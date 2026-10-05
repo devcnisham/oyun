@@ -30,7 +30,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
   const [date, setDate] = useState(initialDate);
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [loadingSlots, startSlotLoad] = useTransition();
-  const [selectedHour, setSelectedHour] = useState<number | null>(null);
+  const [selectedHours, setSelectedHours] = useState<number[]>([]);
   const [selectedFormat, setSelectedFormat] = useState(turf.formats[0] ?? '');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -46,26 +46,62 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
   const [showPayment, setShowPayment] = useState(false);
   const [booking, startBooking] = useTransition();
 
-  const selectedSlot = slots.find((s) => s.hour === selectedHour && s.available) ?? null;
+  const selectedSlot = slots.find((s) => selectedHours.includes(s.hour) && s.available) ?? null;
   const phoneDigits = phone.replace(/\D/g, '');
   const validPhone = phoneDigits.length === 10 ? phoneDigits : '';
   const addOnList = useMemo(() => Object.entries(qty).filter(([, n]) => n > 0).map(([id, n]) => ({ id, qty: n })), [qty]);
 
+  const fetchCombinedQuote = async (hours: number[], promo: string | null) => {
+    if (hours.length === 0) return null;
+    const quotes = await Promise.all(
+      hours.map((hour) =>
+        getBookingQuote({ turfId: turf.id, date, hour, promoCode: promo, addOns: addOnList, useWallet, phone: validPhone })
+      )
+    );
+    if (quotes.some((q) => !q)) return null;
+
+    // Combine quotes
+    const combined: PublicQuote = {
+      breakdown: {
+        basePrice: quotes.reduce((acc, q) => acc + q!.breakdown.basePrice, 0),
+        adjustments: quotes.flatMap((q) => q!.breakdown.adjustments),
+        slotPrice: quotes.reduce((acc, q) => acc + q!.breakdown.slotPrice, 0),
+        offer: quotes[0]!.breakdown.offer,
+        promo: quotes[0]!.breakdown.promo,
+        addOnTotal: quotes.reduce((acc, q) => acc + q!.breakdown.addOnTotal, 0),
+        subtotal: quotes.reduce((acc, q) => acc + q!.breakdown.subtotal, 0),
+        walletDeduction: quotes.reduce((acc, q) => acc + q!.breakdown.walletDeduction, 0),
+        total: quotes.reduce((acc, q) => acc + q!.breakdown.total, 0),
+        advance: quotes.reduce((acc, q) => acc + q!.breakdown.advance, 0),
+      },
+      addOns: quotes[0]!.addOns,
+      promoCode: quotes[0]!.promoCode,
+      promoError: quotes.find((q) => q!.promoError)?.promoError || null,
+      walletBalance: quotes[0]!.walletBalance,
+      firstTime: quotes[0]!.firstTime,
+      slotError: quotes.find((q) => q!.slotError)?.slotError || null,
+    };
+    return combined;
+  };
+
   // Server recalculates the full price whenever the selection changes
   useEffect(() => {
-    if (selectedHour === null) return;
+    if (selectedHours.length === 0) {
+      setQuote(null);
+      return;
+    }
     let cancelled = false;
-    getBookingQuote({ turfId: turf.id, date, hour: selectedHour, promoCode: appliedPromo, addOns: addOnList, useWallet, phone: validPhone }).then((q) => {
+    fetchCombinedQuote(selectedHours, appliedPromo).then((q) => {
       if (!cancelled) setQuote(q);
     });
     return () => {
       cancelled = true;
     };
-  }, [turf.id, date, selectedHour, appliedPromo, addOnList, useWallet, validPhone]);
+  }, [turf.id, date, selectedHours, appliedPromo, addOnList, useWallet, validPhone]);
 
   const changeDate = (next: string) => {
     setDate(next);
-    setSelectedHour(null);
+    setSelectedHours([]);
     setQuote(null);
     startSlotLoad(async () => {
       setSlots(await getSlotsForDate(turf.id, next));
@@ -80,10 +116,10 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
       setCodeError('');
       return;
     }
-    if (selectedHour === null || !code.trim()) return;
+    if (selectedHours.length === 0 || !code.trim()) return;
     
     // 1. Try applying as a promo code
-    const q = await getBookingQuote({ turfId: turf.id, date, hour: selectedHour, promoCode: code, addOns: addOnList, useWallet, phone: validPhone });
+    const q = await fetchCombinedQuote(selectedHours, code);
     if (!q) return;
     if (!q.promoError && q.promoCode) {
       setCodeError('');
@@ -111,32 +147,40 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
 
   const handleBookClick = () => {
     setBookingError('');
-    if (selectedHour === null) return;
+    if (selectedHours.length === 0) return;
     if (!name.trim()) return setBookingError('Enter your name');
     if (!validPhone) return setBookingError('Enter a 10-digit mobile number');
     setShowPayment(true);
   };
 
   const processBooking = () => {
-    if (selectedHour === null) return;
+    if (selectedHours.length === 0) return;
     setShowPayment(false);
     startBooking(async () => {
-      const res = await createBooking({
-        referralCode: rewards.referralEnabled && referralCheck?.status === 'valid' ? code : null, // server ignores it for returning players
-        turfId: turf.id,
-        date,
-        hour: selectedHour,
-        promoCode: appliedPromo,
-        addOns: addOnList,
-        useWallet,
-        phone: validPhone,
-        name,
-        paymentMode,
-      });
-      if (res.id) {
-        router.push(`/bookings/${res.id}`);
+      const results = await Promise.all(
+        selectedHours.map((hour) =>
+          createBooking({
+            referralCode: rewards.referralEnabled && referralCheck?.status === 'valid' ? code : null,
+            turfId: turf.id,
+            date,
+            hour,
+            promoCode: appliedPromo,
+            addOns: addOnList,
+            useWallet,
+            phone: validPhone,
+            name,
+            paymentMode,
+          })
+        )
+      );
+
+      const successfulIds = results.filter((r) => r.id).map((r) => r.id);
+      
+      if (successfulIds.length > 0) {
+        // Redirect to the first successful booking for now
+        router.push(`/bookings/${successfulIds[0]}`);
       } else {
-        setBookingError(res.error ?? 'Could not book this slot');
+        setBookingError(results[0]?.error ?? 'Could not book these slots');
         setSlots(await getSlotsForDate(turf.id, date));
       }
     });
@@ -281,8 +325,15 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
                   {slots.map((slot) => (
                     <button
                       key={slot.hour}
-                      className={`${styles.slotBtn} ${!slot.available ? styles.slotBtnBooked : ''} ${selectedHour === slot.hour ? styles.slotBtnSelected : ''}`}
-                      onClick={() => slot.available && setSelectedHour(slot.hour)}
+                      className={`${styles.slotBtn} ${!slot.available ? styles.slotBtnBooked : ''} ${selectedHours.includes(slot.hour) ? styles.slotBtnSelected : ''}`}
+                      onClick={() => {
+                        if (!slot.available) return;
+                        setSelectedHours(prev => 
+                          prev.includes(slot.hour) 
+                            ? prev.filter(h => h !== slot.hour)
+                            : [...prev, slot.hour]
+                        );
+                      }}
                       disabled={!slot.available}
                     >
                       <span className={styles.slotTime}>{slot.label}</span>
@@ -302,7 +353,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
               )}
             </div>
 
-            {selectedSlot && (
+            {selectedHours.length > 0 && (
               <div className={styles.paymentOptions}>
 
                 <h2 style={{ marginTop: '24px' }}>Payment & Offers</h2>
@@ -343,7 +394,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
                 {q && (
                   <>
                     <div className={styles.breakdown}>
-                      <div className={styles.breakdownRow}><span>Slot ({selectedSlot.label})</span><span>₹{q.basePrice}</span></div>
+                      <div className={styles.breakdownRow}><span>{selectedHours.length > 1 ? `${selectedHours.length} Slots` : selectedSlot?.label ?? 'Slot'}</span><span>₹{q.basePrice}</span></div>
                       {q.adjustments.map((a) => (
                         <div key={a.label} className={styles.breakdownRow}><span>{a.label}</span><span>{a.amount > 0 ? '+' : '−'}₹{Math.abs(a.amount)}</span></div>
                       ))}
