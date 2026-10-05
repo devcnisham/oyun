@@ -8,6 +8,7 @@
   text-decoration: none;
   transition: box-shadow 0.2s ease;
   color: inherit;
+  height: 100%;
 }
 
 .card:hover {
