@@ -39,25 +39,31 @@ export default function LoginPage() {
             <p className={styles.subtitle}>Enter your details to access your account.</p>
           </div>
 
-          <form className={styles.form}>
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="email">Email</label>
-              <input type="email" id="email" className={styles.input} placeholder="name@example.com" required />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="password">Password</label>
-              <input type="password" id="password" className={styles.input} placeholder="••••••••" required />
-            </div>
-
-            <div className={styles.forgotPassword}>
-              <Link href="#" className={styles.forgotLink}>Forgot Password?</Link>
-            </div>
-
-            <button type="submit" className={styles.submitBtn}>Sign In</button>
+          <form className={styles.form} action={async () => {
+            'use server';
+            const { demoLogin } = await import('@/lib/auth-actions');
+            await demoLogin('partner');
+          }}>
+            <button type="submit" className={styles.submitBtn}>
+              Log in as Partner (Demo)
+            </button>
           </form>
 
-          <div className={styles.divider}>or continue with</div>
+          <form className={styles.form} action={async () => {
+            'use server';
+            const { demoLogin } = await import('@/lib/auth-actions');
+            await demoLogin('admin');
+          }} style={{ marginTop: '16px' }}>
+            <button type="submit" className={styles.submitBtn} style={{ background: '#333' }}>
+              Log in as Admin (Demo)
+            </button>
+          </form>
+
+          <div className={styles.divider}>or</div>
+
+          <p className={styles.subtitle} style={{ textAlign: 'center' }}>
+            Actual sign-in is disabled in this demo environment. Use the demo buttons above.
+          </p>
 
           <button className={styles.socialBtn}>
             <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

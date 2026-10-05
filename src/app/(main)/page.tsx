@@ -6,6 +6,7 @@ import TurfSlider from '@/components/TurfSlider';
 import { canOptimize } from '@/lib/images';
 import { getSiteContent, listPublicTurfs } from '@/lib/queries';
 import HeroSearchBar from './HeroSearchBar';
+import PopupAd from '@/components/PopupAd';
 import styles from './page.module.css';
 
 export default async function Home() {
@@ -27,6 +28,7 @@ export default async function Home() {
 
   return (
     <div className={styles.page}>
+      <PopupAd promos={site.promos} />
       
       {/* OYO Style Hero Search */}
       <section className={styles.hero}>

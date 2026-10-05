@@ -147,7 +147,7 @@ function seed(): Database {
       announcement: 'Beta launch: zero booking fees in Mangalore this month!',
       announcementActive: false,
       promos: [
-        { id: 'promo_1', title: 'Play more, pay less!', subtitle: 'Get up to 60% off with code: ARENA60', image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2000&auto=format&fit=crop' },
+        { id: 'promo_1', title: 'Win an iPhone 18 Pro!', subtitle: 'Book any turf this month to enter the massive giveaway. 1 Booking = 1 Entry.', image: '/iphone18.jpg' },
         { id: 'promo_2', title: 'Midnight Madness', subtitle: 'Flat ₹300 off. Code: NIGHTOWL', image: 'https://images.unsplash.com/photo-1551280857-2b9bbe5204eb?q=80&w=2000&auto=format&fit=crop' },
         { id: 'promo_3', title: 'Weekend Warrior', subtitle: 'Get 20% off weekend slots. Code: WEEKEND20', image: 'https://images.unsplash.com/photo-1529900965798-eb5043b428d0?q=80&w=2000&auto=format&fit=crop' },
       ],
