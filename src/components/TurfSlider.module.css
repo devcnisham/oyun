@@ -1,0 +1,118 @@
+.section {
+  padding: 48px 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.viewAll {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-700);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.viewAll:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.arrows {
+  display: flex;
+  gap: 12px;
+}
+
+.arrowBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.arrowBtn:hover {
+  border-color: var(--primary-500);
+  color: var(--primary-700);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.arrowBtn:active {
+  transform: translateY(0);
+}
+
+.sliderWrapper {
+  margin: 0 -16px;
+  padding: 0 16px 16px;
+  overflow: hidden; /* Hide the scrollbars wrapper */
+}
+
+.slider {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 8px; /* Room for card hover shadows */
+}
+
+.slider::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  flex: 0 0 calc(25% - 18px); /* 4 items per view approx */
+  min-width: 260px;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 1024px) {
+  .slide {
+    flex: 0 0 calc(33.333% - 16px);
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 32px 16px;
+  }
+  .title {
+    font-size: 20px;
+  }
+  .controls {
+    display: none; /* Hide arrows on mobile since touch swipe is natural */
+  }
+  .slider {
+    gap: 16px;
+  }
+  .slide {
+    flex: 0 0 75vw;
+    max-width: 300px;
+  }
+}

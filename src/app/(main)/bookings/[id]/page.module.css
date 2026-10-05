@@ -1,0 +1,210 @@
+.page {
+  padding-top: 40px;
+  padding-bottom: 64px;
+}
+
+.card {
+  max-width: 520px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.status {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: 16px;
+}
+
+.ok {
+  background: #ecfdf3;
+  color: #067647;
+}
+
+.off {
+  background: #f2f4f7;
+  color: #475467;
+}
+
+.turf {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.when {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.where {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.qrBlock {
+  margin: 24px auto;
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  max-width: 280px;
+}
+
+.qr svg {
+  width: 200px;
+  height: 200px;
+  display: block;
+  margin: 0 auto;
+}
+
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+  color: var(--text-primary);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.summary {
+  text-align: left;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+  padding-top: 8px;
+  font-size: 14px;
+}
+
+.summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 0;
+}
+
+.summary dt {
+  color: var(--text-muted);
+}
+
+.summary dd {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 16px;
+}
+
+.rewards {
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  text-align: left;
+}
+
+.rewardsTitle {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.walletBalance {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 4px 0 8px;
+}
+
+.rewardLine {
+  font-size: 14px;
+  color: #067647;
+  margin: 4px 0;
+}
+
+.txns {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.txns li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.txnDate {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.credit {
+  color: #067647;
+  font-weight: 700;
+}
+
+.debit {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.referBox {
+  margin-top: 16px;
+  background: #fef2f2;
+  border: 1px dashed var(--primary-300);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+}
+
+.referHead {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.referText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 4px 0 10px;
+}
+
+.referCode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}

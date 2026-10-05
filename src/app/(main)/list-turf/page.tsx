@@ -1,0 +1,484 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { submitApplication } from '@/lib/booking-actions';
+import styles from './page.module.css';
+
+const sports = ['Football'];
+const amenitiesOptions = [
+  'Changing Rooms', 'Parking', 'Floodlights', 'Drinking Water',
+  'Restrooms', 'Café', 'AC Lobby', 'First Aid', 'WiFi',
+];
+const sizes = ['3-a-side', '5-a-side', '6-a-side', '7-a-side', '11-a-side'];
+const surfaces = ['Artificial Grass', 'FIFA Certified Grass', 'FIFA Pro Artificial Grass', 'Synthetic Turf', 'Natural Grass'];
+const mangaloreAreas = ['Kodialbail', 'Kankanady', 'Bejai', 'Hampankatta', 'Kadri', 'Falnir', 'Mangaladevi', 'Attavar', 'Bunder', 'Urwa', 'Other'];
+
+const perks = [
+  { icon: '🚀', title: 'Instant Reach', desc: 'Get discovered by thousands of football players in Mangalore looking to book now.' },
+  { icon: '📱', title: 'Easy Management', desc: 'Manage bookings, view availability and track revenue — all from your dashboard.' },
+  { icon: '💰', title: 'Zero Commission', desc: 'During beta, listing is 100% free and we charge zero commission. List now before it changes.' },
+  { icon: '✅', title: 'Verified Badge', desc: 'Get a verified badge after our team visits your turf — builds trust instantly with bookers.' },
+];
+
+export default function ListTurfPage() {
+  const [showForm, setShowForm] = useState(false);
+  const [step, setStep] = useState(1);
+  const [submitted, setSubmitted] = useState(false);
+  const [refId, setRefId] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [formData, setFormData] = useState({
+    // Step 1 - Owner
+    ownerName: '',
+    ownerPhone: '',
+    ownerEmail: '',
+    // Step 2 - Turf
+    turfName: '',
+    area: '',
+    address: '',
+    sport: 'Football',
+    size: '',
+    surface: '',
+    openTime: '06:00',
+    closeTime: '22:00',
+    // Step 3 - Pricing
+    weekdayPrice: '',
+    weekendPrice: '',
+    eveningPrice: '',
+    // Step 4 - Extra
+    description: '',
+    whatsapp: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const toggleAmenity = (a: string) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitError('');
+    setSubmitting(true);
+    const res = await submitApplication({ ...formData, amenities: selectedAmenities });
+    setSubmitting(false);
+    if (res.id) {
+      setRefId(res.id);
+      setSubmitted(true);
+    } else {
+      setSubmitError(res.error ?? 'Could not submit your listing. Please try again.');
+    }
+  };
+
+  const steps = ['Your Info', 'Turf Details', 'Pricing', 'Finish'];
+
+  if (submitted) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.successPage}>
+          <div className={styles.successIcon}>🎉</div>
+          <h1 className={styles.successTitle}>Application Submitted!</h1>
+          <p className={styles.successDesc}>
+            Thank you, <strong>{formData.ownerName}</strong>! We&apos;ve received your listing for <strong>{formData.turfName}</strong>.
+            Our team will review it and get back to you at <strong>{formData.ownerPhone}</strong> within 24–48 hours.
+          </p>
+          <div className={styles.successRef}>
+            Reference: SA-{refId}
+          </div>
+          <div className={styles.successPerks}>
+            <div className={styles.successPerk}>✓ Listing review in 24 hrs</div>
+            <div className={styles.successPerk}>✓ Free listing during beta</div>
+            <div className={styles.successPerk}>✓ Verified badge on approval</div>
+          </div>
+          <button className="btn btn--primary btn--lg" onClick={() => { setSubmitted(false); setStep(1); setFormData({ ownerName:'', ownerPhone:'', ownerEmail:'', turfName:'', area:'', address:'', sport:'Football', size:'', surface:'', openTime:'06:00', closeTime:'22:00', weekdayPrice:'', weekendPrice:'', eveningPrice:'', description:'', whatsapp:'' }); setSelectedAmenities([]); }}>
+            Submit Another Turf
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.page}>
+      {/* Landing Page Content */}
+      <div className={styles.landingPage}>
+        <motion.div 
+          className={styles.heroSection}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="container">
+            <Link href="/" style={{display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 24, color: 'var(--text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500}}>
+              <span style={{fontSize: 16}}>←</span> Back home
+            </Link>
+            <h1 className={styles.heroTitle}>Partner with OYUN</h1>
+            <p className={styles.heroSubtitle}>Join Mangalore&apos;s fastest growing turf booking network. Free to list, zero commission during beta.</p>
+            <button className="btn btn--primary btn--lg" onClick={() => { document.getElementById('list-form')?.scrollIntoView({ behavior: 'smooth' }); }}>List Your Property Now</button>
+          </div>
+        </motion.div>
+        
+        <div className={`container ${styles.perksGrid}`}>
+          <motion.h2 
+            className={styles.sectionTitle}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+          >
+            Why list on OYUN?
+          </motion.h2>
+          <div className={styles.perksCards}>
+            {perks.map((p, index) => (
+              <motion.div 
+                key={p.title} 
+                className={styles.perkCardLarge}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              >
+                 <div className={styles.perkIconLarge}>{p.icon}</div>
+                 <h3>{p.title}</h3>
+                 <p>{p.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <motion.div 
+          className={`container ${styles.statsSection}`}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className={styles.statBannerLarge}>
+             <div><h3>2,000+</h3><p>Active Bookers</p></div>
+             <div><h3>₹0</h3><p>Listing Cost</p></div>
+             <div><h3>24h</h3><p>Approval Time</p></div>
+          </div>
+        </motion.div>
+      </div>
+
+      <div id="list-form" style={{ scrollMarginTop: '80px' }}>
+        <div className={styles.header}>
+        <div className="container">
+          <div className={styles.headerInner}>
+            <div>
+              <p className="section-label">For Turf Owners</p>
+              <h1 className={styles.pageTitle}>List Your Turf on OYUN</h1>
+              <p className={styles.pageDesc}>
+                Join Mangalore&apos;s growing turf booking network. Free to list, free to earn.
+              </p>
+              <p className={styles.pageDesc}>
+                Already a partner? <Link href="/partner/login">Log in here</Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={`container ${styles.body}`}>
+        {/* Left: Perks */}
+        <aside className={styles.sidebar}>
+          <div className={styles.perksCard}>
+            <h3 className={styles.perksTitle}>Why list on OYUN?</h3>
+            <div className={styles.perksList}>
+              {perks.map((p) => (
+                <div key={p.title} className={styles.perkItem}>
+                  <div className={styles.perkIcon}>{p.icon}</div>
+                  <div>
+                    <div className={styles.perkTitle}>{p.title}</div>
+                    <div className={styles.perkDesc}>{p.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={styles.statsBanner}>
+            <div className={styles.statBannerItem}>
+              <div className={styles.statBannerValue}>2,000+</div>
+              <div className={styles.statBannerLabel}>Active Bookers</div>
+            </div>
+            <div className={styles.statBannerDivider} />
+            <div className={styles.statBannerItem}>
+              <div className={styles.statBannerValue}>₹0</div>
+              <div className={styles.statBannerLabel}>Listing Cost</div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Right: Form */}
+        <div className={styles.formWrap}>
+          {/* Step indicator */}
+          <div className={styles.stepper}>
+            {steps.map((s, i) => (
+              <div key={s} className={`${styles.stepItem} ${i + 1 === step ? styles.stepActive : ''} ${i + 1 < step ? styles.stepDone : ''}`}>
+                <div className={styles.stepDot}>
+                  {i + 1 < step ? '✓' : i + 1}
+                </div>
+                <div className={styles.stepLabel}>{s}</div>
+                {i < steps.length - 1 && <div className={`${styles.stepLine} ${i + 1 < step ? styles.stepLineDone : ''}`} />}
+              </div>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            {/* Step 1: Owner Info */}
+            {step === 1 && (
+              <div className={`${styles.stepContent} animate-fadeInUp`}>
+                <h2 className={styles.stepTitle}>Owner Information</h2>
+                <p className={styles.stepDesc}>Tell us about yourself so we can reach you after reviewing your listing.</p>
+
+                <div className={styles.fieldGroup}>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="ownerName">Full Name *</label>
+                    <input
+                      id="ownerName"
+                      name="ownerName"
+                      type="text"
+                      required
+                      placeholder="e.g. Rohan Shetty"
+                      className={styles.input}
+                      value={formData.ownerName}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="ownerPhone">Mobile Number *</label>
+                    <input
+                      id="ownerPhone"
+                      name="ownerPhone"
+                      type="tel"
+                      required
+                      placeholder="+91 98765 43210"
+                      className={styles.input}
+                      value={formData.ownerPhone}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="ownerEmail">Email Address</label>
+                  <input
+                    id="ownerEmail"
+                    name="ownerEmail"
+                    type="email"
+                    placeholder="you@example.com"
+                    className={styles.input}
+                    value={formData.ownerEmail}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="whatsapp">WhatsApp Number (for notifications)</label>
+                  <input
+                    id="whatsapp"
+                    name="whatsapp"
+                    type="tel"
+                    placeholder="Same as mobile or different"
+                    className={styles.input}
+                    value={formData.whatsapp}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Turf Details */}
+            {step === 2 && (
+              <div className={`${styles.stepContent} animate-fadeInUp`}>
+                <h2 className={styles.stepTitle}>Turf Details</h2>
+                <p className={styles.stepDesc}>Describe your facility so players can make an informed choice.</p>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="turfName">Turf Name *</label>
+                  <input id="turfName" name="turfName" type="text" required placeholder="e.g. Arena Central" className={styles.input} value={formData.turfName} onChange={handleChange} />
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="area">Area / Locality *</label>
+                    <select id="area" name="area" required className={styles.select} value={formData.area} onChange={handleChange}>
+                      <option value="">Select area</option>
+                      {mangaloreAreas.map((a) => <option key={a} value={a}>{a}</option>)}
+                    </select>
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="size">Turf Format *</label>
+                    <select id="size" name="size" required className={styles.select} value={formData.size} onChange={handleChange}>
+                      <option value="">Select size</option>
+                      {sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="address">Full Address *</label>
+                  <input id="address" name="address" type="text" required placeholder="Street, landmark, area, Mangalore" className={styles.input} value={formData.address} onChange={handleChange} />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="surface">Surface Type *</label>
+                  <select id="surface" name="surface" required className={styles.select} value={formData.surface} onChange={handleChange}>
+                    <option value="">Select surface</option>
+                    {surfaces.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="openTime">Opening Time *</label>
+                    <input id="openTime" name="openTime" type="time" required className={styles.input} value={formData.openTime} onChange={handleChange} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="closeTime">Closing Time *</label>
+                    <input id="closeTime" name="closeTime" type="time" required className={styles.input} value={formData.closeTime} onChange={handleChange} />
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label}>Amenities</label>
+                  <div className={styles.amenitiesGrid}>
+                    {amenitiesOptions.map((a) => (
+                      <button
+                        key={a}
+                        type="button"
+                        id={`amenity-${a.replace(/\s/g,'-').toLowerCase()}`}
+                        className={`${styles.amenityToggle} ${selectedAmenities.includes(a) ? styles.amenityToggleActive : ''}`}
+                        onClick={() => toggleAmenity(a)}
+                      >
+                        {selectedAmenities.includes(a) ? '✓ ' : ''}{a}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Pricing */}
+            {step === 3 && (
+              <div className={`${styles.stepContent} animate-fadeInUp`}>
+                <h2 className={styles.stepTitle}>Pricing</h2>
+                <p className={styles.stepDesc}>Set your hourly rates. You can always update these later from your dashboard.</p>
+
+                <div className={styles.pricingCards}>
+                  <div className={styles.pricingCard}>
+                    <div className={styles.pricingCardIcon}>☀️</div>
+                    <div className={styles.field}>
+                      <label className={styles.label} htmlFor="weekdayPrice">Weekday Rate (₹/hr) *</label>
+                      <div className={styles.priceInputWrap}>
+                        <span className={styles.pricePrefix}>₹</span>
+                        <input id="weekdayPrice" name="weekdayPrice" type="number" required min="100" placeholder="700" className={`${styles.input} ${styles.priceInput}`} value={formData.weekdayPrice} onChange={handleChange} />
+                      </div>
+                      <p className={styles.fieldHint}>Monday – Friday, daytime</p>
+                    </div>
+                  </div>
+                  <div className={styles.pricingCard}>
+                    <div className={styles.pricingCardIcon}>🌆</div>
+                    <div className={styles.field}>
+                      <label className={styles.label} htmlFor="eveningPrice">Evening Rate (₹/hr) *</label>
+                      <div className={styles.priceInputWrap}>
+                        <span className={styles.pricePrefix}>₹</span>
+                        <input id="eveningPrice" name="eveningPrice" type="number" required min="100" placeholder="1000" className={`${styles.input} ${styles.priceInput}`} value={formData.eveningPrice} onChange={handleChange} />
+                      </div>
+                      <p className={styles.fieldHint}>5 PM – closing (peak hours)</p>
+                    </div>
+                  </div>
+                  <div className={styles.pricingCard}>
+                    <div className={styles.pricingCardIcon}>🎯</div>
+                    <div className={styles.field}>
+                      <label className={styles.label} htmlFor="weekendPrice">Weekend Rate (₹/hr) *</label>
+                      <div className={styles.priceInputWrap}>
+                        <span className={styles.pricePrefix}>₹</span>
+                        <input id="weekendPrice" name="weekendPrice" type="number" required min="100" placeholder="1200" className={`${styles.input} ${styles.priceInput}`} value={formData.weekendPrice} onChange={handleChange} />
+                      </div>
+                      <p className={styles.fieldHint}>Saturday & Sunday</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.pricingNote}>
+                  💡 Tip: Turfs with peak-hour pricing typically earn 35% more per month than flat-rate turfs.
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Description */}
+            {step === 4 && (
+              <div className={`${styles.stepContent} animate-fadeInUp`}>
+                <h2 className={styles.stepTitle}>Final Details</h2>
+                <p className={styles.stepDesc}>Add a short description of your turf for players to read before booking.</p>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="description">Turf Description *</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    required
+                    rows={5}
+                    placeholder="Describe your turf — the quality of the pitch, unique features, surroundings, facilities..."
+                    className={styles.textarea}
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
+                  <p className={styles.fieldHint}>{formData.description.length} / 300 characters</p>
+                </div>
+
+                {/* Review summary */}
+                <div className={styles.reviewCard}>
+                  <h4 className={styles.reviewTitle}>Review Your Listing</h4>
+                  <div className={styles.reviewGrid}>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Name</span><span className={styles.reviewValue}>{formData.turfName || '—'}</span></div>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Area</span><span className={styles.reviewValue}>{formData.area || '—'}</span></div>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Format</span><span className={styles.reviewValue}>{formData.size || '—'}</span></div>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Surface</span><span className={styles.reviewValue}>{formData.surface || '—'}</span></div>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Weekday</span><span className={styles.reviewValue}>{formData.weekdayPrice ? `₹${formData.weekdayPrice}/hr` : '—'}</span></div>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Weekend</span><span className={styles.reviewValue}>{formData.weekendPrice ? `₹${formData.weekendPrice}/hr` : '—'}</span></div>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Hours</span><span className={styles.reviewValue}>{formData.openTime} – {formData.closeTime}</span></div>
+                    <div className={styles.reviewItem}><span className={styles.reviewLabel}>Amenities</span><span className={styles.reviewValue}>{selectedAmenities.length > 0 ? selectedAmenities.slice(0,3).join(', ') + (selectedAmenities.length > 3 ? ` +${selectedAmenities.length - 3}` : '') : '—'}</span></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {submitError && (
+              <p role="alert" style={{ color: '#b42318', background: '#fef3f2', border: '1px solid #fecdca', padding: '10px 12px', borderRadius: 8, fontSize: 14 }}>
+                {submitError}
+              </p>
+            )}
+
+            {/* Navigation */}
+            <div className={styles.stepNav}>
+              {step > 1 && (
+                <button type="button" className="btn btn--ghost" onClick={() => setStep(step - 1)} id="form-prev">
+                  ← Previous
+                </button>
+              )}
+              {step < 4 ? (
+                <button type="button" className={`btn btn--primary ${styles.nextBtn}`} onClick={() => setStep(step + 1)} id="form-next">
+                  Continue →
+                </button>
+              ) : (
+                <button type="submit" className={`btn btn--primary ${styles.nextBtn}`} id="form-submit" disabled={submitting}>
+                  {submitting ? 'Submitting…' : '🚀 Submit Listing'}
+                </button>
+              )}
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

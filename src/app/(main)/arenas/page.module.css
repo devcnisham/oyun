@@ -1,0 +1,430 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+/* Header */
+.header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 0 0;
+}
+
+.headerInner {
+  margin-bottom: 24px;
+}
+
+.pageTitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.pageDesc {
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* Search Bar */
+.searchBar {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.searchInputWrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 40px 12px 44px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 16px; /* 16px prevents iOS auto-zoom */
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.searchInput::placeholder { color: var(--text-muted); }
+
+.searchInput:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.searchClear {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.searchClear:hover {
+  background: var(--bg-muted);
+  color: var(--text-primary);
+}
+
+.controlsGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.viewToggle {
+  display: flex;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+}
+
+.viewBtn {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.viewBtn:hover {
+  color: var(--text-primary);
+}
+
+.viewBtnActive {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.sortSelect {
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 16px; /* 16px prevents iOS auto-zoom */
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 180px;
+}
+
+.sortSelect:focus { border-color: var(--primary-500); }
+
+/* Horizontal Pill Filters */
+.areaFiltersWrapper {
+  margin: 0 -32px;
+  padding: 0 32px 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.areaFiltersWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.areaFilters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: max-content;
+}
+
+.areaFilter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.areaFilter:hover {
+  border-color: var(--primary-500);
+  color: var(--primary-700);
+}
+
+.areaFilterActive {
+  background: var(--primary-gradient) !important;
+  border-color: var(--primary-700) !important;
+  color: #fff !important;
+}
+
+.areaFilterCount {
+  font-size: 12px;
+  background: var(--bg-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+}
+
+.areaFilterActive .areaFilterCount {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* Body */
+.body {
+  display: block;
+  padding-top: 16px;
+  padding-bottom: 64px;
+}
+
+/* Main Grid */
+.main {}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  padding: 80px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+}
+
+.emptyIcon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  display: block;
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.emptyDesc {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 16px;
+  color: var(--text-muted);
+  padding-top: 68px;
+}
+
+/* ===== MAP VIEW ===== */
+.mapContainer {
+  width: 100%;
+  height: calc(100vh - 160px);
+  position: sticky;
+  top: 88px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.mapPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mapPlaceholderIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.mapPlaceholder h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.mapPlaceholder p {
+  color: var(--text-secondary);
+}
+
+.mapPinsMock {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mapPinMock {
+  position: absolute;
+  background: var(--text-primary);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+
+.mapPinMock:nth-child(1) { top: 30%; left: 40%; }
+.mapPinMock:nth-child(2) { top: 50%; left: 60%; }
+.mapPinMock:nth-child(3) { top: 60%; left: 30%; }
+.mapPinMock:nth-child(4) { top: 40%; left: 75%; }
+.mapPinMock:nth-child(5) { top: 75%; left: 55%; }
+.mapPinMock:nth-child(6) { top: 20%; left: 50%; }
+
+/* ===== MAP VIEW ===== */
+.mapContainer {
+  width: 100%;
+  height: calc(100vh - 160px);
+  position: sticky;
+  top: 88px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.mapPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mapPlaceholderIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.mapPlaceholder h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.mapPlaceholder p {
+  color: var(--text-secondary);
+}
+
+.mapPinsMock {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mapPinMock {
+  position: absolute;
+  background: var(--text-primary);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+
+.mapPinMock:nth-child(1) { top: 30%; left: 40%; }
+.mapPinMock:nth-child(2) { top: 50%; left: 60%; }
+.mapPinMock:nth-child(3) { top: 60%; left: 30%; }
+.mapPinMock:nth-child(4) { top: 40%; left: 75%; }
+.mapPinMock:nth-child(5) { top: 75%; left: 55%; }
+.mapPinMock:nth-child(6) { top: 20%; left: 50%; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .searchBar { 
+    flex-direction: column; 
+    align-items: stretch;
+  }
+  .searchInputWrap {
+    width: 100%;
+  }
+  .controlsGroup {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .sortSelect { 
+    flex: 1; 
+  }
+  .areaFiltersWrapper {
+    margin: 0 -16px;
+    padding: 0 16px 16px;
+  }
+}
+
+/* Map view: real map embed with a list of turf links underneath */
+.mapContainer .mapPinsMock {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  inset: auto;
+  transform: none;
+}
+
+.mapContainer .mapPinsMock .mapPinMock {
+  position: static;
+  text-decoration: none;
+  transform: none;
+  animation: none;
+}
+
+.mapContainer:has(iframe) {
+  height: auto;
+  position: static;
+  border: none;
+  overflow: visible;
+}

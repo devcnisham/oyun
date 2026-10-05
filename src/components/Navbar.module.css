@@ -1,0 +1,183 @@
+.transparentWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.stickyWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar {
+  background: var(--primary-gradient);
+  border-bottom: none;
+  box-shadow: 0 8px 30px rgba(24, 0, 0, 0.6);
+  position: relative;
+  z-index: 1000;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.navbarTransparent {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: none !important;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+/* Logo */
+.logo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoName {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+/* Nav Links */
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navIcon {
+  font-size: 20px;
+  color: #fff;
+}
+
+.navText {
+  display: flex;
+  flex-direction: column;
+}
+
+.navTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.navSub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Secondary Nav */
+.cityNav {
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s, border 0.3s;
+}
+
+.cityNavTransparent {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.cityNavTransparent .cityLink {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.cityNavTransparent .cityLink:hover {
+  color: #fff !important;
+}
+
+.cityInner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 12px 24px;
+}
+
+.cityInner::-webkit-scrollbar {
+  display: none;
+}
+
+.cityLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.cityLink:hover {
+  color: var(--text-primary);
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.bar {
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  transition: 0.3s;
+}
+
+@media (max-width: 768px) {
+  .desktopOnlyNav {
+    display: none !important;
+  }
+  .hamburger { display: none !important; }
+  .inner { 
+    height: 56px; 
+    justify-content: center;
+  }
+  .logoName { font-size: 18px; }
+  .navLinks {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    display: none;
+    z-index: 999;
+  }
+  .navOpen { display: flex; }
+  .cityNav { display: none; }
+}
