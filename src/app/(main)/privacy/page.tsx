@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getSettings } from '@/lib/queries';
 import styles from '../faq/page.module.css';
+import BackButton from '@/components/BackButton';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -17,7 +18,7 @@ export default async function PrivacyPage() {
   return (
     <div className={styles.pageContainer}>
       <article className={styles.content}>
-        <Link href="/" className={styles.back}>← Back home</Link>
+        <BackButton />
         <h1 className={styles.title}>Privacy Policy</h1>
         <p className={styles.subtitle}>Last updated: {UPDATED}</p>
 
@@ -29,7 +30,7 @@ export default async function PrivacyPage() {
 
           <h2>1. Data we collect</h2>
           <ul>
-            <li><strong>Booking details:</strong> your name, mobile number, the turf, date and time you book, add-ons, the amount paid and your booking status (for example checked in or cancelled).</li>
+            <li><strong>Booking details:</strong> your name, mobile number, the turf, date and time you book, the amount paid and your booking status (for example checked in or cancelled).</li>
             <li><strong>Wallet and referrals:</strong> wallet credits, cashback, refunds and your referral code, linked to your mobile number.</li>
             <li><strong>Turf owners and staff:</strong> name, email, phone, business name, GSTIN and address, and the details of the venue you list.</li>
             <li><strong>Device data:</strong> a random device identifier cookie used to hold slots during checkout, and the name, number and booking list you choose to save on your device.</li>

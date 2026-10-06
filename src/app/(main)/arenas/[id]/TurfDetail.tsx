@@ -1,17 +1,16 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { canOptimize } from '@/lib/images';
-import type { AddOn, Offer, Slot, Turf } from '@/lib/types';
+import type { Offer, Slot, Turf } from '@/lib/types';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
 import ShareButton from './ShareButton';
 import styles from './page.module.css';
+import BackButton from '@/components/BackButton';
 
 interface TurfDetailProps {
   turf: Turf;
   dates: BookingFlowProps['dates'];
   initialDate: string;
   initialSlots: Slot[];
-  addOns: AddOn[];
   offers: Offer[];
   advancePercent: number;
   bookable: boolean;
@@ -21,7 +20,7 @@ interface TurfDetailProps {
 
 const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
 
-export default function TurfDetail({ turf, dates, initialDate, initialSlots, addOns, offers, advancePercent, bookable, rewards, initialReferral }: TurfDetailProps) {
+export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, advancePercent, bookable, rewards, initialReferral }: TurfDetailProps) {
   const imageSrc = turf.images[0];
 
   return (
@@ -31,7 +30,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
         <Image src={imageSrc} alt={turf.name} fill preload sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
 
         <div className={styles.topNav}>
-          <Link href="/arenas" className={styles.iconBtn} aria-label="Back to arenas">←</Link>
+          <BackButton fallback="/arenas" className={styles.iconBtn}>←</BackButton>
           <div className={styles.midBadge}>{turf.isVerified ? 'Verified Turf' : 'Premium Turf'}</div>
           <div className={styles.topNavRight}>
             <ShareButton title={turf.name} className={styles.iconBtn} />
@@ -107,7 +106,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
             dates={dates}
             initialDate={initialDate}
             initialSlots={initialSlots}
-            addOns={addOns}
             advancePercent={advancePercent}
             rewards={rewards}
             initialReferral={initialReferral}

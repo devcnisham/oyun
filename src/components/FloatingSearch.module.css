@@ -1,0 +1,63 @@
+.fab {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 16px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary-700);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(211, 16, 39, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2);
+  place-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s;
+}
+.fab:active { transform: scale(0.92); }
+
+@media (max-width: 768px) {
+  .fab { display: grid; }
+}
+@media print {
+  .fab { display: none !important; }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  background: rgba(10, 12, 16, 0.45);
+  display: flex;
+  align-items: flex-start;
+  animation: fade 0.15s ease-out;
+}
+.sheet {
+  width: 100%;
+  background: #fff;
+  padding: calc(12px + env(safe-area-inset-top)) 16px 20px;
+  border-radius: 0 0 22px 22px;
+  box-shadow: var(--shadow-lg);
+  animation: drop 0.2s ease-out;
+}
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0 12px;
+  color: var(--text-muted);
+}
+.bar input { flex: 1; border: none; outline: none; background: transparent; font: inherit; font-size: 16px; padding: 14px 0; color: var(--text-primary); }
+.close { font: inherit; font-weight: 700; color: var(--primary-700); background: none; border: none; cursor: pointer; }
+.label { margin: 16px 0 8px; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: inherit; font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 99px; border: 1px solid var(--border); background: #fff; color: var(--text-primary); cursor: pointer; }
+.all { margin-top: 16px; width: 100%; font: inherit; font-weight: 800; padding: 12px; border-radius: 12px; border: none; background: var(--primary-700); color: #fff; cursor: pointer; }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes drop { from { transform: translateY(-16px); opacity: 0; } to { transform: none; opacity: 1; } }

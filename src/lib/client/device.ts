@@ -3,7 +3,10 @@
 // Things this browser remembers for the player. Storage can throw (private mode), so every access is guarded.
 
 const PROFILE_KEY = 'oyun_profile';
+// Fired on window when the saved profile or booking list changes, so the top bar can update
+export const DEVICE_EVENT = 'oyun:device';
 const BOOKINGS_KEY = 'oyun_bookings';
+const AREA_KEY = 'oyun_area';
 
 export interface DeviceProfile {
   name: string;
@@ -32,6 +35,7 @@ export function getProfile(): DeviceProfile {
 
 export function saveProfile(profile: DeviceProfile) {
   write(PROFILE_KEY, { name: profile.name.slice(0, 80), phone: profile.phone.slice(0, 20) });
+  window.dispatchEvent(new Event(DEVICE_EVENT));
 }
 
 export function getMyBookingIds(): string[] {
@@ -41,6 +45,7 @@ export function getMyBookingIds(): string[] {
 
 export function addMyBookingIds(ids: string[]) {
   write(BOOKINGS_KEY, [...new Set([...ids, ...getMyBookingIds()])].slice(0, 100));
+  window.dispatchEvent(new Event(DEVICE_EVENT));
 }
 
 export function clearDevice() {
@@ -48,4 +53,15 @@ export function clearDevice() {
     localStorage.removeItem(PROFILE_KEY);
     localStorage.removeItem(BOOKINGS_KEY);
   } catch {}
+  window.dispatchEvent(new Event(DEVICE_EVENT));
+}
+
+// The area chosen in the top bar's "Playing in …" strip
+export function getPreferredArea(): string {
+  const a = read<unknown>(AREA_KEY, '');
+  return typeof a === 'string' ? a.slice(0, 60) : '';
+}
+
+export function setPreferredArea(area: string) {
+  write(AREA_KEY, area.slice(0, 60));
 }

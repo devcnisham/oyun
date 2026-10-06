@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import styles from '../auth.module.css';
@@ -31,10 +32,10 @@ export default function SignupPage() {
 
       {/* Right Form Panel */}
       <div className={styles.formPanel}>
-        <Link href="/" className={styles.backBtn}>
+        <BackButton className={styles.backBtn}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           Back
-        </Link>
+        </BackButton>
 
         <div className={styles.formWrapper}>
           <div className={styles.header}>

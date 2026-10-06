@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getSettings } from '@/lib/queries';
 import styles from '../faq/page.module.css';
+import BackButton from '@/components/BackButton';
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
@@ -17,7 +18,7 @@ export default async function TermsPage() {
   return (
     <div className={styles.pageContainer}>
       <article className={styles.content}>
-        <Link href="/" className={styles.back}>← Back home</Link>
+        <BackButton />
         <h1 className={styles.title}>Terms &amp; Conditions</h1>
         <p className={styles.subtitle}>Last updated: {UPDATED}</p>
 

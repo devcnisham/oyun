@@ -6,6 +6,7 @@ import { getDb } from '@/lib/store';
 import { formatDate, formatDateTime, formatSlotRange } from '@/lib/time';
 import { WALLET_TXN_LABELS, cashbackFor } from '@/lib/wallet';
 import styles from './page.module.css';
+import BackButton from '@/components/BackButton';
 
 const STATUS_TEXT: Record<string, string> = {
   confirmed: 'Booking confirmed',
@@ -41,9 +42,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className={`container ${styles.page}`}>
-      <Link href="/" style={{display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 24, color: 'var(--text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500}}>
-        <span style={{fontSize: 16}}>←</span> Back home
-      </Link>
+      <BackButton fallback="/bookings" />
       <div className={styles.card}>
         <div className={`${styles.status} ${active || booking.status === 'checked_in' ? styles.ok : styles.off}`}>
           {active ? '✓ ' : ''}{STATUS_TEXT[booking.status]}

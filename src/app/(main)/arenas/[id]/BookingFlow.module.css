@@ -166,7 +166,7 @@
 .barInfo span { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .barSpacer { height: 0; }
 
-.primary, .secondary, .addBtn {
+.primary, .secondary {
   font: inherit;
   border-radius: 12px;
   font-weight: 800;
@@ -176,7 +176,7 @@
 }
 .primary { background: var(--brand); color: #fff; padding: 14px 26px; font-size: 15px; min-width: 132px; }
 .primary:disabled { opacity: 0.55; cursor: default; }
-.primary:active:not(:disabled), .secondary:active, .addBtn:active { transform: scale(0.97); }
+.primary:active:not(:disabled), .secondary:active { transform: scale(0.97); }
 .secondary { background: var(--bg-muted); color: var(--text-primary); border: 1px solid var(--border); padding: 0 16px; }
 
 @media (min-width: 1024px) {
@@ -282,14 +282,6 @@
 }
 .input:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
 
-.addOns { display: flex; flex-direction: column; gap: 8px; }
-.addOn { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; }
-.addOn > div:first-child { display: flex; flex-direction: column; }
-.addOn b { font-size: 14px; }
-.addBtn { background: #fff; color: var(--brand); border: 1.5px solid var(--brand); padding: 6px 18px; }
-.stepper { display: flex; align-items: center; gap: 4px; border: 1.5px solid var(--brand); border-radius: 12px; overflow: hidden; }
-.stepper button { width: 32px; height: 30px; border: none; background: #fff; color: var(--brand); font-size: 18px; font-weight: 800; cursor: pointer; }
-.stepper span { min-width: 18px; text-align: center; font-weight: 800; }
 
 .codeRow { display: flex; gap: 8px; }
 .toggle { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 14px; font-weight: 600; }
