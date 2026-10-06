@@ -80,17 +80,17 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
           <h2>Why book this turf?</h2>
           <div className={styles.perk}>
             <span className={styles.perkIcon}>🏟️</span>
-            <div><h4 className={styles.perkTitle}>{turf.surface}</h4></div>
+            <div><h3 className={styles.perkTitle}>{turf.surface}</h3></div>
           </div>
           {turf.isVerified && (
             <div className={styles.perk}>
               <span className={styles.perkIcon}>✓</span>
-              <div><h4 className={styles.perkTitle}>Inspected and verified by OYUN</h4></div>
+              <div><h3 className={styles.perkTitle}>Inspected and verified by OYUN</h3></div>
             </div>
           )}
           <div className={styles.perk}>
             <span className={styles.perkIcon}>💡</span>
-            <div><h4 className={styles.perkTitle}>Open {turf.openTime} – {turf.closeTime}</h4></div>
+            <div><h3 className={styles.perkTitle}>Open {turf.openTime} – {turf.closeTime}</h3></div>
           </div>
         </div>
 
@@ -150,7 +150,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
         <hr className={styles.divider} />
 
         <div className={styles.mapSection}>
-          <h2>Location Preview</h2>
+          <h2>Location</h2>
           <div className={styles.mapContainer}>
             <iframe
               title={`${turf.name} on map`}

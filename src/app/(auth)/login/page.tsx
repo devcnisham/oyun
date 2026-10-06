@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import styles from '../auth.module.css';
+
+export const metadata: Metadata = { title: 'Log in', description: 'Log in to OYUN as a turf owner, staff member or admin.', alternates: { canonical: '/login' } };
 
 export default function LoginPage() {
   return (
@@ -22,7 +25,7 @@ export default function LoginPage() {
             </svg>
             <span className={styles.logoName}>OYUN</span>
           </div>
-          <h1 className={styles.brandTagline}>Your next game is just a tap away.</h1>
+          <p className={styles.brandTagline}>Your next game is just a tap away.</p>
         </div>
       </div>
 

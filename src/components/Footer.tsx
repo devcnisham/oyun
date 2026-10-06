@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import { areaSlug } from '@/lib/site';
 import styles from './Footer.module.css';
 
-export default function Footer() {
+export default function Footer({ areas, supportEmail }: { areas: string[]; supportEmail: string }) {
   return (
     <footer className={styles.footer}>
       <div className={`container ${styles.inner}`}>
@@ -45,47 +46,47 @@ export default function Footer() {
           </div>
 
           {/* Links */}
-          <div className={styles.linksGrid}>
+          <nav className={styles.linksGrid} aria-label="Footer">
             <div className={styles.linkGroup}>
-              <h4 className={styles.linkGroupTitle}>Platform</h4>
+              <p className={styles.linkGroupTitle}>Book</p>
               <ul className={styles.linkList}>
-                <li><Link href="/arenas" id="footer-browse">Browse Arenas</Link></li>
-                <li><Link href="/list-turf" id="footer-list">List Your Turf</Link></li>
-                <li><a href="#how-it-works" id="footer-how">How It Works</a></li>
+                <li><Link href="/arenas">All turfs in Mangalore</Link></li>
+                <li><Link href="/bookings">My bookings</Link></li>
+                <li><Link href="/faq">How booking works</Link></li>
+              </ul>
+            </div>
+            {areas.length > 0 && (
+              <div className={styles.linkGroup}>
+                <p className={styles.linkGroupTitle}>Turfs by area</p>
+                <ul className={styles.linkList}>
+                  {areas.slice(0, 8).map((a) => (
+                    <li key={a}><Link href={`/turfs/${areaSlug(a)}`}>Turfs in {a}</Link></li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div className={styles.linkGroup}>
+              <p className={styles.linkGroupTitle}>Turf owners</p>
+              <ul className={styles.linkList}>
+                <li><Link href="/list-turf">List your turf</Link></li>
+                <li><Link href="/partner/login">Partner login</Link></li>
               </ul>
             </div>
             <div className={styles.linkGroup}>
-              <h4 className={styles.linkGroupTitle}>Areas</h4>
+              <p className={styles.linkGroupTitle}>Support</p>
               <ul className={styles.linkList}>
-                <li><Link href="/arenas?area=Kodialbail">Kodialbail</Link></li>
-                <li><Link href="/arenas?area=Kankanady">Kankanady</Link></li>
-                <li><Link href="/arenas?area=Bejai">Bejai</Link></li>
-                <li><Link href="/arenas?area=Kadri">Kadri</Link></li>
-                <li><Link href="/arenas?area=Hampankatta">Hampankatta</Link></li>
+                <li><a href={`mailto:${supportEmail}`}>Contact us</a></li>
+                <li><Link href="/faq">FAQ</Link></li>
+                <li><Link href="/privacy">Privacy policy</Link></li>
+                <li><Link href="/terms">Terms &amp; conditions</Link></li>
               </ul>
             </div>
-            <div className={styles.linkGroup}>
-              <h4 className={styles.linkGroupTitle}>Support</h4>
-              <ul className={styles.linkList}>
-                <li><a href="mailto:hello@oyun.in" id="footer-email">Contact Us</a></li>
-                <li><Link href="/faq" id="footer-faq">FAQ</Link></li>
-                <li><Link href="/privacy" id="footer-privacy">Privacy Policy</Link></li>
-                <li><Link href="/terms" id="footer-terms">Terms of Service</Link></li>
-              </ul>
-            </div>
-            <div className={styles.linkGroup}>
-              <h4 className={styles.linkGroupTitle}>Prototypes (v2)</h4>
-              <ul className={styles.linkList}>
-                <li><a href="/app-prototype.html" target="_blank" rel="noreferrer">PWA App Demo</a></li>
-                <li><a href="/owner-dashboard.html" target="_blank" rel="noreferrer">Owner Dashboard</a></li>
-              </ul>
-            </div>
-          </div>
+          </nav>
         </div>
 
         <div className={styles.bottom}>
           <p className={styles.copyright}>
-            © 2025 OYUN. All rights reserved.
+            © {new Date().getFullYear()} OYUN. All rights reserved.
           </p>
         </div>
       </div>

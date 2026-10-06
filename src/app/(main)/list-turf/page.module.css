@@ -599,7 +599,7 @@
   text-align: center;
 }
 
-.statBannerLarge h3 {
+.statBannerLarge .statValue {
   font-size: clamp(32px, 4vw, 48px);
   font-weight: 900;
   margin-bottom: 8px;

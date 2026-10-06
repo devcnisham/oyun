@@ -159,9 +159,9 @@ export default function ListTurfPage() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className={styles.statBannerLarge}>
-             <div><h3>2,000+</h3><p>Active Bookers</p></div>
-             <div><h3>₹0</h3><p>Listing Cost</p></div>
-             <div><h3>24h</h3><p>Approval Time</p></div>
+             <div><p className={styles.statValue}>2,000+</p><p>Active Bookers</p></div>
+             <div><p className={styles.statValue}>₹0</p><p>Listing Cost</p></div>
+             <div><p className={styles.statValue}>24h</p><p>Approval Time</p></div>
           </div>
         </motion.div>
       </div>
@@ -172,7 +172,7 @@ export default function ListTurfPage() {
           <div className={styles.headerInner}>
             <div>
               <p className="section-label">For Turf Owners</p>
-              <h1 className={styles.pageTitle}>List Your Turf on OYUN</h1>
+              <h2 className={styles.pageTitle}>List Your Turf on OYUN</h2>
               <p className={styles.pageDesc}>
                 Join Mangalore&apos;s growing turf booking network. Free to list, free to earn.
               </p>
@@ -188,7 +188,7 @@ export default function ListTurfPage() {
         {/* Left: Perks */}
         <aside className={styles.sidebar}>
           <div className={styles.perksCard}>
-            <h3 className={styles.perksTitle}>Why list on OYUN?</h3>
+            <h3 className={styles.perksTitle}>Benefits for partners</h3>
             <div className={styles.perksList}>
               {perks.map((p) => (
                 <div key={p.title} className={styles.perkItem}>
@@ -435,7 +435,7 @@ export default function ListTurfPage() {
 
                 {/* Review summary */}
                 <div className={styles.reviewCard}>
-                  <h4 className={styles.reviewTitle}>Review Your Listing</h4>
+                  <h3 className={styles.reviewTitle}>Review Your Listing</h3>
                   <div className={styles.reviewGrid}>
                     <div className={styles.reviewItem}><span className={styles.reviewLabel}>Name</span><span className={styles.reviewValue}>{formData.turfName || '—'}</span></div>
                     <div className={styles.reviewItem}><span className={styles.reviewLabel}>Area</span><span className={styles.reviewValue}>{formData.area || '—'}</span></div>

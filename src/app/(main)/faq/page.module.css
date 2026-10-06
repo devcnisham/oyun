@@ -36,6 +36,7 @@
   gap: 32px;
 }
 
+.faqItem h2,
 .faqItem h3 {
   font-size: 18px;
   font-weight: 700;

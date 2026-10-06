@@ -1,17 +1,28 @@
+import type { Metadata } from 'next';
+import { SITE_DESCRIPTION } from '@/lib/site';
+import JsonLd from '@/components/JsonLd';
+import { organizationSchema, websiteSchema } from '@/lib/schema';
 import { connection } from 'next/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import TurfSlider from '@/components/TurfSlider';
-import { getSiteContent, listPublicTurfs } from '@/lib/queries';
+import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
 import HeroSearchBar from './HeroSearchBar';
 import PopupAd from '@/components/PopupAd';
 import MobileHome from './_home/MobileHome';
 import styles from './page.module.css';
 
+export const metadata: Metadata = {
+  title: { absolute: 'OYUN | Book Football Turfs in Mangalore Online' },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/' },
+};
+
 export default async function Home() {
   await connection(); // live data: render per request
   const site = await getSiteContent();
   const turfs = await listPublicTurfs();
+  const settings = await getSettings();
   const recommended = [...turfs].sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating).slice(0, 10);
 
   // Top areas by number of listed turfs
@@ -27,11 +38,8 @@ export default async function Home() {
 
   return (
     <div className={styles.page}>
+      <JsonLd data={[organizationSchema(settings.supportEmail, settings.supportPhone), websiteSchema()]} />
       <PopupAd promos={site.promos} />
-      <div className={styles.mobileHome}>
-        <MobileHome turfs={turfs} areas={popularAreas} promos={site.promos} />
-      </div>
-
       <div className={styles.desktopHome}>
 
       {/* OYO Style Hero Search */}
@@ -201,6 +209,10 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      </div>
+
+      <div className={styles.mobileHome}>
+        <MobileHome turfs={turfs} areas={popularAreas} promos={site.promos} />
       </div>
     </div>
   );

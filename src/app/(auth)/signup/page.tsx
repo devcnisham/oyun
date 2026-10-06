@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import styles from '../auth.module.css';
+
+export const metadata: Metadata = { title: 'Get started', description: 'Start booking football turfs on OYUN, or list your own turf.', alternates: { canonical: '/signup' } };
 
 export default function SignupPage() {
   return (
@@ -22,7 +25,7 @@ export default function SignupPage() {
             </svg>
             <span className={styles.logoName}>OYUN</span>
           </div>
-          <h1 className={styles.brandTagline}>Join India&apos;s premium turf booking platform.</h1>
+          <p className={styles.brandTagline}>Join India&apos;s premium turf booking platform.</p>
         </div>
       </div>
 

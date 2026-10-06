@@ -291,7 +291,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
     <div className={styles.flow}>
       {/* 1 · Date strip */}
       <div className={styles.stepHead}>
-        <h2>Select date</h2>
+        <h3>Select date</h3>
       </div>
       <div className={styles.dates} role="tablist" aria-label="Date">
         {dates.map((d) => (
@@ -310,7 +310,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
 
       {/* 2 · Slot map */}
       <div className={styles.stepHead}>
-        <h2>Pick your slots</h2>
+        <h3>Pick your slots</h3>
         <span className={styles.muted}>{loadingSlots ? 'Updating…' : `${availableCount} open`}</span>
       </div>
 

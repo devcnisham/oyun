@@ -1,0 +1,14 @@
+.wrap { min-height: 70vh; display: grid; place-items: center; padding: 48px 16px; background: var(--bg-primary); }
+.card { max-width: 480px; width: 100%; text-align: center; background: #fff; border: 1px solid var(--border); border-radius: 24px; padding: 40px 24px; box-shadow: var(--shadow-md); }
+.ball { font-size: 48px; animation: bounce 1.2s ease-in-out infinite; }
+.code { font-weight: 800; color: var(--primary-700); letter-spacing: 0.1em; margin-top: 8px; }
+.title { font-size: 26px; font-weight: 800; margin: 6px 0 8px; }
+.message { color: var(--text-secondary); margin-bottom: 24px; }
+.actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.primary, .secondary { font: inherit; font-weight: 800; padding: 12px 22px; border-radius: 12px; text-decoration: none; cursor: pointer; border: none; }
+.primary { background: var(--primary-700); color: #fff; }
+.secondary { background: var(--bg-muted); color: var(--text-primary); border: 1px solid var(--border); }
+.links { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center; margin-top: 28px; font-size: 14px; }
+.links a { color: var(--text-secondary); }
+@keyframes bounce { 50% { transform: translateY(-10px); } }
+@media (prefers-reduced-motion: reduce) { .ball { animation: none; } }

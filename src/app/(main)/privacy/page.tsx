@@ -1,10 +1,12 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import styles from '../faq/page.module.css';
 
-export const metadata = {
-  title: 'Privacy Policy - OYUN',
-  description: 'Privacy Policy and data handling practices for OYUN.',
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'How OYUN collects, uses and protects your personal data when you book turfs or list a venue.',
+  alternates: { canonical: '/privacy' },
 };
 
 export default function PrivacyPage() {

@@ -1,10 +1,12 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import styles from '../faq/page.module.css';
 
-export const metadata = {
-  title: 'Terms of Service - OYUN',
-  description: 'Terms of Service and usage conditions for OYUN.',
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'The terms that apply when you book a turf or list a sports venue on OYUN.',
+  alternates: { canonical: '/terms' },
 };
 
 export default function TermsPage() {
