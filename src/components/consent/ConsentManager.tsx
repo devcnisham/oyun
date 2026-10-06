@@ -60,13 +60,15 @@ export default function ConsentManager() {
 
       {open && !privateArea && (
         <div className={styles.banner} role="dialog" aria-live="polite" aria-label="Cookie preferences">
-          <p>
-            We use essential cookies to hold your slots and keep you signed in. With your OK we also use analytics to see what works and make OYUN faster.{' '}
-            <Link href="/privacy">Privacy policy</Link>
-          </p>
-          <div className={styles.actions}>
-            <button className={styles.secondary} onClick={() => writeConsent('essential')}>Essential only</button>
-            <button className={styles.primary} onClick={() => writeConsent('all')}>Accept all</button>
+          <div className={styles.inner}>
+            <p>
+              We use essential cookies to hold your slots and keep you signed in. With your OK we also use analytics to see what works and make OYUN faster.{' '}
+              <Link href="/privacy">Privacy policy</Link>
+            </p>
+            <div className={styles.actions}>
+              <button className={styles.secondary} onClick={() => writeConsent('essential')}>Essential only</button>
+              <button className={styles.primary} onClick={() => writeConsent('all')}>Accept all</button>
+            </div>
           </div>
         </div>
       )}
