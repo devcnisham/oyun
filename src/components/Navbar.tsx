@@ -23,14 +23,34 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [overscrolled, setOverscrolled] = useState(false);
   
+  const [hidden, setHidden] = useState(false);
+
   useEffect(() => {
+    let lastY = window.scrollY;
+    let frame = 0;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-      setOverscrolled(window.scrollY < 0);
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const y = window.scrollY;
+        setScrolled(y > 20);
+        setOverscrolled(y < 0);
+        // Slide the header away while reading down the page; bring it back on any scroll back up
+        if (y < 80) setHidden(false);
+        else if (y > lastY + 6) setHidden(true);
+        else if (y < lastY - 6) setHidden(false);
+        if (Math.abs(y - lastY) > 6) lastY = y;
+      });
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      cancelAnimationFrame(frame);
+    };
   }, []);
+
+  // Never hide while a menu or sheet from the header is open
+  const headerHidden = hidden && !menuOpen && !areaSheet;
 
   // Name and upcoming-booking count come from what this device has saved
   useEffect(() => {
@@ -57,7 +77,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
 
   return (
     <>
-    <div className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''}`}>
+    <div className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner}`}>
           <div className={styles.left}>

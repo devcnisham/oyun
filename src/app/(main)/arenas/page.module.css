@@ -28,15 +28,16 @@
   color: var(--text-muted);
 }
 
-/* Search Bar */
-.searchBar {
+/* Filter bar: row 1 search + sort + view, row 2 area chip + sports */
+.filterBar {
   display: flex;
-  gap: 12px;
-  padding-bottom: 16px;
+  gap: 8px;
+  padding-bottom: 12px;
 }
 
 .searchInputWrap {
   flex: 1;
+  min-width: 0;
   position: relative;
   display: flex;
   align-items: center;
@@ -44,157 +45,120 @@
 
 .searchIcon {
   position: absolute;
-  left: 14px;
+  left: 12px;
   color: var(--text-muted);
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
-  padding: 12px 40px 12px 44px;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
+  height: 44px;
+  padding: 0 36px 0 38px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   font-size: 16px; /* 16px prevents iOS auto-zoom */
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: border-color 0.2s, background 0.2s;
 }
-
+.searchInput::-webkit-search-cancel-button { display: none; }
 .searchInput::placeholder { color: var(--text-muted); }
-
 .searchInput:focus {
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+  outline: none;
+  background: #fff;
+  border-color: var(--primary-700);
+  box-shadow: 0 0 0 3px rgba(211, 16, 39, 0.12);
 }
 
 .searchClear {
   position: absolute;
-  right: 12px;
+  right: 6px;
+  width: 30px;
+  height: 30px;
   background: none;
   border: none;
   color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: 50%;
 }
+.searchClear:hover { background: var(--border); color: var(--text-primary); }
 
-.searchClear:hover {
-  background: var(--bg-muted);
-  color: var(--text-primary);
-}
-
-.controlsGroup {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.viewToggle {
-  display: flex;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-}
-
-.viewBtn {
-  background: transparent;
-  border: none;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-  cursor: pointer;
-  display: flex;
+.ctrlBtn {
+  position: relative;
+  flex: none;
+  height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.viewBtn:hover {
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   color: var(--text-primary);
-}
-
-.viewBtnActive {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-sm);
-}
-
-.sortSelect {
-  padding: 12px 16px;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  font-size: 16px; /* 16px prevents iOS auto-zoom */
-  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.2s ease;
-  min-width: 180px;
+}
+.ctrlBtn:hover { border-color: var(--text-muted); }
+.ctrlBtn:focus-within { border-color: var(--primary-700); }
+
+/* Invisible native select stretched over its button: keeps the OS picker and keyboard support */
+.overlaySelect {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 16px;
 }
 
-.sortSelect:focus { border-color: var(--primary-500); }
-
-/* Horizontal Pill Filters */
-.areaFiltersWrapper {
+.chipRowWrap {
   margin: 0 -32px;
-  padding: 0 32px 24px;
+  padding: 0 32px 16px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
+.chipRowWrap::-webkit-scrollbar { display: none; }
 
-.areaFiltersWrapper::-webkit-scrollbar {
-  display: none;
-}
-
-.areaFilters {
+.chipRow {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
   width: max-content;
 }
 
-.areaFilter {
-  display: flex;
+.chip {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
   border: 1px solid var(--border);
-  background: var(--bg-card);
+  background: #fff;
   color: var(--text-secondary);
-  font-size: 14px;
+  font: inherit;
+  font-size: 13px;
   font-weight: 600;
-  border-radius: var(--radius-full);
+  border-radius: 99px;
   cursor: pointer;
-  transition: all 0.2s ease;
   white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-
-.areaFilter:hover {
-  border-color: var(--primary-500);
-  color: var(--primary-700);
-}
-
-.areaFilterActive {
-  background: var(--primary-gradient) !important;
-  border-color: var(--primary-700) !important;
-  color: #fff !important;
-}
-
-.areaFilterCount {
-  font-size: 12px;
-  background: var(--bg-muted);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  color: var(--text-muted);
-}
-
-.areaFilterActive .areaFilterCount {
-  background: rgba(255, 255, 255, 0.2);
+.chip:hover { border-color: var(--primary-700); color: var(--primary-700); }
+.chipOn, .chipOn:hover {
+  background: var(--primary-700);
+  border-color: var(--primary-700);
   color: #fff;
 }
+.caret { font-size: 11px; opacity: 0.8; }
+.chipDivider { width: 1px; height: 20px; background: var(--border); flex: none; }
 
 /* Body */
 .body {
@@ -384,24 +348,14 @@
 }
 
 @media (max-width: 768px) {
-  .searchBar { 
-    flex-direction: column; 
-    align-items: stretch;
-  }
-  .searchInputWrap {
-    width: 100%;
-  }
-  .controlsGroup {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .sortSelect { 
-    flex: 1; 
-  }
-  .areaFiltersWrapper {
-    margin: 0 -16px;
-    padding: 0 16px 16px;
-  }
+  .header { padding-top: 12px; }
+  .headerInner { margin-bottom: 12px; }
+  .pageTitle { font-size: 24px; margin-bottom: 2px; }
+  .pageDesc { font-size: 13px; }
+  .cityLabel { display: none; } /* the header's "Playing in" strip already says it */
+  .ctrlLabel { display: none; } /* icon-only controls on phones */
+  .ctrlBtn { padding: 0; width: 44px; }
+  .chipRowWrap { margin: 0 -16px; padding: 0 16px 12px; }
 }
 
 /* Map view: real map embed with a list of turf links underneath */

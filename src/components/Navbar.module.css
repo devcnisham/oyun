@@ -12,6 +12,18 @@
   z-index: 1000;
 }
 
+/* Hide-on-scroll: slides up out of view while reading down, returns on scroll up */
+.transparentWrapper, .stickyWrapper {
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+.headerHidden {
+  transform: translateY(-100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .transparentWrapper, .stickyWrapper { transition: none; }
+}
+
 .navbar {
   background: var(--primary-gradient);
   border-bottom: none;
