@@ -94,6 +94,23 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* Left side: menu button and logo */
+.left { display: flex; align-items: center; gap: 10px; }
+.menuBtn {
+  width: 40px;
+  height: 40px;
+  margin-left: -8px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.menuBtn:hover { background: rgba(255, 255, 255, 0.12); }
+
 /* Right side: list-your-turf (desktop), account, bookings */
 .right {
   display: flex;
@@ -328,4 +345,15 @@
   }
   .navOpen { display: flex; }
   .cityNav { display: none; }
+}
+
+/* Narrow phones (iPhone SE and similar): keep menu, logo, account and bookings on one row */
+@media (max-width: 380px) {
+  .left { gap: 4px; }
+  .logo { gap: 6px; }
+  .logo svg { width: 28px; height: 28px; }
+  .logoName { font-size: 16px; }
+  .right { gap: 10px; }
+  .accountName { font-size: 13px; max-width: 72px; }
+  .account svg { width: 22px; height: 22px; }
 }

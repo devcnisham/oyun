@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { getBookingSummaries } from '@/lib/booking-actions';
 import { DEVICE_EVENT, getMyBookingIds, getPreferredArea, getProfile, setPreferredArea } from '@/lib/client/device';
+import SideMenu from './SideMenu';
 import styles from './Navbar.module.css';
 
 export default function Navbar({ areas = [] }: { areas?: string[] }) {
@@ -17,6 +18,8 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
   const [query, setQuery] = useState('');
   const [area, setArea] = useState('');
   const [areaSheet, setAreaSheet] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
   const [upcoming, setUpcoming] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [overscrolled, setOverscrolled] = useState(false);
@@ -58,6 +61,12 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
     <div className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner}`}>
+          <div className={styles.left}>
+          <button type="button" className={styles.menuBtn} onClick={() => setMenuOpen(true)} aria-label="Open menu" aria-expanded={menuOpen}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
           {/* Logo */}
           <Link href="/" className={styles.logo}>
             <svg width="36" height="36" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 6px 12px rgba(100, 0, 0, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' }}>
@@ -75,6 +84,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
             </svg>
             <span className={styles.logoName}>OYUN</span>
           </Link>
+          </div>
 
           <div className={styles.right}>
             {/* Desktop only: partner call to action */}
@@ -141,6 +151,8 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
         </button>
         <Link href="/list-turf" className={styles.pill}>List your turf</Link>
       </div>
+
+      <SideMenu open={menuOpen} onClose={closeMenu} firstName={firstName} upcoming={upcoming} areas={areas} />
 
       {areaSheet && (
         <div className={styles.sheetOverlay} onClick={(e) => e.target === e.currentTarget && setAreaSheet(false)}>

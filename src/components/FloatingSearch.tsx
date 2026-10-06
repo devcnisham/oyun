@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import styles from './FloatingSearch.module.css';
 
-// Round floating search button at the bottom-left on phones; opens a search sheet
+// Round floating search button at the bottom-right on phones; opens a search sheet
 export default function FloatingSearch({ areas }: { areas: string[] }) {
   const pathname = usePathname() ?? '/';
   const router = useRouter();
