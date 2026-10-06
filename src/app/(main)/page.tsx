@@ -5,6 +5,7 @@ import TurfSlider from '@/components/TurfSlider';
 import { getSiteContent, listPublicTurfs } from '@/lib/queries';
 import HeroSearchBar from './HeroSearchBar';
 import PopupAd from '@/components/PopupAd';
+import MobileHome from './_home/MobileHome';
 import styles from './page.module.css';
 
 export default async function Home() {
@@ -27,7 +28,12 @@ export default async function Home() {
   return (
     <div className={styles.page}>
       <PopupAd promos={site.promos} />
-      
+      <div className={styles.mobileHome}>
+        <MobileHome turfs={turfs} areas={popularAreas} promos={site.promos} />
+      </div>
+
+      <div className={styles.desktopHome}>
+
       {/* OYO Style Hero Search */}
       <section className={styles.hero}>
         <div className={styles.videoWrapper}>
@@ -195,6 +201,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }

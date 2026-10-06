@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MobileBottomBar from "@/components/MobileBottomBar";
 import { connection } from "next/server";
 import { getSiteContent } from "@/lib/queries";
 
@@ -22,8 +23,9 @@ export default async function MainLayout({
         </div>
       )}
       <Navbar />
-      <main>{children}</main>
+      <main className="appMain">{children}</main>
       <Footer />
+      <MobileBottomBar />
     </>
   );
 }

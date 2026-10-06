@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import MobileBottomBar from "@/components/MobileBottomBar";
 
 
 export const metadata: Metadata = {
@@ -14,6 +13,20 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
   },
+  applicationName: "OYUN",
+  appleWebApp: { capable: true, title: "OYUN", statusBarStyle: "default" },
+  icons: {
+    icon: [{ url: "/oyun-icon-64.png", sizes: "64x64", type: "image/png" }],
+    apple: [{ url: "/oyun-icon-192.png", sizes: "192x192", type: "image/png" }],
+  },
+};
+
+// Phones: draw under the notch and colour the browser bar like the app
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#d31027",
 };
 
 export default function RootLayout({
@@ -25,7 +38,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
-        <MobileBottomBar />
       </body>
     </html>
   );

@@ -26,6 +26,7 @@ const DEFAULT_SETTINGS: PlatformSettings = {
 export function migrate(data: Database): Database {
   data.settings = { ...DEFAULT_SETTINGS, ...data.settings };
   data.walletTxns ??= [];
+  data.holds ??= [];
   for (const p of data.players) {
     p.referralCode ??= newReferralCode(data, p.name);
     p.referredBy ??= null;
@@ -89,6 +90,7 @@ export function seed(): Database {
     },
     applications: [],
     walletTxns: [],
+    holds: [],
   };
 
   // Demo partner owns the first and the seventh turf; every other turf gets its own partner

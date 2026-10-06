@@ -39,6 +39,7 @@ const LIST_TABLES = {
   addOns: 'add_ons',
   applications: 'applications',
   walletTxns: 'wallet_txns',
+  holds: 'holds',
 } as const;
 
 type Table = (typeof LIST_TABLES)[keyof typeof LIST_TABLES] | 'promo_codes' | 'pricing' | 'app_config';
@@ -103,6 +104,7 @@ class StoreConflict extends Error {}
 const SLOT_TAKEN: Record<string, string> = {
   bookings_live_slot_uniq: 'That slot was just booked by someone else. Please pick another slot.',
   blocks_slot_uniq: 'This slot is already blocked.',
+  holds_slot_uniq: 'Someone else is checking out this slot right now. Please pick another slot.',
 };
 
 async function applyChanges(changes: { upserts: TableRows; deletes: Partial<Record<Table, string[]>> }, expectedRev: number | null) {

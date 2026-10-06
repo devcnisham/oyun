@@ -3,6 +3,7 @@ import { getSlots } from '@/lib/pricing';
 import { getPublicTurf } from '@/lib/queries';
 import { getDb } from '@/lib/store';
 import { addDays, formatDate, isValidDate, istNow } from '@/lib/time';
+import { deviceHolder } from '@/lib/device-holder';
 import TurfDetail from './TurfDetail';
 
 interface PageProps {
@@ -18,9 +19,15 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
 
   const db = await getDb();
   const now = istNow();
-  const dates = Array.from({ length: 7 }, (_, i) => {
+  const dates = Array.from({ length: 14 }, (_, i) => {
     const date = addDays(now.date, i);
-    return { date, label: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : formatDate(date) };
+    const d = new Date(`${date}T00:00:00+05:30`);
+    return {
+      date,
+      label: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : formatDate(date),
+      day: i === 0 ? 'Today' : d.toLocaleDateString('en-IN', { weekday: 'short', timeZone: 'Asia/Kolkata' }),
+      num: d.toLocaleDateString('en-IN', { day: 'numeric', timeZone: 'Asia/Kolkata' }),
+    };
   });
   const initialDate = requestedDate && isValidDate(requestedDate) && dates.some((d) => d.date === requestedDate) ? requestedDate : now.date;
 
@@ -29,7 +36,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
       turf={turf}
       dates={dates}
       initialDate={initialDate}
-      initialSlots={getSlots(db, turf, initialDate, now)}
+      initialSlots={getSlots(db, turf, initialDate, now, await deviceHolder(false))}
       addOns={db.addOns.filter((a) => a.turfId === turf.id && a.active)}
       offers={db.offers.filter((o) => o.turfId === turf.id && o.active)}
       advancePercent={db.settings.advancePercent}

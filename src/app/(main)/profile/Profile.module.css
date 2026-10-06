@@ -1,0 +1,18 @@
+.page { padding-top: 24px; padding-bottom: 120px; max-width: 640px; display: flex; flex-direction: column; gap: 16px; }
+.hero { display: flex; align-items: center; gap: 14px; }
+.hero h1 { font-size: 22px; font-weight: 800; }
+.hero p { color: var(--text-muted); font-size: 14px; }
+.avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--primary-gradient); color: #fff; display: grid; place-items: center; font-size: 24px; font-weight: 800; flex: none; }
+.card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.card h2 { font-size: 16px; font-weight: 800; }
+.hint { font-size: 13px; color: var(--text-muted); margin-top: -6px; }
+.input { font: inherit; font-size: 15px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; }
+.input:focus { outline: 2px solid var(--primary-700); outline-offset: -1px; }
+.save { font: inherit; font-weight: 800; background: var(--primary-700); color: #fff; border: none; padding: 12px; border-radius: 12px; cursor: pointer; }
+.menu { background: #fff; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
+.menu a { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 15px; }
+.menu a + a { border-top: 1px solid #f0f1f3; }
+.menu a:active { background: var(--bg-muted); }
+.menu span { width: 24px; text-align: center; }
+.menu i { margin-left: auto; font-style: normal; color: #b0b4ba; font-size: 20px; }
+.clear { font: inherit; font-weight: 700; background: none; border: none; color: var(--primary-700); padding: 12px; cursor: pointer; }

@@ -15,7 +15,7 @@ declare t text;
 begin
   foreach t in array array[
     'turfs', 'partners', 'staff', 'players', 'bookings', 'blocks', 'offers',
-    'add_ons', 'applications', 'wallet_txns', 'promo_codes', 'pricing', 'app_config'
+    'add_ons', 'applications', 'wallet_txns', 'holds', 'promo_codes', 'pricing', 'app_config'
   ] loop
     execute format(
       'create table public.%I (
@@ -47,6 +47,13 @@ alter table public.blocks
   add column slot_hour int generated always as ((data->>'hour')::int) stored;
 create unique index blocks_slot_uniq on public.blocks (turf_id, slot_date, slot_hour);
 
+-- A slot can only be held for one checkout at a time
+alter table public.holds
+  add column turf_id text generated always as (data->>'turfId') stored,
+  add column slot_date text generated always as (data->>'date') stored,
+  add column slot_hour int generated always as ((data->>'hour')::int) stored;
+create unique index holds_slot_uniq on public.holds (turf_id, slot_date, slot_hour);
+
 create unique index players_phone_uniq on public.players ((data->>'phone'));
 
 -- Whole state in one round trip; rows come back in insertion order
@@ -63,7 +70,7 @@ declare
 begin
   foreach t in array array[
     'turfs', 'partners', 'staff', 'players', 'bookings', 'blocks', 'offers',
-    'add_ons', 'applications', 'wallet_txns', 'promo_codes', 'pricing', 'app_config'
+    'add_ons', 'applications', 'wallet_txns', 'holds', 'promo_codes', 'pricing', 'app_config'
   ] loop
     execute format(
       'select coalesce(jsonb_agg(jsonb_build_object(''id'', id, ''data'', data) order by seq), ''[]''::jsonb) from public.%I', t)
@@ -102,7 +109,7 @@ begin
 
   foreach t in array array[
     'turfs', 'partners', 'staff', 'players', 'bookings', 'blocks', 'offers',
-    'add_ons', 'applications', 'wallet_txns', 'promo_codes', 'pricing', 'app_config'
+    'add_ons', 'applications', 'wallet_txns', 'holds', 'promo_codes', 'pricing', 'app_config'
   ] loop
     if changes->'deletes' ? t then
       execute format('delete from public.%I where id in (select jsonb_array_elements_text($1))', t)
@@ -127,7 +134,7 @@ set search_path = public
 as $$
 begin
   truncate public.turfs, public.partners, public.staff, public.players, public.bookings,
-    public.blocks, public.offers, public.add_ons, public.applications, public.wallet_txns,
+    public.blocks, public.offers, public.add_ons, public.applications, public.wallet_txns, public.holds,
     public.promo_codes, public.pricing, public.app_config, public.app_meta restart identity;
 end $$;
 

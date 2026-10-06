@@ -33,7 +33,7 @@ export interface TurfSummary extends Turf {
   availableToday: number;
 }
 
-export type SlotUnavailableReason = 'booked' | 'blocked' | 'past';
+export type SlotUnavailableReason = 'booked' | 'blocked' | 'past' | 'held';
 
 export interface Slot {
   date: string; // YYYY-MM-DD (IST)
@@ -44,6 +44,7 @@ export interface Slot {
   tags: string[];
   available: boolean;
   reason: SlotUnavailableReason | null;
+  heldByYou?: boolean; // held for this device's checkout
 }
 
 export interface PricingRules {
@@ -78,6 +79,16 @@ export interface AddOn {
   name: string;
   price: number;
   active: boolean;
+}
+
+// Temporary lock on a slot while a player checks out (like a cinema seat)
+export interface SlotHold {
+  id: string;
+  turfId: string;
+  date: string;
+  hour: number;
+  holder: string; // sha256 of the device cookie
+  expiresAt: string; // ISO
 }
 
 export interface SlotBlock {
@@ -273,6 +284,7 @@ export interface Database {
   site: SiteContent;
   applications: Application[];
   walletTxns: WalletTxn[];
+  holds: SlotHold[];
 }
 
 export type ActionResult = { ok?: string; error?: string; data?: Record<string, string> } | null;

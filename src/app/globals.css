@@ -204,3 +204,22 @@ html, body {
     padding-bottom: 80px; /* Leave space for MobileBottomBar */
   }
 }
+
+/* ---------- App feel on phones ---------- */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  /* Room for the bottom tab bar */
+  .appMain { padding-bottom: calc(72px + env(safe-area-inset-bottom)); min-height: 100dvh; }
+  /* Apps don't have a website footer; links live on the Profile tab */
+  .appMain ~ footer { display: none; }
+  button, a { touch-action: manipulation; }
+}
+
+@media (display-mode: standalone) {
+  body { overscroll-behavior-y: none; }
+}
