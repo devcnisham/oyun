@@ -15,6 +15,10 @@ Without `SUPABASE_SECRET_KEY` the app stores data in `.data/db.json` instead, wh
 
 Add every variable from `.env.example` in the Vercel project settings, apply the migration to the Supabase project once, then deploy.
 
+## Launch checklist
+
+See [docs/LAUNCH-SEO.md](docs/LAUNCH-SEO.md) for Search Console, analytics, error alerts and the backlink plan.
+
 ## How data is stored
 
 `src/lib/store.ts` is the only module that talks to storage. Pages call `await getDb()`; server actions call `await mutate(db => ...)`, which reloads the latest data, runs the change and writes only the rows that changed in one transaction (`apply_changes`). If another write landed in between, it retries on fresh data. Postgres enforces one live booking per turf slot, so two people can never book the same hour.
