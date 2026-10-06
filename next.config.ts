@@ -14,6 +14,22 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/",
+          destination: "/app-prototype.html",
+        },
+        {
+          source: "/partner",
+          destination: "/owner-dashboard.html",
+        }
+      ],
+      afterFiles: [],
+      fallback: []
+    };
+  },
   async headers() {
     return [
       {
