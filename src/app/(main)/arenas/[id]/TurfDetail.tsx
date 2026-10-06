@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { canOptimize } from '@/lib/images';
-import type { AddOn, Offer, Slot, Turf } from '@/lib/types';
+import type { Offer, Slot, Turf } from '@/lib/types';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
 import ShareButton from './ShareButton';
 import styles from './page.module.css';
@@ -11,7 +11,6 @@ interface TurfDetailProps {
   dates: BookingFlowProps['dates'];
   initialDate: string;
   initialSlots: Slot[];
-  addOns: AddOn[];
   offers: Offer[];
   advancePercent: number;
   bookable: boolean;
@@ -21,7 +20,7 @@ interface TurfDetailProps {
 
 const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
 
-export default function TurfDetail({ turf, dates, initialDate, initialSlots, addOns, offers, advancePercent, bookable, rewards, initialReferral }: TurfDetailProps) {
+export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, advancePercent, bookable, rewards, initialReferral }: TurfDetailProps) {
   const imageSrc = turf.images[0];
 
   return (
@@ -107,7 +106,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
             dates={dates}
             initialDate={initialDate}
             initialSlots={initialSlots}
-            addOns={addOns}
             advancePercent={advancePercent}
             rewards={rewards}
             initialReferral={initialReferral}

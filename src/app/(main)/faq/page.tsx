@@ -43,7 +43,7 @@ export default async function FAQPage() {
     },
     {
       q: 'Do I need to bring my own equipment?',
-      a: 'Most turfs have balls and bibs, and many offer add-ons such as bibs, match balls, shoes and drinks that you can add at checkout.',
+      a: 'Most turfs have balls and bibs. Check the amenities on the turf page, or call the turf if you need anything specific.',
     },
     {
       q: 'How do I list my turf on OYUN?',

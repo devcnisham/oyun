@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import {
@@ -14,7 +14,7 @@ import {
   type SelectionQuote,
 } from '@/lib/booking-actions';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
-import type { AddOn, Slot, Turf } from '@/lib/types';
+import type { Slot, Turf } from '@/lib/types';
 import PaymentGatewayDemo from '@/components/PaymentGatewayDemo';
 import styles from './BookingFlow.module.css';
 
@@ -23,7 +23,6 @@ export interface BookingFlowProps {
   dates: { date: string; label: string; day: string; num: string }[];
   initialDate: string;
   initialSlots: Slot[];
-  addOns: AddOn[];
   advancePercent: number;
   rewards: { cashbackEnabled: boolean; cashbackPercent: number; cashbackMax: number; referralEnabled: boolean; refereeReward: number };
   initialReferral: string;
@@ -56,7 +55,7 @@ function slotTitle(slot: Slot) {
   return `${slot.label} · ${slot.reason === 'held' ? 'Someone is booking this slot' : slot.reason === 'past' ? 'Over' : 'Not available'}`;
 }
 
-export default function BookingFlow({ turf, dates, initialDate, initialSlots, addOns, advancePercent, rewards, initialReferral }: BookingFlowProps) {
+export default function BookingFlow({ turf, dates, initialDate, initialSlots, advancePercent, rewards, initialReferral }: BookingFlowProps) {
   const router = useRouter();
   const [date, setDate] = useState(initialDate);
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
@@ -70,7 +69,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
   const [now, setNow] = useState(() => Date.now());
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [qty, setQty] = useState<Record<string, number>>({});
   const [code, setCode] = useState(initialReferral);
   const [promo, setPromo] = useState<string | null>(null);
   const [referral, setReferral] = useState<ReferralCheck | null>(null);
@@ -85,7 +83,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
   const inCheckout = holdUntil !== null;
   const secondsLeft = holdUntil ? Math.max(0, Math.ceil((holdUntil - now) / 1000)) : 0;
   const phoneDigits = phone.replace(/\D/g, '').slice(-10);
-  const addOnList = useMemo(() => Object.entries(qty).filter(([, n]) => n > 0).map(([id, n]) => ({ id, qty: n })), [qty]);
   const selectedSlots = slots.filter((s) => selected.includes(s.hour));
   const estimate = selectedSlots.reduce((sum, s) => sum + s.price, 0);
   const dateInfo = dates.find((d) => d.date === date);
@@ -162,7 +159,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
         date,
         hours: selected,
         promoCode: promo,
-        addOns: addOnList,
+        addOns: [],
         useWallet,
         phone: phoneDigits,
         paymentMode,
@@ -175,7 +172,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
       cancelled = true;
       window.clearTimeout(t);
     };
-  }, [inCheckout, turf.id, date, selected, promo, addOnList, useWallet, phoneDigits, paymentMode]);
+  }, [inCheckout, turf.id, date, selected, promo, useWallet, phoneDigits, paymentMode]);
 
   const changeDate = (next: string) => {
     if (next === date) return;
@@ -230,7 +227,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
     }
     const entered = code.trim().toUpperCase();
     if (!entered) return;
-    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: addOnList, useWallet, phone: phoneDigits, paymentMode });
+    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: [], useWallet, phone: phoneDigits, paymentMode });
     if (!('error' in tryPromo) && tryPromo.promoCode && !tryPromo.promoError) {
       setPromo(tryPromo.promoCode);
       setCodeError('');
@@ -267,7 +264,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
         date,
         hours: selected,
         promoCode: promo,
-        addOns: addOnList,
+        addOns: [],
         useWallet,
         phone: phoneDigits,
         paymentMode,
@@ -416,34 +413,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
                 </div>
               </section>
 
-              {addOns.length > 0 && (
-                <section>
-                  <h3>Add-ons <span className={styles.muted}>ready at the venue</span></h3>
-                  <div className={styles.addOns}>
-                    {addOns.map((a) => {
-                      const n = qty[a.id] ?? 0;
-                      return (
-                        <div key={a.id} className={styles.addOn}>
-                          <div>
-                            <b>{a.name}</b>
-                            <span className={styles.muted}>{rupees(a.price)}</span>
-                          </div>
-                          {n === 0 ? (
-                            <button className={styles.addBtn} onClick={() => setQty({ ...qty, [a.id]: 1 })}>Add</button>
-                          ) : (
-                            <div className={styles.stepper}>
-                              <button onClick={() => setQty({ ...qty, [a.id]: n - 1 })} aria-label={`Fewer ${a.name}`}>−</button>
-                              <span>{n}</span>
-                              <button onClick={() => setQty({ ...qty, [a.id]: Math.min(20, n + 1) })} aria-label={`More ${a.name}`}>+</button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              )}
-
               <section>
                 <h3>Offers</h3>
                 <div className={styles.codeRow}>
@@ -489,7 +458,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
                   {quote.adjustments.map((a) => (
                     <div key={a.label} className={styles.discount}><span>{a.label}</span><span>−{rupees(-a.amount)}</span></div>
                   ))}
-                  {quote.addOnTotal > 0 && <div><span>Add-ons</span><span>{rupees(quote.addOnTotal)}</span></div>}
                   {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
                   <div className={styles.billTotal}><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
                   {quote.payAtVenue > 0 && <div className={styles.muted}><span>Pay at venue</span><span>{rupees(quote.payAtVenue)}</span></div>}

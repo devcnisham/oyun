@@ -30,7 +30,7 @@ export default async function PrivacyPage() {
 
           <h2>1. Data we collect</h2>
           <ul>
-            <li><strong>Booking details:</strong> your name, mobile number, the turf, date and time you book, add-ons, the amount paid and your booking status (for example checked in or cancelled).</li>
+            <li><strong>Booking details:</strong> your name, mobile number, the turf, date and time you book, the amount paid and your booking status (for example checked in or cancelled).</li>
             <li><strong>Wallet and referrals:</strong> wallet credits, cashback, refunds and your referral code, linked to your mobile number.</li>
             <li><strong>Turf owners and staff:</strong> name, email, phone, business name, GSTIN and address, and the details of the venue you list.</li>
             <li><strong>Device data:</strong> a random device identifier cookie used to hold slots during checkout, and the name, number and booking list you choose to save on your device.</li>
