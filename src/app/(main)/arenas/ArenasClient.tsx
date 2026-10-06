@@ -89,7 +89,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
           <div className={styles.headerInner}>
             <div>
               <BackButton style={{ marginBottom: 16 }} />
-              <p className="section-label">{selectedCity.toUpperCase()}</p>
+              <p className={`section-label ${styles.cityLabel}`}>{selectedCity.toUpperCase()}</p>
               <h1 className={styles.pageTitle}>{selectedSport === 'All Sports' ? 'Sports Arenas' : selectedSport + ' Arenas'}</h1>
               <p className={styles.pageDesc}>
                 {filtered.length} venue{filtered.length !== 1 ? 's' : ''} available
@@ -98,95 +98,86 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
             </div>
           </div>
 
-          {/* Search */}
-          <div className={styles.searchBar}>
+          {/* Row 1: search, sort, grid/map */}
+          <div className={styles.filterBar}>
             <div className={styles.searchInputWrap}>
-              <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+              <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" aria-hidden>
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" strokeLinecap="round" />
               </svg>
               <input
                 id="arena-search"
-                type="text"
-                placeholder="Search by turf name or area..."
+                type="search"
+                placeholder="Search turfs or areas"
+                aria-label="Search turfs or areas"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
+                enterKeyHint="search"
               />
               {searchQuery && (
-                <button className={styles.searchClear} onClick={() => setSearchQuery('')} aria-label="Clear search">
-                  ✕
-                </button>
+                <button className={styles.searchClear} onClick={() => setSearchQuery('')} aria-label="Clear search">✕</button>
               )}
             </div>
-            
-            <div className={styles.controlsGroup}>
-              <div className={styles.viewToggle}>
-                <button 
-                  className={`${styles.viewBtn} ${viewMode === 'grid' ? styles.viewBtnActive : ''}`}
-                  onClick={() => setViewMode('grid')}
-                  aria-label="Grid view"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                </button>
-                <button 
-                  className={`${styles.viewBtn} ${viewMode === 'map' ? styles.viewBtnActive : ''}`}
-                  onClick={() => setViewMode('map')}
-                  aria-label="Map view"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
-                </button>
-              </div>
-              <select
-                id="arena-sort"
-                className={styles.sortSelect}
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                aria-label="Sort arenas"
-              >
+
+            {/* Native select laid over a compact button: icon-only on phones, with the label on desktop */}
+            <label className={styles.ctrlBtn} title="Sort">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4" />
+              </svg>
+              <span className={styles.ctrlLabel}>{sortOptions.find((o) => o.value === sortBy)?.label}</span>
+              <select id="arena-sort" className={styles.overlaySelect} value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort turfs">
                 {sortOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
-            </div>
+            </label>
+
+            <button
+              className={styles.ctrlBtn}
+              onClick={() => setViewMode(viewMode === 'grid' ? 'map' : 'grid')}
+              aria-label={viewMode === 'grid' ? 'Show map' : 'Show list'}
+              title={viewMode === 'grid' ? 'Map' : 'List'}
+            >
+              {viewMode === 'grid' ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" /></svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+              )}
+              <span className={styles.ctrlLabel}>{viewMode === 'grid' ? 'Map' : 'List'}</span>
+            </button>
           </div>
 
-          {/* Horizontal Sport Filters */}
-          <div className={styles.areaFiltersWrapper}>
-            <div className={styles.areaFilters}>
+          {/* Row 2: area picker chip, then sports */}
+          <div className={styles.chipRowWrap}>
+            <div className={styles.chipRow}>
+              <label className={`${styles.chip} ${selectedArea !== 'All Areas' ? styles.chipOn : ''}`}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" />
+                </svg>
+                {selectedArea === 'All Areas' ? 'All areas' : selectedArea}
+                <span aria-hidden className={styles.caret}>▾</span>
+                <select className={styles.overlaySelect} value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)} aria-label="Area">
+                  {areas.map((area) => (
+                    <option key={area} value={area}>
+                      {area === 'All Areas' ? 'All areas' : `${area} (${turfs.filter((t) => t.area === area).length})`}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <span className={styles.chipDivider} aria-hidden />
               {['All Sports', 'Football', 'Box Cricket', 'Badminton', 'Padel'].map((sport) => (
                 <button
                   key={sport}
                   id={`filter-sport-${sport.replace(/\s+/g, '-').toLowerCase()}`}
-                  className={`${styles.areaFilter} ${selectedSport === sport ? styles.areaFilterActive : ''}`}
+                  className={`${styles.chip} ${selectedSport === sport ? styles.chipOn : ''}`}
                   onClick={() => setSelectedSport(sport)}
+                  aria-pressed={selectedSport === sport}
                 >
-                  {sport}
+                  {sport === 'All Sports' ? 'All sports' : sport}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Horizontal Area Filters (Pill buttons) */}
-          <div className={styles.areaFiltersWrapper} style={{ marginTop: 8 }}>
-            <div className={styles.areaFilters}>
-              {areas.map((area) => (
-                <button
-                  key={area}
-                  id={`filter-area-${area.replace(/\s+/g, '-').toLowerCase()}`}
-                  className={`${styles.areaFilter} ${selectedArea === area ? styles.areaFilterActive : ''}`}
-                  onClick={() => setSelectedArea(area)}
-                >
-                  {area}
-                  {area !== 'All Areas' && (
-                    <span className={styles.areaFilterCount}>
-                      {turfs.filter((t) => t.area === area).length}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
         </div>
       </div>
 
