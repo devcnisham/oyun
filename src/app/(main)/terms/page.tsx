@@ -1,57 +1,95 @@
-import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { getSettings } from '@/lib/queries';
 import styles from '../faq/page.module.css';
 
-export const metadata = {
-  title: 'Terms of Service - OYUN',
-  description: 'Terms of Service and usage conditions for OYUN.',
+export const metadata: Metadata = {
+  title: 'Terms & Conditions',
+  description:
+    'The terms for booking sports turfs on OYUN and for listing a venue: slot holds, payments and advances, cancellations and refunds, wallet credits, conduct and liability.',
+  alternates: { canonical: '/terms' },
 };
 
-export default function TermsPage() {
+const UPDATED = '6 October 2026';
+
+export default async function TermsPage() {
+  const s = await getSettings();
   return (
     <div className={styles.pageContainer}>
-      <div className={styles.content}>
-        <Link href="/" style={{display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 24, color: 'var(--text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500}}>
-          <span style={{fontSize: 16}}>←</span> Back home
-        </Link>
-        <h1 className={styles.title}>Terms of Service</h1>
-        <p className={styles.subtitle}>Last updated: October 5, 2026</p>
+      <article className={styles.content}>
+        <Link href="/" className={styles.back}>← Back home</Link>
+        <h1 className={styles.title}>Terms &amp; Conditions</h1>
+        <p className={styles.subtitle}>Last updated: {UPDATED}</p>
 
         <div className={styles.textBlock}>
           <p>
-            Welcome to OYUN! These terms and conditions outline the rules and regulations for the use of OYUN&apos;s Website, located at oyun.in.
-          </p>
-          <p>
-            By accessing this website we assume you accept these terms and conditions. Do not continue to use OYUN if you do not agree to take all of the terms and conditions stated on this page.
+            These terms apply when you use OYUN to book a sports turf (&quot;player&quot;) or to list and manage a venue (&quot;partner&quot;). By making a booking or listing a venue
+            you agree to them. Please also read our <Link href="/privacy">Privacy Policy</Link>.
           </p>
 
-          <h2>1. Booking and Payments</h2>
-          <ul>
-            <li>Users must be at least 18 years of age, or have parental consent, to make bookings.</li>
-            <li>All bookings are subject to availability. The turf partners reserve the right to decline or cancel bookings under extreme circumstances (e.g., severe weather).</li>
-            <li>Users can opt for a 30% advance payment or full payment. The remaining balance for advance payments must be settled directly at the venue before the start of the slot.</li>
-          </ul>
-
-          <h2>2. Cancellations and Refunds</h2>
-          <ul>
-            <li>Cancellations made more than 24 hours prior to the scheduled slot are eligible for a full refund of any amount paid online.</li>
-            <li>Cancellations made within 24 hours of the scheduled slot are non-refundable.</li>
-            <li>In the event of a venue closure or turf-initiated cancellation, a full refund will be processed within 5-7 business days.</li>
-          </ul>
-
-          <h2>3. Venue Rules</h2>
-          <ul>
-            <li>Users must adhere strictly to the rules established by the individual turf management, including footwear requirements (e.g., non-marking shoes or studs as specified).</li>
-            <li>Any damage caused to the turf or facilities by the user or their group will be billed directly to the user who made the booking.</li>
-            <li>OYUN acts merely as an aggregator and booking platform; we are not responsible for any injuries or accidents that occur on the premises.</li>
-          </ul>
-
-          <h2>4. Modifications</h2>
+          <h2>1. What OYUN does</h2>
           <p>
-            OYUN reserves the right to revise these terms of service for its website at any time without notice. By using this website you are agreeing to be bound by the then current version of these terms of service.
+            OYUN is a marketplace that shows venue availability and takes bookings on behalf of independent turf owners. The venue, its facilities and the game itself are
+            provided by the turf owner, not by OYUN.
+          </p>
+
+          <h2>2. Bookings and slot holds</h2>
+          <ul>
+            <li>When you press Proceed, the selected slots are held for you for 8 minutes. If you don&apos;t complete the booking in that time the hold ends and the slots are released.</li>
+            <li>A booking is confirmed only when you see the confirmation with a booking code and QR code.</li>
+            <li>Please enter your real name and mobile number; the turf uses them to check you in.</li>
+            <li>Prices can change with demand (for example peak hours, weekends or last-minute deals). The price shown at checkout is the price you pay.</li>
+          </ul>
+
+          <h2>3. Payments</h2>
+          <ul>
+            <li>You can pay the full amount or a {s.advancePercent}% advance online. With an advance, the balance is paid to the turf at the venue before play.</li>
+            <li>Prices include GST where applicable. Invoices are available from your booking page.</li>
+            <li>Wallet credits (cashback, referral rewards, refunds) can only be used for bookings on OYUN, have no cash value and cannot be transferred.</li>
+          </ul>
+
+          <h2>4. Cancellations, no-shows and refunds</h2>
+          <ul>
+            <li>To cancel, contact the turf or OYUN support before your slot starts. Refunds for eligible cancellations are credited to your OYUN wallet unless the law requires otherwise.</li>
+            <li>If you don&apos;t arrive for your slot, it may be marked as a no-show and the amount paid is not refunded.</li>
+            <li>If a turf cancels or can&apos;t host your game (for example due to maintenance or bad weather), you get a full refund to your wallet.</li>
+          </ul>
+
+          <h2>5. At the venue</h2>
+          <ul>
+            <li>Follow the turf&apos;s rules, timings and safety instructions. Wear suitable footwear.</li>
+            <li>You are responsible for damage you cause to the venue or equipment.</li>
+            <li>Sport carries a risk of injury. You play at your own risk; the turf owner is responsible for the condition of the venue.</li>
+          </ul>
+
+          <h2>6. Partners</h2>
+          <ul>
+            <li>Partners must provide accurate venue details, prices and availability, honour confirmed bookings and keep login details secure.</li>
+            <li>Partners are responsible for their venue&apos;s licences, safety and taxes. Commission and payout terms are agreed separately and shown in the partner dashboard.</li>
+            <li>We may suspend listings that receive repeated complaints or break these terms.</li>
+          </ul>
+
+          <h2>7. Acceptable use</h2>
+          <p>Don&apos;t misuse OYUN: no fake or speculative bookings, holding slots you don&apos;t intend to book, scraping, automated access, or attempts to break security.</p>
+
+          <h2>8. Liability</h2>
+          <p>
+            To the extent permitted by law, OYUN is not liable for indirect losses, or for anything that happens at a venue, and our total liability for a booking is limited to
+            the amount you paid for it. Nothing in these terms limits rights you have under consumer protection law.
+          </p>
+
+          <h2>9. Changes and governing law</h2>
+          <p>
+            We may update these terms; the version shown when you book applies to that booking. These terms are governed by the laws of India, and courts in Mangalore,
+            Karnataka have jurisdiction.
+          </p>
+
+          <h2>10. Contact</h2>
+          <p>
+            Questions? Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a> or call {s.supportPhone}.
           </p>
         </div>
-      </div>
+      </article>
     </div>
   );
 }

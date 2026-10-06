@@ -5,8 +5,8 @@ import { PageHeader, dash } from '@/components/dash/ui';
 import { deletePromoCard, savePromoCard, saveSiteContent } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 
-export default function AdminCustomization() {
-  const site = getDb().site;
+export default async function AdminCustomization() {
+  const site = (await getDb()).site;
 
   return (
     <div className={dash.page}>

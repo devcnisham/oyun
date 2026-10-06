@@ -6,7 +6,7 @@ import { getDb } from '@/lib/store';
 
 export default async function BookingInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const db = getDb();
+  const db = await getDb();
   const booking = db.bookings.find((b) => b.id === id);
   const turf = booking && db.turfs.find((t) => t.id === booking.turfId);
   if (!booking || !turf) notFound();

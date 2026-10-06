@@ -79,7 +79,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
     }
 
     return result;
-  }, [turfs, selectedCity, selectedArea, sortBy, searchQuery]);
+  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery]);
 
   return (
     <div className={styles.page}>
@@ -198,7 +198,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
           {filtered.length === 0 ? (
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>🏟️</div>
-              <h3 className={styles.emptyTitle}>No turfs found</h3>
+              <h2 className={styles.emptyTitle}>No turfs found</h2>
               <p className={styles.emptyDesc}>Try a different area or search term.</p>
               <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSearchQuery(''); }}>
                 Clear Filters
@@ -222,6 +222,8 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
               </div>
             </div>
           ) : (
+            <>
+            <h2 className="sr-only">{filtered.length} turfs found</h2>
             <div className={styles.grid}>
               {filtered.map((turf, i) => (
                 <div key={turf.id} className="animate-fadeInUp" style={{ animationDelay: `${i * 0.08}s` }}>
@@ -229,6 +231,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
                 </div>
               ))}
             </div>
+            </>
           )}
         </main>
       </div>

@@ -6,7 +6,7 @@ import { getDb } from '@/lib/store';
 
 export default async function AddOnsPage() {
   const ctx = await requirePartner('addons');
-  const db = getDb();
+  const db = await getDb();
   const addOns = db.addOns.filter((a) => a.turfId === ctx.turf.id);
 
   // Units sold and revenue per add-on across all bookings

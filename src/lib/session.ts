@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
+import { sessionSecret } from './env';
 
 export type Role = 'admin' | 'partner';
 
@@ -27,7 +28,7 @@ export function safeEqual(a: string, b: string) {
  * Returns the subject when the token is valid, otherwise null.
  */
 export function verifySessionToken(token: string | undefined, role: Role): string | null {
-  const secret = process.env.SESSION_SECRET;
+  const secret = sessionSecret();
   if (!token || !secret) return null;
 
   const [tokenRole, subject, expiresAt, signature] = token.split('.');
@@ -38,7 +39,7 @@ export function verifySessionToken(token: string | undefined, role: Role): strin
 }
 
 export async function createSession(role: Role, subject: string) {
-  const secret = process.env.SESSION_SECRET;
+  const secret = sessionSecret();
   if (!secret) throw new Error('SESSION_SECRET is not set');
   if (subject.includes('.')) throw new Error('Invalid session subject');
 

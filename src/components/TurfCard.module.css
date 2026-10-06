@@ -33,7 +33,7 @@
   position: absolute;
   top: 12px;
   left: 0;
-  background: #EE2E24;
+  background: #d31027;
   color: #fff;
   padding: 4px 12px;
   font-size: 11px;
@@ -67,7 +67,7 @@
 .rating {
   display: inline-flex;
   align-items: center;
-  background: #52b31f; /* Oyo green rating badge */
+  background: #1e7e34; /* green rating badge, 4.5:1 with white text */
   color: #fff;
   padding: 2px 6px;
   border-radius: var(--radius-sm);

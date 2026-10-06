@@ -4,9 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { submitApplication } from '@/lib/booking-actions';
+import { STEP_FIELDS, validateApplication, type FieldErrors } from '@/lib/validation/application';
 import styles from './page.module.css';
 
-const sports = ['Football'];
 const amenitiesOptions = [
   'Changing Rooms', 'Parking', 'Floodlights', 'Drinking Water',
   'Restrooms', 'Café', 'AC Lobby', 'First Aid', 'WiFi',
@@ -23,13 +23,15 @@ const perks = [
 ];
 
 export default function ListTurfPage() {
-  const [showForm, setShowForm] = useState(false);
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [refId, setRefId] = useState('');
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [startedAt] = useState(() => Date.now());
+  const [website, setWebsite] = useState('');
   const [formData, setFormData] = useState({
     // Step 1 - Owner
     ownerName: '',
@@ -55,6 +57,24 @@ export default function ListTurfPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errors[e.target.name as keyof FieldErrors]) setErrors({ ...errors, [e.target.name]: undefined });
+  };
+
+  // Mark invalid inputs for screen readers and styling, then focus the first one
+  const showErrors = (found: FieldErrors) => {
+    setErrors(found);
+    const form = document.getElementById('list-form');
+    form?.querySelectorAll('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+    const names = Object.keys(found);
+    names.forEach((n) => form?.querySelector(`[name="${n}"]`)?.setAttribute('aria-invalid', 'true'));
+    (form?.querySelector(`[name="${names[0]}"]`) as HTMLElement | null)?.focus();
+  };
+
+  const nextStep = () => {
+    const found = validateApplication({ ...formData }, [step]);
+    if (Object.keys(found).length) return showErrors(found);
+    setErrors({});
+    setStep(step + 1);
   };
 
   const toggleAmenity = (a: string) => {
@@ -66,9 +86,17 @@ export default function ListTurfPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError('');
+    const found = validateApplication({ ...formData });
+    if (Object.keys(found).length) {
+      const firstStep = [1, 2, 3, 4].find((n) => STEP_FIELDS[n].some((f) => found[f])) ?? step;
+      setStep(firstStep);
+      queueMicrotask(() => showErrors(found));
+      return;
+    }
     setSubmitting(true);
-    const res = await submitApplication({ ...formData, amenities: selectedAmenities });
+    const res = await submitApplication({ ...formData, amenities: selectedAmenities, website, startedAt });
     setSubmitting(false);
+    if (res.fieldErrors) showErrors(res.fieldErrors);
     if (res.id) {
       setRefId(res.id);
       setSubmitted(true);
@@ -161,9 +189,9 @@ export default function ListTurfPage() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className={styles.statBannerLarge}>
-             <div><h3>2,000+</h3><p>Active Bookers</p></div>
-             <div><h3>₹0</h3><p>Listing Cost</p></div>
-             <div><h3>24h</h3><p>Approval Time</p></div>
+             <div><p className={styles.statValue}>2,000+</p><p>Active Bookers</p></div>
+             <div><p className={styles.statValue}>₹0</p><p>Listing Cost</p></div>
+             <div><p className={styles.statValue}>24h</p><p>Approval Time</p></div>
           </div>
         </motion.div>
       </div>
@@ -174,7 +202,7 @@ export default function ListTurfPage() {
           <div className={styles.headerInner}>
             <div>
               <p className="section-label">For Turf Owners</p>
-              <h1 className={styles.pageTitle}>List Your Turf on OYUN</h1>
+              <h2 className={styles.pageTitle}>List Your Turf on OYUN</h2>
               <p className={styles.pageDesc}>
                 Join Mangalore&apos;s growing turf booking network. Free to list, free to earn.
               </p>
@@ -190,7 +218,7 @@ export default function ListTurfPage() {
         {/* Left: Perks */}
         <aside className={styles.sidebar}>
           <div className={styles.perksCard}>
-            <h3 className={styles.perksTitle}>Why list on OYUN?</h3>
+            <h3 className={styles.perksTitle}>Benefits for partners</h3>
             <div className={styles.perksList}>
               {perks.map((p) => (
                 <div key={p.title} className={styles.perkItem}>
@@ -231,7 +259,7 @@ export default function ListTurfPage() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
             {/* Step 1: Owner Info */}
             {step === 1 && (
               <div className={`${styles.stepContent} animate-fadeInUp`}>
@@ -259,6 +287,8 @@ export default function ListTurfPage() {
                       name="ownerPhone"
                       type="tel"
                       required
+                      inputMode="numeric"
+                      autoComplete="tel"
                       placeholder="+91 98765 43210"
                       className={styles.input}
                       value={formData.ownerPhone}
@@ -268,11 +298,13 @@ export default function ListTurfPage() {
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.label} htmlFor="ownerEmail">Email Address</label>
+                  <label className={styles.label} htmlFor="ownerEmail">Email Address * <span className={styles.hint}>(your partner login)</span></label>
                   <input
                     id="ownerEmail"
                     name="ownerEmail"
                     type="email"
+                    required
+                    autoComplete="email"
                     placeholder="you@example.com"
                     className={styles.input}
                     value={formData.ownerEmail}
@@ -437,7 +469,7 @@ export default function ListTurfPage() {
 
                 {/* Review summary */}
                 <div className={styles.reviewCard}>
-                  <h4 className={styles.reviewTitle}>Review Your Listing</h4>
+                  <h3 className={styles.reviewTitle}>Review Your Listing</h3>
                   <div className={styles.reviewGrid}>
                     <div className={styles.reviewItem}><span className={styles.reviewLabel}>Name</span><span className={styles.reviewValue}>{formData.turfName || '—'}</span></div>
                     <div className={styles.reviewItem}><span className={styles.reviewLabel}>Area</span><span className={styles.reviewValue}>{formData.area || '—'}</span></div>
@@ -458,6 +490,21 @@ export default function ListTurfPage() {
               </p>
             )}
 
+            {Object.values(errors).some(Boolean) && (
+              <div className={styles.errorSummary} role="alert">
+                <strong>Please check these fields:</strong>
+                <ul>
+                  {Object.values(errors).filter(Boolean).map((m) => <li key={m}>{m}</li>)}
+                </ul>
+              </div>
+            )}
+
+            {/* Spam trap: hidden from people and screen readers */}
+            <div className={styles.trap} aria-hidden="true">
+              <label htmlFor="website">Website</label>
+              <input id="website" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+            </div>
+
             {/* Navigation */}
             <div className={styles.stepNav}>
               {step > 1 && (
@@ -466,7 +513,7 @@ export default function ListTurfPage() {
                 </button>
               )}
               {step < 4 ? (
-                <button type="button" className={`btn btn--primary ${styles.nextBtn}`} onClick={() => setStep(step + 1)} id="form-next">
+                <button type="button" className={`btn btn--primary ${styles.nextBtn}`} onClick={nextStep} id="form-next">
                   Continue →
                 </button>
               ) : (

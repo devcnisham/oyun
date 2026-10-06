@@ -1,19 +1,39 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import MobileBottomBar from "@/components/MobileBottomBar";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import ConsentManager from "@/components/consent/ConsentManager";
 
 
 export const metadata: Metadata = {
-  title: "OYUN — Premium Turf Booking Platform",
-  description:
-    "Discover and book premium football turfs near you. Find the perfect pitch, choose your time slot, and play. Starting in Mangalore and expanding soon.",
-  keywords: "football turf booking, turf rental, slot arena, book football pitch, sports arena",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "OYUN | Book Football Turfs in Mangalore Online",
+    template: "%s | OYUN",
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: ["football turf Mangalore", "turf booking", "book turf near me", "5-a-side turf", "7-a-side football", "box cricket Mangalore", "sports arena booking"],
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   openGraph: {
-    title: "OYUN — Premium Turf Booking Platform",
-    description: "Book premium football turfs instantly. Real-time availability and easy bookings.",
     type: "website",
     locale: "en_IN",
+    siteName: SITE_NAME,
+    url: "/",
+    title: "OYUN | Book Football Turfs in Mangalore Online",
+    description: SITE_DESCRIPTION,
   },
+  twitter: { card: "summary_large_image" },
+  appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
+  formatDetection: { telephone: false },
+  ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
+};
+
+// Phones: draw under the notch and colour the browser bar like the app
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#d31027",
 };
 
 export default function RootLayout({
@@ -22,10 +42,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <body>
         {children}
-        <MobileBottomBar />
+        <ConsentManager />
       </body>
     </html>
   );

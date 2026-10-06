@@ -1,18 +1,28 @@
+import type { Metadata } from 'next';
+import { SITE_DESCRIPTION } from '@/lib/site';
+import JsonLd from '@/components/JsonLd';
+import { organizationSchema, websiteSchema } from '@/lib/schema';
 import { connection } from 'next/server';
 import Image from 'next/image';
 import Link from 'next/link';
-import TurfCard from '@/components/TurfCard';
 import TurfSlider from '@/components/TurfSlider';
-import { canOptimize } from '@/lib/images';
-import { getSiteContent, listPublicTurfs } from '@/lib/queries';
+import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
 import HeroSearchBar from './HeroSearchBar';
 import PopupAd from '@/components/PopupAd';
+import MobileHome from './_home/MobileHome';
 import styles from './page.module.css';
+
+export const metadata: Metadata = {
+  title: { absolute: 'OYUN | Book Football Turfs in Mangalore Online' },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/' },
+};
 
 export default async function Home() {
   await connection(); // live data: render per request
-  const site = getSiteContent();
-  const turfs = listPublicTurfs();
+  const site = await getSiteContent();
+  const turfs = await listPublicTurfs();
+  const settings = await getSettings();
   const recommended = [...turfs].sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating).slice(0, 10);
 
   // Top areas by number of listed turfs
@@ -28,8 +38,10 @@ export default async function Home() {
 
   return (
     <div className={styles.page}>
+      <JsonLd data={[organizationSchema(settings.supportEmail, settings.supportPhone), websiteSchema()]} />
       <PopupAd promos={site.promos} />
-      
+      <div className={styles.desktopHome}>
+
       {/* OYO Style Hero Search */}
       <section className={styles.hero}>
         <div className={styles.videoWrapper}>
@@ -96,7 +108,7 @@ export default async function Home() {
             { name: 'Padel', image: 'https://images.unsplash.com/photo-1698246473105-df6c1032d667?q=80&w=600&auto=format&fit=crop', link: '/arenas?sport=Padel' },
           ].map((sport, i) => (
             <Link href={sport.link} key={i} className={styles.sportCard}>
-              <Image src={sport.image} alt={sport.name} fill className={styles.sportImg} unoptimized sizes="(max-width: 768px) 50vw, 25vw" />
+              <Image src={sport.image} alt={sport.name} fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
               <div className={styles.sportInfo}>
                 <h3 className={styles.sportName}>{sport.name}</h3>
                 <div className={styles.sportAction}>Explore venues <span>→</span></div>
@@ -126,7 +138,7 @@ export default async function Home() {
                 { id: '4', brand: "Adidas", title: "Predator Accuracy", subtitle: "Miss nothing. Score everything.", image: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?q=80&w=2000&auto=format&fit=crop" }
               ].map((ad) => (
                 <div key={`${copy}-${ad.id}`} className={styles.promoCard} aria-hidden={copy === 1}>
-                  <Image src={ad.image} alt={ad.brand} fill sizes="600px" className={styles.promoImg} unoptimized />
+                  <Image src={ad.image} alt={ad.brand} fill sizes="600px" className={styles.promoImg} />
                   <div className={styles.promoContent}>
                     <div className={styles.adBrand}>{ad.brand}</div>
                     <h2>{ad.title}</h2>
@@ -197,6 +209,11 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      </div>
+
+      <div className={styles.mobileHome}>
+        <MobileHome turfs={turfs} areas={popularAreas} promos={site.promos} />
+      </div>
     </div>
   );
 }

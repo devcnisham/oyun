@@ -726,3 +726,10 @@ a.filterActionBtn,
 a.tagBtn {
   text-decoration: none;
 }
+
+/* Phones get the app feed (MobileHome); larger screens the landing page */
+.mobileHome { display: none; }
+@media (max-width: 768px) {
+  .mobileHome { display: block; }
+  .desktopHome { display: none; }
+}

@@ -22,7 +22,7 @@
 
   --text-primary: #222222; /* Dark text */
   --text-secondary: #4a4a4a;
-  --text-muted: #717171;
+  --text-muted: #626262; /* 4.5:1 on the light grey background */
 
   --border: #e0e0e0;
 
@@ -203,4 +203,36 @@ html, body {
   body {
     padding-bottom: 80px; /* Leave space for MobileBottomBar */
   }
+}
+
+/* ---------- App feel on phones ---------- */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  /* Room for the bottom tab bar */
+  .appMain { padding-bottom: calc(72px + env(safe-area-inset-bottom)); min-height: 100dvh; }
+  /* Apps don't have a website footer; links live on the Profile tab */
+  .appMain ~ footer { display: none; }
+  button, a { touch-action: manipulation; }
+}
+
+@media (display-mode: standalone) {
+  body { overscroll-behavior-y: none; }
+}
+
+/* Visible to screen readers and search engines, hidden on screen */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

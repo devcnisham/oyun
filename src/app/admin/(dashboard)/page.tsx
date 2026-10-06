@@ -6,8 +6,8 @@ import { getDb } from '@/lib/store';
 import { formatDate, istNow } from '@/lib/time';
 import PendingApplications from './PendingApplications';
 
-export default function AdminOverview() {
-  const db = getDb();
+export default async function AdminOverview() {
+  const db = await getDb();
   const now = istNow();
   const month = now.date.slice(0, 7);
   const monthBookings = db.bookings.filter((b) => b.date.startsWith(month));

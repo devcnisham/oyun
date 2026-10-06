@@ -11,7 +11,7 @@ const STATUSES: BookingStatus[] = ['confirmed', 'checked_in', 'no_show', 'cancel
 
 export default async function AdminBookings({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; turf?: string }> }) {
   const { q = '', status = '', turf = '' } = await searchParams;
-  const db = getDb();
+  const db = await getDb();
   const search = q.trim().toLowerCase();
   const all = db.bookings
     .filter((b) => !status || b.status === status)

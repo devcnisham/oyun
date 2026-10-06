@@ -10,7 +10,7 @@ import { addDays, formatDate, formatSlotRange, isValidDate, istNow } from '@/lib
 export default async function SlotsPage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
   const ctx = await requirePartner('slots');
   const { date: rawDate } = await searchParams;
-  const db = getDb();
+  const db = await getDb();
   const now = istNow();
   const date = rawDate && isValidDate(rawDate) ? rawDate : now.date;
 

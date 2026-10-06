@@ -8,7 +8,7 @@ import CheckInDesk from './CheckInDesk';
 
 export default async function CheckInPage() {
   const ctx = await requirePartner('checkin');
-  const db = getDb();
+  const db = await getDb();
   const now = istNow();
   const turfBookings = db.bookings.filter((b) => b.turfId === ctx.turf.id);
 

@@ -1,7 +1,31 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== "production";
+
+// Next.js injects inline bootstrap scripts, so script-src needs 'unsafe-inline' without nonces
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://cdnjs.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com`,
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' blob:",
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com${isDev ? " ws:" : ""}`,
+  "frame-src https://www.google.com",
+  "frame-ancestors 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
+
 const nextConfig: NextConfig = {
+  // Let phones on the same Wi-Fi open the dev server (e.g. http://192.168.1.5:3000) to test the mobile app view
+  allowedDevOrigins: ["192.168.*.*", "10.*.*.*", "172.*.*.*", "*.local"],
+  poweredByHeader: false,
+  compress: true,
   images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     // Object form (not new URL) so Unsplash's ?q=&w= query strings are allowed
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com", pathname: "/**" }],
   },
@@ -28,8 +52,13 @@ const nextConfig: NextConfig = {
             value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
+            key: 'Content-Security-Policy',
+            value: contentSecurityPolicy,
+          },
+          {
+            // Legacy XSS auditor is itself exploitable; CSP replaces it
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           {
             key: 'X-Frame-Options',
@@ -37,7 +66,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+            value: 'camera=(self), microphone=(), geolocation=(), payment=(), usb=()',
           },
           {
             key: 'X-Content-Type-Options',
@@ -46,6 +75,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
           },
         ],
       },

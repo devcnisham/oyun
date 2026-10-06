@@ -11,7 +11,7 @@ const hourText = (h: number) => (h === 24 ? 'Midnight' : formatSlotRange(h).spli
 
 export default async function PricingPage() {
   const ctx = await requirePartner('pricing');
-  const db = getDb();
+  const db = await getDb();
   const rules = rulesFor(db, ctx.turf.id);
   const now = istNow();
 

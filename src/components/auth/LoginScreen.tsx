@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { connection } from 'next/server';
 import type { Role } from '@/lib/session';
+import { demoLoginEnabled } from '@/lib/env';
 import LoginForm from './LoginForm';
 import styles from './LoginScreen.module.css';
 
@@ -22,7 +24,8 @@ const copy = {
   },
 };
 
-export default function LoginScreen({ role }: { role: Role }) {
+export default async function LoginScreen({ role }: { role: Role }) {
+  await connection(); // read DEMO_LOGIN at request time, not build time
   const c = copy[role];
 
   return (
@@ -57,7 +60,7 @@ export default function LoginScreen({ role }: { role: Role }) {
           <LoginForm
             role={role}
             emailPlaceholder={c.emailPlaceholder}
-            demoEnabled={process.env.DEMO_LOGIN === 'true'}
+            demoEnabled={demoLoginEnabled()}
           />
 
           <div className={styles.partnerPrompt}>

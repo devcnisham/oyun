@@ -6,7 +6,7 @@ import { getDb } from '@/lib/store';
 
 export default async function StaffPage() {
   const ctx = await requirePartner('staff');
-  const db = getDb();
+  const db = await getDb();
   const staff = db.staff.filter((s) => s.partnerId === ctx.partner.id);
   const walkIns = (name: string) => db.bookings.filter((b) => b.createdBy === name && ctx.turfs.some((t) => t.id === b.turfId)).length;
 

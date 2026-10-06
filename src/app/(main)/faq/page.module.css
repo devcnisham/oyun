@@ -36,6 +36,7 @@
   gap: 32px;
 }
 
+.faqItem h2,
 .faqItem h3 {
   font-size: 18px;
   font-weight: 700;
@@ -85,4 +86,15 @@
   .title {
     font-size: 28px;
   }
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
 }

@@ -1,0 +1,30 @@
+.banner {
+  position: fixed;
+  z-index: 1500;
+  left: 16px;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  max-width: 560px;
+  margin: 0 auto;
+  background: #1f2328;
+  color: #f3f4f6;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  animation: rise 0.25s ease-out;
+}
+.banner a { color: #fff; text-decoration: underline; }
+.actions { display: flex; gap: 8px; justify-content: flex-end; }
+.primary, .secondary { font: inherit; font-weight: 800; border-radius: 12px; padding: 10px 16px; cursor: pointer; border: none; }
+.primary { background: #fff; color: #111; }
+.secondary { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.4); }
+@media (max-width: 768px) {
+  /* Sit above the tab bar */
+  .banner { bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+@keyframes rise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }

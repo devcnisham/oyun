@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MobileBottomBar from "@/components/MobileBottomBar";
 import { connection } from "next/server";
-import { getSiteContent } from "@/lib/queries";
+import { getSettings, getSiteContent, listAreas, listPublicTurfs } from "@/lib/queries";
 
 export default async function MainLayout({
   children,
@@ -9,7 +10,9 @@ export default async function MainLayout({
   children: React.ReactNode;
 }>) {
   await connection(); // announcement can change at any time
-  const site = getSiteContent();
+  const site = await getSiteContent();
+  const settings = await getSettings();
+  const areas = listAreas(await listPublicTurfs());
   return (
     <>
       {site.announcementActive && site.announcement && (
@@ -22,8 +25,9 @@ export default async function MainLayout({
         </div>
       )}
       <Navbar />
-      <main>{children}</main>
-      <Footer />
+      <main className="appMain">{children}</main>
+      <Footer areas={areas} supportEmail={settings.supportEmail} />
+      <MobileBottomBar />
     </>
   );
 }

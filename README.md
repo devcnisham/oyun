@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OYUN
 
-## Getting Started
+Turf booking platform: public booking site, partner (turf owner) dashboard and admin console. Next.js App Router with a Supabase Postgres backend.
 
-First, run the development server:
+## Run it locally
+
+Needs Node 20.9+.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+That's all: with no `.env.local` the app stores data in `.data/db.json`, uses a built-in dev login secret, and shows **See Demo** buttons on `/partner/login` and `/admin/login`. `npm run dev` first runs a quick check and tells you if anything is missing.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Test the mobile app view on your phone:** `npm run dev:lan`, then open `http://<your-computer-IP>:3000` on the same Wi-Fi.
+- **Use Supabase locally:** copy `.env.example` to `.env.local`, fill in `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SECRET_KEY`, and run `supabase/migrations/20261006000000_oyun_store.sql` in the Supabase SQL editor. If the tables are missing, dev falls back to the local file and prints how to fix it.
+- **Reset demo data:** stop the server and delete `.data/`.
+- **Something looks stale after pulling:** `npm install`, delete `.next/`, restart.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploying (Vercel)
 
-## Learn More
+Add every variable from `.env.example` in the Vercel project settings, apply the migration to the Supabase project once, then deploy.
 
-To learn more about Next.js, take a look at the following resources:
+## Launch checklist
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+See [docs/LAUNCH-SEO.md](docs/LAUNCH-SEO.md) for Search Console, analytics, error alerts and the backlink plan.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How data is stored
 
-## Deploy on Vercel
+`src/lib/store.ts` is the only module that talks to storage. Pages call `await getDb()`; server actions call `await mutate(db => ...)`, which reloads the latest data, runs the change and writes only the rows that changed in one transaction (`apply_changes`). If another write landed in between, it retries on fresh data. Postgres enforces one live booking per turf slot, so two people can never book the same hour.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All tables have row-level security on with no policies: only the server, using the secret key, can read or write them.

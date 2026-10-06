@@ -1,8 +1,9 @@
 import { revalidatePath } from 'next/cache';
 import { AccessError } from './partner-auth';
+import { ValidationError } from './errors';
 import type { ActionResult, Turf } from './types';
 
-export class ValidationError extends Error {}
+export { ValidationError };
 
 export function str(fd: FormData, key: string, max = 500) {
   return String(fd.get(key) ?? '').trim().slice(0, max);

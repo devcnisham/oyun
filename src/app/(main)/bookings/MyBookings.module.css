@@ -1,0 +1,26 @@
+.page { padding-top: 24px; padding-bottom: 120px; max-width: 720px; }
+.title { font-size: 26px; font-weight: 800; margin-bottom: 16px; }
+.banner { background: #ecfdf3; color: #067647; font-weight: 700; font-size: 14px; padding: 12px 14px; border-radius: 14px; margin-bottom: 16px; }
+.tabs { display: flex; gap: 6px; background: #eceef1; padding: 4px; border-radius: 14px; margin-bottom: 16px; }
+.tabs button { flex: 1; font: inherit; font-weight: 700; font-size: 14px; padding: 10px; border: none; border-radius: 10px; background: transparent; color: var(--text-secondary); cursor: pointer; }
+.tabs button span { background: var(--primary-700); color: #fff; font-size: 11px; border-radius: 99px; padding: 1px 7px; margin-left: 4px; }
+.tabs .tabOn { background: #fff; color: var(--text-primary); box-shadow: var(--shadow-sm); }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.card { display: flex; gap: 12px; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 10px; text-decoration: none; color: inherit; transition: transform 0.12s; }
+.card:active { transform: scale(0.98); }
+.cardNew { border-color: var(--primary-700); box-shadow: 0 0 0 3px var(--primary-100); }
+.thumb { position: relative; width: 72px; height: 72px; border-radius: 12px; overflow: hidden; flex: none; background: #eee; }
+.thumb img { object-fit: cover; }
+.info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 13px; color: var(--text-secondary); }
+.info b { font-size: 15px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta em { font-style: normal; font-weight: 700; }
+.ok { color: #067647; }
+.off { color: #8a8f98; }
+.chev { font-size: 24px; color: #b0b4ba; padding-right: 4px; }
+.skeleton { height: 92px; border-radius: 16px; background: linear-gradient(90deg, #eef0f2 25%, #f7f8f9 50%, #eef0f2 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+.empty { text-align: center; padding: 48px 16px; background: #fff; border-radius: 20px; border: 1px solid var(--border); }
+.empty h2 { font-size: 18px; margin: 8px 0 4px; }
+.empty p { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+.emptyIcon { font-size: 40px; }
+.cta { display: inline-block; background: var(--primary-700); color: #fff; font-weight: 800; padding: 12px 24px; border-radius: 12px; text-decoration: none; }
+@keyframes shimmer { to { background-position: -200% 0; } }
