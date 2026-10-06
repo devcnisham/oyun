@@ -15,7 +15,6 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
   
   const router = useRouter();
   const [firstName, setFirstName] = useState('');
-  const [query, setQuery] = useState('');
   const [area, setArea] = useState('');
   const [areaSheet, setAreaSheet] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -116,27 +115,6 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
           </div>
         </div>
 
-        {/* Phones: search bar and location strip under the logo row, like a shopping app */}
-        <div className={styles.mobileRows}>
-          <form
-            action="/arenas"
-            role="search"
-            className={styles.searchBar}
-            onSubmit={(e) => {
-              e.preventDefault();
-              const q = query.trim();
-              router.push(q ? `/arenas?q=${encodeURIComponent(q)}` : '/arenas');
-            }}
-          >
-            <input name="q" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search turfs or areas" aria-label="Search turfs or areas" enterKeyHint="search" />
-            <button type="submit" aria-label="Search">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3.5-3.5" />
-              </svg>
-            </button>
-          </form>
-        </div>
       </header>
     </div>
 
