@@ -1,11 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { after } from 'next/server';
 import { cache } from 'react';
 import { ValidationError } from './errors';
 import { DB_VERSION, migrate, seed } from './seed';
 import type { Database } from './types';
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
+import { broadcastSlotChanges } from './realtime';
 
 export { newBookingCode, newId } from './ids';
 
@@ -99,6 +101,40 @@ function diff(before: Map<Table, Map<string, string>>, db: Database) {
   return { upserts, deletes, empty: Object.keys(upserts).length === 0 && Object.keys(deletes).length === 0 };
 }
 
+// Turf/days whose slot map a write changed (a booking, hold or block was added, edited or removed)
+const SLOT_TABLES = new Set<Table>(['bookings', 'holds', 'blocks']);
+
+function changedSlotDays(before: Map<Table, Map<string, string>>, changes: ReturnType<typeof diff>) {
+  const days = new Map<string, { turfId: string; date: string }>();
+  const add = (item: unknown) => {
+    const { turfId, date } = (item ?? {}) as { turfId?: unknown; date?: unknown };
+    if (typeof turfId === 'string' && typeof date === 'string') days.set(`${turfId}|${date}`, { turfId, date });
+  };
+  for (const table of SLOT_TABLES) {
+    const old = before.get(table);
+    for (const row of changes.upserts[table] ?? []) {
+      add(row.data);
+      const prev = old?.get(row.id);
+      if (prev) add(JSON.parse(prev));
+    }
+    for (const id of changes.deletes[table] ?? []) {
+      const prev = old?.get(id);
+      if (prev) add(JSON.parse(prev));
+    }
+  }
+  return [...days.values()];
+}
+
+// Push the change to open slot maps once the response is on its way
+function announceSlotChanges(slots: { turfId: string; date: string }[]) {
+  if (slots.length === 0) return;
+  try {
+    after(() => broadcastSlotChanges(slots));
+  } catch {
+    void broadcastSlotChanges(slots); // outside a request (scripts): fire and forget
+  }
+}
+
 class StoreConflict extends Error {}
 
 const SLOT_TAKEN: Record<string, string> = {
@@ -126,7 +162,7 @@ async function loadSupabase(): Promise<Loaded> {
     const state = data as TableRows & { rev: number | null };
     if (state.rev !== null) return { db: fromRows(state), rev: Number(state.rev) };
 
-    // Empty database: seed the demo data once
+    // Empty database: start it with the launch data once
     const db = seed();
     try {
       const rev = await applyChanges({ upserts: toRows(db), deletes: {} }, null);
@@ -168,7 +204,7 @@ function saveFile(data: Database) {
     renameSync(tmp, DATA_FILE);
     globalStore.__slotArenaPersisted = true;
   } catch (err) {
-    if (globalStore.__slotArenaPersisted !== false) console.error('[store] could not persist demo database; keeping it in memory', err);
+    if (globalStore.__slotArenaPersisted !== false) console.error('[store] could not persist the local database; keeping it in memory', err);
     globalStore.__slotArenaPersisted = false;
   }
 }
@@ -240,6 +276,7 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
     try {
       const rev = changes.empty ? loaded.rev : await applyChanges(changes, loaded.rev);
       requestState().current = Promise.resolve({ db: loaded.db, rev });
+      announceSlotChanges(changedSlotDays(before, changes));
       return result;
     } catch (err) {
       if (!(err instanceof StoreConflict)) throw err;
@@ -247,16 +284,4 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
     }
   }
   throw new ValidationError('The server is busy. Please try again.');
-}
-
-export async function resetDb() {
-  if (!supabaseActive()) {
-    globalStore.__slotArenaDb = seed();
-    saveFile(globalStore.__slotArenaDb);
-    return;
-  }
-  const { error } = await createAdminClient().rpc('reset_state');
-  if (error) throw new Error(`[store] reset failed: ${error.message}`);
-  requestState().current = loadSupabase(); // reseeds
-  await requestState().current;
 }

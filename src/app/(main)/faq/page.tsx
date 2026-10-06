@@ -17,23 +17,23 @@ export default async function FAQPage() {
   const faqs = [
     {
       q: 'How do I book a turf on OYUN?',
-      a: `Open a turf, pick a date and tap one or more free slots, then press Proceed. Your slots are held for 8 minutes while you enter your name and number and pay the full amount or a ${s.advancePercent}% advance. You get a booking with a QR code straight away.`,
+      a: 'Open a turf, pick a date and tap one or more free slots, then press Proceed. Your slots are held for you for 8 minutes while you sign in and reserve. You get a booking with a QR code straight away, and you pay at the turf when you arrive.',
     },
     {
       q: 'What does "On hold" mean on a slot?',
-      a: 'Another player is checking out that slot right now. Holds last 8 minutes; if they don\'t pay in time the slot opens up again automatically.',
+      a: 'Another player is reserving that slot right now. Holds last 8 minutes; if they don\'t finish in time the slot opens up again automatically. Slot maps update live, so you see it the moment it changes.',
     },
     {
       q: 'Do I need an account to book?',
-      a: 'No. You book with your name and mobile number. Your bookings are saved on your phone under the Bookings tab, and you can install OYUN to your home screen like an app.',
+      a: 'Yes, a free OYUN account. Sign in or sign up with your mobile number when you reserve. Your bookings appear under My bookings, and you can install OYUN to your home screen like an app.',
     },
     {
       q: 'What is the cancellation policy?',
-      a: 'Contact the turf or OYUN support to cancel. Refunds for cancelled bookings go to your OYUN wallet, which you can use on your next booking.',
+      a: 'Contact the turf or OYUN support to cancel. You pay at the venue, so there is nothing to refund when you cancel in advance.',
     },
     {
       q: 'How do I check in at the turf?',
-      a: 'Show the QR code on your booking page at the front desk. Staff scan it to check you in, and any balance for an advance booking is paid at the venue.',
+      a: 'Show the QR code on your booking page at the front desk. Staff scan it to check you in, and you pay the turf by cash or UPI.',
     },
     {
       q: 'Do I earn cashback?',

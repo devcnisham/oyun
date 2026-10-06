@@ -11,7 +11,7 @@ export function bookingRevenue(b: Booking) {
 
 // Part of the revenue collected online by OYUN (walk-ins are paid to the turf directly)
 export function onlineCollected(b: Booking) {
-  if (b.source !== 'online' || b.status === 'cancelled' || b.status === 'refunded') return 0;
+  if (b.source !== 'online' || b.paymentMode === 'venue' || b.status === 'cancelled' || b.status === 'refunded') return 0;
   return b.amountPaid;
 }
 

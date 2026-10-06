@@ -219,14 +219,14 @@ export default async function Home() {
             <p className={styles.featureDesc}>No waiting for confirmations. See real-time availability and book instantly.</p>
           </div>
           <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>🏷️</div>
-            <h3 className={styles.featureTitle}>Best Prices Guaranteed</h3>
-            <p className={styles.featureDesc}>Get exclusive discounts up to 60% on our partner turfs across the city.</p>
+            <div className={styles.featureIcon}>💵</div>
+            <h3 className={styles.featureTitle}>Pay at the Turf</h3>
+            <p className={styles.featureDesc}>Reserve online in seconds and pay at the venue by cash or UPI. No prepayment needed.</p>
           </div>
           <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>✅</div>
-            <h3 className={styles.featureTitle}>Verified Quality</h3>
-            <p className={styles.featureDesc}>Every turf is inspected and verified by our team for turf quality and lighting.</p>
+            <div className={styles.featureIcon}>🔒</div>
+            <h3 className={styles.featureTitle}>No Double Bookings</h3>
+            <p className={styles.featureDesc}>Your slot is locked while you reserve, and everyone sees holds and bookings live.</p>
           </div>
         </div>
       </section>
@@ -237,7 +237,7 @@ export default async function Home() {
           <div className={styles.ctaInner}>
             <div className={styles.ctaLeft}>
               <h2>Own a sports facility?</h2>
-              <p>Join India&apos;s largest turf network. List your arena for free and start getting more bookings today.</p>
+              <p>List your arena on OYUN for free and start getting online bookings in Mangalore.</p>
             </div>
             <div className={styles.ctaRight}>
               <Link href="/list-turf" className="btn btn--secondary">List Your Property</Link>

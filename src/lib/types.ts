@@ -182,7 +182,8 @@ export interface PriceBreakdown {
   advance: number;
 }
 
-export type PaymentMode = 'full' | 'advance' | 'cash' | 'upi';
+// venue: reserved online, paid at the turf; full/advance: paid online (when a payment gateway is connected)
+export type PaymentMode = 'venue' | 'full' | 'advance' | 'cash' | 'upi';
 
 export interface Booking {
   id: string;

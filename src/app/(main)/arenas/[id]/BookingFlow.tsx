@@ -15,10 +15,10 @@ import {
 } from '@/lib/booking-actions';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
 import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
+import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
 import type { Slot, Turf } from '@/lib/types';
-import PaymentGatewayDemo from '@/components/PaymentGatewayDemo';
 import styles from './BookingFlow.module.css';
 
 export interface BookingFlowProps {
@@ -26,13 +26,11 @@ export interface BookingFlowProps {
   dates: { date: string; label: string; day: string; num: string }[];
   initialDate: string;
   initialSlots: Slot[];
-  advancePercent: number;
   rewards: { cashbackEnabled: boolean; cashbackPercent: number; cashbackMax: number; referralEnabled: boolean; refereeReward: number };
   initialReferral: string;
 }
 
 const MAX_SLOTS = 6;
-const REFRESH_MS = 15_000;
 
 const SESSIONS = [
   { name: 'Morning', icon: '🌅', from: 0, to: 12 },
@@ -58,7 +56,7 @@ function slotTitle(slot: Slot) {
   return `${slot.label} · ${slot.reason === 'held' ? 'Someone is booking this slot' : slot.reason === 'past' ? 'Over' : 'Not available'}`;
 }
 
-export default function BookingFlow({ turf, dates, initialDate, initialSlots, advancePercent, rewards, initialReferral }: BookingFlowProps) {
+export default function BookingFlow({ turf, dates, initialDate, initialSlots, rewards, initialReferral }: BookingFlowProps) {
   const router = useRouter();
   const [date, setDate] = useState(initialDate);
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
@@ -77,10 +75,8 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
   const [referral, setReferral] = useState<ReferralCheck | null>(null);
   const [codeError, setCodeError] = useState('');
   const [useWallet, setUseWallet] = useState(false);
-  const [paymentMode, setPaymentMode] = useState<'full' | 'advance'>('full');
   const [quote, setQuote] = useState<SelectionQuote | null>(null);
   const [error, setError] = useState('');
-  const [showPayment, setShowPayment] = useState(false);
   const [paying, startPaying] = useTransition();
   const [showGate, setShowGate] = useState(false);
   const account = useAccount();
@@ -122,13 +118,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
     [turf.id, flash]
   );
 
-  useEffect(() => {
-    if (inCheckout) return;
-    const id = window.setInterval(() => {
-      if (document.visibilityState === 'visible') refreshSlots(date).catch(() => {});
-    }, REFRESH_MS);
-    return () => window.clearInterval(id);
-  }, [date, inCheckout, refreshSlots]);
+  // Live seat map: other players' holds and bookings show up within a second
+  const refreshCurrent = useCallback(() => {
+    refreshSlots(date).catch(() => {});
+  }, [date, refreshSlots]);
+  useSlotUpdates(turf.id, date, refreshCurrent, !inCheckout);
 
   // Countdown while slots are held
   useEffect(() => {
@@ -140,7 +134,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
   const closeCheckout = useCallback(
     (message?: string) => {
       setHoldUntil(null);
-      setShowPayment(false);
       setQuote(null);
       setError('');
       releaseHolds().catch(() => {});
@@ -169,7 +162,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
         addOns: [],
         useWallet,
         phone: phoneDigits,
-        paymentMode,
       });
       if (cancelled) return;
       if ('error' in result) setError(result.error);
@@ -179,7 +171,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
       cancelled = true;
       window.clearTimeout(t);
     };
-  }, [inCheckout, turf.id, date, selected, promo, useWallet, phoneDigits, paymentMode]);
+  }, [inCheckout, turf.id, date, selected, promo, useWallet, phoneDigits]);
 
   const changeDate = (next: string) => {
     if (next === date) return;
@@ -234,7 +226,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
     }
     const entered = code.trim().toUpperCase();
     if (!entered) return;
-    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: [], useWallet, phone: phoneDigits, paymentMode });
+    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: [], useWallet, phone: phoneDigits });
     if (!('error' in tryPromo) && tryPromo.promoCode && !tryPromo.promoError) {
       setPromo(tryPromo.promoCode);
       setCodeError('');
@@ -263,14 +255,14 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
       else setShowGate(true);
       return;
     }
-    if (!name.trim()) return setError('Enter your name');
-    if (phoneDigits.length !== 10) return setError('Enter a 10-digit mobile number');
-    if (!quote) return;
-    setShowPayment(true);
+    reserve(name, phoneDigits);
   };
 
-  const completeBooking = () => {
-    setShowPayment(false);
+  // Confirms the held slots; the player pays the turf at the venue
+  const reserve = (playerName: string, playerPhone: string) => {
+    if (!playerName.trim()) return setError('Enter your name');
+    if (playerPhone.length !== 10) return setError('Enter a 10-digit mobile number');
+    if (!quote) return;
     startPaying(async () => {
       const result = await createBookings({
         turfId: turf.id,
@@ -279,16 +271,15 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
         promoCode: promo,
         addOns: [],
         useWallet,
-        phone: phoneDigits,
-        paymentMode,
-        name,
+        phone: playerPhone,
+        name: playerName,
         referralCode: rewards.referralEnabled && referral?.status === 'valid' ? code : null,
       });
       if (!result.ids) {
         setError(result.error ?? 'Could not complete the booking');
         return;
       }
-      saveProfile({ name: name.trim(), phone: phoneDigits });
+      saveProfile({ name: playerName.trim(), phone: playerPhone });
       addMyBookingIds(result.ids);
       router.push(result.ids.length === 1 ? `/bookings/${result.ids[0]}` : `/bookings?new=${result.ids.join(',')}`);
     });
@@ -451,18 +442,9 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
                 )}
               </section>
 
-              <section>
+              <section className={styles.venueNote}>
                 <h3>Payment</h3>
-                <div className={styles.payModes}>
-                  <button className={`${styles.payMode} ${paymentMode === 'full' ? styles.payModeOn : ''}`} onClick={() => setPaymentMode('full')}>
-                    <b>Pay full</b>
-                    <span>Nothing to pay at the venue</span>
-                  </button>
-                  <button className={`${styles.payMode} ${paymentMode === 'advance' ? styles.payModeOn : ''}`} onClick={() => setPaymentMode('advance')}>
-                    <b>Pay {advancePercent}% now</b>
-                    <span>Rest at the venue</span>
-                  </button>
-                </div>
+                <p>💵 Pay at the turf when you arrive, by cash or UPI. Your slots are confirmed as soon as you reserve.</p>
               </section>
 
               {quote && (
@@ -472,8 +454,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
                     <div key={a.label} className={styles.discount}><span>{a.label}</span><span>−{rupees(-a.amount)}</span></div>
                   ))}
                   {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
-                  <div className={styles.billTotal}><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
-                  {quote.payAtVenue > 0 && <div className={styles.muted}><span>Pay at venue</span><span>{rupees(quote.payAtVenue)}</span></div>}
+                  <div className={styles.billTotal}><span>Pay at venue (incl. GST)</span><span>{rupees(quote.total)}</span></div>
                   {cashback > 0 && <p className={styles.success}>💰 Earn {rupees(cashback)} cashback when you check in</p>}
                 </section>
               )}
@@ -483,11 +464,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
 
             <div className={styles.sheetFoot}>
               <div className={styles.barInfo}>
-                <b>{quote ? rupees(quote.payNow) : '…'}</b>
-                <span>{paymentMode === 'advance' ? `${advancePercent}% advance` : 'Full amount'}</span>
+                <b>{quote ? rupees(quote.total) : '…'}</b>
+                <span>Pay at venue</span>
               </div>
               <button className={styles.primary} onClick={pay} disabled={!quote || paying}>
-                {paying ? 'Confirming…' : `${account.signedIn ? 'Pay' : 'Sign in to pay'} ${quote ? rupees(quote.payNow) : ''}`}
+                {paying ? 'Reserving…' : account.signedIn ? 'Reserve slot' : 'Sign in to reserve'}
               </button>
             </div>
           </div>
@@ -505,14 +486,12 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
               setName(p.name);
               setPhone(p.phone);
               setError('');
-              if (quote) setShowPayment(true);
+              reserve(p.name, p.phone);
             }}
           />,
           document.body
         )}
 
-      {showPayment && quote &&
-        createPortal(<PaymentGatewayDemo amount={quote.payNow} onSuccess={completeBooking} onCancel={() => setShowPayment(false)} />, document.body)}
     </div>
   );
 }

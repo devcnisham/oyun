@@ -1,6 +1,6 @@
 import ActionForm from '@/components/dash/ActionForm';
 import { Badge, PageHeader, dash } from '@/components/dash/ui';
-import { deletePromoCode, resetDemoData, savePromoCode, saveSettings, togglePromoCode } from '@/lib/admin-actions';
+import { deletePromoCode, savePromoCode, saveSettings, togglePromoCode } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 
 export default async function AdminSettings() {
@@ -9,7 +9,7 @@ export default async function AdminSettings() {
 
   return (
     <div className={dash.page}>
-      <PageHeader title="Settings" desc="Platform-wide rules, promo codes and demo data." />
+      <PageHeader title="Settings" desc="Platform-wide rules and promo codes." />
 
       <div className={dash.grid2}>
         <div className={dash.card}>
@@ -144,17 +144,6 @@ export default async function AdminSettings() {
         </div>
       </div>
 
-      <div className={dash.card}>
-        <div className={dash.cardHeader}>
-          <div>
-            <h2 className={dash.cardTitle}>Demo data</h2>
-            <p className={dash.cardDesc}>Data is stored in <code>.data/db.json</code> until the real database is connected.</p>
-          </div>
-        </div>
-        <ActionForm action={resetDemoData} confirm="Reset ALL data to the original demo data? Every change, booking and account created since will be lost.">
-          <div className={dash.actions}><button className={`${dash.btn} ${dash.btnDanger}`}>Reset demo data</button></div>
-        </ActionForm>
-      </div>
     </div>
   );
 }

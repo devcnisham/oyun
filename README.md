@@ -11,11 +11,11 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-That's all: with no `.env.local` the app stores data in `.data/db.json`, uses a built-in dev login secret, and shows **See Demo** buttons on `/partner/login` and `/admin/login`. `npm run dev` first runs a quick check and tells you if anything is missing.
+That's all: with no `.env.local` the app stores data in `.data/db.json` (starting with the launch turfs) and uses a built-in dev login secret. To open `/admin` or `/partner` locally, set `ADMIN_EMAIL`/`ADMIN_PASSWORD` and `PARTNER_EMAIL`/`PARTNER_PASSWORD` in `.env.local`. `npm run dev` first runs a quick check and tells you if anything is missing.
 
 - **Test the mobile app view on your phone:** `npm run dev:lan`, then open `http://<your-computer-IP>:3000` on the same Wi-Fi.
 - **Use Supabase locally:** copy `.env.example` to `.env.local`, fill in `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SECRET_KEY`, and run `supabase/migrations/20261006000000_oyun_store.sql` in the Supabase SQL editor. If the tables are missing, dev falls back to the local file and prints how to fix it.
-- **Reset demo data:** stop the server and delete `.data/`.
+- **Start local data over:** stop the server and delete `.data/`.
 - **Something looks stale after pulling:** `npm install`, delete `.next/`, restart.
 
 ## Deploying (Vercel)
@@ -24,7 +24,7 @@ Add every variable from `.env.example` in the Vercel project settings, apply the
 
 ## Launch checklist
 
-See [docs/LAUNCH-SEO.md](docs/LAUNCH-SEO.md) for Search Console, analytics, error alerts and the backlink plan.
+See [docs/GO-LIVE.md](docs/GO-LIVE.md) for the steps to take the site live, and [docs/LAUNCH-SEO.md](docs/LAUNCH-SEO.md) for Search Console, analytics, error alerts and the backlink plan.
 
 ## How data is stored
 

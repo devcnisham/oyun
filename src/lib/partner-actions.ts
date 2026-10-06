@@ -132,6 +132,8 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
       booking.checkedInAt = new Date().toISOString();
       const rewards = rewardCheckIn(db, booking);
       const due = booking.pricing.total - booking.amountPaid;
+      // Pay-at-venue bookings are settled at the desk on check-in
+      if (booking.paymentMode === 'venue') booking.amountPaid = booking.pricing.total;
       return {
         ok: `✓ ${booking.customerName} checked in for ${booking.timeLabel}${due > 0 ? ` — collect ₹${due} balance` : ''}${rewards.length ? ` · ${rewards.join(', ')}` : ''}`,
       };

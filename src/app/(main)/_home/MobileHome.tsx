@@ -45,11 +45,19 @@ export default function MobileHome({ turfs, areas, allAreas, promos, coupons, de
           <b>Play today</b>
           <small>{turfs.reduce((n, t) => n + t.availableToday, 0)} open slots</small>
         </Link>
-        <Link href="#deals" className={`${styles.tile} ${styles.tileAmber}`}>
-          <span aria-hidden>🏷️</span>
-          <b>Deals</b>
-          <small>{coupons.length + deals.length} offers</small>
-        </Link>
+        {coupons.length + deals.length > 0 ? (
+          <Link href="#deals" className={`${styles.tile} ${styles.tileAmber}`}>
+            <span aria-hidden>🏷️</span>
+            <b>Deals</b>
+            <small>{coupons.length + deals.length} offers</small>
+          </Link>
+        ) : (
+          <Link href="/arenas" className={`${styles.tile} ${styles.tileAmber}`}>
+            <span aria-hidden>🏟️</span>
+            <b>All turfs</b>
+            <small>{turfs.length} in Mangalore</small>
+          </Link>
+        )}
         <Link href="/arenas?sort=price-low" className={`${styles.tile} ${styles.tileGreen}`}>
           <span aria-hidden>💸</span>
           <b>Budget</b>
@@ -121,7 +129,7 @@ export default function MobileHome({ turfs, areas, allAreas, promos, coupons, de
 
       <section>
         <div className={styles.sectionHead}>
-          <h2>Top rated near you</h2>
+          <h2>{topRated.some((t) => t.reviewCount > 0) ? 'Top rated near you' : 'Popular turfs'}</h2>
           <Link href="/arenas">See all</Link>
         </div>
         <div className={styles.list}>
@@ -129,7 +137,7 @@ export default function MobileHome({ turfs, areas, allAreas, promos, coupons, de
             <Link key={t.id} href={`/arenas/${t.id}`} className={styles.row}>
               <div className={styles.rowImg}>
                 <Image src={t.images[0]} alt={`${t.name} turf in ${t.area}`} fill sizes="96px" unoptimized={!canOptimize(t.images[0])} />
-                <span className={styles.rank}>#{i + 1}</span>
+                {t.reviewCount > 0 && <span className={styles.rank}>#{i + 1}</span>}
               </div>
               <div className={styles.rowInfo}>
                 <b>{t.name}</b>
@@ -164,13 +172,14 @@ export default function MobileHome({ turfs, areas, allAreas, promos, coupons, de
         <ol>
           <li><span aria-hidden>1</span><div><b>Pick your slots</b><small>Choose a date and one or more hours, like cinema seats.</small></div></li>
           <li><span aria-hidden>2</span><div><b>We hold them for 8 minutes</b><small>Nobody else can take them while you pay.</small></div></li>
-          <li><span aria-hidden>3</span><div><b>Show your QR and play</b><small>Your ticket is saved under My games.</small></div></li>
+          <li><span aria-hidden>3</span><div><b>Show your QR, play and pay</b><small>Pay at the turf by cash or UPI. Your ticket is under My games.</small></div></li>
         </ol>
       </section>
 
       <section className={styles.trust} aria-label="Why OYUN">
-        <div><span aria-hidden>✅</span><b>Verified turfs</b></div>
         <div><span aria-hidden>⚡</span><b>Instant confirmation</b></div>
+        <div><span aria-hidden>💵</span><b>Pay at the turf</b></div>
+        <div><span aria-hidden>🔒</span><b>Live slot updates</b></div>
         {rewards.cashbackEnabled && <div><span aria-hidden>💰</span><b>{rewards.cashbackPercent}% cashback</b></div>}
         {rewards.referralEnabled && <div><span aria-hidden>🤝</span><b>₹{rewards.refereeReward} for friends</b></div>}
       </section>

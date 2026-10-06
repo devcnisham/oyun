@@ -327,3 +327,6 @@
 @media (prefers-reduced-motion: reduce) {
   .sheet, .overlay, .toast, .bar { animation: none; transition: none; }
 }
+
+/* Pay-at-venue note in checkout */
+.venueNote p { font-size: 14px; color: var(--text-secondary); background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px 14px; }

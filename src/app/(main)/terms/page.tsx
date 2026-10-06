@@ -7,7 +7,7 @@ import BackButton from '@/components/BackButton';
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
   description:
-    'The terms for booking sports turfs on OYUN and for listing a venue: slot holds, payments and advances, cancellations and refunds, wallet credits, conduct and liability.',
+    'The terms for booking sports turfs on OYUN and for listing a venue: slot holds, paying at the venue, cancellations, no-shows, conduct and liability.',
   alternates: { canonical: '/terms' },
 };
 
@@ -44,16 +44,16 @@ export default async function TermsPage() {
 
           <h2>3. Payments</h2>
           <ul>
-            <li>You can pay the full amount or a {s.advancePercent}% advance online. With an advance, the balance is paid to the turf at the venue before play.</li>
+            <li>You reserve slots on OYUN and pay the turf at the venue, by cash or UPI, before you play. No payment is taken online.</li>
             <li>Prices include GST where applicable. Invoices are available from your booking page.</li>
-            <li>Wallet credits (cashback, referral rewards, refunds) can only be used for bookings on OYUN, have no cash value and cannot be transferred.</li>
+            <li>Wallet credits (cashback, referral rewards), when offered, can only be used for bookings on OYUN, have no cash value and cannot be transferred.</li>
           </ul>
 
           <h2>4. Cancellations, no-shows and refunds</h2>
           <ul>
-            <li>To cancel, contact the turf or OYUN support before your slot starts. Refunds for eligible cancellations are credited to your OYUN wallet unless the law requires otherwise.</li>
-            <li>If you don&apos;t arrive for your slot, it may be marked as a no-show and the amount paid is not refunded.</li>
-            <li>If a turf cancels or can&apos;t host your game (for example due to maintenance or bad weather), you get a full refund to your wallet.</li>
+            <li>To cancel, contact the turf or OYUN support before your slot starts. As you pay at the venue, there is nothing to refund for a slot you cancel in advance.</li>
+            <li>If you don&apos;t arrive for your slot, it may be marked as a no-show. Repeated no-shows can lead to your account being blocked from booking.</li>
+            <li>If a turf cancels or can&apos;t host your game (for example due to maintenance or bad weather), we will tell you as soon as possible and help you rebook.</li>
           </ul>
 
           <h2>5. At the venue</h2>
@@ -87,7 +87,7 @@ export default async function TermsPage() {
 
           <h2>10. Contact</h2>
           <p>
-            Questions? Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a> or call {s.supportPhone}.
+            Questions? Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a>{s.supportPhone ? ` or call ${s.supportPhone}` : ''}.
           </p>
         </div>
       </article>

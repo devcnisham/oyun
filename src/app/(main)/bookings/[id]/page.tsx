@@ -69,7 +69,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
             <div><dt>Add-ons</dt><dd>{booking.addOns.map((a) => `${a.name} × ${a.qty}`).join(', ')}</dd></div>
           )}
           <div><dt>Total</dt><dd>₹{p.total}</dd></div>
-          <div><dt>Paid</dt><dd>₹{booking.amountPaid}</dd></div>
+          {booking.amountPaid > 0 && <div><dt>Paid</dt><dd>₹{booking.amountPaid}</dd></div>}
           {due > 0 && booking.status === 'confirmed' && <div><dt>Pay at venue</dt><dd>₹{due}</dd></div>}
         </dl>
 
@@ -85,7 +85,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           </a>
           <Link href={`/arenas/${turf.id}`} className="btn btn--primary btn--sm">Book again</Link>
         </div>
-        {player && (
+        {player && (player.walletBalance > 0 || s.cashbackEnabled || s.referralEnabled) && (
           <div className={styles.rewards}>
             <h2 className={styles.rewardsTitle}>Your OYUN wallet</h2>
             <div className={styles.walletBalance}>₹{player.walletBalance}</div>
@@ -128,7 +128,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
         )}
 
         <p className={styles.note}>
-          Save this page — it&apos;s your ticket. Need to cancel? Call the turf at {turf.phone}.
+          Save this page — it&apos;s your ticket. Need to cancel? {turf.phone ? <>Call the turf at {turf.phone}.</> : 'Contact OYUN support from your Account page.'}
         </p>
       </div>
     </div>

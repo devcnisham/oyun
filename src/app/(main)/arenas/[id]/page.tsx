@@ -69,7 +69,6 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
       initialDate={initialDate}
       initialSlots={getSlots(db, turf, initialDate, now, await deviceHolder(false))}
       offers={db.offers.filter((o) => o.turfId === turf.id && o.active)}
-      advancePercent={db.settings.advancePercent}
       bookable={turf.status === 'active'}
       rewards={{
         cashbackEnabled: db.settings.cashbackEnabled,

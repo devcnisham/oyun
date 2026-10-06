@@ -13,7 +13,7 @@ export function organizationSchema(supportEmail: string, supportPhone: string) {
     logo: absoluteUrl('/oyun-icon-512.png'),
     description: SITE_DESCRIPTION,
     email: supportEmail,
-    telephone: supportPhone,
+    telephone: supportPhone || undefined,
     areaServed: { '@type': 'City', name: 'Mangalore' },
   };
 }

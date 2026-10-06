@@ -89,7 +89,7 @@ export default function Invoice({ booking, turf, partner, settings }: InvoicePro
             <td className={styles.num}>{inr(p.total)}</td>
           </tr>
           <tr>
-            <td>Paid {booking.paymentMode === 'advance' ? '(advance)' : `(${booking.paymentMode})`}</td>
+            <td>{booking.paymentMode === 'venue' ? 'Paid at venue' : `Paid ${booking.paymentMode === 'advance' ? '(advance)' : `(${booking.paymentMode})`}`}</td>
             <td className={styles.num}>{inr(booking.amountPaid)}</td>
           </tr>
           {p.total - booking.amountPaid > 0 && (
@@ -103,7 +103,7 @@ export default function Invoice({ booking, turf, partner, settings }: InvoicePro
 
       <footer className={styles.footer}>
         {business?.gstin ? 'SAC 999652 — Sports and recreational services. ' : 'This turf has not added a GSTIN; this is a payment receipt, not a tax invoice. '}
-        Questions? {settings.supportEmail} · {settings.supportPhone}
+        Questions? {settings.supportEmail}{settings.supportPhone ? ` · ${settings.supportPhone}` : ''}
       </footer>
     </article>
   );
