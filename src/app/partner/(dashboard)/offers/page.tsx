@@ -9,7 +9,7 @@ const hourText = (h: number) => (h === 24 ? 'Midnight' : formatSlotRange(h).spli
 
 export default async function OffersPage() {
   const ctx = await requirePartner('offers');
-  const db = getDb();
+  const db = await getDb();
   const offers = db.offers.filter((o) => o.turfId === ctx.turf.id);
 
   // How often each offer has been used (from saved booking price breakdowns)

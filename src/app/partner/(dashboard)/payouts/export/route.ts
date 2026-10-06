@@ -15,7 +15,7 @@ export async function GET() {
   const ctx = await getPartnerContext();
   if (!ctx || !ctx.can('payouts')) return new Response('Unauthorized', { status: 401 });
 
-  const db = getDb();
+  const db = await getDb();
   const today = istNow().date;
   const from = addDays(today, -90);
   const rows = db.bookings

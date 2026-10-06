@@ -45,7 +45,7 @@ export async function getPartnerContext(): Promise<PartnerContext | null> {
   const subject = await getSessionSubject('partner');
   if (!subject) return null;
 
-  const db = getDb();
+  const db = await getDb();
   let partner: Partner | undefined;
   let staff: StaffMember | null = null;
   if (subject.startsWith('p:')) {

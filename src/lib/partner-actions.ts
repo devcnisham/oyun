@@ -54,7 +54,7 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       .filter((k) => k.startsWith('addon_'))
       .map((k) => ({ id: k.slice(6), qty: Number(fd.get(k)) || 0 }));
 
-    return mutate((db) => {
+    return await mutate((db) => {
       const quote = buildQuote(db, { turfId: ctx.turf.id, date, hour, addOns, phone, source: 'walk_in' }, istNow());
       if (!quote) throw new ValidationError('Turf not found');
       if (quote.slotError) throw new ValidationError(quote.slotError);
@@ -89,7 +89,7 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
 export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('bookings');
-    return mutate((db) => {
+    return await mutate((db) => {
       const booking = bookingInTurf(db, ctx, str(fd, 'bookingId'));
       if (booking.status !== 'confirmed') throw new ValidationError('Only upcoming bookings can be cancelled');
       // Online payments go back to the player's wallet
@@ -115,7 +115,7 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
     const bookingId = str(fd, 'bookingId');
     const today = istNow().date;
 
-    return mutate((db) => {
+    return await mutate((db) => {
       const booking = bookingId
         ? db.bookings.find((b) => b.id === bookingId)
         : db.bookings.find((b) => b.code === code);
@@ -142,7 +142,7 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
 export async function markNoShow(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('checkin');
-    return mutate((db) => {
+    return await mutate((db) => {
       const booking = bookingInTurf(db, ctx, str(fd, 'bookingId'));
       if (booking.status !== 'confirmed') throw new ValidationError('Only confirmed bookings can be marked as no-show');
       const now = istNow();
@@ -165,7 +165,7 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
     const hour = int(fd, 'hour', { min: 0, max: 23, label: 'Slot' });
     const reason = required(fd, 'reason', 'Reason', 120);
 
-    return mutate((db) => {
+    return await mutate((db) => {
       const taken = db.bookings.some(
         (b) => b.turfId === ctx.turf.id && b.date === date && b.hour === hour && ['confirmed', 'checked_in'].includes(b.status)
       );
@@ -183,7 +183,7 @@ export async function unblockSlot(_prev: ActionResult, fd: FormData): Promise<Ac
   return run(async () => {
     const ctx = await requirePartnerAction('slots');
     const id = str(fd, 'blockId');
-    return mutate((db) => {
+    return await mutate((db) => {
       const before = db.blocks.length;
       db.blocks = db.blocks.filter((b) => !(b.id === id && b.turfId === ctx.turf.id));
       if (db.blocks.length === before) throw new ValidationError('Block not found');
@@ -212,7 +212,7 @@ export async function savePricing(_prev: ActionResult, fd: FormData): Promise<Ac
       lastMinutePercent: int(fd, 'lastMinutePercent', { min: 0, max: 90, label: 'Last-minute discount' }),
     };
     const pricePerHour = int(fd, 'pricePerHour', { min: 100, max: 20000, label: 'Base price' });
-    mutate((db) => {
+    await mutate((db) => {
       db.pricing[ctx.turf.id] = rules;
       const turf = db.turfs.find((t) => t.id === ctx.turf.id);
       if (turf) turf.pricePerHour = pricePerHour;
@@ -236,7 +236,7 @@ export async function createOffer(_prev: ActionResult, fd: FormData): Promise<Ac
       endHour = int(fd, 'endHour', { min: 1, max: 24, label: 'End hour' });
       if (endHour <= startHour) throw new ValidationError('End hour must be after start hour');
     }
-    mutate((db) => {
+    await mutate((db) => {
       db.offers.push({ id: newId('offer'), turfId: ctx.turf.id, type, title, percentOff, startHour, endHour, active: true, createdAt: new Date().toISOString() });
     });
     return { ok: `Offer "${title}" is live` };
@@ -246,7 +246,7 @@ export async function createOffer(_prev: ActionResult, fd: FormData): Promise<Ac
 export async function toggleOffer(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('offers');
-    return mutate((db) => {
+    return await mutate((db) => {
       const offer = db.offers.find((o) => o.id === str(fd, 'offerId') && o.turfId === ctx.turf.id);
       if (!offer) throw new ValidationError('Offer not found');
       offer.active = !offer.active;
@@ -258,7 +258,7 @@ export async function toggleOffer(_prev: ActionResult, fd: FormData): Promise<Ac
 export async function deleteOffer(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('offers');
-    mutate((db) => {
+    await mutate((db) => {
       db.offers = db.offers.filter((o) => !(o.id === str(fd, 'offerId') && o.turfId === ctx.turf.id));
     });
     return { ok: 'Offer deleted' };
@@ -273,7 +273,7 @@ export async function saveAddOn(_prev: ActionResult, fd: FormData): Promise<Acti
     const id = str(fd, 'addOnId');
     const name = required(fd, 'name', 'Name', 60);
     const price = int(fd, 'price', { min: 0, max: 10000, label: 'Price' });
-    return mutate((db) => {
+    return await mutate((db) => {
       if (id) {
         const addOn = db.addOns.find((a) => a.id === id && a.turfId === ctx.turf.id);
         if (!addOn) throw new ValidationError('Add-on not found');
@@ -290,7 +290,7 @@ export async function saveAddOn(_prev: ActionResult, fd: FormData): Promise<Acti
 export async function toggleAddOn(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('addons');
-    return mutate((db) => {
+    return await mutate((db) => {
       const addOn = db.addOns.find((a) => a.id === str(fd, 'addOnId') && a.turfId === ctx.turf.id);
       if (!addOn) throw new ValidationError('Add-on not found');
       addOn.active = !addOn.active;
@@ -302,7 +302,7 @@ export async function toggleAddOn(_prev: ActionResult, fd: FormData): Promise<Ac
 export async function deleteAddOn(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('addons');
-    mutate((db) => {
+    await mutate((db) => {
       db.addOns = db.addOns.filter((a) => !(a.id === str(fd, 'addOnId') && a.turfId === ctx.turf.id));
     });
     return { ok: 'Add-on deleted' };
@@ -324,7 +324,7 @@ export async function createStaff(_prev: ActionResult, fd: FormData): Promise<Ac
     const phone = phone10(fd, 'phone');
     const role: StaffRole = str(fd, 'role') === 'manager' ? 'manager' : 'front_desk';
     const password = generateTempPassword();
-    mutate((db) => {
+    await mutate((db) => {
       if (emailTaken(db, email)) throw new ValidationError('This email is already in use');
       db.staff.push({ id: newId('staff'), partnerId: ctx.partner.id, name, email, phone, role, passwordHash: hashPassword(password), createdAt: new Date().toISOString() });
     });
@@ -336,7 +336,7 @@ export async function resetStaffPassword(_prev: ActionResult, fd: FormData): Pro
   return run(async () => {
     const ctx = await requirePartnerAction('staff');
     const password = generateTempPassword();
-    return mutate((db) => {
+    return await mutate((db) => {
       const staff = db.staff.find((s) => s.id === str(fd, 'staffId') && s.partnerId === ctx.partner.id);
       if (!staff) throw new ValidationError('Staff member not found');
       staff.passwordHash = hashPassword(password);
@@ -348,7 +348,7 @@ export async function resetStaffPassword(_prev: ActionResult, fd: FormData): Pro
 export async function deleteStaff(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('staff');
-    mutate((db) => {
+    await mutate((db) => {
       db.staff = db.staff.filter((s) => !(s.id === str(fd, 'staffId') && s.partnerId === ctx.partner.id));
     });
     return { ok: 'Staff access removed' };
@@ -361,7 +361,7 @@ export async function updateTurfProfile(_prev: ActionResult, fd: FormData): Prom
   return run(async () => {
     const ctx = await requirePartnerAction('turf');
     const profile = parseTurfProfile(fd);
-    mutate((db) => {
+    await mutate((db) => {
       const turf = db.turfs.find((t) => t.id === ctx.turf.id);
       if (turf) Object.assign(turf, profile);
     });
@@ -374,7 +374,7 @@ export async function updateBusiness(_prev: ActionResult, fd: FormData): Promise
     const ctx = await requirePartnerAction('payouts');
     const gstin = str(fd, 'gstin', 15).toUpperCase();
     if (gstin && !/^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$/.test(gstin)) throw new ValidationError('GSTIN format looks wrong (15 characters, e.g. 29ABCDE1234F1Z5)');
-    mutate((db) => {
+    await mutate((db) => {
       const partner = db.partners.find((p) => p.id === ctx.partner.id);
       if (partner) {
         partner.business = {

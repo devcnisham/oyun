@@ -9,8 +9,8 @@ import styles from './page.module.css';
 
 export default async function Home() {
   await connection(); // live data: render per request
-  const site = getSiteContent();
-  const turfs = listPublicTurfs();
+  const site = await getSiteContent();
+  const turfs = await listPublicTurfs();
   const recommended = [...turfs].sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating).slice(0, 10);
 
   // Top areas by number of listed turfs

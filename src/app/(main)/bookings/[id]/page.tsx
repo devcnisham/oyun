@@ -17,7 +17,7 @@ const STATUS_TEXT: Record<string, string> = {
 
 export default async function BookingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const db = getDb();
+  const db = await getDb();
   const booking = db.bookings.find((b) => b.id === id);
   if (!booking) notFound();
   const turf = db.turfs.find((t) => t.id === booking.turfId);

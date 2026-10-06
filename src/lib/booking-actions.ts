@@ -14,15 +14,15 @@ function checkDate(date: string) {
   return isValidDate(date) && date >= today && date <= addDays(today, MAX_DAYS_AHEAD);
 }
 
-function bookableTurf(turfId: string) {
-  const turf = getDb().turfs.find((t) => t.id === turfId);
+async function bookableTurf(turfId: string) {
+  const turf = (await getDb()).turfs.find((t) => t.id === turfId);
   return turf && turf.status === 'active' ? turf : null;
 }
 
 export async function getSlotsForDate(turfId: string, date: string): Promise<Slot[]> {
-  const turf = bookableTurf(turfId);
+  const turf = await bookableTurf(turfId);
   if (!turf || !checkDate(date)) return [];
-  return getSlots(getDb(), turf, date, istNow());
+  return getSlots(await getDb(), turf, date, istNow());
 }
 
 export interface QuoteRequest {
@@ -41,7 +41,7 @@ export type ReferralCheck = { status: 'valid'; referrerName: string; reward: num
 
 // Referral codes only count for a phone number's first booking
 export async function checkReferralCode(code: string, phone: string): Promise<ReferralCheck> {
-  const db = getDb();
+  const db = await getDb();
   if (!db.settings.referralEnabled) return { status: 'disabled' };
   const referrer = findByReferralCode(db, code);
   if (!referrer || referrer.status !== 'active') return { status: 'invalid' };
@@ -51,8 +51,8 @@ export async function checkReferralCode(code: string, phone: string): Promise<Re
 }
 
 export async function getBookingQuote(req: QuoteRequest): Promise<PublicQuote | null> {
-  if (!bookableTurf(req.turfId) || !checkDate(req.date)) return null;
-  return buildQuote(getDb(), { ...req, source: 'online' }, istNow());
+  if (!await bookableTurf(req.turfId) || !checkDate(req.date)) return null;
+  return buildQuote(await getDb(), { ...req, source: 'online' }, istNow());
 }
 
 export interface BookingRequest extends QuoteRequest {
@@ -67,10 +67,10 @@ export async function createBooking(req: BookingRequest): Promise<{ id?: string;
     const phone = normalizePhone(req.phone);
     if (!name) throw new ValidationError('Enter your name');
     if (phone.length !== 10) throw new ValidationError('Enter a 10-digit mobile number');
-    if (!bookableTurf(req.turfId)) throw new ValidationError('This turf is not taking bookings right now');
+    if (!await bookableTurf(req.turfId)) throw new ValidationError('This turf is not taking bookings right now');
     if (!checkDate(req.date)) throw new ValidationError('Pick a date within the next two weeks');
 
-    const id = mutate((db) => {
+    const id = await mutate((db) => {
       const quote = buildQuote(db, { ...req, phone, source: 'online' }, istNow());
       if (!quote) throw new ValidationError('Turf not found');
       if (quote.slotError) throw new ValidationError(quote.slotError);
@@ -151,7 +151,7 @@ export async function submitApplication(req: ApplicationRequest): Promise<{ id?:
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Enter a valid email address' };
   if (!Number.isFinite(price) || price < 100) return { error: 'Enter a weekday price of at least ₹100' };
 
-  const id = mutate((db) => {
+  const id = await mutate((db) => {
     const appId = newId('app');
     db.applications.push({
       id: appId,

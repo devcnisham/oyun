@@ -9,7 +9,7 @@ import { getDb } from '@/lib/store';
 export default async function PartnerInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const ctx = await requirePartner('bookings');
   const { id } = await params;
-  const db = getDb();
+  const db = await getDb();
   const booking = db.bookings.find((b) => b.id === id);
   if (!booking || !ctx.turfs.some((t) => t.id === booking.turfId)) notFound();
   const turf = db.turfs.find((t) => t.id === booking.turfId)!;

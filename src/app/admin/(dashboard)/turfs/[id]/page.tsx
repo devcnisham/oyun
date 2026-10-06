@@ -8,7 +8,7 @@ import { getDb } from '@/lib/store';
 
 export default async function AdminTurfEdit({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const db = getDb();
+  const db = await getDb();
   const turf = db.turfs.find((t) => t.id === id);
   if (!turf) notFound();
 

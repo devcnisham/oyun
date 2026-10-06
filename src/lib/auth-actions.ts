@@ -24,8 +24,8 @@ function adminSubject(email: string, password: string) {
 }
 
 // Turf owners and their staff are stored in the demo database
-function partnerSubject(email: string, password: string) {
-  const db = getDb();
+async function partnerSubject(email: string, password: string) {
+  const db = await getDb();
   const partner = db.partners.find((p) => p.email === email);
   if (partner) {
     return partner.status === 'active' && verifyPassword(password, partner.passwordHash) ? `p:${partner.id}` : null;
@@ -73,7 +73,7 @@ export async function login(role: Role, _prev: LoginState, formData: FormData): 
   const key = `${role}:${email}`;
   if (lockedOut(key)) return { error: 'Too many failed attempts. Try again in 15 minutes.' };
 
-  const subject = role === 'admin' ? adminSubject(email, password) : partnerSubject(email, password);
+  const subject = role === 'admin' ? adminSubject(email, password) : await partnerSubject(email, password);
   if (!subject) {
     recordFailure(key);
     return { error: 'Invalid email or password.' };

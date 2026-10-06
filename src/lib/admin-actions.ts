@@ -23,7 +23,7 @@ export async function approveApplication(_prev: ActionResult, fd: FormData): Pro
   return run(async () => {
     await requireAdmin();
     const now = new Date().toISOString();
-    return mutate((db) => {
+    return await mutate((db) => {
       const app = db.applications.find((a) => a.id === str(fd, 'applicationId'));
       if (!app || app.status !== 'pending') throw new ValidationError('Application not found or already reviewed');
 
@@ -89,7 +89,7 @@ export async function approveApplication(_prev: ActionResult, fd: FormData): Pro
 export async function rejectApplication(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    return mutate((db) => {
+    return await mutate((db) => {
       const app = db.applications.find((a) => a.id === str(fd, 'applicationId'));
       if (!app || app.status !== 'pending') throw new ValidationError('Application not found or already reviewed');
       app.status = 'rejected';
@@ -116,7 +116,7 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
     if (!Number.isFinite(rating) || rating < 0 || rating > 5) throw new ValidationError('Rating must be between 0 and 5');
     const partnerId = str(fd, 'partnerId') || null;
 
-    return mutate((db) => {
+    return await mutate((db) => {
       const turf = db.turfs.find((t) => t.id === str(fd, 'turfId'));
       if (!turf) throw new ValidationError('Turf not found');
       if (partnerId && !db.partners.some((p) => p.id === partnerId)) throw new ValidationError('Partner not found');
@@ -136,7 +136,7 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
 export async function quickUpdateTurf(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    return mutate((db) => {
+    return await mutate((db) => {
       const turf = db.turfs.find((t) => t.id === str(fd, 'turfId'));
       if (!turf) throw new ValidationError('Turf not found');
       const field = str(fd, 'field');
@@ -157,7 +157,7 @@ export async function quickUpdateTurf(_prev: ActionResult, fd: FormData): Promis
 export async function togglePlayerBan(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    return mutate((db) => {
+    return await mutate((db) => {
       const player = db.players.find((p) => p.id === str(fd, 'playerId'));
       if (!player) throw new ValidationError('Player not found');
       player.status = player.status === 'active' ? 'banned' : 'active';
@@ -171,7 +171,7 @@ export async function adjustWallet(_prev: ActionResult, fd: FormData): Promise<A
     await requireAdmin();
     const amount = int(fd, 'amount', { min: -100000, max: 100000, label: 'Amount' });
     if (amount === 0) throw new ValidationError('Enter an amount to add (e.g. 200) or remove (e.g. -200)');
-    return mutate((db) => {
+    return await mutate((db) => {
       const player = db.players.find((p) => p.id === str(fd, 'playerId'));
       if (!player) throw new ValidationError('Player not found');
       if (player.walletBalance + amount < 0) throw new ValidationError('Wallet balance cannot go below ₹0');
@@ -186,7 +186,7 @@ export async function adjustWallet(_prev: ActionResult, fd: FormData): Promise<A
 export async function togglePartnerStatus(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    return mutate((db) => {
+    return await mutate((db) => {
       const partner = db.partners.find((p) => p.id === str(fd, 'partnerId'));
       if (!partner) throw new ValidationError('Partner not found');
       partner.status = partner.status === 'active' ? 'suspended' : 'active';
@@ -199,7 +199,7 @@ export async function resetPartnerPassword(_prev: ActionResult, fd: FormData): P
   return run(async () => {
     await requireAdmin();
     const password = generateTempPassword();
-    return mutate((db) => {
+    return await mutate((db) => {
       const partner = db.partners.find((p) => p.id === str(fd, 'partnerId'));
       if (!partner) throw new ValidationError('Partner not found');
       partner.passwordHash = hashPassword(password);
@@ -212,7 +212,7 @@ export async function updatePartner(_prev: ActionResult, fd: FormData): Promise<
   return run(async () => {
     await requireAdmin();
     const email = required(fd, 'email', 'Email', 120).toLowerCase();
-    return mutate((db) => {
+    return await mutate((db) => {
       const partner = db.partners.find((p) => p.id === str(fd, 'partnerId'));
       if (!partner) throw new ValidationError('Partner not found');
       if (email !== partner.email && emailTaken(db, email)) throw new ValidationError('This email is already in use');
@@ -229,7 +229,7 @@ export async function updatePartner(_prev: ActionResult, fd: FormData): Promise<
 export async function refundBooking(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    return mutate((db) => {
+    return await mutate((db) => {
       const booking = db.bookings.find((b) => b.id === str(fd, 'bookingId'));
       if (!booking) throw new ValidationError('Booking not found');
       if (booking.status === 'refunded' || booking.status === 'cancelled') throw new ValidationError('Already cancelled or refunded');
@@ -262,7 +262,7 @@ export async function saveSettings(_prev: ActionResult, fd: FormData): Promise<A
       referrerReward: int(fd, 'referrerReward', { min: 0, max: 5000, label: 'Referrer reward' }),
       refereeReward: int(fd, 'refereeReward', { min: 0, max: 5000, label: 'New player reward' }),
     };
-    mutate((db) => {
+    await mutate((db) => {
       db.settings = settings;
     });
     return { ok: 'Platform settings saved' };
@@ -279,7 +279,7 @@ export async function savePromoCode(_prev: ActionResult, fd: FormData): Promise<
     const maxRaw = str(fd, 'maxDiscount');
     const maxDiscount = maxRaw === '' ? null : int(fd, 'maxDiscount', { min: 1, max: 10000, label: 'Max discount' });
     const isEdit = str(fd, 'mode') === 'edit';
-    return mutate((db) => {
+    return await mutate((db) => {
       const existing = db.promoCodes.find((p) => p.code === code);
       if (existing && !isEdit) throw new ValidationError(`${code} already exists`);
       if (existing) {
@@ -295,7 +295,7 @@ export async function savePromoCode(_prev: ActionResult, fd: FormData): Promise<
 export async function togglePromoCode(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    return mutate((db) => {
+    return await mutate((db) => {
       const promo = db.promoCodes.find((p) => p.code === str(fd, 'code'));
       if (!promo) throw new ValidationError('Promo code not found');
       promo.active = !promo.active;
@@ -307,7 +307,7 @@ export async function togglePromoCode(_prev: ActionResult, fd: FormData): Promis
 export async function deletePromoCode(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    mutate((db) => {
+    await mutate((db) => {
       db.promoCodes = db.promoCodes.filter((p) => p.code !== str(fd, 'code'));
     });
     return { ok: 'Promo code deleted' };
@@ -317,7 +317,7 @@ export async function deletePromoCode(_prev: ActionResult, fd: FormData): Promis
 export async function resetDemoData(): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    resetDb();
+    await resetDb();
     return { ok: 'Demo data has been reset' };
   });
 }
@@ -327,7 +327,7 @@ export async function resetDemoData(): Promise<ActionResult> {
 export async function saveSiteContent(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    mutate((db) => {
+    await mutate((db) => {
       db.site.heroTitle = required(fd, 'heroTitle', 'Hero title', 120);
       db.site.announcement = str(fd, 'announcement', 160);
       db.site.announcementActive = bool(fd, 'announcementActive') && db.site.announcement !== '';
@@ -345,7 +345,7 @@ export async function savePromoCard(_prev: ActionResult, fd: FormData): Promise<
       throw new ValidationError('Use an image from /public (e.g. /turfs/turf_1.jpg) or an images.unsplash.com link');
     }
     const card = { title: required(fd, 'title', 'Title', 60), subtitle: required(fd, 'subtitle', 'Subtitle', 120), image };
-    return mutate((db) => {
+    return await mutate((db) => {
       if (id) {
         const existing = db.site.promos.find((p) => p.id === id);
         if (!existing) throw new ValidationError('Promo card not found');
@@ -361,7 +361,7 @@ export async function savePromoCard(_prev: ActionResult, fd: FormData): Promise<
 export async function deletePromoCard(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    mutate((db) => {
+    await mutate((db) => {
       db.site.promos = db.site.promos.filter((p) => p.id !== str(fd, 'promoId'));
     });
     return { ok: 'Promo card removed' };

@@ -7,7 +7,7 @@ import { WALLET_TXN_LABELS } from '@/lib/wallet';
 
 export default async function AdminPlayers({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = '' } = await searchParams;
-  const db = getDb();
+  const db = await getDb();
   const search = q.trim().toLowerCase();
   const players = db.players
     .filter((p) => !search || p.name.toLowerCase().includes(search) || p.phone.includes(search))

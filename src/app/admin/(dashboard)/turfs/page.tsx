@@ -11,7 +11,7 @@ import { istNow } from '@/lib/time';
 
 export default async function AdminTurfs({ searchParams }: { searchParams: Promise<{ q?: string; status?: string }> }) {
   const { q = '', status = '' } = await searchParams;
-  const db = getDb();
+  const db = await getDb();
   const month = istNow().date.slice(0, 7);
   const search = q.trim().toLowerCase();
   const turfs = db.turfs

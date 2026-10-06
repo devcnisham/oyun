@@ -3,8 +3,8 @@ import { Badge, PageHeader, dash } from '@/components/dash/ui';
 import { deletePromoCode, resetDemoData, savePromoCode, saveSettings, togglePromoCode } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 
-export default function AdminSettings() {
-  const db = getDb();
+export default async function AdminSettings() {
+  const db = await getDb();
   const s = db.settings;
 
   return (

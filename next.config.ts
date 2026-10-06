@@ -10,7 +10,7 @@ const contentSecurityPolicy = [
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",
-  `connect-src 'self'${isDev ? " ws:" : ""}`,
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co${isDev ? " ws:" : ""}`,
   "frame-src https://www.google.com",
   "frame-ancestors 'self'",
   "object-src 'none'",

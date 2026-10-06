@@ -10,7 +10,7 @@ import { formatDate, istNow } from '@/lib/time';
 
 export default async function PayoutsPage() {
   const ctx = await requirePartner('payouts');
-  const db = getDb();
+  const db = await getDb();
   const now = istNow();
   const weeks = payoutWeeks(db, ctx.turf, now.date, 8);
   const rate = commissionFor(db, ctx.turf);

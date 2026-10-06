@@ -9,7 +9,7 @@ import styles from './layout.module.css';
 
 export default async function PartnerDashboard() {
   const ctx = await requirePartner();
-  const db = getDb();
+  const db = await getDb();
   const now = istNow();
   const monthPrefix = now.date.slice(0, 7);
   const bookings = db.bookings.filter((b) => b.turfId === ctx.turf.id);

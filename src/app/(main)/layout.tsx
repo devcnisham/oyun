@@ -9,7 +9,7 @@ export default async function MainLayout({
   children: React.ReactNode;
 }>) {
   await connection(); // announcement can change at any time
-  const site = getSiteContent();
+  const site = await getSiteContent();
   return (
     <>
       {site.announcementActive && site.announcement && (

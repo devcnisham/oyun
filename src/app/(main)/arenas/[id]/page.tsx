@@ -13,10 +13,10 @@ interface PageProps {
 export default async function TurfDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
   const { date: requestedDate, ref } = await searchParams;
-  const turf = getPublicTurf(id);
+  const turf = await getPublicTurf(id);
   if (!turf) notFound();
 
-  const db = getDb();
+  const db = await getDb();
   const now = istNow();
   const dates = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(now.date, i);

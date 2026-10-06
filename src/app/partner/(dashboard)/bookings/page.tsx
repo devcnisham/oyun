@@ -18,7 +18,7 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
   const ctx = await requirePartner('bookings');
   const { view: rawView, q = '' } = await searchParams;
   const view = VIEWS.some((v) => v.key === rawView) ? rawView! : 'today';
-  const db = getDb();
+  const db = await getDb();
   const now = istNow();
   const search = q.trim().toLowerCase();
 

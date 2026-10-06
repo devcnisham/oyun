@@ -4,8 +4,8 @@ import { Badge, PageHeader, dash } from '@/components/dash/ui';
 import { resetPartnerPassword, togglePartnerStatus, updatePartner } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 
-export default function AdminPartners() {
-  const db = getDb();
+export default async function AdminPartners() {
+  const db = await getDb();
 
   return (
     <div className={dash.page}>
