@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { turfSeeds } from '@/data/turfs';
@@ -15,9 +16,11 @@ import { createPlayer, newReferralCode, walletTxn } from './wallet';
  */
 
 const DB_VERSION = 1;
-const DATA_FILE = path.join(process.cwd(), '.data', 'db.json');
+// Serverless hosts (Vercel etc.) only allow writes under the temp dir
+const DATA_DIR = process.env.DATA_DIR || (process.env.VERCEL ? path.join(tmpdir(), 'oyun-data') : path.join(process.cwd(), '.data'));
+const DATA_FILE = path.join(DATA_DIR, 'db.json');
 
-const globalStore = globalThis as unknown as { __slotArenaDb?: Database };
+const globalStore = globalThis as unknown as { __slotArenaDb?: Database; __slotArenaPersisted?: boolean };
 
 export function newId(prefix: string) {
   return `${prefix}_${randomBytes(6).toString('hex')}`;
@@ -51,13 +54,17 @@ function save(data: Database) {
     const tmp = `${DATA_FILE}.tmp`;
     writeFileSync(tmp, JSON.stringify(data));
     renameSync(tmp, DATA_FILE);
+    globalStore.__slotArenaPersisted = true;
   } catch (err) {
-    console.error('[store] could not persist demo database', err);
+    if (globalStore.__slotArenaPersisted !== false) console.error('[store] could not persist demo database; keeping it in memory', err);
+    globalStore.__slotArenaPersisted = false;
   }
 }
 
 export function getDb(): Database {
-  if (!globalStore.__slotArenaDb || !existsSync(DATA_FILE)) globalStore.__slotArenaDb = load();
+  // Reload if db.json was deleted (manual reset), but never reseed on every request when the disk is read-only
+  const fileGone = globalStore.__slotArenaPersisted === true && !existsSync(DATA_FILE);
+  if (!globalStore.__slotArenaDb || fileGone) globalStore.__slotArenaDb = load();
   return globalStore.__slotArenaDb;
 }
 

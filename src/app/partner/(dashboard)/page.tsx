@@ -122,7 +122,7 @@ export default async function PartnerDashboard() {
           className={styles.slotBlockerForm}
           action={async (formData) => {
             "use server";
-            await blockSlot({} as any, formData);
+            await blockSlot(null, formData);
           }}
         >
           <div style={{ flex: 1, minWidth: '180px' }}>

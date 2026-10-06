@@ -1,9 +1,7 @@
 import { connection } from 'next/server';
 import Image from 'next/image';
 import Link from 'next/link';
-import TurfCard from '@/components/TurfCard';
 import TurfSlider from '@/components/TurfSlider';
-import { canOptimize } from '@/lib/images';
 import { getSiteContent, listPublicTurfs } from '@/lib/queries';
 import HeroSearchBar from './HeroSearchBar';
 import PopupAd from '@/components/PopupAd';

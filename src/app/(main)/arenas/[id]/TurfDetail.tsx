@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -40,7 +40,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
   const [codeError, setCodeError] = useState('');
   const [useWallet, setUseWallet] = useState(false);
   const [paymentMode, setPaymentMode] = useState<'full' | 'advance'>('full');
-  const [quote, setQuote] = useState<PublicQuote | null>(null);
+  const [fetchedQuote, setQuote] = useState<PublicQuote | null>(null);
   const [bookingError, setBookingError] = useState('');
   const [referralCheck, setReferralCheck] = useState<ReferralCheck | null>(null);
   const [showPayment, setShowPayment] = useState(false);
@@ -51,7 +51,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
   const validPhone = phoneDigits.length === 10 ? phoneDigits : '';
   const addOnList = useMemo(() => Object.entries(qty).filter(([, n]) => n > 0).map(([id, n]) => ({ id, qty: n })), [qty]);
 
-  const fetchCombinedQuote = async (hours: number[], promo: string | null) => {
+  const fetchCombinedQuote = useCallback(async (hours: number[], promo: string | null) => {
     if (hours.length === 0) return null;
     const quotes = await Promise.all(
       hours.map((hour) =>
@@ -60,7 +60,12 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
     );
     if (quotes.some((q) => !q)) return null;
 
-    // Combine quotes
+    // Combine per-hour quotes. Each quote assumes the full wallet balance is available,
+    // so cap the wallet deduction across all hours (the server deducts sequentially too).
+    const subtotal = quotes.reduce((acc, q) => acc + q!.breakdown.subtotal, 0);
+    const walletBalance = quotes[0]!.walletBalance;
+    const walletDeduction = useWallet ? Math.min(walletBalance, subtotal) : 0;
+    const total = subtotal - walletDeduction;
     const combined: PublicQuote = {
       breakdown: {
         basePrice: quotes.reduce((acc, q) => acc + q!.breakdown.basePrice, 0),
@@ -69,27 +74,24 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
         offer: quotes[0]!.breakdown.offer,
         promo: quotes[0]!.breakdown.promo,
         addOnTotal: quotes.reduce((acc, q) => acc + q!.breakdown.addOnTotal, 0),
-        subtotal: quotes.reduce((acc, q) => acc + q!.breakdown.subtotal, 0),
-        walletDeduction: quotes.reduce((acc, q) => acc + q!.breakdown.walletDeduction, 0),
-        total: quotes.reduce((acc, q) => acc + q!.breakdown.total, 0),
-        advance: quotes.reduce((acc, q) => acc + q!.breakdown.advance, 0),
+        subtotal,
+        walletDeduction,
+        total,
+        advance: Math.round((total * advancePercent) / 100),
       },
       addOns: quotes[0]!.addOns,
       promoCode: quotes[0]!.promoCode,
       promoError: quotes.find((q) => q!.promoError)?.promoError || null,
-      walletBalance: quotes[0]!.walletBalance,
+      walletBalance,
       firstTime: quotes[0]!.firstTime,
       slotError: quotes.find((q) => q!.slotError)?.slotError || null,
     };
     return combined;
-  };
+  }, [turf.id, date, addOnList, useWallet, validPhone, advancePercent]);
 
   // Server recalculates the full price whenever the selection changes
   useEffect(() => {
-    if (selectedHours.length === 0) {
-      setQuote(null);
-      return;
-    }
+    if (selectedHours.length === 0) return;
     let cancelled = false;
     fetchCombinedQuote(selectedHours, appliedPromo).then((q) => {
       if (!cancelled) setQuote(q);
@@ -97,7 +99,8 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
     return () => {
       cancelled = true;
     };
-  }, [turf.id, date, selectedHours, appliedPromo, addOnList, useWallet, validPhone]);
+  }, [fetchCombinedQuote, selectedHours, appliedPromo]);
+  const quote = selectedHours.length > 0 ? fetchedQuote : null;
 
   const changeDate = (next: string) => {
     setDate(next);

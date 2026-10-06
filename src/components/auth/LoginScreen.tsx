@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { connection } from 'next/server';
 import type { Role } from '@/lib/session';
 import LoginForm from './LoginForm';
 import styles from './LoginScreen.module.css';
@@ -22,7 +23,8 @@ const copy = {
   },
 };
 
-export default function LoginScreen({ role }: { role: Role }) {
+export default async function LoginScreen({ role }: { role: Role }) {
+  await connection(); // read DEMO_LOGIN at request time, not build time
   const c = copy[role];
 
   return (

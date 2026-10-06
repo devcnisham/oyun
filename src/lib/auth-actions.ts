@@ -38,15 +38,47 @@ function partnerSubject(email: string, password: string) {
   return null;
 }
 
+// Slow down password guessing: lock an account for a while after repeated failures.
+// In-memory, so per server instance; move to a shared store along with the database.
+const MAX_FAILURES = 5;
+const LOCKOUT_MS = 15 * 60 * 1000;
+const failures = new Map<string, { count: number; until: number }>();
+
+function lockedOut(key: string) {
+  const entry = failures.get(key);
+  if (!entry) return false;
+  if (entry.until && entry.until < Date.now()) {
+    failures.delete(key);
+    return false;
+  }
+  return entry.count >= MAX_FAILURES;
+}
+
+function recordFailure(key: string) {
+  const entry = failures.get(key) ?? { count: 0, until: 0 };
+  entry.count += 1;
+  entry.until = Date.now() + LOCKOUT_MS;
+  failures.set(key, entry);
+  if (failures.size > 10_000) failures.delete(failures.keys().next().value!);
+}
+
 export async function login(role: Role, _prev: LoginState, formData: FormData): Promise<LoginState> {
   if (!ROLES.includes(role)) return { error: 'Invalid login.' };
   if (!process.env.SESSION_SECRET) return { error: 'Login is not configured on the server.' };
 
-  const email = String(formData.get('email') ?? '').trim().toLowerCase();
-  const password = String(formData.get('password') ?? '');
+  const email = String(formData.get('email') ?? '').trim().toLowerCase().slice(0, 200);
+  const password = String(formData.get('password') ?? '').slice(0, 200);
+  if (!email || !password) return { error: 'Enter your email and password.' };
+
+  const key = `${role}:${email}`;
+  if (lockedOut(key)) return { error: 'Too many failed attempts. Try again in 15 minutes.' };
 
   const subject = role === 'admin' ? adminSubject(email, password) : partnerSubject(email, password);
-  if (!subject) return { error: 'Invalid email or password.' };
+  if (!subject) {
+    recordFailure(key);
+    return { error: 'Invalid email or password.' };
+  }
+  failures.delete(key);
 
   await createSession(role, subject);
   redirect(`/${role}`);

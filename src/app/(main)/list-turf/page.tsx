@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { submitApplication } from '@/lib/booking-actions';
 import styles from './page.module.css';
 
-const sports = ['Football'];
 const amenitiesOptions = [
   'Changing Rooms', 'Parking', 'Floodlights', 'Drinking Water',
   'Restrooms', 'Café', 'AC Lobby', 'First Aid', 'WiFi',
@@ -23,7 +22,6 @@ const perks = [
 ];
 
 export default function ListTurfPage() {
-  const [showForm, setShowForm] = useState(false);
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [refId, setRefId] = useState('');

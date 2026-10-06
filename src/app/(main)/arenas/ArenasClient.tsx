@@ -79,7 +79,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
     }
 
     return result;
-  }, [turfs, selectedCity, selectedArea, sortBy, searchQuery]);
+  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery]);
 
   return (
     <div className={styles.page}>
