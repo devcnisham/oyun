@@ -5,8 +5,12 @@ Everything the site needs before launch day. Do the steps in order; each takes a
 ## 1. Database (Supabase project `nimfjwxzolkwiyqmnaat`)
 
 1. Open supabase.com → your project → **SQL Editor** → **New query**.
-2. Paste the whole of `supabase/migrations/20261006000000_oyun_store.sql` and click **Run**.
-   It is safe to run again; it only creates what is missing.
+2. Run the four files in `supabase/setup/` **in order**, one at a time
+   (`1-tables.sql`, `2-load-state.sql`, `3-apply-changes.sql`, `4-reset-and-permissions.sql`):
+   open a new query, paste the **whole** file, make sure **no text is highlighted** (the editor runs only the
+   highlighted part), and click **Run**. Each step should say "Success. No rows returned".
+   They are safe to run again. (They are the same SQL as `supabase/migrations/…oyun_store.sql`, split into
+   small pieces; you can also run that one file instead.)
 3. **Only if** you tested the site against this database before (demo bookings, iPhone giveaway…):
    run `supabase/reset-before-launch.sql` once. ⚠️ It deletes all data. Never run it after launch.
 4. Go to **Project Settings → API Keys** and copy the **secret** key (`sb_secret_…`).
