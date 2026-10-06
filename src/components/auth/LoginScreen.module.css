@@ -110,7 +110,7 @@
 
 .forgotLink {
   font-size: 13px;
-  color: #EE2E24;
+  color: #d31027;
   text-decoration: none;
   font-weight: 600;
 }
@@ -131,7 +131,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #EE2E24;
+  border-color: #d31027;
   background: #fff;
   box-shadow: 0 0 0 4px rgba(238,46,36,0.1);
 }
@@ -152,7 +152,7 @@
 }
 
 .loginBtn:hover {
-  background: #EE2E24;
+  background: #d31027;
 }
 
 .loginBtn:active {
@@ -178,7 +178,7 @@
 
 .partnerLink:hover {
   text-decoration: underline;
-  color: #EE2E24;
+  color: #d31027;
 }
 
 @media (max-width: 900px) {

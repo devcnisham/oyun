@@ -24,10 +24,6 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image" },
   appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
-  icons: {
-    icon: [{ url: "/oyun-icon-64.png", sizes: "64x64", type: "image/png" }],
-    apple: [{ url: "/oyun-icon-192.png", sizes: "192x192", type: "image/png" }],
-  },
   formatDetection: { telephone: false },
   ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
 };

@@ -1,7 +1,7 @@
 /* Cinema-style booking: date strip, slot map, sticky selection bar, checkout sheet */
 
 .flow {
-  --open: #12a150;
+  --open: #0e7a3d;
   --open-bg: #ecfdf3;
   --held: #d97706;
   --held-bg: #fffbeb;
@@ -51,7 +51,7 @@
 .date b { font-size: 18px; font-weight: 800; }
 .date:active { transform: scale(0.95); }
 .dateOn { background: var(--brand); border-color: var(--brand); color: #fff; box-shadow: 0 6px 16px rgba(211, 16, 39, 0.28); }
-.dateOn small { color: rgba(255, 255, 255, 0.85); }
+.dateOn small { color: #fff; }
 
 /* "Screen this way": the pitch the slots belong to */
 .pitch {

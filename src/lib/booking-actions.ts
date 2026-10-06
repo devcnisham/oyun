@@ -1,6 +1,10 @@
 'use server';
 
+import { randomBytes } from 'node:crypto';
+import { headers } from 'next/headers';
 import { ValidationError, refreshAll } from './action-utils';
+import { rateLimit } from './rate-limit';
+import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
 import { deviceHolder } from './device-holder';
 import { buildQuote, getSlots, normalizePhone } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
@@ -20,6 +24,17 @@ function checkDate(date: string) {
 function bookableTurf(db: Database, turfId: string) {
   const turf = db.turfs.find((t) => t.id === turfId);
   return turf && turf.status === 'active' ? turf : null;
+}
+
+async function clientIp() {
+  return (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+}
+
+// Throws a friendly error when one network or device is making requests too fast
+async function throttle(action: string, perIp: number, holder?: string | null, perDevice?: number) {
+  const ip = await clientIp();
+  const ok = rateLimit(`${action}:ip:${ip}`, perIp, 10 * 60_000) && (!holder || !perDevice || rateLimit(`${action}:dev:${holder}`, perDevice, 10 * 60_000));
+  if (!ok) throw new ValidationError('Too many attempts. Please wait a few minutes and try again.');
 }
 
 function purgeExpiredHolds(db: Database) {
@@ -50,6 +65,7 @@ export type HoldResult = { ok: true; expiresInMs: number; slots: Slot[] } | { ok
 export async function holdSlots(turfId: string, date: string, hours: number[]): Promise<HoldResult> {
   const holder = (await deviceHolder(true))!;
   try {
+    await throttle('hold', 60, holder, 15);
     if (!checkDate(String(date))) throw new ValidationError('Pick a date within the next two weeks');
     const wanted = cleanHours(hours);
     const expiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString();
@@ -232,6 +248,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
 export async function quoteSelection(req: SelectionRequest): Promise<SelectionQuote | { error: string }> {
   try {
     if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next two weeks');
+    await throttle('quote', 300);
     const db = await getDb();
     const holder = await deviceHolder(false);
     return planBooking(structuredClone(db), { ...req, name: 'Player' }, holder, false).quote;
@@ -247,6 +264,7 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
     if (normalizePhone(String(req.phone ?? '')).length !== 10) throw new ValidationError('Enter a 10-digit mobile number');
     if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next two weeks');
     const holder = await deviceHolder(true);
+    await throttle('book', 30, holder, 10);
 
     const ids = await mutate((db) => {
       purgeExpiredHolds(db);
@@ -309,61 +327,74 @@ export async function getBookingSummaries(ids: string[]): Promise<BookingSummary
     .sort((a, b) => a.date.localeCompare(b.date) || a.hour - b.hour);
 }
 
-export interface ApplicationRequest {
-  ownerName: string;
-  ownerPhone: string;
-  ownerEmail: string;
-  turfName: string;
-  area: string;
-  address: string;
+export interface ApplicationRequest extends ApplicationFields {
   sport: string;
-  size: string;
-  surface: string;
-  openTime: string;
-  closeTime: string;
-  weekdayPrice: string;
-  description: string;
-  whatsapp: string;
   amenities: string[];
+  /** Honeypot: hidden from people, bots fill it in */
+  website?: string;
+  /** When the form was first shown (ms since epoch), to catch instant bot submissions */
+  startedAt?: number;
 }
 
-export async function submitApplication(req: ApplicationRequest): Promise<{ id?: string; error?: string }> {
-  const s = (v: unknown, max = 200) => String(v ?? '').trim().slice(0, max);
-  const phone = normalizePhone(s(req.ownerPhone));
-  const email = s(req.ownerEmail).toLowerCase();
-  const price = Number(req.weekdayPrice);
-  if (!s(req.ownerName) || !s(req.turfName) || !s(req.area) || !s(req.address)) return { error: 'Please fill in all required fields' };
-  if (phone.length !== 10) return { error: 'Enter a 10-digit phone number' };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Enter a valid email address' };
-  if (!Number.isFinite(price) || price < 100) return { error: 'Enter a weekday price of at least ₹100' };
+export async function submitApplication(req: ApplicationRequest): Promise<{ id?: string; error?: string; fieldErrors?: FieldErrors }> {
+  const fake = () => ({ id: randomBytes(4).toString('hex').toUpperCase() });
+  // Bots: pretend it worked so they don't adapt, but store nothing
+  if (String(req.website ?? '').trim() !== '') return fake();
+  const startedAt = Number(req.startedAt);
+  if (!Number.isFinite(startedAt) || Date.now() - startedAt < 4000) return fake();
 
-  const id = await mutate((db) => {
-    const appId = newId('app');
-    db.applications.push({
-      id: appId,
-      ownerName: s(req.ownerName, 80),
-      ownerPhone: phone,
-      ownerEmail: email,
-      turfName: s(req.turfName, 80),
-      area: s(req.area, 60),
-      address: s(req.address, 300),
-      sport: s(req.sport, 40) || 'Football',
-      size: s(req.size, 40) || '5-a-side',
-      surface: s(req.surface, 60) || 'Artificial Grass',
-      openTime: /^\d{2}:\d{2}$/.test(req.openTime) ? req.openTime : '06:00',
-      closeTime: /^\d{2}:\d{2}$/.test(req.closeTime) ? req.closeTime : '22:00',
-      weekdayPrice: Math.round(price),
-      description: s(req.description, 1000),
-      whatsapp: s(req.whatsapp, 20),
-      amenities: (req.amenities ?? []).map((a) => s(a, 40)).slice(0, 20),
-      status: 'pending',
-      note: '',
-      turfId: null,
-      createdAt: new Date().toISOString(),
-      reviewedAt: null,
+  const ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  if (!rateLimit(`apply:${ip}`, 5, 60 * 60_000)) return { error: 'Too many applications from your network. Please try again in an hour.' };
+
+  const s = (v: unknown, max = 200) => String(v ?? '').trim().slice(0, max);
+  const fields = Object.fromEntries(
+    (Object.keys(STEP_FIELDS) as unknown as number[]).flatMap((k) => STEP_FIELDS[k]).map((k) => [k, s(req[k], 1000)])
+  ) as unknown as ApplicationFields;
+  const fieldErrors = validateApplication(fields);
+  if (Object.keys(fieldErrors).length > 0) return { error: Object.values(fieldErrors)[0], fieldErrors };
+
+  const phone = normalizePhone(fields.ownerPhone);
+  const email = fields.ownerEmail.toLowerCase();
+
+  try {
+    const id = await mutate((db) => {
+      const duplicate = db.applications.find(
+        (a) => a.status === 'pending' && (a.ownerPhone === phone || a.ownerEmail === email) && a.turfName.toLowerCase() === fields.turfName.toLowerCase()
+      );
+      if (duplicate) throw new ValidationError('We already have your application for this turf. Our team will contact you within 24–48 hours.');
+      if (db.applications.filter((a) => a.status === 'pending' && a.ownerPhone === phone).length >= 3) {
+        throw new ValidationError('You already have several applications waiting for review. We will contact you soon.');
+      }
+      const appId = newId('app');
+      db.applications.push({
+        id: appId,
+        ownerName: s(fields.ownerName, 80),
+        ownerPhone: phone,
+        ownerEmail: email,
+        turfName: s(fields.turfName, 80),
+        area: s(fields.area, 60),
+        address: s(fields.address, 300),
+        sport: s(req.sport, 40) || 'Football',
+        size: s(fields.size, 40),
+        surface: s(fields.surface, 60),
+        openTime: fields.openTime,
+        closeTime: fields.closeTime,
+        weekdayPrice: Math.round(Number(fields.weekdayPrice)),
+        description: s(fields.description, 1000),
+        whatsapp: normalizePhone(fields.whatsapp),
+        amenities: (Array.isArray(req.amenities) ? req.amenities : []).map((a) => s(a, 40)).filter(Boolean).slice(0, 20),
+        status: 'pending',
+        note: [`Evening ₹${Math.round(Number(fields.eveningPrice))}/hr`, `Weekend ₹${Math.round(Number(fields.weekendPrice))}/hr`].join(' · '),
+        turfId: null,
+        createdAt: new Date().toISOString(),
+        reviewedAt: null,
+      });
+      return appId;
     });
-    return appId;
-  });
-  refreshAll();
-  return { id: id.slice(4, 12).toUpperCase() };
+    refreshAll();
+    return { id: id.slice(4, 12).toUpperCase() };
+  } catch (err) {
+    if (err instanceof ValidationError) return { error: err.message };
+    throw err;
+  }
 }

@@ -55,7 +55,7 @@ export default function MobileHome({ turfs, areas, promos }: Props) {
       )}
 
       {promos.length > 0 && (
-        <section className={styles.promos}>
+        <section className={styles.promos} tabIndex={0} aria-label="Offers">
           {promos.map((p) => (
             <div key={p.id} className={styles.promo}>
               <Image src={p.image} alt={p.title} fill sizes="85vw" unoptimized={!canOptimize(p.image)} />

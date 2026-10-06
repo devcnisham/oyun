@@ -108,7 +108,7 @@ export default async function Home() {
             { name: 'Padel', image: 'https://images.unsplash.com/photo-1698246473105-df6c1032d667?q=80&w=600&auto=format&fit=crop', link: '/arenas?sport=Padel' },
           ].map((sport, i) => (
             <Link href={sport.link} key={i} className={styles.sportCard}>
-              <Image src={sport.image} alt={sport.name} fill className={styles.sportImg} unoptimized sizes="(max-width: 768px) 50vw, 25vw" />
+              <Image src={sport.image} alt={sport.name} fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
               <div className={styles.sportInfo}>
                 <h3 className={styles.sportName}>{sport.name}</h3>
                 <div className={styles.sportAction}>Explore venues <span>→</span></div>
@@ -138,7 +138,7 @@ export default async function Home() {
                 { id: '4', brand: "Adidas", title: "Predator Accuracy", subtitle: "Miss nothing. Score everything.", image: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?q=80&w=2000&auto=format&fit=crop" }
               ].map((ad) => (
                 <div key={`${copy}-${ad.id}`} className={styles.promoCard} aria-hidden={copy === 1}>
-                  <Image src={ad.image} alt={ad.brand} fill sizes="600px" className={styles.promoImg} unoptimized />
+                  <Image src={ad.image} alt={ad.brand} fill sizes="600px" className={styles.promoImg} />
                   <div className={styles.promoContent}>
                     <div className={styles.adBrand}>{ad.brand}</div>
                     <h2>{ad.title}</h2>

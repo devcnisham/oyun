@@ -98,7 +98,7 @@
 }
 
 .ratingBadge {
-  background: #EE2E24;
+  background: #d31027;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -124,7 +124,7 @@
 
 .mapLink {
   display: inline-block;
-  color: #108ee9;
+  color: #0a5fb4;
   text-decoration: none;
   font-weight: 500;
   margin-top: 4px;
@@ -191,7 +191,7 @@
 
 .slotBtnSelected {
   background: rgba(238, 46, 36, 0.1);
-  border-color: #EE2E24;
+  border-color: #d31027;
 }
 
 .slotBtnBooked {
@@ -323,7 +323,7 @@
 }
 
 .errorText {
-  color: #EE2E24;
+  color: #d31027;
   font-size: 13px;
   font-weight: 500;
 }
@@ -352,7 +352,7 @@
 .walletCheckbox {
   width: 20px;
   height: 20px;
-  accent-color: #EE2E24;
+  accent-color: #d31027;
   cursor: pointer;
 }
 
@@ -393,13 +393,13 @@
 }
 
 .payActive {
-  border-color: #EE2E24;
+  border-color: #d31027;
   background: rgba(238, 46, 36, 0.05);
 }
 
 .payRadio input[type="radio"] {
   margin-top: 4px;
-  accent-color: #EE2E24;
+  accent-color: #d31027;
   width: 18px;
   height: 18px;
 }
@@ -525,12 +525,12 @@
 
 .priceTaxes {
   font-size: 12px;
-  color: #108ee9;
+  color: #0a5fb4;
   font-weight: 500;
 }
 
 .bookBtn {
-  background: #EE2E24;
+  background: #d31027;
   color: #fff;
   border: none;
   padding: 12px 32px;
@@ -566,7 +566,7 @@
 .aggregateScore {
   font-size: 16px;
   font-weight: 800;
-  color: #EE2E24;
+  color: #d31027;
 }
 
 .aggregateCount {
@@ -619,7 +619,7 @@
 }
 
 .reviewStars {
-  color: #EE2E24;
+  color: #d31027;
   font-size: 14px;
   margin-bottom: 8px;
   letter-spacing: 2px;

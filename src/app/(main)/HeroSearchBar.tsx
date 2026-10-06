@@ -40,6 +40,7 @@ export default function HeroSearchBar() {
           <span className={styles.searchIcon}>📅</span>
           <input 
             type="date" 
+            aria-label="Date" 
             className={styles.searchInput} 
             value={dateStr}
             onChange={(e) => setDateStr(e.target.value)}
