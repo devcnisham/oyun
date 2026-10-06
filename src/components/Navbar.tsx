@@ -17,6 +17,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
   
   const router = useRouter();
   const [firstName, setFirstName] = useState('');
+  const [signedIn, setSignedIn] = useState(false);
   const [area, setArea] = useState('');
   const [areaSheet, setAreaSheet] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -58,7 +59,9 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
   useEffect(() => {
     let cancelled = false;
     const refresh = () => {
-      setFirstName(getProfile().name.trim().split(/\s+/)[0] ?? '');
+      const profile = getProfile();
+      setFirstName(profile.name.trim().split(/\s+/)[0] ?? '');
+      setSignedIn(Boolean(profile.name.trim() || profile.phone));
       const ids = getMyBookingIds();
       if (ids.length === 0) return setUpcoming(0);
       const today = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
@@ -121,8 +124,8 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
             {clerkEnabled ? (
               <ClerkAccount className={styles.account} nameClassName={styles.accountName} />
             ) : (
-            <Link href="/profile" className={styles.account} aria-label={firstName ? `Profile of ${firstName}` : 'Profile'}>
-              <span className={styles.accountName}>{firstName ? `Hi, ${firstName}` : 'Sign in'} <span aria-hidden>›</span></span>
+            <Link href={signedIn ? '/profile' : '/login'} className={styles.account} aria-label={signedIn ? `Account${firstName ? ` of ${firstName}` : ''}` : 'Sign in'}>
+              <span className={styles.accountName}>{signedIn ? `Hi, ${firstName || 'player'}` : 'Sign in'} <span aria-hidden>›</span></span>
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <circle cx="12" cy="8" r="4" />
                 <path d="M4 21a8 8 0 0 1 16 0" />

@@ -14,6 +14,9 @@ import {
   type SelectionQuote,
 } from '@/lib/booking-actions';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
+import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
+import { clerkEnabled } from '@/lib/clerk';
+import SignInGate from '@/components/SignInGate';
 import type { Slot, Turf } from '@/lib/types';
 import PaymentGatewayDemo from '@/components/PaymentGatewayDemo';
 import styles from './BookingFlow.module.css';
@@ -79,6 +82,9 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
   const [error, setError] = useState('');
   const [showPayment, setShowPayment] = useState(false);
   const [paying, startPaying] = useTransition();
+  const [showGate, setShowGate] = useState(false);
+  const account = useAccount();
+  const openClerkSignIn = useOpenClerkSignIn();
 
   const inCheckout = holdUntil !== null;
   const secondsLeft = holdUntil ? Math.max(0, Math.ceil((holdUntil - now) / 1000)) : 0;
@@ -92,14 +98,15 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
     window.setTimeout(() => setToast((t) => (t === message ? '' : t)), 3200);
   }, []);
 
-  // Remembered name and phone from earlier bookings on this device
+  // Fill in the signed-in player's name and number
   useEffect(() => {
+    if (!account.ready) return;
     const p = getProfile();
     queueMicrotask(() => {
-      setName((n) => n || p.name);
-      setPhone((n) => n || p.phone);
+      setName((n) => n || account.name || p.name);
+      setPhone((n) => n || account.phone || p.phone);
     });
-  }, []);
+  }, [account.ready, account.name, account.phone]);
 
   // Keep the slot map live, like a cinema seat map
   const refreshSlots = useCallback(
@@ -250,6 +257,12 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
 
   const pay = () => {
     setError('');
+    // Booking needs an account: sign in or sign up first, without losing the held slots
+    if (!account.signedIn) {
+      if (clerkEnabled) openClerkSignIn();
+      else setShowGate(true);
+      return;
+    }
     if (!name.trim()) return setError('Enter your name');
     if (phoneDigits.length !== 10) return setError('Enter a 10-digit mobile number');
     if (!quote) return;
@@ -474,13 +487,29 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, ad
                 <span>{paymentMode === 'advance' ? `${advancePercent}% advance` : 'Full amount'}</span>
               </div>
               <button className={styles.primary} onClick={pay} disabled={!quote || paying}>
-                {paying ? 'Confirming…' : `Pay ${quote ? rupees(quote.payNow) : ''}`}
+                {paying ? 'Confirming…' : `${account.signedIn ? 'Pay' : 'Sign in to pay'} ${quote ? rupees(quote.payNow) : ''}`}
               </button>
             </div>
           </div>
         </div>,
         document.body
       )}
+
+      {showGate &&
+        createPortal(
+          <SignInGate
+            onClose={() => setShowGate(false)}
+            onDone={() => {
+              const p = getProfile();
+              setShowGate(false);
+              setName(p.name);
+              setPhone(p.phone);
+              setError('');
+              if (quote) setShowPayment(true);
+            }}
+          />,
+          document.body
+        )}
 
       {showPayment && quote &&
         createPortal(<PaymentGatewayDemo amount={quote.payNow} onSuccess={completeBooking} onCancel={() => setShowPayment(false)} />, document.body)}

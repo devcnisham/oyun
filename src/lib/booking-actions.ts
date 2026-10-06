@@ -2,6 +2,8 @@
 
 import { randomBytes } from 'node:crypto';
 import { headers } from 'next/headers';
+import { auth } from '@clerk/nextjs/server';
+import { clerkEnabled } from './clerk';
 import { ValidationError, refreshAll } from './action-utils';
 import { rateLimit } from './rate-limit';
 import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
@@ -260,6 +262,8 @@ export async function quoteSelection(req: SelectionRequest): Promise<SelectionQu
 
 export async function createBookings(req: BookingRequest): Promise<{ ids?: string[]; error?: string }> {
   try {
+    // With Clerk set up, only signed-in players can book
+    if (clerkEnabled && !(await auth()).userId) throw new ValidationError('Please sign in to book');
     if (!String(req.name ?? '').trim()) throw new ValidationError('Enter your name');
     if (normalizePhone(String(req.phone ?? '')).length !== 10) throw new ValidationError('Enter a 10-digit mobile number');
     if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next two weeks');
