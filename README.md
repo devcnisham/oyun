@@ -2,14 +2,21 @@
 
 Turf booking platform: public booking site, partner (turf owner) dashboard and admin console. Next.js App Router with a Supabase Postgres backend.
 
-## Setup
+## Run it locally
 
-1. `npm install`
-2. Copy `.env.example` to `.env.local` and fill it in.
-3. Create the database schema: run `supabase/migrations/20261006000000_oyun_store.sql` in the Supabase SQL editor (or `supabase db push` with the Supabase CLI).
-4. `npm run dev` and open http://localhost:3000. The first request seeds demo turfs, partners and bookings.
+Needs Node 20.9+.
 
-Without `SUPABASE_SECRET_KEY` the app stores data in `.data/db.json` instead, which is handy for local work but is not shared between servers.
+```bash
+npm install
+npm run dev          # http://localhost:3000
+```
+
+That's all: with no `.env.local` the app stores data in `.data/db.json`, uses a built-in dev login secret, and shows **See Demo** buttons on `/partner/login` and `/admin/login`. `npm run dev` first runs a quick check and tells you if anything is missing.
+
+- **Test the mobile app view on your phone:** `npm run dev:lan`, then open `http://<your-computer-IP>:3000` on the same Wi-Fi.
+- **Use Supabase locally:** copy `.env.example` to `.env.local`, fill in `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SECRET_KEY`, and run `supabase/migrations/20261006000000_oyun_store.sql` in the Supabase SQL editor. If the tables are missing, dev falls back to the local file and prints how to fix it.
+- **Reset demo data:** stop the server and delete `.data/`.
+- **Something looks stale after pulling:** `npm install`, delete `.next/`, restart.
 
 ## Deploying (Vercel)
 

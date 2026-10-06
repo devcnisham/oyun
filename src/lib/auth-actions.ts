@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { verifyPassword } from './password';
 import { ROLES, createSession, deleteSession, safeEqual, type Role } from './session';
+import { demoLoginEnabled, sessionSecret } from './env';
 import { getDb } from './store';
 
 export type LoginState = { error?: string } | undefined;
@@ -64,7 +65,7 @@ function recordFailure(key: string) {
 
 export async function login(role: Role, _prev: LoginState, formData: FormData): Promise<LoginState> {
   if (!ROLES.includes(role)) return { error: 'Invalid login.' };
-  if (!process.env.SESSION_SECRET) return { error: 'Login is not configured on the server.' };
+  if (!sessionSecret()) return { error: 'Login is not configured on the server (set SESSION_SECRET).' };
 
   const email = String(formData.get('email') ?? '').trim().toLowerCase().slice(0, 200);
   const password = String(formData.get('password') ?? '').slice(0, 200);
@@ -87,7 +88,7 @@ export async function login(role: Role, _prev: LoginState, formData: FormData): 
 // One-click demo access; only works while DEMO_LOGIN=true
 export async function demoLogin(role: Role): Promise<LoginState> {
   if (!ROLES.includes(role)) return { error: 'Invalid login.' };
-  if (process.env.DEMO_LOGIN !== 'true' || !process.env.SESSION_SECRET) {
+  if (!demoLoginEnabled() || !sessionSecret()) {
     return { error: 'Demo login is disabled.' };
   }
 

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { connection } from 'next/server';
 import type { Role } from '@/lib/session';
+import { demoLoginEnabled } from '@/lib/env';
 import LoginForm from './LoginForm';
 import styles from './LoginScreen.module.css';
 
@@ -59,7 +60,7 @@ export default async function LoginScreen({ role }: { role: Role }) {
           <LoginForm
             role={role}
             emailPlaceholder={c.emailPlaceholder}
-            demoEnabled={process.env.DEMO_LOGIN === 'true'}
+            demoEnabled={demoLoginEnabled()}
           />
 
           <div className={styles.partnerPrompt}>

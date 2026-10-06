@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/check-dev.mjs",
     "dev": "next dev",
+    "predev:lan": "node scripts/check-dev.mjs",
+    "dev:lan": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -27,5 +30,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   }
 }

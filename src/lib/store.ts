@@ -182,23 +182,43 @@ function fileDb(): Database {
 
 /* ---------------- public API ---------------- */
 
+// Local dev only: if Supabase is set up but unreachable or missing its tables, use the JSON file
+// instead of failing every page. Production always surfaces the error.
+const devFallback = globalThis as unknown as { __oyunSupabaseFailed?: boolean };
+
+function supabaseActive() {
+  return supabaseConfigured() && !devFallback.__oyunSupabaseFailed;
+}
+
+function fallBackInDev(err: unknown): boolean {
+  if (process.env.NODE_ENV !== 'development') return false;
+  devFallback.__oyunSupabaseFailed = true;
+  console.warn(
+    `\n[store] Supabase is configured but not usable, so local dev is using .data/db.json instead.\n` +
+      `        Reason: ${err instanceof Error ? err.message : String(err)}\n` +
+      `        Fix: run supabase/migrations/*.sql in the Supabase SQL editor and check SUPABASE_SECRET_KEY, then restart \`npm run dev\`.\n`
+  );
+  return true;
+}
+
 // One load per request, shared by layouts, pages and actions
 const requestState = cache(() => ({ current: null as Promise<Loaded> | null }));
 
 export async function getDb(): Promise<Database> {
-  if (!supabaseConfigured()) return fileDb();
+  if (!supabaseActive()) return fileDb();
   const state = requestState();
   state.current ??= loadSupabase();
   try {
     return (await state.current).db;
   } catch (err) {
     state.current = null;
+    if (fallBackInDev(err)) return fileDb();
     throw err;
   }
 }
 
 export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
-  if (!supabaseConfigured()) {
+  if (!supabaseActive()) {
     const db = fileDb();
     const result = fn(db);
     saveFile(db);
@@ -207,7 +227,13 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
 
   for (let attempt = 0; attempt < 5; attempt++) {
     // Always start from fresh data so checks (e.g. slot availability) see the latest writes
-    const loaded = await loadSupabase();
+    let loaded: Loaded;
+    try {
+      loaded = await loadSupabase();
+    } catch (err) {
+      if (fallBackInDev(err)) return mutate(fn);
+      throw err;
+    }
     const before = snapshot(loaded.db);
     const result = fn(loaded.db);
     const changes = diff(before, loaded.db);
@@ -224,7 +250,7 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
 }
 
 export async function resetDb() {
-  if (!supabaseConfigured()) {
+  if (!supabaseActive()) {
     globalStore.__slotArenaDb = seed();
     saveFile(globalStore.__slotArenaDb);
     return;

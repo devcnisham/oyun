@@ -40,10 +40,10 @@ export default function MobileHome({ turfs, areas, promos }: Props) {
             <Link href="/arenas?sort=availability">See all</Link>
           </div>
           <div className={styles.rail}>
-            {openNow.map((t) => (
+            {openNow.map((t, i) => (
               <Link key={t.id} href={`/arenas/${t.id}`} className={styles.railCard}>
                 <div className={styles.railImg}>
-                  <Image src={t.images[0]} alt={`${t.name} turf in ${t.area}`} fill sizes="220px" unoptimized={!canOptimize(t.images[0])} />
+                  <Image src={t.images[0]} alt={`${t.name} turf in ${t.area}`} fill sizes="220px" loading={i < 2 ? 'eager' : 'lazy'} unoptimized={!canOptimize(t.images[0])} />
                   <span className={styles.badge}>{t.availableToday} slots left</span>
                 </div>
                 <b>{t.name}</b>
