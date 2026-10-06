@@ -1,4 +1,6 @@
+import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { clerkEnabled } from '@/lib/clerk';
 import { sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
 import { updateSession } from '@/utils/supabase/middleware';
 
@@ -30,11 +32,18 @@ function forceHttps(req: NextRequest) {
   return NextResponse.redirect(`https://${host}${req.nextUrl.pathname}${req.nextUrl.search}`, 308);
 }
 
-export async function proxy(req: NextRequest) {
+async function handle(req: NextRequest) {
   return forceHttps(req) ?? dashboardGuard(req) ?? (await updateSession(req));
 }
 
+// With Clerk keys set, Clerk's middleware runs first so player sessions are available everywhere
+export const proxy = clerkEnabled ? clerkMiddleware((_auth, req) => handle(req)) : handle;
+
 export const config = {
   // Everything except static files and image optimisation
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|html)$).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|html)$).*)',
+    '/(api|trpc)(.*)',
+    '/__clerk/:path*',
+  ],
 };

@@ -2,16 +2,34 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// Clerk's Frontend API host is encoded in the publishable key (pk_test_/pk_live_ + base64("host$"))
+function clerkFrontendApi() {
+  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  if (!key) return "";
+  try {
+    const host = Buffer.from(key.split("_")[2] ?? "", "base64").toString("utf8").replace(/\$$/, "");
+    return /^[a-z0-9.-]+$/i.test(host) ? `https://${host}` : "";
+  } catch {
+    return "";
+  }
+}
+const clerk = clerkFrontendApi();
+// Sign-in forms, their scripts and bot-protection challenge (only when Clerk is configured)
+const clerkScript = clerk ? ` ${clerk} https://challenges.cloudflare.com` : "";
+const clerkConnect = clerk ? ` ${clerk}` : "";
+const clerkFrame = clerk ? " https://challenges.cloudflare.com" : "";
+
 // Next.js injects inline bootstrap scripts, so script-src needs 'unsafe-inline' without nonces
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://cdnjs.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://cdnjs.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com${clerkScript}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com${isDev ? " ws:" : ""}`,
-  "frame-src https://www.google.com",
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com${clerkConnect}${isDev ? " ws:" : ""}`,
+  `frame-src https://www.google.com${clerkFrame}`,
+  "worker-src 'self' blob:",
   "frame-ancestors 'self'",
   "object-src 'none'",
   "base-uri 'self'",

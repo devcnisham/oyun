@@ -5,6 +5,8 @@ import { useCallback, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { getBookingSummaries } from '@/lib/booking-actions';
 import { DEVICE_EVENT, getMyBookingIds, getPreferredArea, getProfile, setPreferredArea } from '@/lib/client/device';
+import { clerkEnabled } from '@/lib/clerk';
+import ClerkAccount from './ClerkAccount';
 import SideMenu from './SideMenu';
 import styles from './Navbar.module.css';
 
@@ -115,7 +117,10 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
               </span>
             </Link>
 
-            {/* Account: "Hi, Name ›" with a profile icon, like a shopping app */}
+            {/* Account: Clerk sign-in when configured, otherwise the name saved on this device */}
+            {clerkEnabled ? (
+              <ClerkAccount className={styles.account} nameClassName={styles.accountName} />
+            ) : (
             <Link href="/profile" className={styles.account} aria-label={firstName ? `Profile of ${firstName}` : 'Profile'}>
               <span className={styles.accountName}>{firstName ? `Hi, ${firstName}` : 'Sign in'} <span aria-hidden>›</span></span>
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -123,6 +128,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
                 <path d="M4 21a8 8 0 0 1 16 0" />
               </svg>
             </Link>
+            )}
 
             {/* Bookings in place of a cart, with the number of upcoming games */}
             <Link href="/bookings" className={styles.bookings} aria-label={upcoming ? `My bookings, ${upcoming} upcoming` : 'My bookings'}>

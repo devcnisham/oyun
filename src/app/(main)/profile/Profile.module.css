@@ -19,3 +19,9 @@
 .menuButton { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: var(--text-primary); font: inherit; font-weight: 600; font-size: 15px; background: none; border: none; border-top: 1px solid #f0f1f3; cursor: pointer; text-align: left; }
 .menuButton span { width: 24px; text-align: center; }
 .menuButton i { margin-left: auto; font-style: normal; color: #b0b4ba; font-size: 20px; }
+.authRow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.authRow a { text-align: center; text-decoration: none; }
+.secondaryBtn { font: inherit; font-weight: 800; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: var(--text-primary); }
+.accountRow { flex-direction: row; align-items: center; gap: 12px; }
+.accountRow > div { display: flex; flex-direction: column; min-width: 0; }
+.accountRow b { font-size: 16px; }
