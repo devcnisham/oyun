@@ -55,6 +55,11 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
   // Never hide while a menu or sheet from the header is open
   const headerHidden = hidden && !menuOpen && !areaSheet;
 
+  // Lets floating controls (the back button) follow the top bar as it slides away
+  useEffect(() => {
+    document.documentElement.dataset.header = headerHidden ? 'hidden' : 'shown';
+  }, [headerHidden]);
+
   // Name and upcoming-booking count come from what this device has saved
   useEffect(() => {
     let cancelled = false;

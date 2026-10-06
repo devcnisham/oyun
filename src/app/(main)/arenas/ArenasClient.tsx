@@ -88,7 +88,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
         <div className="container">
           <div className={styles.headerInner}>
             <div>
-              <BackButton style={{ marginBottom: 16 }} />
+              <BackButton />
               <p className={`section-label ${styles.cityLabel}`}>{selectedCity.toUpperCase()}</p>
               <h1 className={styles.pageTitle}>{selectedSport === 'All Sports' ? 'Sports Arenas' : selectedSport + ' Arenas'}</h1>
               <p className={styles.pageDesc}>
