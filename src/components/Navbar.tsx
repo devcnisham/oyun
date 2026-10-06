@@ -55,11 +55,6 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
   // Never hide while a menu or sheet from the header is open
   const headerHidden = hidden && !menuOpen && !areaSheet;
 
-  // Lets floating controls (the back button) follow the top bar as it slides away
-  useEffect(() => {
-    document.documentElement.dataset.header = headerHidden ? 'hidden' : 'shown';
-  }, [headerHidden]);
-
   // Name and upcoming-booking count come from what this device has saved
   useEffect(() => {
     let cancelled = false;
@@ -68,7 +63,8 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
       setFirstName(profile.name.trim().split(/\s+/)[0] ?? '');
       setSignedIn(Boolean(profile.name.trim() || profile.phone));
       const ids = getMyBookingIds();
-      if (ids.length === 0) return setUpcoming(0);
+      // Signed-in players also see bookings made on their other devices
+      if (ids.length === 0 && !clerkEnabled) return setUpcoming(0);
       const today = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
       getBookingSummaries(ids)
         .then((list) => !cancelled && setUpcoming(list.filter((b) => b.status === 'confirmed' && b.date >= today).length))
@@ -87,7 +83,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
 
   return (
     <>
-    <div className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''}`}>
+    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner}`}>
           <div className={styles.left}>

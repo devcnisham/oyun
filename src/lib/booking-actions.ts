@@ -3,6 +3,7 @@
 import { randomBytes } from 'node:crypto';
 import { headers } from 'next/headers';
 import { auth } from '@clerk/nextjs/server';
+import { CANCEL_CUTOFF_HOURS, canSelfCancel } from './cancel-policy';
 import { clerkEnabled } from './clerk';
 import { ValidationError, refreshAll } from './action-utils';
 import { rateLimit } from './rate-limit';
@@ -260,8 +261,9 @@ export async function quoteSelection(req: SelectionRequest): Promise<SelectionQu
 
 export async function createBookings(req: BookingRequest): Promise<{ ids?: string[]; error?: string }> {
   try {
-    // With Clerk set up, only signed-in players can book
-    if (clerkEnabled && !(await auth()).userId) throw new ValidationError('Please sign in to book');
+    // With Clerk set up, only signed-in players can book, and the booking is saved to their account
+    const accountId = await currentAccountId();
+    if (clerkEnabled && !accountId) throw new ValidationError('Please sign in to book');
     if (!String(req.name ?? '').trim()) throw new ValidationError('Enter your name');
     if (normalizePhone(String(req.phone ?? '')).length !== 10) throw new ValidationError('Enter a 10-digit mobile number');
     if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next two weeks');
@@ -274,6 +276,7 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
       if (quote.slotError) throw new ValidationError(quote.slotError);
       if (quote.promoError) throw new ValidationError(quote.promoError);
       db.holds = db.holds.filter((h) => h.holder !== holder);
+      for (const b of bookings) b.accountId = accountId;
       return bookings.map((b) => b.id);
     });
 
@@ -285,7 +288,53 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
   }
 }
 
-/* ---------- booking lookup for "My bookings" (ids are unguessable, kept on the device) ---------- */
+/* ---------- player self-cancel ---------- */
+
+// A player cancels their own upcoming booking. The booking id (unguessable, on their ticket) proves they made it;
+// bookings made while signed in can only be cancelled from that same account. The slot opens up live for others.
+export async function cancelMyBooking(bookingId: string): Promise<{ ok: true } | { error: string }> {
+  try {
+    const id = String(bookingId);
+    if (!/^bk_[a-f0-9]{12}$/.test(id)) throw new ValidationError('Booking not found');
+    await throttle('cancel', 20);
+    const accountId = await currentAccountId();
+    await mutate((db) => {
+      const booking = db.bookings.find((b) => b.id === id);
+      if (!booking) throw new ValidationError('Booking not found');
+      if (booking.accountId && booking.accountId !== accountId) throw new ValidationError('Sign in with the account that made this booking to cancel it');
+      if (booking.status !== 'confirmed') throw new ValidationError('This booking can no longer be cancelled');
+      if (!canSelfCancel(booking)) {
+        throw new ValidationError(`Bookings can be cancelled up to ${CANCEL_CUTOFF_HOURS} hours before the slot. Please call the turf.`);
+      }
+      booking.cancelledAt = new Date().toISOString();
+      // Anything paid from the wallet goes back to the wallet
+      if (booking.amountPaid > 0 && booking.playerId) {
+        const player = db.players.find((pl) => pl.id === booking.playerId);
+        if (player) walletTxn(db, player, booking.amountPaid, 'refund', `Booking ${booking.code} cancelled`, booking.id);
+        booking.status = 'refunded';
+      } else {
+        booking.status = 'cancelled';
+      }
+    });
+    refreshAll();
+    return { ok: true };
+  } catch (err) {
+    if (err instanceof ValidationError) return { error: err.message };
+    throw err;
+  }
+}
+
+/* ---------- booking lookup for "My bookings" ---------- */
+
+// The signed-in Clerk player, if any
+async function currentAccountId(): Promise<string | null> {
+  if (!clerkEnabled) return null;
+  try {
+    return (await auth()).userId ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export interface BookingSummary {
   id: string;
@@ -302,13 +351,15 @@ export interface BookingSummary {
   due: number;
 }
 
+// Bookings saved on this device (their ids are unguessable) plus, when signed in, every booking on the
+// player's account, so they show up on any phone or computer
 export async function getBookingSummaries(ids: string[]): Promise<BookingSummary[]> {
-  if (!Array.isArray(ids)) return [];
-  const wanted = new Set(ids.map(String).filter((id) => /^bk_[a-f0-9]{12}$/.test(id)).slice(0, 100));
-  if (wanted.size === 0) return [];
+  const wanted = new Set((Array.isArray(ids) ? ids : []).map(String).filter((id) => /^bk_[a-f0-9]{12}$/.test(id)).slice(0, 100));
+  const accountId = await currentAccountId();
+  if (wanted.size === 0 && !accountId) return [];
   const db = await getDb();
   return db.bookings
-    .filter((b) => wanted.has(b.id))
+    .filter((b) => wanted.has(b.id) || (accountId !== null && b.accountId === accountId))
     .map((b) => {
       const turf = db.turfs.find((t) => t.id === b.turfId);
       return {

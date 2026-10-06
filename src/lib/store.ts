@@ -237,6 +237,16 @@ function fallBackInDev(err: unknown): boolean {
   return true;
 }
 
+// Where data lives right now. On a serverless host the local file is per-server and temporary, so
+// bookings are only safe (and shared between players) when Supabase is active.
+export function storageInfo() {
+  const supabase = supabaseActive();
+  return {
+    backend: supabase ? ('supabase' as const) : ('local-file' as const),
+    shared: supabase || !process.env.VERCEL,
+  };
+}
+
 // One load per request, shared by layouts, pages and actions
 const requestState = cache(() => ({ current: null as Promise<Loaded> | null }));
 

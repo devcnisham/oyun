@@ -7,6 +7,8 @@ import { formatDate, formatDateTime, formatSlotRange } from '@/lib/time';
 import { WALLET_TXN_LABELS, cashbackFor } from '@/lib/wallet';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
+import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/lib/cancel-policy';
+import CancelBooking from './CancelBooking';
 
 const STATUS_TEXT: Record<string, string> = {
   confirmed: 'Booking confirmed',
@@ -85,6 +87,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           </a>
           <Link href={`/arenas/${turf.id}`} className="btn btn--primary btn--sm">Book again</Link>
         </div>
+        {canSelfCancel(booking) && <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} />}
         {player && (player.walletBalance > 0 || s.cashbackEnabled || s.referralEnabled) && (
           <div className={styles.rewards}>
             <h2 className={styles.rewardsTitle}>Your OYUN wallet</h2>
@@ -127,9 +130,11 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           </div>
         )}
 
-        <p className={styles.note}>
-          Save this page — it&apos;s your ticket. Need to cancel? {turf.phone ? <>Call the turf at {turf.phone}.</> : 'Contact OYUN support from your Account page.'}
-        </p>
+        {active && (
+          <p className={styles.note}>
+            Save this page — it&apos;s your ticket. Need to cancel less than {CANCEL_CUTOFF_HOURS} hours before? {turf.phone ? <>Call the turf at {turf.phone}.</> : 'Contact OYUN support from your Account page.'}
+          </p>
+        )}
       </div>
     </div>
   );
