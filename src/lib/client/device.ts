@@ -48,6 +48,14 @@ export function addMyBookingIds(ids: string[]) {
   window.dispatchEvent(new Event(DEVICE_EVENT));
 }
 
+// Forget the player's name and number but keep the tickets booked on this device
+export function signOutDevice() {
+  try {
+    localStorage.removeItem(PROFILE_KEY);
+  } catch {}
+  window.dispatchEvent(new Event(DEVICE_EVENT));
+}
+
 export function clearDevice() {
   try {
     localStorage.removeItem(PROFILE_KEY);

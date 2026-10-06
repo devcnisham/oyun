@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { UserButton, useUser } from '@clerk/nextjs';
-import styles from './Profile.module.css';
+import styles from './Account.module.css';
 
 // Player account (Clerk) on the Profile tab
 export default function AccountCard() {
@@ -12,18 +12,18 @@ export default function AccountCard() {
   if (!isSignedIn) {
     return (
       <div className={styles.card}>
-        <h2>Your OYUN account</h2>
-        <p className={styles.hint}>Sign in to keep your bookings and wallet on every device.</p>
+        <h2>Sign in to OYUN</h2>
+        <p className={styles.hint}>Keep your bookings and wallet on every device.</p>
         <div className={styles.authRow}>
-          <Link href="/login" className={styles.save}>Sign in</Link>
-          <Link href="/signup" className={styles.secondaryBtn}>Create account</Link>
+          <Link href="/login" className={styles.primaryBtn}>Sign in</Link>
+          <Link href="/signup" className={styles.ghostBtn}>Create account</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`${styles.card} ${styles.accountRow}`}>
+    <div className={`${styles.card} ${styles.who}`}>
       <UserButton appearance={{ elements: { avatarBox: { width: 44, height: 44 } } }} />
       <div>
         <b>{user.fullName || user.username || 'Signed in'}</b>

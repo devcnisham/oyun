@@ -1,0 +1,252 @@
+.page {
+  max-width: 560px;
+  padding-top: 24px;
+  padding-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pageTitle {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.card h2 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.hint {
+  display: block;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Signed in */
+.who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.whoText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.whoText b {
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.whoText span {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  color: var(--primary-700);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.editForm label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-700);
+  box-shadow: 0 0 0 4px rgba(211, 16, 39, 0.12);
+}
+
+.error {
+  font-size: 13px;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Signed out */
+.signInCard {
+  text-align: center;
+  padding: 28px 20px;
+}
+
+.signInIcon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+.signInCard p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.authRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  background: var(--primary-700);
+  color: #fff;
+  border: none;
+}
+
+.primaryBtn:hover {
+  background: #b50d21;
+}
+
+.ghostBtn {
+  background: #fff;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+}
+
+.ghostBtn:hover {
+  background: var(--bg-muted);
+}
+
+/* Menu */
+.menu {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.menu a,
+.menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 54px;
+  padding: 0 20px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu > :last-child {
+  border-bottom: none;
+}
+
+.menu a:hover,
+.menu button:hover {
+  background: var(--bg-muted);
+}
+
+.menu i {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 20px;
+  color: var(--text-muted);
+}
+
+.legal {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.legal a {
+  color: var(--text-muted);
+}
+
+.signOut {
+  align-self: center;
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  color: var(--primary-700);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
