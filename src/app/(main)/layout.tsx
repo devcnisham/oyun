@@ -24,7 +24,7 @@ export default async function MainLayout({
           {site.announcement}
         </div>
       )}
-      <Navbar />
+      <Navbar areas={areas} />
       <main className="appMain">{children}</main>
       <Footer areas={areas} supportEmail={settings.supportEmail} />
       <FloatingSearch areas={areas} />

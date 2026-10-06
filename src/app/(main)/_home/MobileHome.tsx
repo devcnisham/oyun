@@ -21,10 +21,6 @@ export default function MobileHome({ turfs, areas, promos }: Props) {
       <header className={styles.head}>
         <NextGame />
         <h2 className={styles.title}>Where do you want to play today?</h2>
-        <form action="/arenas" className={styles.search} role="search">
-          <span aria-hidden>🔍</span>
-          <input name="q" placeholder="Search turfs or areas" aria-label="Search turfs or areas" enterKeyHint="search" />
-        </form>
         <div className={styles.chips}>
           <Link href="/arenas" className={styles.chip}>All turfs</Link>
           {areas.map(({ area }) => (
