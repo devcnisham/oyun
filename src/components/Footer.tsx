@@ -73,6 +73,13 @@ export default function Footer() {
                 <li><Link href="/terms" id="footer-terms">Terms of Service</Link></li>
               </ul>
             </div>
+            <div className={styles.linkGroup}>
+              <h4 className={styles.linkGroupTitle}>Prototypes (v2)</h4>
+              <ul className={styles.linkList}>
+                <li><a href="/app-prototype.html" target="_blank" rel="noreferrer">PWA App Demo</a></li>
+                <li><a href="/owner-dashboard.html" target="_blank" rel="noreferrer">Owner Dashboard</a></li>
+              </ul>
+            </div>
           </div>
         </div>
 
