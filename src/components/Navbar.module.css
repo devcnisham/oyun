@@ -59,6 +59,7 @@
 }
 
 .navItem {
+  text-decoration: none;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -92,6 +93,40 @@
   font-size: 11px;
   color: rgba(255, 255, 255, 0.8);
 }
+
+/* Right side: list-your-turf (desktop), account, bookings */
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.account, .bookings {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.accountName { font-size: 15px; font-weight: 700; white-space: nowrap; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+.bookings { position: relative; padding: 2px; }
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--primary-700);
+  font-size: 12px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.account:active, .bookings:active { opacity: 0.7; }
 
 /* Secondary Nav */
 .cityNav {
@@ -168,10 +203,13 @@
     border-bottom: none !important;
     box-shadow: 0 2px 12px rgba(24, 0, 0, 0.25) !important;
   }
-  .inner { 
-    height: 56px; 
-    justify-content: center;
+  .inner {
+    height: 56px;
+    justify-content: space-between;
   }
+  .desktopOnly { display: none !important; }
+  .right { gap: 14px; }
+  .accountName { font-size: 14px; max-width: 110px; }
   .logoName { font-size: 18px; }
   .navLinks {
     position: absolute;

@@ -3,14 +3,17 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { getBookingSummaries } from '@/lib/booking-actions';
+import { DEVICE_EVENT, getMyBookingIds, getProfile } from '@/lib/client/device';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === '/';
   const isArenaDetail = pathname?.startsWith('/arenas/') && pathname !== '/arenas';
   
+  const [firstName, setFirstName] = useState('');
+  const [upcoming, setUpcoming] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [overscrolled, setOverscrolled] = useState(false);
   
@@ -21,6 +24,26 @@ export default function Navbar() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Name and upcoming-booking count come from what this device has saved
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = () => {
+      setFirstName(getProfile().name.trim().split(/\s+/)[0] ?? '');
+      const ids = getMyBookingIds();
+      if (ids.length === 0) return setUpcoming(0);
+      const today = new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
+      getBookingSummaries(ids)
+        .then((list) => !cancelled && setUpcoming(list.filter((b) => b.status === 'confirmed' && b.date >= today).length))
+        .catch(() => {});
+    };
+    queueMicrotask(refresh);
+    window.addEventListener(DEVICE_EVENT, refresh);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(DEVICE_EVENT, refresh);
+    };
   }, []);
 
   return (
@@ -45,33 +68,34 @@ export default function Navbar() {
             <span className={styles.logoName}>OYUN</span>
           </Link>
 
-          {/* Nav Links */}
-          <nav className={`${styles.navLinks} ${menuOpen ? styles.navOpen : ''}`}>
-            <Link href="/list-turf" style={{textDecoration: 'none'}}>
-              <div className={styles.navItem}>
-                <span className={styles.navIcon}>💼</span>
-                <div className={styles.navText}>
-                  <span className={styles.navTitle}>List your property</span>
-                  <span className={styles.navSub}>Start earning today</span>
-                </div>
-              </div>
+          <div className={styles.right}>
+            {/* Desktop only: partner call to action */}
+            <Link href="/list-turf" className={`${styles.navItem} ${styles.desktopOnly}`}>
+              <span className={styles.navIcon} aria-hidden>💼</span>
+              <span className={styles.navText}>
+                <span className={styles.navTitle}>List your turf</span>
+                <span className={styles.navSub}>Start earning today</span>
+              </span>
             </Link>
-            <Link href="/login" style={{textDecoration: 'none'}}>
-              <div className={styles.navItem}>
-                <span className={styles.navIcon}>👤</span>
-                <div className={styles.navText}>
-                  <span className={styles.navTitle}>Login / Signup</span>
-                </div>
-              </div>
-            </Link>
-          </nav>
 
-          {/* Hamburger */}
-          <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-            <span className={`${styles.bar} ${menuOpen ? styles.barOpen1 : ''}`} />
-            <span className={`${styles.bar} ${menuOpen ? styles.barOpen2 : ''}`} />
-            <span className={`${styles.bar} ${menuOpen ? styles.barOpen3 : ''}`} />
-          </button>
+            {/* Account: "Hi, Name ›" with a profile icon, like a shopping app */}
+            <Link href="/profile" className={styles.account} aria-label={firstName ? `Profile of ${firstName}` : 'Profile'}>
+              <span className={styles.accountName}>{firstName ? `Hi, ${firstName}` : 'Sign in'} <span aria-hidden>›</span></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21a8 8 0 0 1 16 0" />
+              </svg>
+            </Link>
+
+            {/* Bookings in place of a cart, with the number of upcoming games */}
+            <Link href="/bookings" className={styles.bookings} aria-label={upcoming ? `My bookings, ${upcoming} upcoming` : 'My bookings'}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z" />
+                <path d="M14 6v12" strokeDasharray="2 2" />
+              </svg>
+              {upcoming > 0 && <span className={styles.badge}>{upcoming > 9 ? '9+' : upcoming}</span>}
+            </Link>
+          </div>
         </div>
       </header>
     </div>
