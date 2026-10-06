@@ -126,7 +126,6 @@ export interface SelectionRequest {
   addOns: { id: string; qty: number }[];
   useWallet: boolean;
   phone: string;
-  paymentMode: 'full' | 'advance';
 }
 
 export interface BookingRequest extends SelectionRequest {
@@ -162,7 +161,6 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
   const phone = normalizePhone(req.phone);
   const name = req.name.trim().slice(0, 80) || 'Player';
   const now = istNow();
-  const paymentMode = req.paymentMode === 'advance' ? 'advance' : 'full';
 
   let player = phone.length === 10 ? db.players.find((p) => p.phone === phone) : undefined;
   if (player?.status === 'banned') throw new ValidationError('This number cannot make bookings. Contact support.');
@@ -213,9 +211,9 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
       createdBy: null,
       addOns: quote.addOns,
       pricing: quote.breakdown,
-      paymentMode,
-      // Payment gateway comes later (FEATURE_LIST section 3); treat as paid for the demo
-      amountPaid: paymentMode === 'advance' ? quote.breakdown.advance : quote.breakdown.total,
+      // Players reserve online and pay the turf at the venue; the turf collects the total at check-in
+      paymentMode: 'venue',
+      amountPaid: 0,
       status: 'confirmed',
       checkedInAt: null,
       createdAt: new Date().toISOString(),

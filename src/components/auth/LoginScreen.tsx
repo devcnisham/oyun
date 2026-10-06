@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { connection } from 'next/server';
 import type { Role } from '@/lib/session';
-import { demoLoginEnabled } from '@/lib/env';
 import LoginForm from './LoginForm';
 import styles from './LoginScreen.module.css';
 
@@ -25,7 +24,7 @@ const copy = {
 };
 
 export default async function LoginScreen({ role }: { role: Role }) {
-  await connection(); // read DEMO_LOGIN at request time, not build time
+  await connection(); // render per request (reads login settings at runtime)
   const c = copy[role];
 
   return (
@@ -57,11 +56,7 @@ export default async function LoginScreen({ role }: { role: Role }) {
             <p>{c.subtitle}</p>
           </div>
 
-          <LoginForm
-            role={role}
-            emailPlaceholder={c.emailPlaceholder}
-            demoEnabled={demoLoginEnabled()}
-          />
+          <LoginForm role={role} emailPlaceholder={c.emailPlaceholder} />
 
           <div className={styles.partnerPrompt}>
             <p>{c.prompt}</p>

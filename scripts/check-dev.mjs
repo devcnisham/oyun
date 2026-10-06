@@ -38,7 +38,8 @@ if (has('SUPABASE_SECRET_KEY') && has('NEXT_PUBLIC_SUPABASE_URL')) {
   notes.push('Data: local file .data/db.json (add SUPABASE_SECRET_KEY to .env.local to use Supabase).');
 }
 if (!has('SESSION_SECRET')) notes.push('Logins: using a built-in dev secret (set SESSION_SECRET for production).');
-notes.push('Partner/admin login: use the "See Demo" buttons on /partner/login and /admin/login.');
+if (!has('ADMIN_EMAIL') || !has('ADMIN_PASSWORD')) notes.push('Admin login: set ADMIN_EMAIL and ADMIN_PASSWORD in .env.local to open /admin.');
+if (!has('PARTNER_EMAIL') || !has('PARTNER_PASSWORD')) notes.push('Partner login: set PARTNER_EMAIL and PARTNER_PASSWORD in .env.local to open /partner.');
 notes.push('Test on your phone: run `npm run dev:lan` and open http://<your-computer-IP>:3000 on the same Wi-Fi.');
 
 if (problems.length) {

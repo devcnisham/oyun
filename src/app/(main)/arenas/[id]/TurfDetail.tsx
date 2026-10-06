@@ -12,7 +12,6 @@ interface TurfDetailProps {
   initialDate: string;
   initialSlots: Slot[];
   offers: Offer[];
-  advancePercent: number;
   bookable: boolean;
   rewards: BookingFlowProps['rewards'];
   initialReferral: string;
@@ -20,7 +19,7 @@ interface TurfDetailProps {
 
 const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
 
-export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, advancePercent, bookable, rewards, initialReferral }: TurfDetailProps) {
+export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, bookable, rewards, initialReferral }: TurfDetailProps) {
   const imageSrc = turf.images[0];
 
   return (
@@ -106,7 +105,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             dates={dates}
             initialDate={initialDate}
             initialSlots={initialSlots}
-            advancePercent={advancePercent}
             rewards={rewards}
             initialReferral={initialReferral}
           />
@@ -129,7 +127,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>Contact</span>
-              <span className={styles.infoValue}>{turf.ownerName} ({turf.phone})</span>
+              <span className={styles.infoValue}>{turf.phone ? <a href={`tel:${turf.phone.replace(/\s/g, '')}`}>{turf.ownerName} ({turf.phone})</a> : turf.ownerName}</span>
             </div>
           </div>
         </div>

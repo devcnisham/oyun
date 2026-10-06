@@ -5,7 +5,7 @@ import { AccessError } from './partner-auth';
 import { generateTempPassword, hashPassword } from './password';
 import { DEFAULT_PRICING } from './pricing';
 import { hasSession } from './session';
-import { mutate, newId, resetDb } from './store';
+import { mutate, newId } from './store';
 import type { ActionResult, Database, TurfStatus } from './types';
 import { walletTxn } from './wallet';
 
@@ -311,14 +311,6 @@ export async function deletePromoCode(_prev: ActionResult, fd: FormData): Promis
       db.promoCodes = db.promoCodes.filter((p) => p.code !== str(fd, 'code'));
     });
     return { ok: 'Promo code deleted' };
-  });
-}
-
-export async function resetDemoData(): Promise<ActionResult> {
-  return run(async () => {
-    await requireAdmin();
-    await resetDb();
-    return { ok: 'Demo data has been reset' };
   });
 }
 

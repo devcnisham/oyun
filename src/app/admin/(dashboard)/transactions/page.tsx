@@ -61,7 +61,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
                   <td>{turfName(b.turfId)}</td>
                   <td>{b.customerName}<div className={dash.muted}>{b.customerPhone}</div></td>
                   <td className={dash.muted}>{b.code}</td>
-                  <td>{b.source === 'walk_in' ? 'Walk-in' : 'Online'} · {b.paymentMode}</td>
+                  <td>{b.source === 'walk_in' ? 'Walk-in' : 'Online'} · {b.paymentMode === 'venue' ? 'pay at venue' : b.paymentMode}</td>
                   <td><Badge status={b.status} /></td>
                   <td className={dash.num}>{inr(b.pricing.total)}</td>
                   <td className={dash.num}>{inr(b.amountPaid)}</td>

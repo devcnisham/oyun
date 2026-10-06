@@ -3,8 +3,9 @@
 -- database needs for integrity (slot locking) pulled out as generated columns.
 -- Only the server talks to these tables, using the secret key: RLS is on with no
 -- policies, so the publishable key and logged-in Supabase users cannot read them.
+-- Safe to run again: everything is created only if it is missing.
 
-create table public.app_meta (
+create table if not exists public.app_meta (
   id smallint primary key default 1 check (id = 1),
   rev bigint not null default 0,
   updated_at timestamptz not null default now()
@@ -18,13 +19,13 @@ begin
     'add_ons', 'applications', 'wallet_txns', 'holds', 'promo_codes', 'pricing', 'app_config'
   ] loop
     execute format(
-      'create table public.%I (
+      'create table if not exists public.%I (
          id text primary key,
          seq bigint generated always as identity,
          data jsonb not null,
          updated_at timestamptz not null default now()
        )', t);
-    execute format('create index %I on public.%I (seq)', t || '_seq_idx', t);
+    execute format('create index if not exists %I on public.%I (seq)', t || '_seq_idx', t);
     execute format('alter table public.%I enable row level security', t);
   end loop;
 end $$;
@@ -33,28 +34,28 @@ alter table public.app_meta enable row level security;
 
 -- Slot locking: at most one live booking and one block per turf, date and hour
 alter table public.bookings
-  add column turf_id text generated always as (data->>'turfId') stored,
-  add column slot_date text generated always as (data->>'date') stored,
-  add column slot_hour int generated always as ((data->>'hour')::int) stored,
-  add column status text generated always as (data->>'status') stored;
-create unique index bookings_live_slot_uniq on public.bookings (turf_id, slot_date, slot_hour)
+  add column if not exists turf_id text generated always as (data->>'turfId') stored,
+  add column if not exists slot_date text generated always as (data->>'date') stored,
+  add column if not exists slot_hour int generated always as ((data->>'hour')::int) stored,
+  add column if not exists status text generated always as (data->>'status') stored;
+create unique index if not exists bookings_live_slot_uniq on public.bookings (turf_id, slot_date, slot_hour)
   where status in ('confirmed', 'checked_in');
-create unique index bookings_code_uniq on public.bookings ((data->>'code'));
+create unique index if not exists bookings_code_uniq on public.bookings ((data->>'code'));
 
 alter table public.blocks
-  add column turf_id text generated always as (data->>'turfId') stored,
-  add column slot_date text generated always as (data->>'date') stored,
-  add column slot_hour int generated always as ((data->>'hour')::int) stored;
-create unique index blocks_slot_uniq on public.blocks (turf_id, slot_date, slot_hour);
+  add column if not exists turf_id text generated always as (data->>'turfId') stored,
+  add column if not exists slot_date text generated always as (data->>'date') stored,
+  add column if not exists slot_hour int generated always as ((data->>'hour')::int) stored;
+create unique index if not exists blocks_slot_uniq on public.blocks (turf_id, slot_date, slot_hour);
 
 -- A slot can only be held for one checkout at a time
 alter table public.holds
-  add column turf_id text generated always as (data->>'turfId') stored,
-  add column slot_date text generated always as (data->>'date') stored,
-  add column slot_hour int generated always as ((data->>'hour')::int) stored;
-create unique index holds_slot_uniq on public.holds (turf_id, slot_date, slot_hour);
+  add column if not exists turf_id text generated always as (data->>'turfId') stored,
+  add column if not exists slot_date text generated always as (data->>'date') stored,
+  add column if not exists slot_hour int generated always as ((data->>'hour')::int) stored;
+create unique index if not exists holds_slot_uniq on public.holds (turf_id, slot_date, slot_hour);
 
-create unique index players_phone_uniq on public.players ((data->>'phone'));
+create unique index if not exists players_phone_uniq on public.players ((data->>'phone'));
 
 -- Whole state in one round trip; rows come back in insertion order
 create or replace function public.load_state()
@@ -126,7 +127,8 @@ begin
   return new_rev;
 end $$;
 
--- Wipe everything (admin "reset demo data"); the app reseeds on next load
+-- Wipe everything; the app starts again from the launch data on its next load.
+-- Only used by supabase/reset-before-launch.sql.
 create or replace function public.reset_state()
 returns void
 language plpgsql

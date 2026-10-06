@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { verifyPassword } from './password';
 import { ROLES, createSession, deleteSession, safeEqual, type Role } from './session';
-import { demoLoginEnabled, sessionSecret } from './env';
+import { sessionSecret } from './env';
 import { getDb } from './store';
 
 export type LoginState = { error?: string } | undefined;
@@ -24,9 +24,17 @@ function adminSubject(email: string, password: string) {
   return emailOk && passwordOk ? 'admin' : null;
 }
 
-// Turf owners and their staff are stored in the demo database
+// Turf owners and their staff are stored in the database
 async function partnerSubject(email: string, password: string) {
   const db = await getDb();
+  // The OYUN operations account (manages the launch turfs) signs in with PARTNER_EMAIL / PARTNER_PASSWORD,
+  // read at login time so changing them in the hosting settings takes effect straight away
+  const opsEmail = process.env.PARTNER_EMAIL?.trim().toLowerCase();
+  const opsPassword = process.env.PARTNER_PASSWORD;
+  const ops = db.partners.find((p) => p.id === 'partner_oyun');
+  if (ops && opsEmail && opsPassword && matches(email, opsEmail)) {
+    return ops.status === 'active' && matches(password, opsPassword) ? `p:${ops.id}` : null;
+  }
   const partner = db.partners.find((p) => p.email === email);
   if (partner) {
     return partner.status === 'active' && verifyPassword(password, partner.passwordHash) ? `p:${partner.id}` : null;
@@ -85,16 +93,6 @@ export async function login(role: Role, _prev: LoginState, formData: FormData): 
   redirect(`/${role}`);
 }
 
-// One-click demo access; only works while DEMO_LOGIN=true
-export async function demoLogin(role: Role): Promise<LoginState> {
-  if (!ROLES.includes(role)) return { error: 'Invalid login.' };
-  if (!demoLoginEnabled() || !sessionSecret()) {
-    return { error: 'Demo login is disabled.' };
-  }
-
-  await createSession(role, role === 'admin' ? 'admin' : 'p:partner_demo');
-  redirect(`/${role}`);
-}
 
 export async function logout(role: Role) {
   if (!ROLES.includes(role)) return;

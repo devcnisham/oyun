@@ -97,7 +97,7 @@ export default async function PrivacyPage() {
 
           <h2>10. Contact and grievance officer</h2>
           <p>
-            Grievance Officer, OYUN, Mangalore, Karnataka, India. Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a> or call {s.supportPhone}.
+            Grievance Officer, OYUN, Mangalore, Karnataka, India. Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a>{s.supportPhone ? ` or call ${s.supportPhone}` : ''}.
           </p>
           <p>See also our <Link href="/terms">Terms &amp; Conditions</Link>.</p>
         </div>
