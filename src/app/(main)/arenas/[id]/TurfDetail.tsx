@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import { canOptimize } from '@/lib/images';
 import type { Offer, Slot, Turf } from '@/lib/types';
+import type { PublicReview } from '@/lib/reviews';
+import Stars from '@/components/Stars';
+import FavouriteButton from '@/components/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
 import ShareButton from './ShareButton';
 import styles from './page.module.css';
@@ -15,11 +18,12 @@ interface TurfDetailProps {
   bookable: boolean;
   rewards: BookingFlowProps['rewards'];
   initialReferral: string;
+  reviews: PublicReview[];
 }
 
 const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
 
-export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, bookable, rewards, initialReferral }: TurfDetailProps) {
+export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, bookable, rewards, initialReferral, reviews }: TurfDetailProps) {
   const imageSrc = turf.images[0];
 
   return (
@@ -32,6 +36,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           <BackButton fallback="/arenas" className={styles.iconBtn}>←</BackButton>
           <div className={styles.midBadge}>{turf.isVerified ? 'Verified Turf' : 'Premium Turf'}</div>
           <div className={styles.topNavRight}>
+            <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.iconBtn} />
             <ShareButton title={turf.name} className={styles.iconBtn} />
           </div>
         </div>
@@ -46,10 +51,11 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         <h1 className={styles.title}>{turf.name}</h1>
 
         <div className={styles.ratingRow}>
+          <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.saveInline} />
           {turf.reviewCount > 0 ? (
             <>
               <span className={styles.ratingBadge}>★ {turf.rating}</span>
-              <span className={styles.ratingText}>({turf.reviewCount} ratings)</span>
+              <a href="#reviews" className={styles.ratingText}>({turf.reviewCount} rating{turf.reviewCount === 1 ? '' : 's'})</a>
             </>
           ) : (
             <span className={styles.ratingBadge}>New</span>
@@ -141,6 +147,39 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
               <span key={a} className={styles.amenityTag}>✓ {a}</span>
             ))}
           </div>
+        </div>
+
+        <hr className={styles.divider} />
+
+        <div className={styles.reviewsSection} id="reviews">
+          <h2>Player reviews</h2>
+          {reviews.length === 0 ? (
+            <p className={styles.reviewEmpty}>No reviews yet. Players can rate {turf.name} from their booking after they play.</p>
+          ) : (
+            <>
+              <div className={styles.reviewSummary}>
+                <b>{turf.rating.toFixed(1)}</b>
+                <div>
+                  <Stars value={turf.rating} size={18} />
+                  <span>{turf.reviewCount} rating{turf.reviewCount === 1 ? '' : 's'} from players who booked on OYUN</span>
+                </div>
+              </div>
+              <ul className={styles.reviewList}>
+                {reviews.map((r) => (
+                  <li key={r.bookingId}>
+                    <div className={styles.reviewHead}>
+                      <b>{r.name}</b>
+                      <Stars value={r.rating} size={14} />
+                      <time dateTime={r.createdAt}>
+                        {new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}
+                      </time>
+                    </div>
+                    {r.comment && <p>{r.comment}</p>}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
 
         <hr className={styles.divider} />

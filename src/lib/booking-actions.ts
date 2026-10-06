@@ -4,6 +4,7 @@ import { randomBytes } from 'node:crypto';
 import { headers } from 'next/headers';
 import { auth } from '@clerk/nextjs/server';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from './cancel-policy';
+import { REVIEW_MAX_LENGTH, publicName, recomputeTurfRating } from './reviews';
 import { clerkEnabled } from './clerk';
 import { ValidationError, refreshAll } from './action-utils';
 import { rateLimit } from './rate-limit';
@@ -324,6 +325,40 @@ export async function cancelMyBooking(bookingId: string): Promise<{ ok: true } |
   }
 }
 
+/* ---------- ratings & reviews ---------- */
+
+// After playing (checked in), the player rates the turf. One review per booking; sending again updates it.
+export async function submitReview(bookingId: string, rating: number, comment: string): Promise<{ ok: true } | { error: string }> {
+  try {
+    const id = String(bookingId);
+    if (!/^bk_[a-f0-9]{12}$/.test(id)) throw new ValidationError('Booking not found');
+    const stars = Math.round(Number(rating));
+    if (!(stars >= 1 && stars <= 5)) throw new ValidationError('Pick 1 to 5 stars');
+    const text = String(comment ?? '').replace(/\s+/g, ' ').trim().slice(0, REVIEW_MAX_LENGTH);
+    await throttle('review', 20);
+    const accountId = await currentAccountId();
+    await mutate((db) => {
+      const booking = db.bookings.find((b) => b.id === id);
+      if (!booking) throw new ValidationError('Booking not found');
+      if (booking.accountId && booking.accountId !== accountId) throw new ValidationError('Sign in with the account that made this booking to review it');
+      if (booking.status !== 'checked_in') throw new ValidationError('You can rate the turf after you have played');
+      booking.review = {
+        rating: stars,
+        comment: text,
+        name: publicName(booking.customerName),
+        createdAt: new Date().toISOString(),
+        hidden: booking.review?.hidden ?? false,
+      };
+      recomputeTurfRating(db, booking.turfId);
+    });
+    refreshAll();
+    return { ok: true };
+  } catch (err) {
+    if (err instanceof ValidationError) return { error: err.message };
+    throw err;
+  }
+}
+
 /* ---------- booking lookup for "My bookings" ---------- */
 
 // The signed-in Clerk player, if any
@@ -349,6 +384,7 @@ export interface BookingSummary {
   status: Booking['status'];
   total: number;
   due: number;
+  reviewed: boolean;
 }
 
 // Bookings saved on this device (their ids are unguessable) plus, when signed in, every booking on the
@@ -375,6 +411,7 @@ export async function getBookingSummaries(ids: string[]): Promise<BookingSummary
         status: b.status,
         total: b.pricing.total,
         due: b.pricing.total - b.amountPaid,
+        reviewed: Boolean(b.review),
       };
     })
     .sort((a, b) => a.date.localeCompare(b.date) || a.hour - b.hour);

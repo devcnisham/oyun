@@ -8,6 +8,7 @@ import { hasSession } from './session';
 import { mutate, newId } from './store';
 import type { ActionResult, Database, TurfStatus } from './types';
 import { walletTxn } from './wallet';
+import { recomputeTurfRating } from './reviews';
 
 async function requireAdmin() {
   if (!(await hasSession('admin'))) throw new AccessError('Your admin session has expired. Please log in again.');
@@ -148,6 +149,22 @@ export async function quickUpdateTurf(_prev: ActionResult, fd: FormData): Promis
         turf.status = status;
       } else throw new ValidationError('Unknown field');
       return { ok: 'Saved' };
+    });
+  });
+}
+
+/* ---------- reviews ---------- */
+
+// Hide or show a player review (e.g. abusive or off-topic); the turf's rating follows
+export async function toggleReviewHidden(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    await requireAdmin();
+    return await mutate((db) => {
+      const booking = db.bookings.find((b) => b.id === str(fd, 'bookingId'));
+      if (!booking?.review) throw new ValidationError('Review not found');
+      booking.review.hidden = !booking.review.hidden;
+      recomputeTurfRating(db, booking.turfId);
+      return { ok: booking.review.hidden ? 'Review hidden' : 'Review visible again' };
     });
   });
 }

@@ -67,7 +67,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>⚽</div>
           <h2>{tab === 'upcoming' ? 'No upcoming games' : 'Nothing here yet'}</h2>
-          <p>Bookings you make on this device show up here.</p>
+          <p>Bookings you make on this device or your account show up here.</p>
           <Link href="/arenas" className={styles.cta}>Book a turf</Link>
         </div>
       ) : (
@@ -83,6 +83,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
                 <span className={styles.meta}>
                   <em className={b.status === 'confirmed' || b.status === 'checked_in' ? styles.ok : styles.off}>{STATUS[b.status]}</em>
                   {b.due > 0 && b.status === 'confirmed' && <> · ₹{b.due} at venue</>}
+                  {b.status === 'checked_in' && !b.reviewed && <> · <strong className={styles.rate}>⭐ Rate your game</strong></>}
                 </span>
               </div>
               <span className={styles.chev} aria-hidden>›</span>

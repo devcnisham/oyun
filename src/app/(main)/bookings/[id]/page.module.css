@@ -208,3 +208,20 @@
   margin-bottom: 10px;
   color: var(--text-primary);
 }
+
+/* Quick actions under an active ticket */
+.extras { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
+.extra {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-muted);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.extra:hover { border-color: var(--primary-700); color: var(--primary-700); }

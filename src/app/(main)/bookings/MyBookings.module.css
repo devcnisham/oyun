@@ -24,3 +24,5 @@
 .emptyIcon { font-size: 40px; }
 .cta { display: inline-block; background: var(--primary-700); color: #fff; font-weight: 800; padding: 12px 24px; border-radius: 12px; text-decoration: none; }
 @keyframes shimmer { to { background-position: -200% 0; } }
+
+.rate { color: #b7791f; font-weight: 800; }

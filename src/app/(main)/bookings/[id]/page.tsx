@@ -3,12 +3,13 @@ import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { qrSvg } from '@/lib/qr';
 import { getDb } from '@/lib/store';
-import { formatDate, formatDateTime, formatSlotRange } from '@/lib/time';
+import { addDays, formatDate, formatDateTime, formatSlotRange } from '@/lib/time';
 import { WALLET_TXN_LABELS, cashbackFor } from '@/lib/wallet';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/lib/cancel-policy';
 import CancelBooking from './CancelBooking';
+import ReviewForm from './ReviewForm';
 
 const STATUS_TEXT: Record<string, string> = {
   confirmed: 'Booking confirmed',
@@ -87,7 +88,28 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           </a>
           <Link href={`/arenas/${turf.id}`} className="btn btn--primary btn--sm">Book again</Link>
         </div>
+        {active && (
+          <div className={styles.extras}>
+            <a href={`/bookings/${booking.id}/calendar`} className={styles.extra}>📅 Add to calendar</a>
+            <a
+              className={styles.extra}
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`https://wa.me/?text=${encodeURIComponent(`I've booked ${turf.name} on ${formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}, ${formatSlotRange(booking.hour)}. Join the game! ${origin}/arenas/${turf.id}`)}`}
+            >
+              💬 Share on WhatsApp
+            </a>
+            <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
+          </div>
+        )}
         {canSelfCancel(booking) && <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} />}
+        {booking.status === 'checked_in' && (
+          <ReviewForm
+            bookingId={booking.id}
+            turfName={turf.name}
+            existing={booking.review ? { rating: booking.review.rating, comment: booking.review.comment } : null}
+          />
+        )}
         {player && (player.walletBalance > 0 || s.cashbackEnabled || s.referralEnabled) && (
           <div className={styles.rewards}>
             <h2 className={styles.rewardsTitle}>Your OYUN wallet</h2>

@@ -930,3 +930,31 @@
     height: 0;
   }
 }
+
+/* Player reviews */
+.reviewsSection h2 { margin-bottom: 12px; }
+.reviewEmpty { color: var(--text-muted); font-size: 15px; }
+.reviewSummary { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.reviewSummary > b { font-size: 40px; font-weight: 800; line-height: 1; }
+.reviewSummary > div { display: flex; flex-direction: column; gap: 2px; }
+.reviewSummary span { font-size: 13px; color: var(--text-muted); }
+.reviewList { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.reviewList li { padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: #fff; }
+.reviewHead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.reviewHead b { font-size: 15px; }
+.reviewHead time { margin-left: auto; font-size: 12px; color: var(--text-muted); }
+.reviewList p { font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
+
+.saveInline {
+  order: 9;
+  margin-left: auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text-primary);
+}

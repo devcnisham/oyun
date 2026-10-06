@@ -205,8 +205,17 @@ export interface Booking {
   checkedInAt: string | null;
   cashback?: number; // wallet credit given when the player checked in
   accountId?: string | null; // signed-in player account (Clerk user id) that made the booking
+  review?: BookingReview | null; // the player's rating after playing
   cancelledAt?: string | null;
   createdAt: string;
+}
+
+export interface BookingReview {
+  rating: number; // 1-5
+  comment: string;
+  name: string; // shown publicly, e.g. "Rahul S."
+  createdAt: string;
+  hidden: boolean; // hidden by OYUN moderation
 }
 
 export interface PromoCode {

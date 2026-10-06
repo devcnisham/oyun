@@ -38,6 +38,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             {link('/admin/partners', '🤝', 'Partners')}
             {link('/admin/users', '👥', 'Players')}
             {link('/admin/transactions', '💳', 'Bookings & refunds')}
+            {link('/admin/reviews', '⭐', 'Reviews')}
           </div>
 
           <div className={styles.navGroup} style={{ marginTop: '24px' }}>

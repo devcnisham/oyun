@@ -88,6 +88,7 @@ export default function ProfileScreen({ supportEmail }: { supportEmail: string }
 
       <nav className={styles.menu} aria-label="Account">
         <Link href="/bookings">My bookings<i aria-hidden>›</i></Link>
+        <Link href="/saved">Saved turfs<i aria-hidden>›</i></Link>
         <Link href="/faq">Help &amp; FAQ<i aria-hidden>›</i></Link>
         <a href={`mailto:${supportEmail}`}>Contact support<i aria-hidden>›</i></a>
         <button type="button" onClick={openConsentSettings}>Cookie settings<i aria-hidden>›</i></button>

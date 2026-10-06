@@ -8,6 +8,7 @@ import { deviceHolder } from '@/lib/device-holder';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbSchema, turfSchema } from '@/lib/schema';
 import { areaSlug } from '@/lib/site';
+import { turfReviews } from '@/lib/reviews';
 import TurfDetail from './TurfDetail';
 
 interface PageProps {
@@ -77,6 +78,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
         referralEnabled: db.settings.referralEnabled,
         refereeReward: db.settings.refereeReward,
       }}
+      reviews={turfReviews(db, turf.id, { limit: 10 })}
       initialReferral={(ref ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12)}
     />
     </>

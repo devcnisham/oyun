@@ -55,6 +55,7 @@ export default function SideMenu({ open, onClose, firstName, upcoming, areas }: 
             <span aria-hidden>🎟️</span>My bookings
             {upcoming > 0 && <em className={styles.count}>{upcoming} upcoming</em>}
           </Link>
+          <Link href="/saved" className={styles.item}><span aria-hidden>♡</span>Saved turfs</Link>
           <Link href="/profile" className={styles.item}><span aria-hidden>👤</span>Profile</Link>
 
           {areas.length > 0 && (
