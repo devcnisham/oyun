@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { clearDevice, getProfile, saveProfile } from '@/lib/client/device';
 import { openConsentSettings } from '@/components/consent/consent';
+import { clerkEnabled } from '@/lib/clerk';
+import AccountCard from './AccountCard';
 import styles from './Profile.module.css';
 
 export default function ProfileScreen({ supportEmail, supportPhone }: { supportEmail: string; supportPhone: string }) {
@@ -37,6 +39,8 @@ export default function ProfileScreen({ supportEmail, supportPhone }: { supportE
           <p>{phone ? `+91 ${phone.replace(/\D/g, '').slice(-10)}` : 'Save your details for faster checkout'}</p>
         </div>
       </div>
+
+      {clerkEnabled && <AccountCard />}
 
       <form className={styles.card} onSubmit={save}>
         <h2>Your details</h2>

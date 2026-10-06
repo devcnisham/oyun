@@ -3,6 +3,7 @@ import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import ConsentManager from "@/components/consent/ConsentManager";
 import NavTracker from "@/components/NavTracker";
+import AuthProvider from "@/components/AuthProvider";
 
 
 export const metadata: Metadata = {
@@ -45,9 +46,11 @@ export default function RootLayout({
   return (
     <html lang="en-IN">
       <body>
+        <AuthProvider>
         {children}
         <ConsentManager />
         <NavTracker />
+        </AuthProvider>
       </body>
     </html>
   );

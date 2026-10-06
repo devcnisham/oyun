@@ -20,7 +20,7 @@
 .sectionHead h2 { font-size: 18px; font-weight: 800; }
 .sectionHead a { font-size: 13px; font-weight: 700; color: var(--primary-700); text-decoration: none; }
 
-.rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px 4px; scrollbar-width: none; }
+.rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; padding: 0 16px 4px; scrollbar-width: none; }
 .rail::-webkit-scrollbar { display: none; }
 .railCard { flex: 0 0 64%; max-width: 240px; scroll-snap-align: start; text-decoration: none; color: var(--text-primary); display: flex; flex-direction: column; gap: 2px; }
 .railCard b { font-size: 15px; margin-top: 6px; }
@@ -29,7 +29,7 @@
 .railImg img, .rowImg img, .promo img { object-fit: cover; }
 .badge { position: absolute; left: 8px; bottom: 8px; background: rgba(255, 255, 255, 0.95); color: #067647 !important; font-weight: 800; font-size: 11px !important; padding: 4px 8px; border-radius: 8px; }
 
-.promos { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px; scrollbar-width: none; }
+.promos { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; padding: 0 16px; scrollbar-width: none; }
 .promos::-webkit-scrollbar { display: none; }
 .promo { position: relative; flex: 0 0 86%; aspect-ratio: 2 / 1; border-radius: 18px; overflow: hidden; scroll-snap-align: center; background: #222; }
 .promo > div { position: absolute; inset: auto 0 0 0; padding: 14px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); color: #fff; display: flex; flex-direction: column; }
@@ -52,3 +52,80 @@
 .ownerCta div { flex: 1; display: flex; flex-direction: column; }
 .ownerCta small { opacity: 0.75; }
 .ownerCta i { font-style: normal; font-size: 22px; opacity: 0.6; }
+
+/* Quick action tiles */
+.quick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; }
+.tile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: var(--text-primary);
+  min-width: 0;
+}
+.tile span { grid-row: span 2; font-size: 24px; }
+.tile b { font-size: 14px; }
+.tile small { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tile:active { transform: scale(0.96); }
+.tileRed { background: #fde8ea; }
+.tileAmber { background: #fff4d6; }
+.tileGreen { background: #e3f6ea; }
+.tileBlue { background: #e6efff; }
+
+.muted { font-size: 12px; color: var(--text-muted); }
+.anchor { scroll-margin-top: 80px; }
+
+/* Coupons and turf deals */
+.coupon, .deal {
+  flex: 0 0 auto;
+  width: 160px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 14px;
+  border-radius: 16px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+.coupon { border: 1.5px dashed var(--primary-700); background: #fff; color: var(--text-primary); }
+.couponTitle { font-size: 18px; font-weight: 900; color: var(--primary-700); }
+.couponNote { font-size: 12px; color: var(--text-secondary); min-height: 32px; }
+.couponCode { margin-top: 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; background: var(--primary-50); color: var(--primary-700); padding: 4px 8px; border-radius: 6px; }
+.deal { background: linear-gradient(135deg, #1a0003, #5a0610); color: #fff; }
+.deal b { font-size: 15px; }
+.deal span { font-size: 12px; opacity: 0.85; }
+.deal small { font-size: 11px; opacity: 0.7; margin-top: auto; }
+.dealOff { font-size: 20px !important; font-weight: 900; color: #ffd166; opacity: 1 !important; }
+
+/* Top rated: numbered, short list */
+.rowImg .rank { position: absolute; top: 6px; left: 6px; background: rgba(0, 0, 0, 0.7); color: #fff; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
+.seeAll { display: block; margin: 10px 16px 0; text-align: center; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: var(--primary-700); font-weight: 800; text-decoration: none; }
+
+/* Browse by area */
+.areaGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; }
+.areaTile { display: flex; flex-direction: column; padding: 14px; border-radius: 14px; background: #fff; border: 1px solid var(--border); text-decoration: none; color: var(--text-primary); position: relative; overflow: hidden; }
+.areaTile::after { content: '📍'; position: absolute; right: 10px; top: 10px; font-size: 18px; opacity: 0.35; }
+.areaTile b { font-size: 15px; }
+.areaTile span { font-size: 12px; color: var(--text-muted); }
+
+/* How it works */
+.how { margin: 0 16px; padding: 18px 16px; border-radius: 18px; background: #fff; border: 1px solid var(--border); }
+.how h2 { font-size: 18px; font-weight: 800; margin-bottom: 12px; }
+.how ol { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.how li { display: flex; gap: 12px; align-items: flex-start; }
+.how li > span { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--primary-700); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+.how li div { display: flex; flex-direction: column; }
+.how li b { font-size: 14px; }
+.how li small { font-size: 12px; color: var(--text-secondary); }
+
+/* Trust strip */
+.trust { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; }
+.trust div { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 12px; background: var(--bg-muted); font-size: 13px; }

@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import TurfSlider from '@/components/TurfSlider';
 import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
+import { getDb } from '@/lib/store';
 import HeroSearchBar from './HeroSearchBar';
 import PopupAd from '@/components/PopupAd';
 import MobileHome from './_home/MobileHome';
@@ -35,6 +36,41 @@ export default async function Home() {
     .map(([area, count]) => ({ area, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 4);
+
+  // Phone home feed extras: coupons, turf deals and every area with its turf count
+  const db = await getDb();
+  const coupons = db.promoCodes
+    .filter((p) => p.active)
+    .map((p) => ({
+      code: p.code,
+      title: p.kind === 'percent' ? `${p.value}% off` : `₹${p.value} off`,
+      note: [p.maxDiscount ? `up to ₹${p.maxDiscount}` : '', p.weekendOnly ? 'weekends only' : 'any day'].filter(Boolean).join(' · '),
+    }));
+  const turfNames = new Map(turfs.map((t) => [t.id, t]));
+  const deals = db.offers
+    .filter((o) => o.active && turfNames.has(o.turfId))
+    .map((o) => {
+      const t = turfNames.get(o.turfId)!;
+      const h = (x: number) => `${x % 12 === 0 ? 12 : x % 12} ${x < 12 || x === 24 ? 'AM' : 'PM'}`;
+      return {
+        id: o.id,
+        turfId: t.id,
+        turfName: t.name,
+        image: t.images[0],
+        title: o.title,
+        percentOff: o.percentOff,
+        when: o.type === 'first_time' ? 'Your first booking' : `${h(o.startHour)} – ${h(o.endHour)}`,
+      };
+    });
+  const allAreas = Object.entries(
+    turfs.reduce<Record<string, number>>((acc, t) => {
+      acc[t.area] = (acc[t.area] ?? 0) + 1;
+      return acc;
+    }, {})
+  )
+    .map(([area, count]) => ({ area, count }))
+    .sort((a, b) => a.area.localeCompare(b.area));
+  const rewards = { cashbackEnabled: settings.cashbackEnabled, cashbackPercent: settings.cashbackPercent, referralEnabled: settings.referralEnabled, refereeReward: settings.refereeReward };
 
   return (
     <div className={styles.page}>
@@ -212,7 +248,7 @@ export default async function Home() {
       </div>
 
       <div className={styles.mobileHome}>
-        <MobileHome turfs={turfs} areas={popularAreas} promos={site.promos} />
+        <MobileHome turfs={turfs} areas={popularAreas} allAreas={allAreas} promos={site.promos} coupons={coupons} deals={deals} rewards={rewards} />
       </div>
     </div>
   );
