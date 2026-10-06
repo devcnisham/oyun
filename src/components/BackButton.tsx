@@ -11,17 +11,6 @@ interface BackButtonProps {
   children?: React.ReactNode;
 }
 
-const defaultStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 6,
-  marginBottom: 24,
-  color: 'var(--text-muted)',
-  textDecoration: 'none',
-  fontSize: 14,
-  fontWeight: 500,
-};
-
 // True when the previous history entry is an OYUN page (moved within the app, or arrived from another OYUN page)
 function cameFromThisSite() {
   if ((window as unknown as { __oyunNavigated?: boolean }).__oyunNavigated) return true;
@@ -35,11 +24,13 @@ function cameFromThisSite() {
 // Goes to the previous page like the browser's back button. Still a real link, so it works without JavaScript.
 export default function BackButton({ fallback = '/', className, style, ariaLabel = 'Back', children }: BackButtonProps) {
   const router = useRouter();
-  return (
+  const floating = !className;
+  const link = (
     <a
       href={fallback}
-      className={className}
-      style={className ? style : { ...defaultStyle, ...style }}
+      // Without a custom look it is the floating back button: pinned on screen and always on top
+      className={floating ? 'floatingBack' : className}
+      style={style}
       aria-label={ariaLabel}
       onClick={(e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // let "open in new tab" work
@@ -50,9 +41,21 @@ export default function BackButton({ fallback = '/', className, style, ariaLabel
     >
       {children ?? (
         <>
-          <span aria-hidden style={{ fontSize: 16 }}>←</span> Back
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span className="floatingBackLabel">Back</span>
         </>
       )}
     </a>
+  );
+  // The floating button leaves its old spot empty so it never covers the page heading
+  return floating ? (
+    <>
+      <span className="floatingBackSpacer" aria-hidden />
+      {link}
+    </>
+  ) : (
+    link
   );
 }
