@@ -16,3 +16,6 @@
 .menu span { width: 24px; text-align: center; }
 .menu i { margin-left: auto; font-style: normal; color: #b0b4ba; font-size: 20px; }
 .clear { font: inherit; font-weight: 700; background: none; border: none; color: var(--primary-700); padding: 12px; cursor: pointer; }
+.menuButton { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: var(--text-primary); font: inherit; font-weight: 600; font-size: 15px; background: none; border: none; border-top: 1px solid #f0f1f3; cursor: pointer; text-align: left; }
+.menuButton span { width: 24px; text-align: center; }
+.menuButton i { margin-left: auto; font-style: normal; color: #b0b4ba; font-size: 20px; }

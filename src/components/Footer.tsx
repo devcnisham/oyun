@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { areaSlug } from '@/lib/site';
+import CookieSettingsLink from './consent/CookieSettingsLink';
 import styles from './Footer.module.css';
 
 export default function Footer({ areas, supportEmail }: { areas: string[]; supportEmail: string }) {
@@ -79,6 +80,7 @@ export default function Footer({ areas, supportEmail }: { areas: string[]; suppo
                 <li><Link href="/faq">FAQ</Link></li>
                 <li><Link href="/privacy">Privacy policy</Link></li>
                 <li><Link href="/terms">Terms &amp; conditions</Link></li>
+                <li><CookieSettingsLink className={styles.linkButton} /></li>
               </ul>
             </div>
           </nav>

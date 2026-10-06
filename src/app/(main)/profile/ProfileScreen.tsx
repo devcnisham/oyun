@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { clearDevice, getProfile, saveProfile } from '@/lib/client/device';
+import { openConsentSettings } from '@/components/consent/consent';
 import styles from './Profile.module.css';
 
 export default function ProfileScreen({ supportEmail, supportPhone }: { supportEmail: string; supportPhone: string }) {
@@ -58,6 +59,7 @@ export default function ProfileScreen({ supportEmail, supportPhone }: { supportE
         <a href={`tel:${supportPhone.replace(/\s/g, '')}`}><span>📞</span>{supportPhone}<i>›</i></a>
         <Link href="/terms"><span>📄</span>Terms<i>›</i></Link>
         <Link href="/privacy"><span>🔒</span>Privacy<i>›</i></Link>
+        <button type="button" className={styles.menuButton} onClick={openConsentSettings}><span>🍪</span>Cookie settings<i>›</i></button>
       </nav>
 
       <button

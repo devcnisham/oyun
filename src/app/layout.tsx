@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import ConsentManager from "@/components/consent/ConsentManager";
 
 
 export const metadata: Metadata = {
@@ -48,6 +49,7 @@ export default function RootLayout({
     <html lang="en-IN">
       <body>
         {children}
+        <ConsentManager />
       </body>
     </html>
   );
