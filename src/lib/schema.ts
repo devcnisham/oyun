@@ -54,7 +54,7 @@ export function turfSchema(turf: Turf) {
     description: turf.description,
     url: absoluteUrl(`/arenas/${turf.id}`),
     image: turf.images.map((src) => absoluteUrl(src)),
-    telephone: turf.phone,
+    telephone: turf.phone || undefined,
     priceRange: `₹${turf.pricePerHour}+ per hour`,
     address: {
       '@type': 'PostalAddress',

@@ -1,0 +1,7 @@
+.page { padding-top: 24px; padding-bottom: 48px; }
+.title { font-size: 28px; font-weight: 800; margin-bottom: 20px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.empty { text-align: center; padding: 48px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.empty h2 { font-size: 20px; }
+.empty p { color: var(--text-muted); margin-bottom: 8px; }
+.icon { font-size: 44px; color: var(--primary-700); }

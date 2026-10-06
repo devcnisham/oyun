@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { canOptimize } from '@/lib/images';
 import type { Turf } from '@/lib/types';
+import FavouriteButton from './FavouriteButton';
 import styles from './TurfCard.module.css';
 
 interface TurfCardProps {
@@ -11,6 +12,8 @@ interface TurfCardProps {
 export default function TurfCard({ turf }: TurfCardProps) {
 
   return (
+    <div className={styles.cardWrap}>
+    <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.fav} />
     <Link href={`/arenas/${turf.id}`} className={styles.card}>
       <div className={styles.imageWrap}>
         <Image src={turf.images[0]} alt={turf.name} fill sizes="(max-width: 768px) 100vw, 400px" className={styles.image} unoptimized={!canOptimize(turf.images[0])} />
@@ -42,5 +45,6 @@ export default function TurfCard({ turf }: TurfCardProps) {
         </div>
       </div>
     </Link>
+    </div>
   );
 }
