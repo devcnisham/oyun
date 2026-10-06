@@ -145,36 +145,8 @@
 }
 .account:active, .bookings:active { opacity: 0.7; }
 
-/* Phone-only rows: search bar and "Playing in" strip */
-.mobileRows, .locationStrip { display: none; }
-.searchBar {
-  display: flex;
-  align-items: stretch;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-.searchBar input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  font: inherit;
-  font-size: 16px;
-  padding: 12px 14px;
-  color: var(--text-primary);
-  background: transparent;
-}
-.searchBar button {
-  width: 52px;
-  border: none;
-  background: #ffd2d6;
-  color: #7a0714;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
+/* Phone-only "Playing in" strip */
+.locationStrip { display: none; }
 .locationStrip {
   align-items: center;
   justify-content: space-between;
@@ -325,7 +297,6 @@
     justify-content: space-between;
   }
   .desktopOnly { display: none !important; }
-  .mobileRows { display: block; padding: 0 12px 10px; }
   .locationStrip { display: flex; }
   .right { gap: 14px; }
   .accountName { font-size: 14px; max-width: 110px; }
