@@ -29,7 +29,7 @@ export default async function FAQPage() {
     },
     {
       q: 'What is the cancellation policy?',
-      a: 'Contact the turf or OYUN support to cancel. You pay at the venue, so there is nothing to refund when you cancel in advance.',
+      a: 'Open your booking and tap Cancel booking, up to 2 hours before your slot. Closer to the time, call the turf or OYUN support. You pay at the venue, so there is nothing to refund.',
     },
     {
       q: 'How do I check in at the turf?',

@@ -235,57 +235,41 @@ html {
 }
 
 /* ---------- Floating back button (BackButton without a custom class) ---------- */
+/* Its spot at the top-left of the page; the button sits here until the spot scrolls under the top bar */
+.floatingBackSpot {
+  position: relative;
+  display: block;
+  height: 40px;
+  margin-bottom: 16px;
+}
 .floatingBack {
-  position: fixed;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 1100; /* above the page and the top bar, below sheets and dialogs */
-  /* In line with the page content (.container: max 1440px wide, 32px padding) */
-  left: max(32px, calc((100vw - 1440px) / 2 + 32px));
-  top: calc(70px + 14px); /* just under the desktop top bar */
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 8px 16px 8px 10px;
+  height: 40px;
+  padding: 0 16px 0 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+  /* see-through glass */
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: top 0.25s ease, transform 0.12s;
+  white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s;
 }
-.floatingBack:hover { color: var(--primary-700); }
+.floatingBack[data-pinned] { position: fixed; }
+.floatingBack:hover { color: var(--primary-700); background: rgba(255, 255, 255, 0.7); }
 .floatingBack:active { transform: scale(0.95); }
-.floatingBackSpacer { display: block; height: 52px; }
-/* The top bar slides away while scrolling down; follow it up */
-html[data-header='hidden'] .floatingBack { top: calc(14px + env(safe-area-inset-top)); }
-
-@media (max-width: 768px) {
-  /* Phones: a round button at the bottom-left, opposite the search button */
-  .floatingBack,
-  html[data-header='hidden'] .floatingBack {
-    top: auto;
-    left: 16px;
-    bottom: calc(18px + env(safe-area-inset-bottom));
-    width: 52px;
-    height: 52px;
-    padding: 0;
-    justify-content: center;
-    background: #fff;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.12);
-  }
-  .floatingBack svg { width: 24px; height: 24px; }
-  .floatingBackSpacer { display: none; }
-  .floatingBackLabel { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .floatingBack { transition: none; }
-}
 
 @media print {
   .floatingBack { display: none !important; }

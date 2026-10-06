@@ -51,7 +51,7 @@ export default async function TermsPage() {
 
           <h2>4. Cancellations, no-shows and refunds</h2>
           <ul>
-            <li>To cancel, contact the turf or OYUN support before your slot starts. As you pay at the venue, there is nothing to refund for a slot you cancel in advance.</li>
+            <li>You can cancel a booking yourself from its booking page up to 2 hours before the slot starts. After that, contact the turf or OYUN support. As you pay at the venue, there is nothing to refund.</li>
             <li>If you don&apos;t arrive for your slot, it may be marked as a no-show. Repeated no-shows can lead to your account being blocked from booking.</li>
             <li>If a turf cancels or can&apos;t host your game (for example due to maintenance or bad weather), we will tell you as soon as possible and help you rebook.</li>
           </ul>

@@ -31,6 +31,11 @@ Then **Deployments → ⋯ → Redeploy**. The first page load fills the empty d
 **Without `SUPABASE_SECRET_KEY` the live site does not save bookings**: each Vercel server keeps its own temporary copy,
 so players can't see each other's holds and bookings disappear. This step is required.
 
+## Check it's connected
+
+Open `https://<your-site>/api/health`. You want `"ready": true`, `"storage": "supabase"` and
+`"bookingsSharedBetweenPlayers": true`. The admin dashboard also shows a red warning while bookings are not being saved.
+
 ## 3. Real-time slot updates
 
 Nothing to set up: when anyone holds, books or releases a slot, everyone looking at that turf and day sees it change

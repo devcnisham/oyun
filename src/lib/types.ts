@@ -204,6 +204,8 @@ export interface Booking {
   status: BookingStatus;
   checkedInAt: string | null;
   cashback?: number; // wallet credit given when the player checked in
+  accountId?: string | null; // signed-in player account (Clerk user id) that made the booking
+  cancelledAt?: string | null;
   createdAt: string;
 }
 

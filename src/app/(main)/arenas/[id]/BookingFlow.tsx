@@ -124,6 +124,18 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   }, [date, refreshSlots]);
   useSlotUpdates(turf.id, date, refreshCurrent, !inCheckout);
 
+  // Leaving mid-checkout (closing the tab, navigating away) frees the held slots for others at once
+  useEffect(() => {
+    if (!inCheckout) return;
+    const release = () => {
+      try {
+        navigator.sendBeacon('/api/holds/release');
+      } catch {}
+    };
+    window.addEventListener('pagehide', release);
+    return () => window.removeEventListener('pagehide', release);
+  }, [inCheckout]);
+
   // Countdown while slots are held
   useEffect(() => {
     if (!inCheckout) return;
