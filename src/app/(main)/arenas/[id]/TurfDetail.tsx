@@ -1,10 +1,10 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { canOptimize } from '@/lib/images';
 import type { AddOn, Offer, Slot, Turf } from '@/lib/types';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
 import ShareButton from './ShareButton';
 import styles from './page.module.css';
+import BackButton from '@/components/BackButton';
 
 interface TurfDetailProps {
   turf: Turf;
@@ -31,7 +31,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, add
         <Image src={imageSrc} alt={turf.name} fill preload sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
 
         <div className={styles.topNav}>
-          <Link href="/arenas" className={styles.iconBtn} aria-label="Back to arenas">←</Link>
+          <BackButton fallback="/arenas" className={styles.iconBtn}>←</BackButton>
           <div className={styles.midBadge}>{turf.isVerified ? 'Verified Turf' : 'Premium Turf'}</div>
           <div className={styles.topNavRight}>
             <ShareButton title={turf.name} className={styles.iconBtn} />

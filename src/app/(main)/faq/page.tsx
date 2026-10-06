@@ -4,6 +4,7 @@ import JsonLd from '@/components/JsonLd';
 import { getSettings } from '@/lib/queries';
 import { faqSchema } from '@/lib/schema';
 import styles from './page.module.css';
+import BackButton from '@/components/BackButton';
 
 export const metadata: Metadata = {
   title: 'Turf Booking FAQ | Payments, Cancellations & Check-in',
@@ -54,9 +55,7 @@ export default async function FAQPage() {
     <div className={styles.pageContainer}>
       <JsonLd data={faqSchema(faqs)} />
       <div className={styles.content}>
-        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 24, color: 'var(--text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-          <span style={{ fontSize: 16 }}>←</span> Back home
-        </Link>
+        <BackButton />
         <h1 className={styles.title}>Frequently asked questions</h1>
         <p className={styles.subtitle}>
           Everything you need to know about booking football turfs with OYUN. Still stuck? Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a>.

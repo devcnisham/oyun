@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import ConsentManager from "@/components/consent/ConsentManager";
+import NavTracker from "@/components/NavTracker";
 
 
 export const metadata: Metadata = {
@@ -46,6 +47,7 @@ export default function RootLayout({
       <body>
         {children}
         <ConsentManager />
+        <NavTracker />
       </body>
     </html>
   );

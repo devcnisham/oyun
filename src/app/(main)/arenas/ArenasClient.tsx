@@ -2,10 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import TurfCard from '@/components/TurfCard';
 import type { TurfSummary } from '@/lib/types';
 import styles from './page.module.css';
+import BackButton from '@/components/BackButton';
 
 const sortOptions = [
   { value: 'featured', label: 'Featured First' },
@@ -88,9 +88,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
         <div className="container">
           <div className={styles.headerInner}>
             <div>
-              <Link href="/" style={{display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 16, color: 'var(--text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500}}>
-                <span style={{fontSize: 16}}>←</span> Back home
-              </Link>
+              <BackButton style={{ marginBottom: 16 }} />
               <p className="section-label">{selectedCity.toUpperCase()}</p>
               <h1 className={styles.pageTitle}>{selectedSport === 'All Sports' ? 'Sports Arenas' : selectedSport + ' Arenas'}</h1>
               <p className={styles.pageDesc}>

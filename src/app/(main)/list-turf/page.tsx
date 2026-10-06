@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { submitApplication } from '@/lib/booking-actions';
 import { STEP_FIELDS, validateApplication, type FieldErrors } from '@/lib/validation/application';
 import styles from './page.module.css';
+import BackButton from '@/components/BackButton';
 
 const amenitiesOptions = [
   'Changing Rooms', 'Parking', 'Floodlights', 'Drinking Water',
@@ -144,9 +145,7 @@ export default function ListTurfPage() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="container">
-            <Link href="/" style={{display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 24, color: 'var(--text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500}}>
-              <span style={{fontSize: 16}}>←</span> Back home
-            </Link>
+            <BackButton />
             <h1 className={styles.heroTitle}>Partner with OYUN</h1>
             <p className={styles.heroSubtitle}>Join Mangalore&apos;s fastest growing turf booking network. Free to list, zero commission during beta.</p>
             <button className="btn btn--primary btn--lg" onClick={() => { document.getElementById('list-form')?.scrollIntoView({ behavior: 'smooth' }); }}>List Your Property Now</button>
