@@ -22,7 +22,7 @@ export default function ClerkAccount({ className, nameClassName }: { className?:
   return (
     <span className={className}>
       <Link href="/profile" className={nameClassName} style={{ color: 'inherit', textDecoration: 'none' }}>
-        Hi, {user.firstName || user.username || 'there'} <span aria-hidden>›</span>
+        Hi, {user.firstName || user.username || user.primaryEmailAddress?.emailAddress.split('@')[0] || 'player'} <span aria-hidden>›</span>
       </Link>
       <UserButton appearance={{ elements: { avatarBox: { width: 28, height: 28 } } }} />
     </span>
