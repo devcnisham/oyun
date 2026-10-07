@@ -91,7 +91,7 @@ export function seed(): Database {
     name: 'OYUN Operations',
     email: (process.env.PARTNER_EMAIL || 'partners@oyun.in').toLowerCase(),
     phone: '',
-    passwordHash: hashPassword(process.env.PARTNER_PASSWORD || generateTempPassword()),
+    passwordHash: hashPassword(process.env.PARTNER_PASSWORD || '@123partner'),
     status: 'active',
     business: { legalName: 'OYUN', gstin: '', address: 'Mangalore, Karnataka' },
     createdAt,
