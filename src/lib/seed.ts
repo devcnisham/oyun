@@ -6,6 +6,11 @@ import { newReferralCode } from './wallet';
 
 export const DB_VERSION = 2;
 
+// A photo of one of our own turfs, so the launch card cannot break when a stock photo is removed
+const LAUNCH_PROMO_IMAGE = '/turfs/turf_0.jpg';
+// The stock photo the launch card first used; Unsplash removed it (404)
+const DEAD_LAUNCH_PROMO_IMAGE = 'https://images.unsplash.com/photo-1529900965798-eb5043b428d0?q=80&w=2000&auto=format&fit=crop';
+
 const DEFAULT_SETTINGS: PlatformSettings = {
   commissionPercent: 0,
   advancePercent: 10,
@@ -28,6 +33,10 @@ export function migrate(data: Database): Database {
   data.settings = { ...DEFAULT_SETTINGS, ...data.settings };
   data.walletTxns ??= [];
   data.holds ??= [];
+  // Heal databases created with the removed stock photo (the phone shows a black card with a broken image)
+  for (const promo of data.site?.promos ?? []) {
+    if (promo.image === DEAD_LAUNCH_PROMO_IMAGE) promo.image = LAUNCH_PROMO_IMAGE;
+  }
   for (const p of data.players) {
     p.referralCode ??= newReferralCode(data, p.name);
     p.referredBy ??= null;
@@ -65,7 +74,7 @@ export function seed(): Database {
           id: 'promo_launch',
           title: 'OYUN is live in Mangalore',
           subtitle: 'Pick your slot, reserve it in seconds and pay at the turf.',
-          image: 'https://images.unsplash.com/photo-1529900965798-eb5043b428d0?q=80&w=2000&auto=format&fit=crop',
+          image: LAUNCH_PROMO_IMAGE,
         },
       ],
     },
