@@ -130,18 +130,17 @@
 .trust { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; }
 .trust div { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 12px; background: var(--bg-muted); font-size: 13px; }
 
-/* Sport photo cards: two across on a phone, more as the screen widens */
-.sports { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px; padding: 0 16px; }
-.sportCard {
-  position: relative; overflow: hidden; display: flex; align-items: center;
-  min-height: clamp(104px, 26vw, 150px); border-radius: 16px; background: #000;
-  box-shadow: var(--shadow-md); text-decoration: none; color: #fff;
+/* Sport icons: a round photo with the name underneath. Four across; they scroll sideways if the screen is too narrow. */
+.sports { display: flex; justify-content: space-between; gap: 12px; padding: 4px 16px 2px; overflow-x: auto; scrollbar-width: none; }
+.sports::-webkit-scrollbar { display: none; }
+.sportIcon {
+  flex: 1 0 64px; max-width: 110px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  text-decoration: none; color: var(--text-primary); -webkit-tap-highlight-color: transparent;
 }
-.sportCard:active { transform: scale(0.97); }
-.sportImg { object-fit: cover; }
-.sportInfo {
-  position: relative; z-index: 1; width: 100%; height: 100%; padding: 14px; display: flex; flex-direction: column; justify-content: center; gap: 6px;
-  background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0) 100%);
+.sportIcon:active { transform: scale(0.95); }
+.sportIconImg {
+  position: relative; display: block; width: clamp(60px, 18vw, 88px); aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+  background: #000; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--primary-200), var(--shadow-md);
 }
-.sportInfo b { font-size: clamp(16px, 4.6vw, 22px); font-weight: 800; line-height: 1.1; }
-.sportInfo > span { font-size: 12.5px; font-weight: 600; color: var(--primary-400); }
+.sportIconImg img { object-fit: cover; }
+.sportIcon b { font-size: clamp(12px, 3.4vw, 14px); font-weight: 700; line-height: 1.2; text-align: center; }
