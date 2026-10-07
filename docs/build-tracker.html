@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #27 (main at ba881eb) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #31 (main at f875f31) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1125,14 +1125,15 @@ featureGroups:[
   ["Turf list","built","Active turfs only, each with open slots today","arenas/ArenasClient.tsx, lib/queries.ts"],
   ["Text search","built","Matches name, location or area, on the device","ArenasClient.tsx"],
   ["Area filter","built","Dropdown built from live data with a count per area","ArenasClient.tsx"],
-  ["Sport chips","built","All, Football, Box Cricket, Badminton, Padel (fixed list)","ArenasClient.tsx"],
+  ["Sport chips","built","All, Football, Box Cricket, Badminton, Pickleball (fixed list; Padel is also in the filter but not on home)","ArenasClient.tsx"],
   ["Sort","built","Featured, rating, price low to high, price high to low, most available","ArenasClient.tsx"],
   ["Map view","partial","Google Maps search iframe plus link chips; no pins per turf","ArenasClient.tsx"],
   ["Price range, distance, amenity, date filters","planned","Not built","–"],
   ["Home page","built","Hero search, sport tiles, recommended slider (top 10), popular areas (top 4), list-your-turf call to action","(main)/page.tsx"],
   ["Mobile home feed","built","Next game, What do you want to play? sport cards, open slots today, featured promo, deals, top 3 rated, how it works, list-your-turf call to action","(main)/_home/"],
-  ["Sport photo cards","built","Football, Box Cricket, Badminton, Padel as round image icons with names (60 to 88px, scrolls on narrow screens); each opens the turfs list filtered by that sport. Phone and desktop share src/lib/sports.ts. PR #26.","_home/MobileHome.tsx, lib/sports.ts"],
-  ["Area chips, quick tiles, Browse by area grid, Why OYUN strip on the phone home","removed","Taken out at the owner's request (PR #20); areas are still reachable from the turfs list and the footer","–"],
+  ["Sport photo cards","built","Football, Box Cricket, Badminton, Pickleball as round image icons with names (60 to 88px, scrolls on narrow screens); tapping a sport filters the Open slots rail in place on the same page instead of opening a separate page, a chosen icon is highlighted and shows a larger ring with spring animation on hover. Padel is in the turfs filter but no longer on home. Phone and desktop share src/lib/sports.ts. PR #28 and #31.","_home/MobileHome.tsx, lib/sports.ts"],
+  ["Open slots rail","built","Below the sport icons: shows up to 8 venues with open slots today for the chosen sport, sorted by most slots left; tap to book, See all link opens the filtered turfs list, empty state shows a link to browse venues for that sport. Title fades in when you pick a sport, cards slide in one after another, loading shimmer appears during photo load, slots badge pops in, hover zoom on cards and enter press effect. All motion disabled for prefers-reduced-motion. PR #28 and #31.","_home/SportRail.tsx"],
+  ["Area chips, quick tiles, Browse by area grid, Why OYUN strip, and How OYUN works card on the phone home","removed","Taken out at the owner's request (PR #20, #28); areas are still reachable from the turfs list and the footer","–"],
   ["Area landing pages","built","One SEO page per area with copy","(main)/turfs/[area]"],
   ["Floating search sheet","built","Phone only","components/FloatingSearch.tsx"],
   ["Phone side menu","partial","Home, My bookings, Saved turfs, Profile, Turf owners links. Turfs by area, Help & FAQ, Privacy, Terms and Cookie settings were removed (PR #20); the legal links remain only in the page footer and the FAQ is linked from nowhere on the phone","components/SideMenu.tsx"],
@@ -1728,8 +1729,20 @@ DATA.tasks.push(
  {id:"P8-37",p:"P8",t:"Forms clear typed values after validation error",s:"todo",pr:"P2",n:"React 19 clears uncontrolled inputs after a failed action, so the Settings and New promo code forms lose what the admin typed. Found in the PR #27 review."},
  {id:"P8-38",p:"P8",t:"Check-in time window and turf hours limits",s:"todo",pr:"P2",n:"Check-in only checks the date, so it works hours before or after the slot and triggers cashback; turf hours accept half hours and a close time after midnight silently drops the late slots. Found in the PR #27 review."},
  {id:"P7-16",p:"P7",t:"Mobile menu keyboard navigation and input labels",s:"todo",pr:"P2",n:"The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review."},
- {id:"P8-39",p:"P8",t:"Admin and partner list pagination",s:"todo",pr:"P2",n:"Admin bookings show the first 150, admin reviews 500, wallet activity the last 30, partner bookings 100, with no next page. Found in the PR #27 review."}
+ {id:"P8-39",p:"P8",t:"Admin and partner list pagination",s:"todo",pr:"P2",n:"Admin bookings show the first 150, admin reviews 500, wallet activity the last 30, partner bookings 100, with no next page. Found in the PR #27 review."},
+ {id:"P7-17",p:"P7",t:"Phone home: sport icons filter Open slots in place; remove How OYUN works card",s:"done",pr:"P1",n:"Tapping a sport now filters the rail underneath on the same page instead of opening the turfs page. Removes the How OYUN works card and its styles. PR #28."},
+ {id:"P7-18",p:"P7",t:"Search sheet: remove area chips; home sports icon: Pickleball replaces Padel",s:"done",pr:"P2",n:"Removes Popular areas chips and label from phone search sheet. Fourth home sport icon is now Pickleball with photo; turfs list filter offers both Padel and Pickleball. PR #30."},
+ {id:"P7-19",p:"P7",t:"Phone home: animate sport icons and the Open slots rail",s:"done",pr:"P2",n:"Sport icons rise in staggered (70 ms apart), spring on hover and press, chosen icon pops with a larger ring. Rail title fades in, cards slide in one after another, loading shimmer, slots badge pop, hover zoom and enter press. All wrapped in prefers-reduced-motion. PR #31."},
+ {id:"P7-20",p:"P7",t:"Phone side menu: remove items, add Help center page and Settings page",s:"todo",pr:"P2",n:"Waiting for the owner to confirm which menu items to remove and what the Help center (FAQ plus contact and policy links) and Settings page (cookie preferences, account and legal links) should contain."},
+ {id:"P7-21",p:"P7",t:"Add two real Pickleball venues: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)",s:"todo",pr:"P2",n:"Waiting for hourly price, opening time, closing hour, phone, address and photo. They would show bookings under OYUN operations partner until they get their own login."},
+ {id:"P7-22",p:"P7",t:"Decide whether the Padel Club stays a separate sport next to Pickleball on the home icons",s:"todo",pr:"P3",n:"Padel is only in the turfs list filter now; it is no longer on the home page."}
 );
+
+
+DATA.tasks.push(
+ {id:"P9-18",p:"P9",t:"Remove the hard-coded admin and partner credentials from LoginForm.tsx; set strong ADMIN_*/PARTNER_* values on the deployed site",s:"todo",pr:"P0",n:"The form posts a fixed email and password for each role from hidden inputs, so anyone who views the login page source has them. Do this before real owners or players use the site, and decide with the owner when the login comes back for the demo."}
+);
+DATA.risks.push({id:"R-15",t:"Login form ships hard-coded admin and partner credentials",sev:"High",stride:"S, E, I",d:[9,10,9,8,8],ev:"components/auth/LoginForm.tsx submits a fixed email and password for admin and for partner from hidden inputs, so they are visible in the page source of /admin/login and /partner/login. They sign in anyone whenever the deployed ADMIN_*/PARTNER_* values match them. Today the deployed site is behind Vercel's own login (all addresses except custom domains), which hides it from the public; a custom domain would expose it.",fix:"Remove the hidden inputs, set long random deployed credentials, rotate them, and add real login back.",task:"P9-18"});
 
 /* ===================== BOOT ===================== */
 function initControls(){
