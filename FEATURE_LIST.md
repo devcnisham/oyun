@@ -1,6 +1,6 @@
-# Slot Arena - Feature Roadmap
+# Oyun Arena - Feature Roadmap
 
-This document outlines the core features required to turn the Slot Arena frontend into a fully functional, production-ready premium turf booking platform. 
+This document outlines the core features required to turn the Oyun Arena frontend into a fully functional, production-ready premium turf booking platform. 
 
 ### 1. Backend & Database Integration (High Priority)
 *Status: Not Started*
@@ -50,7 +50,7 @@ This document outlines the core features required to turn the Slot Arena fronten
 
 ### 8. Digital Wallet & Promo Engine
 *Status: Not Started*
-- [x] **Slot Arena Wallet:** Allow users to earn and store cashback credits from previous bookings to use on future matches.
+- [x] **Oyun Arena Wallet:** Allow users to earn and store cashback credits from previous bookings to use on future matches.
 - [x] **Promo Code Engine:** Build a backend system to generate, validate, and apply discount codes (e.g., `ARENA10`) dynamically at checkout.
 
 ### 9. Player Experience Extras
