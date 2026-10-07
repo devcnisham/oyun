@@ -10,7 +10,7 @@ import { ValidationError, refreshAll } from './action-utils';
 import { rateLimit } from './rate-limit';
 import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
 import { deviceHolder } from './device-holder';
-import { buildQuote, getSlots, normalizePhone } from './pricing';
+import { advanceDue, buildQuote, getSlots, normalizePhone, splitAdvance } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
 import { addDays, formatHour, isValidDate, istNow } from './time';
 import type { Booking, BookingAddOn, Database, PriceLine, Slot } from './types';
@@ -144,6 +144,8 @@ export interface SelectionQuote {
   walletBalance: number;
   walletDeduction: number;
   total: number;
+  advancePercent: number;
+  minAdvance: number;
   payNow: number;
   payAtVenue: number;
   promoCode: string | null;
@@ -226,8 +228,14 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
     bookings.push(booking);
   });
 
+  // One advance for the whole booking, not one per hour, so the minimum applies once
   const sum = (f: (b: Booking) => number) => bookings.reduce((s, b) => s + f(b), 0);
   const total = sum((b) => b.pricing.total);
+  const shares = splitAdvance(bookings.map((b) => b.pricing.total), advanceDue(db.settings, total));
+  bookings.forEach((b, i) => {
+    b.amountPaid = shares[i];
+    b.pricing.advance = shares[i];
+  });
   const payNow = sum((b) => b.amountPaid);
   const quote: SelectionQuote = {
     slots: bookings.map((b) => ({ hour: b.hour, label: b.timeLabel, price: b.pricing.slotPrice })),
@@ -238,6 +246,8 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
     walletBalance,
     walletDeduction: sum((b) => b.pricing.walletDeduction),
     total,
+    advancePercent: total > 0 ? Math.round((payNow / total) * 1000) / 10 : 0, // what is actually asked, after the minimum
+    minAdvance: db.settings.minAdvance,
     payNow,
     payAtVenue: total - payNow,
     promoCode,

@@ -4,6 +4,7 @@ import type {
   Database,
   Offer,
   PriceBreakdown,
+  PlatformSettings,
   PriceLine,
   PricingRules,
   PromoCode,
@@ -213,7 +214,7 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
       subtotal,
       walletDeduction,
       total,
-      advance: Math.round((total * db.settings.advancePercent) / 100),
+      advance: advanceDue(db.settings, total),
     },
     addOns,
     promoCode,
@@ -222,6 +223,25 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
     firstTime,
     slotError,
   };
+}
+
+// Advance paid online to confirm a booking: advancePercent of the total, but never under minAdvance
+// (and never more than the total). 10% of 1500 is 150; 10% of 1000 is 100, so it rises to 150.
+export function advanceDue(settings: Pick<PlatformSettings, 'advancePercent' | 'minAdvance'>, total: number) {
+  if (total <= 0) return 0;
+  return Math.min(total, Math.max(settings.minAdvance ?? 0, Math.round((total * settings.advancePercent) / 100)));
+}
+
+// Split one advance across the hours of a booking in proportion to what each hour costs
+export function splitAdvance(totals: number[], advance: number) {
+  const sum = totals.reduce((s, t) => s + t, 0);
+  if (sum <= 0) return totals.map(() => 0);
+  const shares = totals.map((t) => Math.floor((t * advance) / sum));
+  let left = advance - shares.reduce((s, x) => s + x, 0);
+  for (let i = 0; left > 0 && i < shares.length; i = (i + 1) % shares.length) {
+    if (totals[i] > 0) { shares[i] += 1; left -= 1; }
+  }
+  return shares;
 }
 
 // GST is included in the booking price; split it out for invoices

@@ -9,6 +9,7 @@ export const DB_VERSION = 2;
 const DEFAULT_SETTINGS: PlatformSettings = {
   commissionPercent: 0,
   advancePercent: 10,
+  minAdvance: 150,
   gstPercent: 18,
   supportEmail: 'hello@oyun.in',
   supportPhone: '',
