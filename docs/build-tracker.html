@@ -201,7 +201,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
 
 <!-- ================= OVERVIEW ================= -->
 <section class="panel" id="p-overview" role="tabpanel">
-  <header><h2>Where the build stands</h2><p>A working pay-at-venue booking product shipped in two days. The next gates are quality (no tests, no CI), security (identity and wallet), and storage scale, all before online payments.</p></header>
+  <header><h2>Where the build stands</h2><p>A working turf-booking product shipped in two days: players book and pay a flat ₹150 advance for each hour (recorded, not yet collected), then pay the rest at the venue. The next gates are quality (no tests, no CI), security (identity and wallet), and storage scale, all before online payments.</p></header>
   <div class="stack">
     <div class="grid g4" id="ov-stats"></div>
     <div class="box tint-crit"><div class="section-label">First target: 1,000 users</div>
@@ -217,7 +217,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
           <li><b>Close the money and identity risks</b>: rotate the old Supabase key, bind wallet to the signed-in account, shared rate limiting (P9-01, 03, 06).</li>
           <li><b>Backups and monitoring</b>: nightly dump, Sentry, uptime check on /api/health.</li>
           <li><b>Paper</b>: partner agreement, refund and commission policy, privacy review, a custom domain.</li>
-          <li><b>Pay at venue is fine for this stage.</b> Online payments (Razorpay) can wait until the 1,000-user pilot works.</li>
+          <li><b>The ₹150 an hour advance is only recorded.</b> No money is taken until Razorpay is added (phase 11). Decide whether the pilot collects it by UPI by hand, or waits. Until then, do not describe it to players as paid.</li>
         </ol>
       </div></div>
     <div class="grid g2">
@@ -235,13 +235,13 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
         <ul class="tight">
           <li>Browse 10 launch turfs, filter by area and sport, live hourly slots for the next 14 days.</li>
           <li>8-minute slot holds per device, up to 6 slots per booking, promo, referral and add-ons, server-side quote.</li>
-          <li>Pay-at-venue booking, ticket with QR, invoice, calendar file, self-cancel until 2 hours before.</li>
+          <li>Booking with a flat ₹150 advance per hour (10% of the hour's price, never under or over ₹150, so 3 hours is ₹450), the rest paid at the venue; ticket with QR, invoice, calendar file, self-cancel until 2 hours before.</li>
           <li>Reviews after check-in, saved turfs, WhatsApp share.</li>
           <li>Owner dashboard (pricing rules, offers, blocks, check-in desk, payouts CSV, staff roles) and admin console.</li>
         </ul></div>
       <div class="box"><h3>What does not exist</h3>
         <ul class="tight">
-          <li>Online payments (Razorpay is documented as "later"). <code>advancePercent</code> is computed but unused.</li>
+          <li>Real money movement: the advance is recorded as paid but nothing is charged. Razorpay is planned for phase 11.</li>
           <li>Any outbound message: no SMS, WhatsApp, email or push. Only the error webhook.</li>
           <li>Tests, CI, staging, backups policy, uptime monitor.</li>
           <li>Find players, tournaments, weather alerts, real map, admin analytics.</li>
@@ -257,7 +257,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
         <tr><td><b>Tests, backups, monitoring</b></td><td>Nothing catches a broken price or a lost database.</td><td><code>P8-02, P8-08, P8-21, P8-22</code></td></tr>
         <tr><td><b>Scale</b></td><td><span class="s-ok"><b>Fixed in code</b></span>: delta sync. Needs SQL step 5 on production. The global write lock remains.</td><td><code>P10-01, P10-13, P10-02</code></td></tr>
       </tbody></table></div>
-      <p class="muted" style="margin-top:10px">Nice to have later: find players, tournaments, weather alerts, waitlist, recurring bookings, Kannada, an app with push. Verdict: fine for a pay-at-venue pilot with trusted owners; an open launch needs payments, messages and the security fixes first.</p>
+      <p class="muted" style="margin-top:10px">Nice to have later: find players, tournaments, weather alerts, waitlist, recurring bookings, Kannada, an app with push. Verdict: fine for a pilot with trusted owners; an open launch needs payments, messages and the security fixes first.</p>
     </div>
     <div class="box" id="ov-gate"></div>
     <p class="note">Everything on this page comes from reading the code. The worktree has no <code>node_modules</code>, so lint, type-check, build and tests were not run, and Next.js 16 docs under <code>node_modules/next/dist/docs/</code> were not read (AGENTS.md asks for that before writing code).</p>
@@ -486,7 +486,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
 </section>
 
 <section class="panel" id="p-features" role="tabpanel">
-  <header><h2>Features</h2><p>Every feature by audience, with its status and where the code lives.</p></header>
+  <header><h2>Features</h2><p>Every feature with the parts inside it: rules, limits and defaults, each with its own status and where the code lives. For example, Payment holds the 10% advance, its ₹150 minimum and maximum, and the wallet.</p></header>
   <div class="stack">
     <div class="grid g3" id="feat-stats"></div>
     <div class="ctl" id="feat-ctl"></div>
@@ -862,7 +862,7 @@ debt:[
 adr:[
  {t:"Store data as jsonb documents in Postgres",ctx:"Two-day build, schema still moving, one developer.",dec:"Fourteen (id, data jsonb) tables with generated columns only where a unique index needs them.",tr:"Fast iteration and one write path; no referential integrity, whole-state reads.",rev:"Revisit before real traffic or when a second developer joins (P10)."},
  {t:"Global revision lock plus partial unique indexes",ctx:"Double-booking is the one failure that breaks trust.",dec:"apply_changes succeeds only if the caller saw the latest rev; unique indexes catch the rest.",tr:"Cross-table checks are safe in app code; all writes serialise.",rev:"When busy errors appear in logs or two owners edit at once."},
- {t:"Pay at venue first",ctx:"No payment gateway yet; owners collect cash or UPI on site.",dec:"paymentMode venue, amountPaid 0; wallet is internal credit only.",tr:"Zero payment risk and fast launch; no-shows cost owners and commission is 0.",rev:"When no-show rate hurts owners (P11)."},
+ {t:"Flat advance now, gateway later",ctx:"No payment gateway yet, but owners want a commitment before holding a slot.",dec:"Each booked hour asks an advance of advancePercent of its price, kept between minAdvance and maxAdvance (both 150 rupees, so a flat 150 for each hour booked), recorded as paymentMode advance; the rest is paid at the venue. Wallet is internal credit only.",tr:"Commitment signal and a path to Razorpay; the advance is bookkeeping only until the gateway exists, so a refund can credit money never collected.",rev:"When Razorpay goes in (P11) or when no-shows still hurt owners."},
  {t:"Clerk is optional, device identity is the fallback",ctx:"Launch must work with no keys, and demos should not need accounts.",dec:"With the Clerk key, sign-in is required before paying; without it, a localStorage name and phone.",tr:"Easy local dev; the fallback is not authentication and weakens wallet and ticket security.",rev:"Make Clerk mandatory in production (P9-03)."},
  {t:"Custom cookie auth for admin and partner",ctx:"Few operator accounts, env-provisioned.",dec:"HMAC session cookie, scrypt hashes in the store, role matrix for partners.",tr:"Simple and dependency-free; no MFA, no revocation, in-memory lockout.",rev:"When more than a handful of operators exist (P9-09)."},
  {t:"Supabase Realtime broadcast for slot freshness",ctx:"Players must see a slot disappear while choosing.",dec:"Server posts a ping to slots:{turf}:{date}; clients refetch. Poll every 10 seconds as safety net.",tr:"Cheap and decoupled from RLS; topics are public and carry no data.",rev:"If payloads ever carry data, switch to private channels (P9-15)."},
@@ -968,12 +968,12 @@ function renderStatic(){
   const cnt = k => all.filter(i=>i[2]===k).length;
   $('#gate-stats').innerHTML = [['pass','Pass'],['fail','Fail'],['manual','Manual'],['skip','Skip / partial']].map(([k,l])=>
     `<div class="box stat"><b class="s-${k}">${k==='skip'?cnt('skip')+cnt('partial'):cnt(k)}</b><span>${l}</span></div>`).join('');
-  $('#gate-verdict').innerHTML = `<div class="verdict"><h3>Verdict</h3>${pill('SHIP WITH CAUTION','high')}<span>pay-at-venue pilot with trusted owners</span></div>
+  $('#gate-verdict').innerHTML = `<div class="verdict"><h3>Verdict</h3>${pill('SHIP WITH CAUTION','high')}<span>pilot with trusted owners where the advance is collected by hand</span></div>
     <div class="verdict" style="margin-top:8px">${pill('DO NOT SHIP','crit')}<span>online payments or open public launch until P8 and P9 close the failing items</span></div>
     <p class="muted" style="margin-top:10px">Severity guide: Critical blocks any release, High should be fixed first, Advisory is recommended. No check here is Critical for a pilot with cash on site; R-01, R-02 and R-03 become blocking once real money moves.</p>`;
   $('#gate-list').innerHTML = DATA.gate.map(g=>`<div><h3 style="margin-bottom:8px">${g.c} · ${g.n}</h3><div class="tw"><table><thead><tr><th>ID</th><th>Check</th><th>Result</th><th>Evidence</th></tr></thead><tbody>${
     g.items.map(i=>`<tr><td class="k">${i[0]}</td><td>${esc(i[1])}</td><td>${pill(i[2].toUpperCase(),i[2])}</td><td>${esc(i[3])}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
-  $('#ov-gate').innerHTML = `<h3>Ship gate snapshot</h3><div class="verdict">${pill('SHIP WITH CAUTION','high')}<span>for the pay-at-venue pilot</span> ${pill('DO NOT SHIP','crit')}<span>for online payments</span></div>
+  $('#ov-gate').innerHTML = `<h3>Ship gate snapshot</h3><div class="verdict">${pill('SHIP WITH CAUTION','high')}<span>for a pilot with the advance collected by hand</span> ${pill('DO NOT SHIP','crit')}<span>for online payments</span></div>
     <p class="muted" style="margin-top:8px">${cnt('pass')} pass · ${cnt('fail')} fail · ${cnt('manual')} manual · from code reading only. Details in the Ship gate tab.</p>`;
 }
 
@@ -1119,46 +1119,216 @@ npm run dev                  # http://localhost:3000`,
  ]
 },
 
-features:[
- // [audience, feature, status, where, note]
- ["Player","Browse and search turfs by area, sport, sort; grid or map toggle","built","arenas/ArenasClient.tsx","Map is a Google Maps iframe, not an API integration"],
- ["Player","Turf page: 14-day date strip, live slots, offers, reviews, share","built","arenas/[id]/TurfDetail.tsx",""],
- ["Player","8-minute slot hold with live updates","built","booking-actions.ts, lib/client/use-slot-updates.ts","Realtime ping plus 10-second poll"],
- ["Player","Book up to 6 slots, promo, referral, wallet, server quote","built","BookingFlow.tsx, pricing.ts","Add-ons are owner-side only; checkout add-ons were removed in P4"],
- ["Player","Pay at venue","built","booking-actions.ts","paymentMode venue, amountPaid 0"],
- ["Player","Pay online (Razorpay)","planned","","Phase 11"],
- ["Player","Ticket with QR, invoice, calendar file, WhatsApp share","built","bookings/[id]/",""],
- ["Player","Self-cancel up to 2 hours before","built","cancel-policy.ts","Wallet refund path needs verification"],
- ["Player","Ratings and reviews after check-in","built","lib/reviews.ts","Admin can hide"],
- ["Player","Saved turfs","built","saved/, lib/client/favourites.ts","localStorage, synced to Clerk metadata"],
- ["Player","Sign in with Clerk, or device profile fallback","partial","(auth)/, lib/clerk.ts","Fallback is not real authentication"],
- ["Player","Wallet, cashback, referral","partial","lib/wallet.ts","Rewards default to off"],
- ["Player","PWA install","partial","manifest.ts","No service worker, no offline, no push"],
- ["Player","SEO: sitemap, JSON-LD, area pages, OG images","built","sitemap.ts, lib/schema.ts, turfs/[area]",""],
- ["Player","Booking reminders and confirmations","planned","","Phase 12"],
- ["Player","Find players, teams, tournaments, weather alerts, waitlist, recurring bookings, Kannada","planned","","Phase 13"],
- ["Owner","Dashboard: 7-day revenue, today's schedule","built","partner/(dashboard)/page.tsx",""],
- ["Owner","Bookings list and walk-in booking","built","partner/…/bookings",""],
- ["Owner","Check-in desk with camera QR scan or typed code, no-show","built","partner/…/check-in","Camera uses BarcodeDetector, not on every browser"],
- ["Owner","Block and unblock slots","built","partner/…/slots",""],
- ["Owner","Dynamic pricing: peak, weekend, last-minute","built","partner/…/pricing",""],
- ["Owner","Offers (happy hour, first-time) and add-ons","built","partner/…/offers, add-ons",""],
- ["Owner","Reviews view","built","partner/…/reviews",""],
- ["Owner","Staff accounts with roles (owner, manager, front desk)","built","partner/…/staff, lib/partner-auth.ts",""],
- ["Owner","Payouts, GST summary, CSV export, invoices","built","partner/…/payouts","Shows zero online settlement until payments exist"],
- ["Owner","Turf profile and multi-turf switcher","built","partner/…/turf",""],
- ["Owner","List your turf (4-step application)","built","(main)/list-turf","Honeypot, timing check, rate limit"],
- ["Admin","Approve or reject applications, creates partner login and turf","built","admin/…/PendingApplications.tsx",""],
- ["Admin","Manage turfs, partners, players (ban, wallet adjust)","built","admin/…/turfs, partners, users",""],
- ["Admin","Bookings, refunds","built","admin/…/transactions",""],
- ["Admin","Review moderation","built","admin/…/reviews",""],
- ["Admin","Settings: commission, GST, cashback, referral, promo codes","built","admin/…/settings",""],
- ["Admin","Homepage content, announcement bar, promo carousel","built","admin/…/customization",""],
- ["Admin","Analytics dashboard, audit log","planned","","Not built"],
- ["Platform","Health endpoint, error monitoring webhook, cookie consent","built","api/health, lib/monitoring.ts, components/consent",""],
- ["Platform","Security headers, CSP, HTTPS redirect, login lockout","built","next.config.ts, proxy.ts",""],
- ["Platform","Tests and CI","planned","","Phase 8"],
- ["Platform","Email, SMS, WhatsApp, push","planned","","Phase 12"]
+featureGroups:[
+ // {g: group, a: audience, subs: [[name, status, detail, files]]}
+ {g:"Browse, search and filter",a:"Player",subs:[
+  ["Turf list","built","Active turfs only, each with open slots today","arenas/ArenasClient.tsx, lib/queries.ts"],
+  ["Text search","built","Matches name, location or area, on the device","ArenasClient.tsx"],
+  ["Area filter","built","Dropdown built from live data with a count per area","ArenasClient.tsx"],
+  ["Sport chips","built","All, Football, Box Cricket, Badminton, Padel (fixed list)","ArenasClient.tsx"],
+  ["Sort","built","Featured, rating, price low to high, price high to low, most available","ArenasClient.tsx"],
+  ["Map view","partial","Google Maps search iframe plus link chips; no pins per turf","ArenasClient.tsx"],
+  ["Price range, distance, amenity, date filters","planned","Not built","–"],
+  ["Home page","built","Hero search, sport tiles, recommended slider (top 10), popular areas (top 4), list-your-turf call to action","(main)/page.tsx"],
+  ["Mobile home feed","built","Next game, quick tiles, open slots today, deals, top 3 rated, areas","(main)/_home/"],
+  ["Area landing pages","built","One SEO page per area with copy","(main)/turfs/[area]"],
+  ["Floating search sheet","built","Phone only","components/FloatingSearch.tsx"],
+  ["Stats banner and brand ad strip on home","partial","Static placeholder content (100+ turfs, 50k+ players, sports brand ads); not real data","(main)/page.tsx"]
+ ]},
+ {g:"Turf detail page",a:"Player",subs:[
+  ["Photo gallery","partial","First image only with a 1/N counter; no carousel","arenas/[id]/TurfDetail.tsx"],
+  ["Turf information","built","Size and surface, address with maps link, offers strip, perks, sports and formats, amenities, tap-to-call","TurfDetail.tsx"],
+  ["Reviews on the page","built","Latest 10 with the aggregate rating","TurfDetail.tsx"],
+  ["Embedded map","built","Google Maps iframe","TurfDetail.tsx"],
+  ["Maintenance state","built","Visible but not bookable, with a notice","TurfDetail.tsx"],
+  ["Save and share","built","Heart toggle; Web Share with copy-link fallback","ShareButton.tsx"],
+  ["Search data for Google","built","Title, canonical, SportsActivityLocation with rating, breadcrumbs","lib/schema.ts"],
+  ["Deep links","built","?date= sets the date, ?ref= fills the referral code","page.tsx"]
+ ]},
+ {g:"Slots, holds and live updates",a:"Player",subs:[
+  ["Booking window","built","Today plus 14 days, 14 date chips","lib/pricing.ts (MAX_DAYS_AHEAD)"],
+  ["Hourly slot grid","built","Open to close, grouped Morning, Afternoon, Evening, Night; a close time at or before open means midnight","lib/pricing.ts getSlots"],
+  ["Slot states","built","past, booked, blocked, held; a slot is past once its start hour is reached","lib/pricing.ts"],
+  ["Hold while checking out","built","8 minutes, per device cookie (only a hash is stored); a new hold replaces the old one","booking-actions.ts, device-holder.ts"],
+  ["Hold release","built","On leaving checkout, on page hide by beacon, or on timeout","api/holds/release"],
+  ["Countdown timer","built","Shown in checkout; slots are released at zero","BookingFlow.tsx"],
+  ["Max slots per booking","built","6, need not be consecutive","booking-actions.ts (MAX_SLOTS)"],
+  ["Double-booking protection","built","Database unique indexes on live booking, block and hold per slot","supabase migrations"],
+  ["Live updates","built","Realtime broadcast per turf and date; also a 10-second poll and refresh on tab focus","lib/realtime.ts, use-slot-updates.ts"],
+  ["Request limits","partial","Hold 60 per IP and 15 per device per 10 minutes; in memory per server","booking-actions.ts"]
+ ]},
+ {g:"Pricing engine",a:"Player",subs:[
+  ["Base price","built","Per turf, validated 100 to 20,000","lib/pricing.ts"],
+  ["Peak markup","built","Default on, 17:00 to 22:00, +30% (owner range 0 to 200%)","pricing.ts, partner/pricing"],
+  ["Weekend markup","built","Default on, Saturday and Sunday, +15% (0 to 200%); computed on base, not stacked with peak","pricing.ts"],
+  ["Last-minute discount","built","Default on, 25% off slots starting within 2 hours (window 1 to 12 h, 0 to 90%), same day","pricing.ts"],
+  ["Owner offers","built","Happy hour window or first-time customer, 1 to 90% off; best single offer only, no stacking","pricing.ts bestOffer"],
+  ["First-time offer in multi-slot bookings","partial","Effectively applies to the first slot only","pricing.ts"],
+  ["Promo codes","built","Percent (1 to 100) or flat (1 to 10,000), optional max discount, weekend-only flag, active toggle","pricing.ts promoDiscount"],
+  ["Promo limits","planned","No expiry date, global cap or per-player cap","–"],
+  ["Add-ons in the price","built","Quantity 0 to 20, attached to the first slot","pricing.ts"],
+  ["GST","built","Included in the price (default 18%), split into CGST and SGST on invoices","gstSplit in pricing.ts"],
+  ["Commission","built","Platform default 0%, per-turf override 0 to 50%; counted on money collected online","pricing.ts, reports.ts"],
+  ["Same quote as the charge","built","Server dry-runs the real booking on a copy so display equals charge","booking-actions.ts"]
+ ]},
+ {g:"Booking and checkout",a:"Player",subs:[
+  ["Flow","built","Pick date, pick slots, Proceed (holds), checkout sheet, Pay Advance","BookingFlow.tsx"],
+  ["Checkout sheet","built","Ticket summary, name and phone, promo or referral code, wallet toggle, full bill","BookingFlow.tsx"],
+  ["Validation","built","Name required (max 80), 10-digit phone, date in window, banned phones blocked","booking-actions.ts"],
+  ["Sign-in at checkout","built","Clerk sign-in required when configured; otherwise a name and phone gate with slots kept held","SignInGate.tsx"],
+  ["Promo and referral in one box","built","Tries promo first, then referral; an invalid referral is an error","booking-actions.ts"],
+  ["One booking per hour","built","Booking code SA-XXXXXX; single booking opens the ticket, several open My bookings","booking-actions.ts"],
+  ["Player record by phone","built","Created automatically with a referral code","lib/wallet.ts"],
+  ["Create limits","built","30 per IP and 10 per device per 10 minutes","booking-actions.ts"],
+  ["Add-ons at checkout","partial","Owners can create them and walk-ins can sell them, but online checkout always sends none","BookingFlow.tsx"],
+  ["Reschedule","planned","Not built","–"],
+  ["Split payment, recurring bookings, waitlist","planned","Not built","–"]
+ ]},
+ {g:"Payment",a:"Player",subs:[
+  ["Advance payment percent","partial","Each hour booked carries an advance of 10% of that hour's price (Admin setting, 10 to 100%). Recorded as paid, but no money is taken yet","pricing.ts advanceDue"],
+  ["Minimum advance per hour","built","Never under ₹150 an hour (Admin setting): a ₹1,000 hour asks ₹150, which is 15%","pricing.ts, admin settings"],
+  ["Maximum advance per hour","built","Never over ₹150 an hour (Admin setting), so by default every hour asks a flat ₹150","pricing.ts, admin settings"],
+  ["Advance never above the hour's price","built","A ₹120 hour asks ₹120","pricing.ts"],
+  ["Advance adds up per hour","built","3 hours at ₹150 an hour asks 150 + 150 + 150 = ₹450; each hour keeps its own advance","pricing.ts, booking-actions.ts"],
+  ["Advance shown at checkout","built","The bill shows the total, for example 3 × ₹150, and the checkout text says per hour","BookingFlow.tsx"],
+  ["Pay the rest at the venue","built","Balance shown to player and to staff at check-in; cash or UPI","check-in desk"],
+  ["Wallet as payment","built","Deducted at booking, capped at the subtotal, recorded as a transaction","lib/wallet.ts"],
+  ["Online payment gateway (Razorpay)","planned","Nothing is charged today; no webhook, no capture","phase 11"],
+  ["Full payment mode","planned","The type exists but nothing sets it","lib/types.ts"],
+  ["Refunds","partial","Credit the wallet only; the wallet-paid part is not returned and an advance that was never collected is credited anyway","admin-actions.ts, booking-actions.ts"],
+  ["Walk-in payment","built","Cash or UPI, full amount recorded as paid","partner-actions.ts"],
+  ["Payouts","partial","Weekly report only; no transfers are made","lib/reports.ts"]
+ ]},
+ {g:"Ticket, invoice and sharing",a:"Player",subs:[
+  ["Ticket page","built","Status banner, QR code of the booking code, balance to pay, wallet and referral box; booking id is the credential","bookings/[id]"],
+  ["Invoice","built","Tax invoice with CGST and SGST if the owner has a GSTIN, otherwise a receipt; printable","components/Invoice.tsx"],
+  ["Calendar file","built","1-hour .ics with a 1-hour alarm, location and ticket link","bookings/[id]/calendar"],
+  ["WhatsApp share","built","Share-the-game and referral links (not WhatsApp messages from OYUN)","bookings/[id]"],
+  ["Book same slot next week","built","Link to the turf on the date plus 7 days","bookings/[id]"],
+  ["Directions","built","Maps link","bookings/[id]"]
+ ]},
+ {g:"My bookings and cancellation",a:"Player",subs:[
+  ["My bookings list","built","Upcoming and past tabs; built from this device's ids plus the Clerk account","bookings/MyBookings.tsx"],
+  ["Rate your game badge and balance due","built","Shown on each booking","MyBookings.tsx"],
+  ["Self-cancel","built","Confirmed online bookings, up to 2 hours before; the same account must cancel an account booking; slot reopens live","lib/cancel-policy.ts"],
+  ["Partner and admin cancel","built","Partner any time; admin refund with confirmation","partner-actions.ts, admin-actions.ts"],
+  ["Summary cap","built","100 booking ids per request","booking-actions.ts"]
+ ]},
+ {g:"Reviews and ratings",a:"Player",subs:[
+  ["Leave a review","built","1 to 5 stars, comment up to 500 characters, one per booking, editable","ReviewForm.tsx, lib/reviews.ts"],
+  ["Only after check-in","built","No prompt or reminder asks for it","reviews.ts"],
+  ["Public name","built","Shown like Rahul S.","reviews.ts"],
+  ["Rating average","built","One decimal, recomputed on every change","reviews.ts"],
+  ["Moderation","built","Admin hides or shows a review","admin/reviews"],
+  ["Owner reply","planned","Owners can only read reviews","–"]
+ ]},
+ {g:"Saved turfs",a:"Player",subs:[
+  ["Heart toggle","built","On cards and the turf page; up to 200, kept on the device","lib/client/favourites.ts"],
+  ["Sync across devices","built","Through Clerk metadata when signed in, debounced","ClerkProfileSync.tsx"],
+  ["Saved page","built","/saved","(main)/saved"],
+  ["One-tap rebook","partial","Book again link only","bookings/[id]"]
+ ]},
+ {g:"Player account and sign-in",a:"Player",subs:[
+  ["Clerk sign-in and sign-up","built","When the Clerk key is set; also a modal at checkout and a header account menu","(auth)/, lib/clerk.ts"],
+  ["Device account (no Clerk)","partial","Name plus a 10-digit Indian mobile in localStorage; no OTP, anyone can claim a number","(auth)/_shell/PlayerForm.tsx"],
+  ["Profile page","built","Name edit (device mode), menu links, sign out","(main)/profile"],
+  ["Wallet page, photo, password recovery","planned","Wallet shows only on the ticket page","–"]
+ ]},
+ {g:"Wallet, cashback and referral",a:"Player",subs:[
+  ["Wallet balance and history","built","Every change is a transaction; last 5 shown on the ticket","lib/wallet.ts"],
+  ["Cashback","built","Default off: 5% of the booking, max ₹100, paid at check-in","wallet.ts, admin settings"],
+  ["Referral","built","Default off: ₹100 each to referrer and new player, paid after the first check-in; new phone only","wallet.ts, admin settings"],
+  ["Admin wallet adjust","built","Plus or minus up to 100,000; balance cannot go below 0","admin/users"],
+  ["Spend rules","partial","Keyed by typed phone, not the signed-in account (security risk R-01)","pricing.ts"]
+ ]},
+ {g:"Notifications",a:"Platform",subs:[
+  ["Booking confirmation","planned","No email, SMS, WhatsApp or push","phase 12"],
+  ["Reminder before the game","planned","Not built","phase 12"],
+  ["Cancellation and owner alerts","planned","Not built","phase 12"],
+  ["Passwords for owners and staff","partial","Shown on screen to admin or owner, never sent","admin, partner/staff"]
+ ]},
+ {g:"App feel (PWA and mobile)",a:"Player",subs:[
+  ["Install manifest","built","Standalone, portrait, red theme, icons, two shortcuts","manifest.ts"],
+  ["Phone shell","built","Hide-on-scroll header, slide-in menu, bottom booking bar, area picker, floating controls","components/"],
+  ["Service worker, offline, push, install prompt","planned","Not built","–"]
+ ]},
+ {g:"SEO, legal and analytics",a:"Platform",subs:[
+  ["Sitemap and robots","built","Dynamic sitemap with images; private areas disallowed","sitemap.ts, robots.ts"],
+  ["Structured data and share images","built","Organization, WebSite, location, breadcrumbs, FAQ; generated Open Graph images","lib/schema.ts"],
+  ["Terms, privacy, FAQ","partial","Built, but still describe pay-at-venue and say nothing to refund; stale against the advance flow","(main)/terms, privacy, faq"],
+  ["Cookie consent","built","Essential only or Accept all, 1-year cookie; hidden on admin and partner","components/consent"],
+  ["Analytics","built","Vercel Analytics, Speed Insights, GA4 only after Accept all","components/consent"],
+  ["Languages","planned","English only","–"]
+ ]},
+ {g:"Owner: dashboard and bookings",a:"Owner",subs:[
+  ["Overview","built","Month revenue and 7-day chart (owner only), today's schedule, next 7 days, 30-day no-show rate, latest bookings","partner/(dashboard)/page.tsx"],
+  ["Bookings list","built","Today, Upcoming, Past, Cancelled; search by name, phone or code; first 100 shown","partner/bookings"],
+  ["Cancel with refund","built","Credits the wallet","partner-actions.ts"],
+  ["Walk-in booking","built","Name, phone, date up to 14 days, free-slot picker, cash or UPI, add-ons; no online offers","partner/bookings/WalkInForm"],
+  ["Roles","built","Owner: all nine permissions. Manager: all except staff and payouts. Front desk: bookings, check-in, slots","lib/partner-auth.ts"]
+ ]},
+ {g:"Owner: check-in and no-show",a:"Owner",subs:[
+  ["Check-in by code","built","Type the code (SA- prefix optional)","partner/check-in"],
+  ["Check-in by camera","built","QR scan with BarcodeDetector; Chrome, Edge and Android only","CheckInDesk.tsx"],
+  ["Checks","built","Right turf and today's date; shows the balance to collect","check-in"],
+  ["Rewards at check-in","built","Triggers cashback and referral rewards","lib/wallet.ts"],
+  ["No-show","built","Allowed only after the slot starts; missed list and repeat no-show list (more than one in 30 days); no automatic penalty","partner-actions.ts"]
+ ]},
+ {g:"Owner: slots, pricing, offers, add-ons",a:"Owner",subs:[
+  ["Block and unblock slots","built","Per slot with a reason; cannot block over a booking; instant on the public site","partner/slots"],
+  ["Dashboard quick blocker","partial","Only 6, 7 and 8 PM and it ignores errors","partner/page.tsx"],
+  ["Pricing rules page","built","Base price plus peak, weekend and last-minute rules","partner/pricing"],
+  ["Offers","built","Create, pause, delete; happy hour or first-time; name up to 40","partner/offers"],
+  ["Add-ons","built","Name up to 60, price 0 to 10,000, edit, hide, delete; sold only through walk-ins","partner/add-ons"],
+  ["Calendar view","planned","Per-day grid only","–"]
+ ]},
+ {g:"Owner: staff, payouts and profile",a:"Owner",subs:[
+  ["Staff accounts","built","Manager or front desk, temporary password shown once, reset, delete; email unique across partners and staff","partner/staff"],
+  ["Payouts and GST","partial","Weekly Monday to Sunday for 8 weeks: gross, online, commission, GST on commission, payout; status is inferred from dates, no money moves","partner/payouts, lib/reports.ts"],
+  ["CSV export","built","Last 90 days, protected against spreadsheet formula injection","partner/payouts/export"],
+  ["Invoices","built","Per booking, GST split","partner/invoices/[id]"],
+  ["Business details","built","Legal name, GSTIN (format checked), billing address","partner/turf"],
+  ["Turf profile","built","Name, area, address, phone, description (1,000), price, hours, size, surface, formats, sports, 12 amenities, images by URL","partner/turf"],
+  ["Photo upload","planned","Image links only","–"],
+  ["Multi-turf switcher","built","Dropdown when an owner has more than one turf","partner-actions.ts"],
+  ["Review reply, own cancellation policy, password recovery","planned","Forgot password is a mailto link","–"]
+ ]},
+ {g:"List your turf (owner application)",a:"Owner",subs:[
+  ["Four-step form","built","Owner, turf, pricing, final; same validation on client and server","(main)/list-turf"],
+  ["Field rules","built","Indian mobile, email, address 10+ characters, times, rates 100 to 20,000, description 20 to 1,000","lib/validation/application.ts"],
+  ["Anti-spam","built","Hidden field, 4-second minimum, 5 per IP per hour, duplicate and 3-pending limits","submitApplication"],
+  ["Evening and weekend rates","partial","Saved as a note only; approved turf starts from default pricing rules","application, approveApplication"],
+  ["Photos","planned","Approved turf gets a placeholder image","–"]
+ ]},
+ {g:"Admin console",a:"Admin",subs:[
+  ["Overview","built","Pending approvals, live turfs, players and bans, month bookings, value and commission, warning if storage is not shared","admin/page.tsx"],
+  ["Approvals","built","Approve creates the owner login and a live verified turf; reject with a note","PendingApplications.tsx"],
+  ["Turfs","built","Search, quick toggles, full editor: status, partner, commission, rating, verified, featured","admin/turfs"],
+  ["Partners","built","Suspend, reactivate, reset password, edit details","admin/partners"],
+  ["Players","built","Search, bookings, no-shows, referrals, wallet adjust, ban","admin/users"],
+  ["Bookings and refunds","built","Filters; first 150 shown; refund credits the wallet","admin/transactions"],
+  ["Review moderation","built","Hide or show, up to 500 shown","admin/reviews"],
+  ["Settings","built","Commission, advance %, minimum and maximum advance, GST, support email and phone, cashback, referral","admin/settings"],
+  ["Promo codes","built","Create, edit, pause, delete; code 3 to 20 letters or digits","admin/settings"],
+  ["Homepage content","built","Hero headline, announcement bar, promo cards (first is the popup)","admin/customization"],
+  ["Audit log, analytics, export, dispute queue, bulk actions","planned","Not built","–"]
+ ]},
+ {g:"Sign-in, sessions and roles",a:"Platform",subs:[
+  ["Session cookie","built","Signed, httpOnly, secure in production, 8 hours","lib/session.ts"],
+  ["Route guarding","built","Optimistic check in proxy, re-checked in layouts and actions","proxy.ts"],
+  ["Admin login","built","From environment variables, constant-time check","auth-actions.ts"],
+  ["Owner and staff login","built","Database accounts with scrypt hashes plus the OYUN operations account","partner-auth.ts"],
+  ["Lockout","partial","5 failures lock for 15 minutes, in memory per server","auth-actions.ts"],
+  ["Session revocation, MFA","planned","Suspension takes effect next request; no session list","–"]
+ ]},
+ {g:"Operations and platform",a:"Platform",subs:[
+  ["Health check","built","/api/health: storage, database, turfs, realtime, sign-in mode, logins; 503 if not ready","api/health"],
+  ["Error reporting","built","Server and browser errors to JSON logs and an optional Slack or Discord webhook, deduped for 10 minutes","instrumentation.ts, lib/monitoring.ts"],
+  ["Security headers","built","CSP, HSTS 2 years, frame, nosniff, referrer, COOP, permissions; CSP still allows inline scripts","next.config.ts"],
+  ["Data store","built","Supabase jsonb tables with delta sync and a revision-checked write; local file in development","lib/store.ts"],
+  ["Backups and restore","planned","Depends on the Supabase plan; none in the repo","–"],
+  ["Custom 404 and error pages","built","Yes","not-found.tsx, global-error.tsx"]
+ ]}
 ],
 
 fe:{
@@ -1389,18 +1559,27 @@ function renderNew(){
     `<div><h3 style="margin-bottom:8px">Accounts to create and who owns them</h3>${tb(['Service','Why','Plan now','Owner','Note'],s.accounts.map(r=>[`<b>${r[0]}</b>`,esc(r[1]),esc(r[2]),esc(r[3]),esc(r[4])]))}</div>` +
     `<div class="grid g2">${bx('Glossary', '<dl class="kv">'+s.glossary.map(g=>`<dt><b>${g[0]}</b></dt><dd>${g[1]}</dd>`).join('')+'</dl>')}<div class="stack">${bx('Your first week', ul(s.week1))}${bx('Working agreement', ul(s.rules))}</div></div>`;
 
-  // features
+  // features: each feature with its sub-features
   const aud = ['All','Player','Owner','Admin','Platform'];
-  $('#feat-ctl').innerHTML = `<select id="feat-aud" aria-label="Audience">${aud.map(a=>`<option>${a}</option>`).join('')}</select><select id="feat-st" aria-label="Status"><option value="">All statuses</option><option value="built">built</option><option value="partial">partial</option><option value="planned">planned</option></select><span class="muted" id="feat-count"></span>`;
+  $('#feat-ctl').innerHTML = `<input id="feat-q" type="search" placeholder="Search features, rules, files" aria-label="Search features"><select id="feat-aud" aria-label="Audience">${aud.map(a=>`<option>${a}</option>`).join('')}</select><select id="feat-st" aria-label="Status"><option value="">All statuses</option><option value="built">built</option><option value="partial">partial</option><option value="planned">planned</option></select><span class="muted" id="feat-count"></span>`;
   const drawFeat = ()=>{
-    const a=$('#feat-aud').value, st=$('#feat-st').value;
-    const rows = D2.features.filter(f=>(a==='All'||f[0]===a)&&(!st||f[2]===st));
-    $('#feat-count').textContent = rows.length+' of '+D2.features.length;
-    $('#feat-table').innerHTML = tb(['Who','Feature','Status','Where','Note'],rows.map(f=>[esc(f[0]),`<b>${esc(f[1])}</b>`,pill(f[2].toUpperCase(),f[2]),f[3]?`<code>${esc(f[3])}</code>`:'<span class="muted">not built</span>',esc(f[4])]));
-    const c=k=>D2.features.filter(f=>f[2]===k).length;
-    $('#feat-stats').innerHTML=[['built','Built'],['partial','Partial'],['planned','Planned']].map(([k,l])=>`<div class="box stat"><b class="s-${k}">${c(k)}</b><span>${l}</span></div>`).join('');
+    const a=$('#feat-aud').value, st=$('#feat-st').value, q=$('#feat-q').value.trim().toLowerCase();
+    const open = !!(st||q||a!=='All');
+    let shown=0, html='';
+    for(const g of D2.featureGroups){
+      if(a!=='All' && g.a!==a) continue;
+      const subs = g.subs.filter(x=>(!st||x[1]===st)&&(!q||(g.g+' '+x.join(' ')).toLowerCase().includes(q)));
+      if(!subs.length) continue; shown+=subs.length;
+      const cnt = k=>g.subs.filter(x=>x[1]===k).length;
+      html += `<details class="ph"${open?' open':''}><summary><span class="pid" style="min-width:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase">${esc(g.a)}</span><span><span class="pt">${esc(g.g)}</span><br><span class="pm">${g.subs.length} parts</span></span><span style="display:flex;gap:6px;align-items:center">${cnt('built')?pill(cnt('built')+' built','built'):''}${cnt('partial')?pill(cnt('partial')+' partial','partial'):''}${cnt('planned')?pill(cnt('planned')+' planned','planned'):''}</span></summary><div class="tl">`+
+        subs.map(x=>`<div class="t-row" style="grid-template-columns:minmax(0,1fr) auto"><div class="tt"><b>${esc(x[0])}</b><div class="tn">${esc(x[2])}</div>${x[3]&&x[3]!=='–'?`<div class="who"><code>${esc(x[3])}</code></div>`:''}</div>${pill(x[1].toUpperCase(),x[1])}</div>`).join('')+`</div></details>`;
+    }
+    $('#feat-count').textContent = shown+' of '+D2.featureGroups.reduce((s,g)=>s+g.subs.length,0)+' parts';
+    $('#feat-table').innerHTML = html || '<div class="box muted">Nothing matches.</div>';
+    const all = D2.featureGroups.flatMap(g=>g.subs), c=k=>all.filter(x=>x[1]===k).length;
+    $('#feat-stats').innerHTML=[['built','Built'],['partial','Partial'],['planned','Planned']].map(([k,l])=>`<div class="box stat"><b class="s-${k}">${c(k)}</b><span>${l} parts, across ${D2.featureGroups.length} features</span></div>`).join('');
   };
-  $('#feat-aud').onchange=drawFeat; $('#feat-st').onchange=drawFeat; drawFeat();
+  ['feat-q','feat-aud','feat-st'].forEach(id=>$('#'+id).addEventListener('input',drawFeat)); drawFeat();
 
   // frontend
   const f = D2.fe;
@@ -1508,6 +1687,22 @@ DATA.tasks.push(
  {id:"P10-11",p:"P10",t:"Upgrade Supabase to Pro before launch; set spend cap and usage alerts",s:"todo",pr:"P0"},
  {id:"P10-12",p:"P10",t:"1,000-user readiness test: 3 months of seeded bookings, k6 run, p95 under 800 ms",s:"todo",pr:"P1"}
 );
+
+
+DATA.tasks.push(
+ {id:"P7-08",p:"P7",t:"Advance payment recorded on every booking",s:"done",pr:"P1",n:"paymentMode advance, amountPaid = advance. No money is collected yet."},
+ {id:"P7-09",p:"P7",t:"Advance is 10% of each hour's price, never under or over ₹150 (flat ₹150 an hour by default); 3 hours asks ₹450",s:"done",pr:"P0",n:"minAdvance and maxAdvance are per-hour Admin settings. 8 maths checks passed. PRs #16 and #17 (PR #16 first applied it once per booking; #17 made it per hour)."},
+ {id:"P8-28",p:"P8",t:"After PR #17 deploys, check Admin → Settings in production: advance 10%, minimum 150, maximum 150 (per hour)",s:"todo",pr:"P0",n:"Production keeps its saved advance percent (it may still be 30)."},
+ {id:"P8-24",p:"P8",t:"Update FAQ, Terms, the home Pay at the Turf card, BookingFlow comments, FEATURE_LIST and GO-LIVE for the advance flow",s:"todo",pr:"P1",n:"They still say pay at venue and no prepayment."},
+ {id:"P8-25",p:"P8",t:"Replace the fake home stats banner and brand ad strip; fill the footer social links",s:"todo",pr:"P2",n:"100+ turfs, 50k+ players and sports-brand ads are placeholders."},
+ {id:"P8-26",p:"P8",t:"Fix the owner dashboard quick slot blocker: only 6 to 8 PM, and it ignores errors",s:"todo",pr:"P2"},
+ {id:"P8-27",p:"P8",t:"Apply evening and weekend rates from a turf application to the approved turf's pricing",s:"todo",pr:"P2",n:"Stored as a text note only today."},
+ {id:"P9-17",p:"P9",t:"Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part",s:"todo",pr:"P0",n:"Needed before the advance is real money, and wrong today even with the wallet off."},
+ {id:"P11-07",p:"P11",t:"Collect the per-hour advance through Razorpay; until then label it recorded, not paid",s:"todo",pr:"P0"},
+ {id:"P13-09",p:"P13",t:"Let players pick add-ons at checkout",s:"todo",pr:"P2",n:"Owners can create add-ons; online checkout always sends none."},
+ {id:"P13-10",p:"P13",t:"Turf photo gallery carousel and a real map pin per turf",s:"todo",pr:"P3"}
+);
+DATA.risks.push({id:"R-14",t:"Advance recorded as paid but never collected",sev:"High",stride:"R, T",d:[6,8,5,6,5],ev:"Bookings set amountPaid to the advance with no gateway. Cancel and admin refund credit that amount to the wallet, so a player can cancel and spend wallet money that was never paid in; the wallet-paid part is not returned.",fix:"Refund only collected money; collect the advance through Razorpay.",task:"P9-17"});
 
 /* ===================== BOOT ===================== */
 function initControls(){
