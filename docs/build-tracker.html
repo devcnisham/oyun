@@ -93,7 +93,7 @@ section.panel.on{display:block}
 .s-high{color:var(--high)}
 .s-low{color:var(--low)}
 .s-med,.s-manual,.s-medium{color:var(--med)}
-.s-todo,.s-planned,.s-skip,.s-info{color:var(--info)}
+.s-todo,.s-planned,.s-skip,.s-info,.s-removed{color:var(--info)}
 .pill.fill{color:#fff;background:var(--crit);border-color:var(--crit)}
 
 /* tables */
@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Reviewed at PR #13, scale fix on branch claude/scale-scoped-reads · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #22 (main at 2bf4459) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1130,9 +1130,13 @@ featureGroups:[
   ["Map view","partial","Google Maps search iframe plus link chips; no pins per turf","ArenasClient.tsx"],
   ["Price range, distance, amenity, date filters","planned","Not built","–"],
   ["Home page","built","Hero search, sport tiles, recommended slider (top 10), popular areas (top 4), list-your-turf call to action","(main)/page.tsx"],
-  ["Mobile home feed","built","Next game, quick tiles, open slots today, deals, top 3 rated, areas","(main)/_home/"],
+  ["Mobile home feed","built","Next game, What do you want to play? sport cards, open slots today, featured promo, deals, top 3 rated, how it works, list-your-turf call to action","(main)/_home/"],
+  ["Sport photo cards","built","Football, Box Cricket, Badminton, Padel as photo cards with a dark fade and Explore venues; two across on a phone, four on a tablet; each opens the turfs list filtered by that sport. Phone and desktop share src/lib/sports.ts","_home/MobileHome.tsx, lib/sports.ts"],
+  ["Area chips, quick tiles, Browse by area grid, Why OYUN strip on the phone home","removed","Taken out at the owner's request (PR #20); areas are still reachable from the turfs list and the footer","–"],
   ["Area landing pages","built","One SEO page per area with copy","(main)/turfs/[area]"],
   ["Floating search sheet","built","Phone only","components/FloatingSearch.tsx"],
+  ["Phone side menu","partial","Home, My bookings, Saved turfs, Profile, Turf owners links. Turfs by area, Help & FAQ, Privacy, Terms and Cookie settings were removed (PR #20); the legal links remain only in the page footer and the FAQ is linked from nowhere on the phone","components/SideMenu.tsx"],
+  ["Launch promo card","built","Featured card and popup ad; its dead Unsplash photo was replaced by a turf photo and existing databases are healed on load (PR #22)","lib/seed.ts"],
   ["Stats banner and brand ad strip on home","partial","Static placeholder content (100+ turfs, 50k+ players, sports brand ads); not real data","(main)/page.tsx"]
  ]},
  {g:"Turf detail page",a:"Player",subs:[
@@ -1265,6 +1269,7 @@ featureGroups:[
   ["Bookings list","built","Today, Upcoming, Past, Cancelled; search by name, phone or code; first 100 shown","partner/bookings"],
   ["Cancel with refund","built","Credits the wallet","partner-actions.ts"],
   ["Walk-in booking","built","Name, phone, date up to 14 days, free-slot picker, cash or UPI, add-ons; no online offers","partner/bookings/WalkInForm"],
+  ["Phone menu for the owner dashboard","built","Slide-out drawer menu so the dashboard works in a phone browser (committed by the owner)","partner/(dashboard)/layout.tsx, MobileDrawerClose.tsx"],
   ["Roles","built","Owner: all nine permissions. Manager: all except staff and payouts. Front desk: bookings, check-in, slots","lib/partner-auth.ts"]
  ]},
  {g:"Owner: check-in and no-show",a:"Owner",subs:[
@@ -1561,7 +1566,7 @@ function renderNew(){
 
   // features: each feature with its sub-features
   const aud = ['All','Player','Owner','Admin','Platform'];
-  $('#feat-ctl').innerHTML = `<input id="feat-q" type="search" placeholder="Search features, rules, files" aria-label="Search features"><select id="feat-aud" aria-label="Audience">${aud.map(a=>`<option>${a}</option>`).join('')}</select><select id="feat-st" aria-label="Status"><option value="">All statuses</option><option value="built">built</option><option value="partial">partial</option><option value="planned">planned</option></select><span class="muted" id="feat-count"></span>`;
+  $('#feat-ctl').innerHTML = `<input id="feat-q" type="search" placeholder="Search features, rules, files" aria-label="Search features"><select id="feat-aud" aria-label="Audience">${aud.map(a=>`<option>${a}</option>`).join('')}</select><select id="feat-st" aria-label="Status"><option value="">All statuses</option><option value="built">built</option><option value="partial">partial</option><option value="planned">planned</option><option value="removed">removed</option></select><span class="muted" id="feat-count"></span>`;
   const drawFeat = ()=>{
     const a=$('#feat-aud').value, st=$('#feat-st').value, q=$('#feat-q').value.trim().toLowerCase();
     const open = !!(st||q||a!=='All');
@@ -1571,7 +1576,7 @@ function renderNew(){
       const subs = g.subs.filter(x=>(!st||x[1]===st)&&(!q||(g.g+' '+x.join(' ')).toLowerCase().includes(q)));
       if(!subs.length) continue; shown+=subs.length;
       const cnt = k=>g.subs.filter(x=>x[1]===k).length;
-      html += `<details class="ph"${open?' open':''}><summary><span class="pid" style="min-width:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase">${esc(g.a)}</span><span><span class="pt">${esc(g.g)}</span><br><span class="pm">${g.subs.length} parts</span></span><span style="display:flex;gap:6px;align-items:center">${cnt('built')?pill(cnt('built')+' built','built'):''}${cnt('partial')?pill(cnt('partial')+' partial','partial'):''}${cnt('planned')?pill(cnt('planned')+' planned','planned'):''}</span></summary><div class="tl">`+
+      html += `<details class="ph"${open?' open':''}><summary><span class="pid" style="min-width:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase">${esc(g.a)}</span><span><span class="pt">${esc(g.g)}</span><br><span class="pm">${g.subs.length} parts</span></span><span style="display:flex;gap:6px;align-items:center">${cnt('built')?pill(cnt('built')+' built','built'):''}${cnt('partial')?pill(cnt('partial')+' partial','partial'):''}${cnt('planned')?pill(cnt('planned')+' planned','planned'):''}${cnt('removed')?pill(cnt('removed')+' removed','removed'):''}</span></summary><div class="tl">`+
         subs.map(x=>`<div class="t-row" style="grid-template-columns:minmax(0,1fr) auto"><div class="tt"><b>${esc(x[0])}</b><div class="tn">${esc(x[2])}</div>${x[3]&&x[3]!=='–'?`<div class="who"><code>${esc(x[3])}</code></div>`:''}</div>${pill(x[1].toUpperCase(),x[1])}</div>`).join('')+`</div></details>`;
     }
     $('#feat-count').textContent = shown+' of '+D2.featureGroups.reduce((s,g)=>s+g.subs.length,0)+' parts';
@@ -1703,6 +1708,19 @@ DATA.tasks.push(
  {id:"P13-10",p:"P13",t:"Turf photo gallery carousel and a real map pin per turf",s:"todo",pr:"P3"}
 );
 DATA.risks.push({id:"R-14",t:"Advance recorded as paid but never collected",sev:"High",stride:"R, T",d:[6,8,5,6,5],ev:"Bookings set amountPaid to the advance with no gateway. Cancel and admin refund credit that amount to the wallet, so a player can cancel and spend wallet money that was never paid in; the wallet-paid part is not returned.",fix:"Refund only collected money; collect the advance through Razorpay.",task:"P9-17"});
+
+
+DATA.tasks.push(
+ {id:"P7-10",p:"P7",t:"Phone home: What do you want to play? with Football, Box Cricket, Badminton and Padel photo cards",s:"done",pr:"P2",n:"Responsive: two across on a phone, four on a tablet; shared sports list. PR #21."},
+ {id:"P7-11",p:"P7",t:"Remove phone home area chips, quick tiles, Browse by area, Why OYUN strip; side menu Turfs by area and Help & settings",s:"done",pr:"P3",n:"PR #20. Legal links stay in the footer."},
+ {id:"P7-12",p:"P7",t:"Fix the broken launch promo image and heal existing data",s:"done",pr:"P2",n:"The Unsplash photo returned 404. New seed uses /turfs/turf_0.jpg; migrate swaps the dead link. PR #22."},
+ {id:"P7-13",p:"P7",t:"Fix the Padel card photo on the desktop home (dead link, black card)",s:"done",pr:"P3",n:"PR #21."},
+ {id:"P7-14",p:"P7",t:"Owner dashboard slide-out phone menu",s:"done",pr:"P2",n:"Commit 0d21f8a."},
+ {id:"P8-29",p:"P8",t:"Fix checkout crash on a dev server that predates a new setting",s:"done",pr:"P2",n:"File mode now fills missing settings from defaults on every read; rupees() tolerates a missing value. PR #19."},
+ {id:"P8-30",p:"P8",t:"Link the FAQ again somewhere on the phone (side menu or home) and keep a phone route to Privacy, Terms and Cookie settings",s:"todo",pr:"P2",n:"Removed from the phone menu in PR #20; the footer still has the legal links. Cookie settings must stay easy to reopen."},
+ {id:"P8-31",p:"P8",t:"Check every hard-coded image link (sports, promos, turfs) for 404s and move them to our own files or storage",s:"todo",pr:"P2",n:"Two Unsplash links had already died (Padel card, launch promo). Add a link check to CI."},
+ {id:"P8-32",p:"P8",t:"Make the local dev server re-read settings and data on code change, or warn when it is stale",s:"todo",pr:"P3",n:"A server started before a code change kept an old in-memory copy and crashed checkout."}
+);
 
 /* ===================== BOOT ===================== */
 function initControls(){
