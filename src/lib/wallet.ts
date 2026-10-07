@@ -52,6 +52,13 @@ export function walletTxn(db: Database, player: Player, amount: number, type: Wa
   });
 }
 
+// What goes back to the wallet when a booking is cancelled or refunded: money that was really paid in.
+// That is wallet credit used at booking, plus an amount paid up front, but not a 'advance' booking's amountPaid,
+// which was only recorded (nothing was charged online).
+export function refundDue(booking: Booking) {
+  return (booking.paymentMode === 'advance' ? 0 : booking.amountPaid) + (booking.pricing.walletDeduction ?? 0);
+}
+
 export function cashbackFor(db: Database, booking: Booking) {
   const s = db.settings;
   if (!s.cashbackEnabled || s.cashbackPercent <= 0) return 0;

@@ -17,7 +17,7 @@ import { buildQuote, getSlots, turfHours } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
 import { formatHour, isValidDate, istNow } from './time';
 import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from './types';
-import { createPlayer, rewardCheckIn, walletTxn } from './wallet';
+import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
   const booking = db.bookings.find((b) => b.id === bookingId);
@@ -93,7 +93,7 @@ export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<
       const booking = bookingInTurf(db, ctx, str(fd, 'bookingId'));
       if (booking.status !== 'confirmed') throw new ValidationError('Only upcoming bookings can be cancelled');
       // Online payments, and anything paid from the wallet, go back to the player's wallet
-      const refund = booking.amountPaid + (booking.pricing.walletDeduction ?? 0);
+      const refund = refundDue(booking);
       if (booking.source === 'online' && refund > 0 && booking.playerId) {
         const player = db.players.find((p) => p.id === booking.playerId);
         if (player) walletTxn(db, player, refund, 'refund', `Booking ${booking.code} cancelled by the turf`, booking.id);

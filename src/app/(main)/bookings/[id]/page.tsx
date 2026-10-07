@@ -73,7 +73,16 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           )}
           <div><dt>Total</dt><dd>₹{p.total}</dd></div>
           {booking.amountPaid > 0 && <div><dt>Paid</dt><dd>₹{booking.amountPaid}</dd></div>}
-          {due > 0 && booking.status === 'confirmed' && <div><dt>Pay at venue</dt><dd>₹{due}</dd></div>}
+          {due > 0 && booking.status === 'confirmed' && (
+            p.advance > 0 && p.advance < due ? (
+              <>
+                <div><dt>Advance at the turf</dt><dd>₹{p.advance}</dd></div>
+                <div><dt>Balance after you play</dt><dd>₹{due - p.advance}</dd></div>
+              </>
+            ) : (
+              <div><dt>Pay at venue</dt><dd>₹{due}</dd></div>
+            )
+          )}
         </dl>
 
         <div className={styles.actions}>

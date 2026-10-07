@@ -209,7 +209,7 @@ export default async function Home() {
           <div className={styles.featureCard}>
             <div className={styles.featureIcon}>💵</div>
             <h3 className={styles.featureTitle}>Pay at the Turf</h3>
-            <p className={styles.featureDesc}>Reserve online in seconds and pay at the venue by cash or UPI. No prepayment needed.</p>
+            <p className={styles.featureDesc}>Reserve online in seconds and pay at the venue by cash or UPI: a small advance when you arrive, the rest after you play. Nothing is charged online.</p>
           </div>
           <div className={styles.featureCard}>
             <div className={styles.featureIcon}>🔒</div>
