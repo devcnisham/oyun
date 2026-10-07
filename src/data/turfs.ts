@@ -1,8 +1,8 @@
-import type { Turf } from '@/lib/types';
+import type { Turf, TurfStatus } from '@/lib/types';
 
 // Launch turfs a new database starts with (src/lib/seed.ts). Contact numbers, ratings and photos are
 // filled in from the admin or partner dashboard.
-export type TurfSeed = Omit<Turf, 'city' | 'status' | 'partnerId' | 'commissionPercent' | 'createdAt'>;
+export type TurfSeed = Omit<Turf, 'city' | 'status' | 'partnerId' | 'commissionPercent' | 'createdAt'> & { status?: TurfStatus };
 
 export const turfSeeds: TurfSeed[] = [
   {
@@ -225,4 +225,56 @@ export const turfSeeds: TurfSeed[] = [
     ownerName: "Padel Club",
     phone: "",
   }
+];
+
+// Venues added after launch. A new database starts with them; an existing one gets any it is missing the next time it
+// loads (see migrate() in src/lib/seed.ts). They start as drafts that players cannot see: open Admin, Turfs, fill in the
+// real price, hours, phone, address and photo with each owner, then set the status to Active.
+export const lateTurfSeeds: TurfSeed[] = [
+  {
+    id: "onelve-pickleball-bejai",
+    name: "OneLve - Pickleball",
+    location: "Bejai Main Rd, opp. KSRTC, Bejai, Mangalore",
+    area: "Bejai",
+    rating: 0,
+    reviewCount: 0,
+    pricePerHour: 500, // placeholder until the owner confirms
+    sports: ["Pickleball"],
+    amenities: ["Pickleball Courts"],
+    size: "Pickleball court",
+    formats: ["Doubles"],
+    surface: "Court",
+    openTime: "06:00", // placeholder; closes 11:30 pm, rounded down to whole hours
+    closeTime: "23:00",
+    images: ["/turfs/turf_0.jpg"],
+    isVerified: false,
+    isFeatured: false,
+    description: "Pickleball courts in Bejai. Details are being confirmed with the venue.",
+    ownerName: "OneLve",
+    phone: "",
+    status: "pending",
+  },
+  {
+    id: "courtyard-pickleball-kadri",
+    name: "TheCourtyard Pickleball Court",
+    location: "Kadri, Mangalore",
+    area: "Kadri",
+    rating: 0,
+    reviewCount: 0,
+    pricePerHour: 500, // placeholder until the owner confirms
+    sports: ["Pickleball"],
+    amenities: ["Pickleball Courts"],
+    size: "Pickleball court",
+    formats: ["Doubles"],
+    surface: "Court",
+    openTime: "06:00", // placeholder; closes 11 pm
+    closeTime: "23:00",
+    images: ["/turfs/turf_0.jpg"],
+    isVerified: false,
+    isFeatured: false,
+    description: "Pickleball court in Kadri. Details are being confirmed with the venue.",
+    ownerName: "TheCourtyard",
+    phone: "",
+    status: "pending",
+  },
 ];

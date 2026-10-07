@@ -1,4 +1,4 @@
-import { turfSeeds } from '@/data/turfs';
+import { lateTurfSeeds, turfSeeds } from '@/data/turfs';
 import { DEFAULT_PRICING } from './pricing';
 import { generateTempPassword, hashPassword } from './password';
 import type { Database, PlatformSettings } from './types';
@@ -33,6 +33,15 @@ export function migrate(data: Database): Database {
   data.settings = { ...DEFAULT_SETTINGS, ...data.settings };
   data.walletTxns ??= [];
   data.holds ??= [];
+  // Venues added after launch show up in databases that were created before them
+  const opsPartner = data.partners.find((p) => p.id === 'partner_oyun') ?? data.partners[0];
+  if (opsPartner) {
+    for (const t of lateTurfSeeds) {
+      if (data.turfs.some((x) => x.id === t.id)) continue;
+      data.turfs.push({ ...t, city: 'Mangalore', status: t.status ?? 'active', partnerId: opsPartner.id, commissionPercent: null, createdAt: new Date().toISOString() });
+      data.pricing[t.id] ??= { ...DEFAULT_PRICING };
+    }
+  }
   // Heal databases created with the removed stock photo (the phone shows a black card with a broken image)
   for (const promo of data.site?.promos ?? []) {
     if (promo.image === DEAD_LAUNCH_PROMO_IMAGE) promo.image = LAUNCH_PROMO_IMAGE;
@@ -97,8 +106,8 @@ export function seed(): Database {
     createdAt,
   });
 
-  for (const t of turfSeeds) {
-    data.turfs.push({ ...t, city: 'Mangalore', status: 'active', partnerId, commissionPercent: null, createdAt });
+  for (const t of [...turfSeeds, ...lateTurfSeeds]) {
+    data.turfs.push({ ...t, city: 'Mangalore', status: t.status ?? 'active', partnerId, commissionPercent: null, createdAt });
     data.pricing[t.id] = { ...DEFAULT_PRICING };
   }
 
