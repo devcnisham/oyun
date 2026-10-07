@@ -213,9 +213,9 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
       createdBy: null,
       addOns: quote.addOns,
       pricing: quote.breakdown,
-      // Players reserve online and pay the turf at the venue; the turf collects the total at check-in
-      paymentMode: 'venue',
-      amountPaid: 0,
+      // Players pay an advance online to confirm; the turf collects the rest at check-in
+      paymentMode: 'advance',
+      amountPaid: quote.breakdown.advance,
       status: 'confirmed',
       checkedInAt: null,
       createdAt: new Date().toISOString(),

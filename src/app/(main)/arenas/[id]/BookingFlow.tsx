@@ -456,7 +456,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
               <section className={styles.venueNote}>
                 <h3>Payment</h3>
-                <p>💵 Pay at the turf when you arrive, by cash or UPI. Your slots are confirmed as soon as you reserve.</p>
+                <p>💵 Pay a 10% advance online to confirm your slots. The remaining amount will be paid at the turf when you arrive.</p>
               </section>
 
               {quote && (
@@ -466,7 +466,9 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
                     <div key={a.label} className={styles.discount}><span>{a.label}</span><span>−{rupees(-a.amount)}</span></div>
                   ))}
                   {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
-                  <div className={styles.billTotal}><span>Pay at venue (incl. GST)</span><span>{rupees(quote.total)}</span></div>
+                  <div><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
+                  <div className={styles.billTotal}><span>Advance (10%)</span><span>{rupees(quote.payNow)}</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--text-muted)' }}><span>Pay at venue</span><span>{rupees(quote.payAtVenue)}</span></div>
                   {cashback > 0 && <p className={styles.success}>💰 Earn {rupees(cashback)} cashback when you check in</p>}
                 </section>
               )}
@@ -476,11 +478,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
             <div className={styles.sheetFoot}>
               <div className={styles.barInfo}>
-                <b>{quote ? rupees(quote.total) : '…'}</b>
-                <span>Pay at venue</span>
+                <b>{quote ? rupees(quote.payNow) : '…'}</b>
+                <span>Advance amount</span>
               </div>
               <button className={styles.primary} onClick={pay} disabled={!quote || paying}>
-                {paying ? 'Reserving…' : account.signedIn ? 'Reserve slot' : 'Sign in to reserve'}
+                {paying ? 'Reserving…' : account.signedIn ? 'Pay Advance' : 'Sign in to pay advance'}
               </button>
             </div>
           </div>
