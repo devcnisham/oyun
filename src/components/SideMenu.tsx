@@ -2,8 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { openConsentSettings } from './consent/consent';
-import { areaSlug } from '@/lib/site';
 import styles from './SideMenu.module.css';
 
 interface SideMenuProps {
@@ -11,11 +9,10 @@ interface SideMenuProps {
   onClose: () => void;
   firstName: string;
   upcoming: number;
-  areas: string[];
 }
 
 // Slide-in menu from the left, opened by the ☰ button in the top bar
-export default function SideMenu({ open, onClose, firstName, upcoming, areas }: SideMenuProps) {
+export default function SideMenu({ open, onClose, firstName, upcoming }: SideMenuProps) {
   const closeBtn = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -58,33 +55,9 @@ export default function SideMenu({ open, onClose, firstName, upcoming, areas }: 
           <Link href="/saved" className={styles.item}><span aria-hidden>♡</span>Saved turfs</Link>
           <Link href="/profile" className={styles.item}><span aria-hidden>👤</span>Profile</Link>
 
-          {areas.length > 0 && (
-            <>
-              <p className={styles.section}>Turfs by area</p>
-              {areas.map((a) => (
-                <Link key={a} href={`/turfs/${areaSlug(a)}`} className={styles.item}><span aria-hidden>📍</span>{a}</Link>
-              ))}
-            </>
-          )}
-
           <p className={styles.section}>Turf owners</p>
           <Link href="/list-turf" className={styles.item}><span aria-hidden>💼</span>List your turf</Link>
           <Link href="/partner/login" className={styles.item}><span aria-hidden>🔑</span>Partner login</Link>
-
-          <p className={styles.section}>Help &amp; settings</p>
-          <Link href="/faq" className={styles.item}><span aria-hidden>❓</span>Help &amp; FAQ</Link>
-          <Link href="/privacy" className={styles.item}><span aria-hidden>🔒</span>Privacy policy</Link>
-          <Link href="/terms" className={styles.item}><span aria-hidden>📄</span>Terms &amp; conditions</Link>
-          <button
-            type="button"
-            className={styles.item}
-            onClick={() => {
-              onClose();
-              openConsentSettings();
-            }}
-          >
-            <span aria-hidden>🍪</span>Cookie settings
-          </button>
         </div>
       </nav>
     </div>

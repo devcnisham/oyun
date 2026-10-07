@@ -62,15 +62,7 @@ export default async function Home() {
         when: o.type === 'first_time' ? 'Your first booking' : `${h(o.startHour)} – ${h(o.endHour)}`,
       };
     });
-  const allAreas = Object.entries(
-    turfs.reduce<Record<string, number>>((acc, t) => {
-      acc[t.area] = (acc[t.area] ?? 0) + 1;
-      return acc;
-    }, {})
-  )
-    .map(([area, count]) => ({ area, count }))
-    .sort((a, b) => a.area.localeCompare(b.area));
-  const rewards = { cashbackEnabled: settings.cashbackEnabled, cashbackPercent: settings.cashbackPercent, referralEnabled: settings.referralEnabled, refereeReward: settings.refereeReward };
+
 
   return (
     <div className={styles.page}>
@@ -248,7 +240,7 @@ export default async function Home() {
       </div>
 
       <div className={styles.mobileHome}>
-        <MobileHome turfs={turfs} areas={popularAreas} allAreas={allAreas} promos={site.promos} coupons={coupons} deals={deals} rewards={rewards} />
+        <MobileHome turfs={turfs} promos={site.promos} coupons={coupons} deals={deals} />
       </div>
     </div>
   );

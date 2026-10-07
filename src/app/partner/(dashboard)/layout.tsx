@@ -4,6 +4,7 @@ import { logout } from '@/lib/auth-actions';
 import { ROLE_LABELS, requirePartner } from '@/lib/partner-auth';
 import { switchTurf } from '@/lib/partner-actions';
 import NavLinks, { type NavItem } from './NavLinks';
+import MobileDrawerClose from './MobileDrawerClose';
 import styles from './layout.module.css';
 
 export default async function PartnerLayout({ children }: { children: React.ReactNode }) {
@@ -25,6 +26,21 @@ export default async function PartnerLayout({ children }: { children: React.Reac
 
   return (
     <div className={styles.layout}>
+      <MobileDrawerClose />
+      <input type="checkbox" id="mobile-menu" className={styles.mobileMenuToggle} aria-hidden="true" />
+      <label htmlFor="mobile-menu" className={styles.mobileMenuOverlay} aria-label="Close menu"></label>
+      
+      <header className={`${styles.mobileHeader} noPrint`}>
+        <Link href="/" className={styles.logo}>
+          <span className={styles.logoIcon}>⚽</span>
+          <div className={styles.logoText}>
+            <span className={styles.logoName}>OYUN</span>
+            <span className={styles.logoTag}>Partner</span>
+          </div>
+        </Link>
+        <label htmlFor="mobile-menu" className={styles.menuBtn} aria-label="Open menu">☰</label>
+      </header>
+
       <aside className={`${styles.sidebar} noPrint`}>
         <div className={styles.brand}>
           <Link href="/" className={styles.logo}>
@@ -34,6 +50,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
               <span className={styles.logoTag}>Partner</span>
             </div>
           </Link>
+          <label htmlFor="mobile-menu" className={styles.closeBtn} aria-label="Close menu">✕</label>
         </div>
 
         <nav className={styles.nav}>
