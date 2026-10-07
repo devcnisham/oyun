@@ -456,7 +456,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
               <section className={styles.venueNote}>
                 <h3>Payment</h3>
-                <p>💵 Pay {quote ? (quote.minAdvance === quote.maxAdvance ? `a flat ${rupees(quote.minAdvance)}` : `an advance of ${rupees(quote.minAdvance)} to ${rupees(quote.maxAdvance)}`) : 'a flat ₹150'} online to confirm your slots. The remaining amount will be paid at the turf when you arrive.</p>
+                <p>💵 Pay {quote ? (quote.minAdvance === quote.maxAdvance ? `a flat ${rupees(quote.minAdvance)} per hour` : `an advance of ${rupees(quote.minAdvance)} to ${rupees(quote.maxAdvance)} per hour`) : 'a flat ₹150 per hour'} online to confirm your slots. The remaining amount will be paid at the turf when you arrive.</p>
               </section>
 
               {quote && (
@@ -467,7 +467,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
                   ))}
                   {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
                   <div><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
-                  <div className={styles.billTotal}><span>Advance ({quote.advancePercent}%)</span><span>{rupees(quote.payNow)}</span></div>
+                  <div className={styles.billTotal}><span>Advance ({quote.minAdvance === quote.maxAdvance && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span><span>{rupees(quote.payNow)}</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--text-muted)' }}><span>Pay at venue</span><span>{rupees(quote.payAtVenue)}</span></div>
                   {cashback > 0 && <p className={styles.success}>💰 Earn {rupees(cashback)} cashback when you check in</p>}
                 </section>

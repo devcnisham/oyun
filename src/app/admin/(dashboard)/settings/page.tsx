@@ -25,11 +25,11 @@ export default async function AdminSettings() {
                 <input name="advancePercent" type="number" min={10} max={100} defaultValue={s.advancePercent} className={dash.input} required />
               </label>
               <label className={dash.field}>
-                <span className={dash.label}>Minimum advance (₹)</span>
+                <span className={dash.label}>Minimum advance per hour (₹)</span>
                 <input name="minAdvance" type="number" min={0} max={5000} defaultValue={s.minAdvance} className={dash.input} required />
               </label>
               <label className={dash.field}>
-                <span className={dash.label}>Maximum advance (₹)</span>
+                <span className={dash.label}>Maximum advance per hour (₹)</span>
                 <input name="maxAdvance" type="number" min={0} max={5000} defaultValue={s.maxAdvance} className={dash.input} required />
               </label>
               <label className={dash.field}>
