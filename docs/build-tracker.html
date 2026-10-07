@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #35 (main at 3fabd6c) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #37 (main at d13514c) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1136,7 +1136,7 @@ featureGroups:[
   ["Area chips, quick tiles, Browse by area grid, Why OYUN strip, and How OYUN works card on the phone home","removed","Taken out at the owner's request (PR #20, #28); areas are still reachable from the turfs list and the footer","–"],
   ["Area landing pages","built","One SEO page per area with copy","(main)/turfs/[area]"],
   ["Floating search sheet","built","Phone only","components/FloatingSearch.tsx"],
-  ["Phone side menu","partial","Home, My bookings, Saved turfs, Profile, Turf owners links. Turfs by area, Help & FAQ, Privacy, Terms and Cookie settings were removed (PR #20); the legal links remain only in the page footer and the FAQ is linked from nowhere on the phone","components/SideMenu.tsx"],
+  ["Phone side menu","built","Home, My bookings, Saved turfs, Profile, Turf owners links; Help & settings section with Help center and Settings links. Turfs by area was removed (PR #20); legal links remain in footer and Help center (PR #37).","components/SideMenu.tsx"],
   ["Launch promo card","built","Featured card and popup ad; its dead Unsplash photo was replaced by a turf photo and existing databases are healed on load (PR #22)","lib/seed.ts"],
   ["Stats banner and brand ad strip on home","partial","Static placeholder content (100+ turfs, 50k+ players, sports brand ads); not real data","(main)/page.tsx"],
   ["Pickleball venues","partial","The two venues exist as hidden drafts and are not yet live, so the Pickleball icon shows no venues","data/turfs.ts"]
@@ -1262,6 +1262,8 @@ featureGroups:[
   ["Sitemap and robots","built","Dynamic sitemap with images; private areas disallowed","sitemap.ts, robots.ts"],
   ["Structured data and share images","built","Organization, WebSite, location, breadcrumbs, FAQ; generated Open Graph images","lib/schema.ts"],
   ["Terms, privacy, FAQ","partial","Built, but still describe pay-at-venue and say nothing to refund; stale against the advance flow","(main)/terms, privacy, faq"],
+  ["Help center page","built","Support email and phone, quick links, FAQ accordion (same questions as /faq, shared via src/lib/faq.ts), legal links","(main)/help/page.tsx, lib/faq.ts"],
+  ["Settings page","built","Account links, cookie settings button, notifications and language info only, help and legal links","(main)/settings/page.tsx"],
   ["Cookie consent","built","Essential only or Accept all, 1-year cookie; hidden on admin and partner","components/consent"],
   ["Analytics","built","Vercel Analytics, Speed Insights, GA4 only after Accept all","components/consent"],
   ["Languages","planned","English only","–"]
@@ -1736,7 +1738,7 @@ DATA.tasks.push(
  {id:"P7-17",p:"P7",t:"Phone home: sport icons filter Open slots in place; remove How OYUN works card",s:"done",pr:"P1",n:"Tapping a sport now filters the rail underneath on the same page instead of opening the turfs page. Removes the How OYUN works card and its styles. PR #28."},
  {id:"P7-18",p:"P7",t:"Search sheet: remove area chips; home sports icon: Pickleball replaces Padel",s:"done",pr:"P2",n:"Removes Popular areas chips and label from phone search sheet. Fourth home sport icon is now Pickleball with photo; turfs list filter offers both Padel and Pickleball. PR #30."},
  {id:"P7-19",p:"P7",t:"Phone home: animate sport icons and the Open slots rail",s:"done",pr:"P2",n:"Sport icons rise in staggered (70 ms apart), spring on hover and press, chosen icon pops with a larger ring. Rail title fades in, cards slide in one after another, loading shimmer, slots badge pop, hover zoom and enter press. All wrapped in prefers-reduced-motion. PR #31."},
- {id:"P7-20",p:"P7",t:"Phone side menu: remove items, add Help center page and Settings page",s:"todo",pr:"P2",n:"Waiting for the owner to confirm which menu items to remove and what the Help center (FAQ plus contact and policy links) and Settings page (cookie preferences, account and legal links) should contain."},
+ {id:"P7-20",p:"P7",t:"Phone side menu: remove items, add Help center page and Settings page",s:"done",pr:"P2",n:"PR #37. Help center has support email/phone, quick links, FAQ accordion (shared via src/lib/faq.ts), legal links. Settings has account links, cookie preferences, notifications/language (info only), help and legal links. Help & settings section added to side menu; /help in sitemap, /settings disallowed in robots."},
  {id:"P7-21",p:"P7",t:"Make the two Pickleball venues live: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)",s:"doing",pr:"P2",n:"Added as hidden drafts in PR #34 (status pending, placeholder price 500 and hours 6 to 23). Still needed from the owners: real hourly price, opening time, phone, address and photo. Then set each to Active in Admin, Turfs. Bookings go to the OYUN Operations partner until they get their own login."},
  {id:"P7-22",p:"P7",t:"Decide whether the Padel Club stays a separate sport next to Pickleball on the home icons",s:"todo",pr:"P3",n:"Padel is only in the turfs list filter now; it is no longer on the home page."},
  {id:"P7-23",p:"P7",t:"Checkout and ticket wording: show Advance at the turf and Balance after you play; button is Confirm booking",s:"done",pr:"P2",n:"Checkout and ticket both show the two amounts separately. PR #33."}
