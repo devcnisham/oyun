@@ -231,6 +231,9 @@ export interface PromoCode {
 export interface PlatformSettings {
   commissionPercent: number;
   advancePercent: number;
+  // The advance stays between these rupee amounts (and never above the booking total)
+  minAdvance: number;
+  maxAdvance: number;
   gstPercent: number;
   supportEmail: string;
   supportPhone: string;
