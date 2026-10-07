@@ -225,11 +225,15 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
   };
 }
 
-// Advance paid online to confirm a booking: advancePercent of the total, but never under minAdvance
-// (and never more than the total). 10% of 1500 is 150; 10% of 1000 is 100, so it rises to 150.
-export function advanceDue(settings: Pick<PlatformSettings, 'advancePercent' | 'minAdvance'>, total: number) {
+// Advance paid online to confirm a booking: advancePercent of the total, kept between minAdvance and
+// maxAdvance, and never more than the total. With the defaults (10%, 150 to 150) it is a flat ₹150 per
+// booking; set the two limits apart in Admin → Settings to let the percentage show through.
+export function advanceDue(settings: Pick<PlatformSettings, 'advancePercent' | 'minAdvance' | 'maxAdvance'>, total: number) {
   if (total <= 0) return 0;
-  return Math.min(total, Math.max(settings.minAdvance ?? 0, Math.round((total * settings.advancePercent) / 100)));
+  const min = settings.minAdvance ?? 0;
+  const max = Math.max(min, settings.maxAdvance ?? Infinity);
+  const byPercent = Math.round((total * settings.advancePercent) / 100);
+  return Math.min(total, Math.min(max, Math.max(min, byPercent)));
 }
 
 // Split one advance across the hours of a booking in proportion to what each hour costs

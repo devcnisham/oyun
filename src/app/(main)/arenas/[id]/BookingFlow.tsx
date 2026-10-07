@@ -456,7 +456,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
               <section className={styles.venueNote}>
                 <h3>Payment</h3>
-                <p>💵 Pay a small advance online to confirm your slots ({quote ? `${quote.advancePercent}%, at least ${rupees(quote.minAdvance)}` : '10%, at least ₹150'}). The remaining amount will be paid at the turf when you arrive.</p>
+                <p>💵 Pay {quote ? (quote.minAdvance === quote.maxAdvance ? `a flat ${rupees(quote.minAdvance)}` : `an advance of ${rupees(quote.minAdvance)} to ${rupees(quote.maxAdvance)}`) : 'a flat ₹150'} online to confirm your slots. The remaining amount will be paid at the turf when you arrive.</p>
               </section>
 
               {quote && (

@@ -270,6 +270,7 @@ export async function saveSettings(_prev: ActionResult, fd: FormData): Promise<A
       commissionPercent: int(fd, 'commissionPercent', { min: 0, max: 50, label: 'Commission' }),
       advancePercent: int(fd, 'advancePercent', { min: 10, max: 100, label: 'Advance' }),
       minAdvance: int(fd, 'minAdvance', { min: 0, max: 5000, label: 'Minimum advance' }),
+      maxAdvance: int(fd, 'maxAdvance', { min: 0, max: 5000, label: 'Maximum advance' }),
       gstPercent: int(fd, 'gstPercent', { min: 0, max: 28, label: 'GST' }),
       supportEmail: required(fd, 'supportEmail', 'Support email', 120),
       supportPhone: required(fd, 'supportPhone', 'Support phone', 20),

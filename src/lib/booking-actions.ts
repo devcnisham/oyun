@@ -146,6 +146,7 @@ export interface SelectionQuote {
   total: number;
   advancePercent: number;
   minAdvance: number;
+  maxAdvance: number;
   payNow: number;
   payAtVenue: number;
   promoCode: string | null;
@@ -248,6 +249,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
     total,
     advancePercent: total > 0 ? Math.round((payNow / total) * 1000) / 10 : 0, // what is actually asked, after the minimum
     minAdvance: db.settings.minAdvance,
+    maxAdvance: db.settings.maxAdvance,
     payNow,
     payAtVenue: total - payNow,
     promoCode,

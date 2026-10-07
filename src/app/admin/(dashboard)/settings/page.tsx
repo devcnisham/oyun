@@ -29,6 +29,10 @@ export default async function AdminSettings() {
                 <input name="minAdvance" type="number" min={0} max={5000} defaultValue={s.minAdvance} className={dash.input} required />
               </label>
               <label className={dash.field}>
+                <span className={dash.label}>Maximum advance (₹)</span>
+                <input name="maxAdvance" type="number" min={0} max={5000} defaultValue={s.maxAdvance} className={dash.input} required />
+              </label>
+              <label className={dash.field}>
                 <span className={dash.label}>GST % on bookings</span>
                 <input name="gstPercent" type="number" min={0} max={28} defaultValue={s.gstPercent} className={dash.input} required />
               </label>
