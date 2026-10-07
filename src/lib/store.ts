@@ -281,7 +281,7 @@ function loadSupabase(): Promise<Loaded> {
 const DATA_DIR = process.env.DATA_DIR || (process.env.VERCEL ? path.join(tmpdir(), 'oyun-data') : path.join(process.cwd(), '.data'));
 const DATA_FILE = path.join(DATA_DIR, 'db.json');
 
-const globalStore = globalThis as unknown as { __slotArenaDb?: Database; __slotArenaPersisted?: boolean };
+const globalStore = globalThis as unknown as { __oyunArenaDb?: Database; __oyunArenaPersisted?: boolean };
 
 function loadFile(): Database {
   if (existsSync(DATA_FILE)) {
@@ -303,20 +303,20 @@ function saveFile(data: Database) {
     const tmp = `${DATA_FILE}.tmp`;
     writeFileSync(tmp, JSON.stringify(data));
     renameSync(tmp, DATA_FILE);
-    globalStore.__slotArenaPersisted = true;
+    globalStore.__oyunArenaPersisted = true;
   } catch (err) {
-    if (globalStore.__slotArenaPersisted !== false) console.error('[store] could not persist the local database; keeping it in memory', err);
-    globalStore.__slotArenaPersisted = false;
+    if (globalStore.__oyunArenaPersisted !== false) console.error('[store] could not persist the local database; keeping it in memory', err);
+    globalStore.__oyunArenaPersisted = false;
   }
 }
 
 function fileDb(): Database {
   // Reload if db.json was deleted (manual reset), but never reseed on every request when the disk is read-only
-  const fileGone = globalStore.__slotArenaPersisted === true && !existsSync(DATA_FILE);
-  if (!globalStore.__slotArenaDb || fileGone) globalStore.__slotArenaDb = loadFile();
+  const fileGone = globalStore.__oyunArenaPersisted === true && !existsSync(DATA_FILE);
+  if (!globalStore.__oyunArenaDb || fileGone) globalStore.__oyunArenaDb = loadFile();
   // A dev server keeps this copy across code reloads, so settings added since it started (like
   // minAdvance) would be missing; migrate fills them in from the defaults and is safe to repeat
-  return migrate(globalStore.__slotArenaDb);
+  return migrate(globalStore.__oyunArenaDb);
 }
 
 /* ---------------- public API ---------------- */
