@@ -30,12 +30,11 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
 
       <nav className={styles.sports} aria-label="Sports">
         {SPORTS.map((sport) => (
-          <Link key={sport.value} href={sportHref(sport.value)} className={styles.sportCard}>
-            <Image src={sport.image} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" className={styles.sportImg} />
-            <div className={styles.sportInfo}>
-              <b>{sport.label}</b>
-              <span>Explore venues <span aria-hidden>→</span></span>
-            </div>
+          <Link key={sport.value} href={sportHref(sport.value)} className={styles.sportIcon}>
+            <span className={styles.sportIconImg}>
+              <Image src={sport.image} alt="" fill sizes="88px" />
+            </span>
+            <b>{sport.label}</b>
           </Link>
         ))}
       </nav>
