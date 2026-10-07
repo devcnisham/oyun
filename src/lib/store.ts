@@ -155,23 +155,124 @@ async function applyChanges(changes: { upserts: TableRows; deletes: Partial<Reco
   throw new Error(`[store] write failed: ${error.message}`);
 }
 
-async function loadSupabase(): Promise<Loaded> {
+async function loadFull(): Promise<Loaded> {
   for (let attempt = 0; attempt < 3; attempt++) {
     const { data, error } = await createAdminClient().rpc('load_state');
     if (error) throw new Error(`[store] could not load data from Supabase: ${error.message}. Did you apply supabase/migrations?`);
     const state = data as TableRows & { rev: number | null };
-    if (state.rev !== null) return { db: fromRows(state), rev: Number(state.rev) };
+    if (state.rev !== null) return cacheFull(state, Number(state.rev));
 
     // Empty database: start it with the launch data once
     const db = seed();
     try {
       const rev = await applyChanges({ upserts: toRows(db), deletes: {} }, null);
-      return { db, rev };
+      return cacheFull(toRows(db), rev);
     } catch (err) {
       if (!(err instanceof StoreConflict)) throw err; // another server seeded first
     }
   }
   throw new Error('[store] could not initialise the database');
+}
+
+/*
+ * In-memory copy per server. Instead of downloading every table on every request,
+ * each request asks Supabase only for rows written since the revision this server
+ * already has (load_changes, see supabase/migrations/20261007000000_delta_sync.sql).
+ * An unchanged store answers with a few bytes. Readers share the cached object and
+ * must not modify it; mutate() always works on its own copy.
+ */
+type RowMaps = Map<Table, Map<string, unknown>>;
+interface Cache {
+  rows: RowMaps;
+  rev: number;
+  db: Database;
+}
+interface Delta {
+  rev: number | null;
+  full: boolean;
+  upserts?: TableRows;
+  deletes?: Partial<Record<Table, string[]>>;
+}
+
+const memory = globalThis as unknown as {
+  __oyunCache?: Cache;
+  __oyunSync?: Promise<Loaded> | null;
+  __oyunNoDelta?: boolean;
+};
+
+function buildDb(rows: RowMaps): Database {
+  const tableRows: TableRows = {};
+  for (const [table, map] of rows) tableRows[table] = [...map].map(([id, data]) => ({ id, data }));
+  const db = fromRows(tableRows);
+  // Catch readers that modify the shared copy while developing
+  if (process.env.NODE_ENV === 'development') deepFreeze(db);
+  return db;
+}
+
+function deepFreeze(value: unknown) {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const v of Object.values(value)) deepFreeze(v);
+  }
+}
+
+function cacheFull(state: TableRows, rev: number): Loaded {
+  const rows: RowMaps = new Map();
+  for (const table of Object.keys(state) as Table[]) {
+    if (!Array.isArray(state[table])) continue; // skip rev / full flags
+    rows.set(table, new Map((state[table] ?? []).map((r) => [r.id, r.data])));
+  }
+  const cache: Cache = { rows, rev, db: buildDb(rows) };
+  memory.__oyunCache = cache;
+  return { db: cache.db, rev };
+}
+
+function applyToCache(cache: Cache, upserts: TableRows, deletes: Partial<Record<Table, string[]>>, rev: number): Loaded {
+  for (const [table, ids] of Object.entries(deletes) as [Table, string[]][]) {
+    const map = cache.rows.get(table);
+    for (const id of ids) map?.delete(id);
+  }
+  for (const [table, list] of Object.entries(upserts) as [Table, Row[]][]) {
+    let map = cache.rows.get(table);
+    if (!map) cache.rows.set(table, (map = new Map()));
+    for (const row of list) map.set(row.id, row.data); // existing ids keep their place, like `order by seq`
+  }
+  cache.rev = rev;
+  cache.db = buildDb(cache.rows);
+  return { db: cache.db, rev };
+}
+
+async function syncOnce(): Promise<Loaded> {
+  const cache = memory.__oyunCache;
+  if (!cache || memory.__oyunNoDelta) return loadFull();
+  const since = cache.rev;
+  const { data, error } = await createAdminClient().rpc('load_changes', { since });
+  if (error) {
+    // Migration not applied yet: keep working the old way (whole state per request)
+    if (error.code === 'PGRST202' || error.code === '42883') {
+      memory.__oyunNoDelta = true;
+      console.warn('[store] load_changes is missing; run supabase/migrations/20261007000000_delta_sync.sql. Loading everything per request until then.');
+      return loadFull();
+    }
+    throw new Error(`[store] could not load changes from Supabase: ${error.message}`);
+  }
+  const delta = data as Delta & TableRows;
+  if (delta.full) {
+    if (delta.rev === null) return loadFull(); // store was reset: seed it again
+    return cacheFull(delta, Number(delta.rev));
+  }
+  // A write on this server moved the cache on while we waited; this delta is older
+  if (memory.__oyunCache !== cache || cache.rev !== since) return { db: memory.__oyunCache!.db, rev: memory.__oyunCache!.rev };
+  if (Number(delta.rev) === cache.rev) return { db: cache.db, rev: cache.rev };
+  return applyToCache(cache, delta.upserts ?? {}, delta.deletes ?? {}, Number(delta.rev));
+}
+
+// One sync at a time per server; concurrent requests share it
+function loadSupabase(): Promise<Loaded> {
+  memory.__oyunSync ??= syncOnce().finally(() => {
+    memory.__oyunSync = null;
+  });
+  return memory.__oyunSync;
 }
 
 /* ---------------- JSON file backend (local development) ---------------- */
@@ -280,12 +381,19 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
       if (fallBackInDev(err)) return mutate(fn);
       throw err;
     }
-    const before = snapshot(loaded.db);
-    const result = fn(loaded.db);
-    const changes = diff(before, loaded.db);
+    // Work on a private copy: the loaded object is shared with other requests on this server
+    const db = structuredClone(loaded.db);
+    const before = snapshot(db);
+    const result = fn(db);
+    const changes = diff(before, db);
     try {
       const rev = changes.empty ? loaded.rev : await applyChanges(changes, loaded.rev);
-      requestState().current = Promise.resolve({ db: loaded.db, rev });
+      // Our write is exactly the next revision, so the cache can take it without a round trip
+      const cache = memory.__oyunCache;
+      if (!changes.empty && rev !== null && cache && cache.rev === loaded.rev) {
+        applyToCache(cache, structuredClone(changes.upserts), changes.deletes, rev);
+      }
+      requestState().current = Promise.resolve({ db, rev });
       announceSlotChanges(changedSlotDays(before, changes));
       return result;
     } catch (err) {
