@@ -315,10 +315,11 @@ export async function cancelMyBooking(bookingId: string): Promise<{ ok: true } |
         throw new ValidationError(`Bookings can be cancelled up to ${CANCEL_CUTOFF_HOURS} hours before the slot. Please call the turf.`);
       }
       booking.cancelledAt = new Date().toISOString();
-      // Anything paid from the wallet goes back to the wallet
-      if (booking.amountPaid > 0 && booking.playerId) {
+      // The advance and anything paid from the wallet go back to the wallet
+      const refund = booking.amountPaid + (booking.pricing.walletDeduction ?? 0);
+      if (refund > 0 && booking.playerId) {
         const player = db.players.find((pl) => pl.id === booking.playerId);
-        if (player) walletTxn(db, player, booking.amountPaid, 'refund', `Booking ${booking.code} cancelled`, booking.id);
+        if (player) walletTxn(db, player, refund, 'refund', `Booking ${booking.code} cancelled`, booking.id);
         booking.status = 'refunded';
       } else {
         booking.status = 'cancelled';
@@ -477,6 +478,8 @@ export async function submitApplication(req: ApplicationRequest): Promise<{ id?:
         openTime: fields.openTime,
         closeTime: fields.closeTime,
         weekdayPrice: Math.round(Number(fields.weekdayPrice)),
+        eveningPrice: Math.round(Number(fields.eveningPrice)),
+        weekendPrice: Math.round(Number(fields.weekendPrice)),
         description: s(fields.description, 1000),
         whatsapp: normalizePhone(fields.whatsapp),
         amenities: (Array.isArray(req.amenities) ? req.amenities : []).map((a) => s(a, 40)).filter(Boolean).slice(0, 20),

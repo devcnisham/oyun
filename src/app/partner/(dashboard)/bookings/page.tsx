@@ -79,7 +79,7 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
                     <td>{b.source === 'walk_in' ? `Walk-in (${b.paymentMode})` : b.paymentMode === 'venue' ? 'Online · pay at venue' : `Online (${b.paymentMode})`}</td>
                     <td><Badge status={b.status} /></td>
                     <td className={dash.num}>{inr(b.pricing.total)}</td>
-                    <td className={dash.num}>{inr(b.amountPaid)}</td>
+                    <td className={dash.num}>{inr(b.status === 'checked_in' ? b.pricing.total : b.amountPaid)}</td>
                     <td>
                       <div className={dash.inline}>
                         <Link href={`/partner/invoices/${b.id}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Invoice</Link>

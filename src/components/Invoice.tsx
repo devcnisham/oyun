@@ -92,7 +92,7 @@ export default function Invoice({ booking, turf, partner, settings }: InvoicePro
             <td>{booking.paymentMode === 'venue' ? 'Paid at venue' : `Paid ${booking.paymentMode === 'advance' ? '(advance)' : `(${booking.paymentMode})`}`}</td>
             <td className={styles.num}>{inr(booking.amountPaid)}</td>
           </tr>
-          {p.total - booking.amountPaid > 0 && (
+          {booking.status !== 'checked_in' && p.total - booking.amountPaid > 0 && (
             <tr>
               <td>Balance due at venue</td>
               <td className={styles.num}>{inr(p.total - booking.amountPaid)}</td>

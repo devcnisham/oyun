@@ -47,7 +47,7 @@ export default async function AdminPartners() {
                     <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Save</button>
                   </ActionForm>
                   <div className={dash.inline}>
-                    <ActionForm action={resetPartnerPassword}>
+                    <ActionForm action={resetPartnerPassword} confirm={`Reset ${p.name}'s password? Their current password stops working.`}>
                       <input type="hidden" name="partnerId" value={p.id} />
                       <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Reset password</button>
                     </ActionForm>

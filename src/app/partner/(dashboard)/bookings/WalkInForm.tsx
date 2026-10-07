@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import ActionForm from '@/components/dash/ActionForm';
 import { dash } from '@/components/dash/ui';
-import { getSlotsForDate } from '@/lib/booking-actions';
-import { createWalkIn } from '@/lib/partner-actions';
+import { createWalkIn, getWalkInSlots } from '@/lib/partner-actions';
 import type { AddOn, Slot } from '@/lib/types';
 
 interface WalkInFormProps {
@@ -21,13 +20,17 @@ export default function WalkInForm({ turfId, today, maxDate, addOns }: WalkInFor
 
   useEffect(() => {
     let cancelled = false;
-    getSlotsForDate(turfId, date).then((s) => {
-      if (!cancelled) setSlots(s);
-    });
+    getWalkInSlots(date)
+      .then((s) => {
+        if (!cancelled) setSlots(s);
+      })
+      .catch(() => {
+        if (!cancelled) setSlots([]); // never leave the picker on "Loading…"
+      });
     return () => {
       cancelled = true;
     };
-  }, [turfId, date, version]);
+  }, [turfId, date, version]); // turfId: reload when the owner switches turf
 
   const available = (slots ?? []).filter((s) => s.available);
 

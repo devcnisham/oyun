@@ -273,6 +273,8 @@ export interface Application {
   openTime: string;
   closeTime: string;
   weekdayPrice: number;
+  eveningPrice?: number; // what the owner quoted for evenings and weekends; becomes the peak and weekend markups on approval
+  weekendPrice?: number;
   description: string;
   whatsapp: string;
   amenities: string[];

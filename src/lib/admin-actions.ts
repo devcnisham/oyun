@@ -31,6 +31,9 @@ export async function approveApplication(_prev: ActionResult, fd: FormData): Pro
       const email = app.ownerEmail.toLowerCase();
       let partner = db.partners.find((p) => p.email === email);
       let loginNote = `Owner logs in with their existing account (${email}).`;
+      if (partner && partner.status !== 'active') {
+        throw new ValidationError(`${email} belongs to a suspended partner. Reactivate them on the Partners page first, then approve.`);
+      }
       if (!partner) {
         if (db.staff.some((s) => s.email === email)) throw new ValidationError('Owner email belongs to a staff account');
         const password = generateTempPassword();
@@ -77,7 +80,16 @@ export async function approveApplication(_prev: ActionResult, fd: FormData): Pro
         commissionPercent: null,
         createdAt: now,
       });
-      db.pricing[id] = { ...DEFAULT_PRICING };
+      // Turn the evening and weekend prices the owner quoted into markups on their weekday price
+      const markup = (quoted: number | undefined) =>
+        quoted && app.weekdayPrice > 0 ? Math.min(200, Math.max(0, Math.round(((quoted - app.weekdayPrice) / app.weekdayPrice) * 100))) : null;
+      const peak = markup(app.eveningPrice);
+      const weekend = markup(app.weekendPrice);
+      db.pricing[id] = {
+        ...DEFAULT_PRICING,
+        ...(peak !== null ? { peakEnabled: peak > 0, peakPercent: peak } : {}),
+        ...(weekend !== null ? { weekendEnabled: weekend > 0, weekendPercent: weekend } : {}),
+      };
 
       app.status = 'approved';
       app.turfId = id;
@@ -229,13 +241,16 @@ export async function updatePartner(_prev: ActionResult, fd: FormData): Promise<
   return run(async () => {
     await requireAdmin();
     const email = required(fd, 'email', 'Email', 120).toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new ValidationError('Enter a valid email');
+    const phone = str(fd, 'phone', 20);
+    if (phone && phone.replace(/\D/g, '').length < 10) throw new ValidationError('Phone number needs 10 digits');
     return await mutate((db) => {
       const partner = db.partners.find((p) => p.id === str(fd, 'partnerId'));
       if (!partner) throw new ValidationError('Partner not found');
       if (email !== partner.email && emailTaken(db, email)) throw new ValidationError('This email is already in use');
       partner.name = required(fd, 'name', 'Name', 80);
       partner.email = email;
-      partner.phone = str(fd, 'phone', 20);
+      partner.phone = phone;
       return { ok: 'Partner saved' };
     });
   });
@@ -251,12 +266,26 @@ export async function refundBooking(_prev: ActionResult, fd: FormData): Promise<
       if (!booking) throw new ValidationError('Booking not found');
       if (booking.status === 'refunded' || booking.status === 'cancelled') throw new ValidationError('Already cancelled or refunded');
       const player = booking.playerId ? db.players.find((p) => p.id === booking.playerId) : undefined;
+      const wasCheckedIn = booking.status === 'checked_in';
       booking.status = 'refunded';
-      if (player && booking.amountPaid > 0) {
-        walletTxn(db, player, booking.amountPaid, 'refund', `Refund for booking ${booking.code}`, booking.id);
-        return { ok: `Refunded ₹${booking.amountPaid} to ${player.name}'s wallet` };
+      const notes: string[] = [];
+      // Online money (the advance, and anything paid from the wallet) goes back to the wallet.
+      // A walk-in was paid in cash or UPI at the desk, so there is nothing of ours to credit.
+      const refund = booking.amountPaid + (booking.pricing.walletDeduction ?? 0);
+      if (player && booking.source === 'online' && refund > 0) {
+        walletTxn(db, player, refund, 'refund', `Refund for booking ${booking.code}`, booking.id);
+        notes.push(`Refunded ₹${refund} to ${player.name}'s wallet`);
+      } else if (booking.source === 'walk_in') {
+        notes.push('Walk-in was paid at the desk, so nothing was credited to a wallet');
       }
-      return { ok: 'Booking marked as refunded' };
+      // Take back the cashback paid at check-in (never below zero)
+      if (player && wasCheckedIn && booking.cashback) {
+        const back = Math.min(booking.cashback, Math.max(0, player.walletBalance));
+        walletTxn(db, player, -back, 'admin_adjust', `Cashback reversed for refunded booking ${booking.code}`, booking.id);
+        booking.cashback = 0;
+        notes.push(`Cashback of ₹${back} taken back`);
+      }
+      return { ok: notes.length ? `${notes.join('. ')}.` : 'Booking marked as refunded' };
     });
   });
 }
@@ -301,6 +330,7 @@ export async function savePromoCode(_prev: ActionResult, fd: FormData): Promise<
     return await mutate((db) => {
       const existing = db.promoCodes.find((p) => p.code === code);
       if (existing && !isEdit) throw new ValidationError(`${code} already exists`);
+      if (!existing && isEdit) throw new ValidationError(`${code} no longer exists. Refresh the page.`);
       if (existing) {
         Object.assign(existing, { kind, value, maxDiscount, weekendOnly: bool(fd, 'weekendOnly') });
         return { ok: `${code} updated` };

@@ -37,7 +37,7 @@ export default function ActionForm({ action, children, className, resetOnSuccess
         {children}
       </fieldset>
       {state?.error && <p role="alert" className={`${styles.message} ${styles.error}`}>{state.error}</p>}
-      {state?.ok && !inline && <p role="status" className={`${styles.message} ${styles.success}`}>{state.ok}</p>}
+      {state?.ok && <p role="status" className={`${styles.message} ${styles.success}`}>{state.ok}</p>}
     </form>
   );
 }
