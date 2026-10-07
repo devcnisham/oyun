@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Static review of commit 7755471 (PR #13) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Reviewed at PR #13, scale fix on branch claude/scale-scoped-reads · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -210,7 +210,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
         <ol>
           <li><b>Move off Vercel Hobby.</b> It forbids commercial use. Use Vercel Pro ($20 a month) once owners and players are real.</li>
           <li><b>Move the database to Supabase Pro ($25 a month).</b> Free projects pause after 7 days idle; two of your other projects already show as paused.</li>
-          <li><b>Stop reading the whole database per request</b> (task P10-01). At 1,000 users this alone would pass the free egress limit many times over. Use the calculator in the Cost &amp; scale tab.</li>
+          <li><b>Run <code>supabase/setup/5-delta-sync.sql</code> on production</b> (task P10-13). The code now syncs only changed rows instead of the whole database per request; the SQL step switches it on. See the Cost &amp; scale tab.</li>
           <li><b>Add tests and CI</b> for pricing and double-booking (P8-02, P8-04, P8-08).</li>
         </ol>
         <ol start="5">
@@ -225,7 +225,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
       <div class="box"><h3>Three biggest gaps</h3>
         <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px">
           <li><b>No tests and no CI.</b> Pricing, cancellation and the double-booking guard have no automated check. A change to <code>src/lib/pricing.ts</code> ships unverified.</li>
-          <li><b>Whole database read on every request.</b> <code>load_state()</code> returns every table; each write reloads, diffs and retries behind one global <code>rev</code>. Fine for a pilot, not for traffic.</li>
+          <li><b>No online payment and no messages.</b> Players can't pay or leave a deposit, and nobody gets a confirmation or reminder. No-shows cost owners, and commission is 0.</li>
           <li><b>Player identity is weak.</b> Without Clerk it is a localStorage name and phone. Wallet spend is keyed by a typed phone number, and a ticket link exposes name and phone to anyone holding it.</li>
         </ol>
       </div>
@@ -246,6 +246,18 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
           <li>Tests, CI, staging, backups policy, uptime monitor.</li>
           <li>Find players, tournaments, weather alerts, real map, admin analytics.</li>
         </ul></div>
+    </div>
+    <div class="box"><div class="section-label">Compared with a full booking site</div>
+      <h3 style="font-size:18px;margin:4px 0 10px">What a booking site like Playo or Hudle has that OYUN still lacks</h3>
+      <div class="tw" style="box-shadow:none"><table><thead><tr><th>Gap</th><th>Why it matters</th><th>Tasks</th></tr></thead><tbody>
+        <tr><td><b>Online payment and deposits</b></td><td>No-shows cost owners; OYUN earns nothing at the venue. Commission is 0 today.</td><td><code>P11-01 to P11-06</code></td></tr>
+        <tr><td><b>Confirmations and reminders</b></td><td>No WhatsApp, SMS, email or push. Owners and players only see a booking if they open the site.</td><td><code>P12-01 to P12-05</code></td></tr>
+        <tr><td><b>Verified identity</b></td><td>Without Clerk, sign-in is an unverified name and phone; the ticket link shows name and phone.</td><td><code>P9-03, P9-05</code></td></tr>
+        <tr><td><b>Owner onboarding</b></td><td>Owners paste image URLs instead of uploading photos, and there is no signed agreement.</td><td><code>P13-08, P8-16</code></td></tr>
+        <tr><td><b>Tests, backups, monitoring</b></td><td>Nothing catches a broken price or a lost database.</td><td><code>P8-02, P8-08, P8-21, P8-22</code></td></tr>
+        <tr><td><b>Scale</b></td><td><span class="s-ok"><b>Fixed in code</b></span>: delta sync. Needs SQL step 5 on production. The global write lock remains.</td><td><code>P10-01, P10-13, P10-02</code></td></tr>
+      </tbody></table></div>
+      <p class="muted" style="margin-top:10px">Nice to have later: find players, tournaments, weather alerts, waitlist, recurring bookings, Kannada, an app with push. Verdict: fine for a pay-at-venue pilot with trusted owners; an open launch needs payments, messages and the security fixes first.</p>
     </div>
     <div class="box" id="ov-gate"></div>
     <p class="note">Everything on this page comes from reading the code. The worktree has no <code>node_modules</code>, so lint, type-check, build and tests were not run, and Next.js 16 docs under <code>node_modules/next/dist/docs/</code> were not read (AGENTS.md asks for that before writing code).</p>
@@ -294,8 +306,8 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
       <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--crit)"/></marker></defs>
       <g>
         <rect class="bx" x="20" y="40" width="122" height="58" rx="6"/><text class="t" x="81" y="63" text-anchor="middle">Server action</text><text class="lbl" x="81" y="80" text-anchor="middle">mutate(fn)</text>
-        <rect class="bx" x="162" y="40" width="122" height="58" rx="6"/><text class="t" x="223" y="63" text-anchor="middle">load_state()</text><text class="lbl" x="223" y="80" text-anchor="middle">all tables + rev</text>
-        <rect class="bx" x="304" y="40" width="122" height="58" rx="6"/><text class="t" x="365" y="63" text-anchor="middle">Run fn</text><text class="lbl" x="365" y="80" text-anchor="middle">on in-memory copy</text>
+        <rect class="bx" x="162" y="40" width="122" height="58" rx="6"/><text class="t" x="223" y="63" text-anchor="middle">load_changes</text><text class="lbl" x="223" y="80" text-anchor="middle">rows since my rev</text>
+        <rect class="bx" x="304" y="40" width="122" height="58" rx="6"/><text class="t" x="365" y="63" text-anchor="middle">Run fn</text><text class="lbl" x="365" y="80" text-anchor="middle">on a private copy</text>
         <rect class="bx" x="446" y="40" width="122" height="58" rx="6"/><text class="t" x="507" y="63" text-anchor="middle">Diff</text><text class="lbl" x="507" y="80" text-anchor="middle">upserts + deletes</text>
         <rect class="bx acc" x="588" y="40" width="130" height="58" rx="6"/><text class="t" x="653" y="63" text-anchor="middle">apply_changes</text><text class="lbl" x="653" y="80" text-anchor="middle">(changes, rev)</text>
         <rect class="bx" x="738" y="40" width="122" height="58" rx="6"/><text class="t" x="799" y="63" text-anchor="middle">Broadcast</text><text class="lbl" x="799" y="80" text-anchor="middle">+ revalidatePath</text>
@@ -305,9 +317,9 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
       <path class="ln bad" d="M653 98 V150 H223 V98" marker-end="url(#ah3)"/>
       <text x="438" y="144" text-anchor="middle" style="fill:var(--crit);font-size:12px">rev moved → store_conflict (40001) → retry up to 5×, jittered</text>
       <text class="lbl" x="20" y="190">Backstop: partial unique indexes on bookings, blocks and holds raise a unique violation, mapped to a friendly "slot taken" error.</text>
-      <text class="lbl" x="20" y="208">Cost: every write is serialised behind one global counter and reloads the whole database.</text>
+      <text class="lbl" x="20" y="208">Each server keeps the store in memory and fetches only rows changed since its revision. Every write is still serialised behind one global counter.</text>
     </svg></div>
-    <figcaption>Optimistic concurrency with a single global revision. It makes cross-table checks (a block against a booking, a hold against a booking) safe without database constraints, at the price of write contention and a full load per request.</figcaption>
+    <figcaption>Delta sync plus optimistic concurrency with a single global revision. An unchanged store costs about 22 bytes per request (measured on a local Postgres); a full load happens only when a server starts. It makes cross-table checks (a block against a booking, a hold against a booking) safe without database constraints, at the price of write contention and a full load per request.</figcaption>
   </figure>
 
   <figure>
@@ -438,7 +450,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <div class="box"><h3>Target direction for storage</h3>
       <p class="muted" style="margin-bottom:8px">Keep the jsonb tables for low-churn config (turfs, partners, pricing) and move the hot path to scoped reads and per-row locking.</p>
       <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
-        <li>Add RPCs that read one turf and one date range instead of <code>load_state()</code>.</li>
+        <li><s>Stop downloading every table per request.</s> Done with delta sync (<code>load_changes</code>); next, keep old bookings out of the in-memory copy so cold starts stay small.</li>
         <li>Replace the global <code>rev</code> with a version per turf (or per slot) so two turfs never conflict.</li>
         <li>Promote bookings, holds and wallet transactions to typed columns with CHECK constraints and foreign keys.</li>
         <li>Cache public pages (ISR plus tag revalidation on writes) so browsing never touches the store.</li>
@@ -538,7 +550,7 @@ phases:[
  {id:"P7",name:"Launch polish",when:"6 Oct",goal:"Operational extras and engagement features.",exit:"Health check, account-linked bookings, self-cancel, reviews, saved turfs. PRs #10 to #13.",refs:"7e4b881 … 1f4bdd9"},
  {id:"P8",name:"Quality foundation",when:"next",goal:"Make change safe: tests, CI, typed checks, accurate docs.",exit:"CI blocks merges on lint, tsc, build and tests; double-booking race test passes."},
  {id:"P9",name:"Security hardening",when:"next",goal:"Close the identity, wallet and rate-limit gaps before real money.",exit:"All Critical and High risks in the register closed or accepted in writing."},
- {id:"P10",name:"Scale the store",when:"before traffic",goal:"Stop loading the whole database per request.",exit:"Scoped reads, per-turf versioning, cached public pages, load test at target traffic."},
+ {id:"P10",name:"Scale the store",when:"before traffic",goal:"Stop loading the whole database per request.",exit:"Delta sync live in production, per-turf versioning, scoped reads for history, per-turf versioning, cached public pages, load test at target traffic."},
  {id:"P11",name:"Online payments",when:"after P8 + P9",goal:"Take advance or full payment through Razorpay.",exit:"Signature-verified orders, idempotent webhooks, refunds and payout reconciliation."},
  {id:"P12",name:"Notifications",when:"after P11",goal:"Confirmations and reminders players and owners rely on.",exit:"WhatsApp or SMS confirmation, 2-hour reminder, owner alert, email receipt."},
  {id:"P13",name:"Growth",when:"later",goal:"Features that bring players back.",exit:"Find players, tournaments, weather alerts, real map, analytics."}
@@ -630,10 +642,10 @@ tasks:[
  {id:"P9-16",p:"P9",t:"Remove the unused Supabase auth proxy step or document why it stays",s:"todo",pr:"P3",n:"updateSession returns early; server.ts is unused."},
 
  // P10
- {id:"P10-01",p:"P10",t:"Scoped read RPCs (one turf, one date range) replacing load_state on hot paths",s:"todo",pr:"P0"},
+ {id:"P10-01",p:"P10",t:"Delta sync: per-server cache plus load_changes(since) instead of load_state per request",s:"done",pr:"P0",n:"store.ts, supabase/migrations/20261007000000_delta_sync.sql, supabase/setup/5-delta-sync.sql. 16 end-to-end checks passed against a local Postgres; production build passes."},
  {id:"P10-02",p:"P10",t:"Per-turf version instead of one global rev",s:"todo",pr:"P1",n:"Two turfs must not conflict."},
  {id:"P10-03",p:"P10",t:"Cache public pages with ISR and tag revalidation; drop connection() from the public layout",s:"todo",pr:"P1"},
- {id:"P10-04",p:"P10",t:"Replace the 10-second slot poll with Realtime plus on-focus refetch",s:"todo",pr:"P2"},
+ {id:"P10-04",p:"P10",t:"Replace the 10-second slot poll with Realtime plus on-focus refetch",s:"todo",pr:"P3",n:"Cheap now: an unchanged poll costs about 22 bytes."},
  {id:"P10-05",p:"P10",t:"loading.tsx and Suspense for every data page",s:"todo",pr:"P2",n:"None exist today."},
  {id:"P10-06",p:"P10",t:"pg_cron job to purge expired holds",s:"todo",pr:"P2"},
  {id:"P10-07",p:"P10",t:"Typed columns and foreign keys for bookings, holds, wallet transactions",s:"todo",pr:"P2"},
@@ -699,7 +711,8 @@ tables:[
  ["promo_codes","Promo definitions and use counter","–"],
  ["pricing","Peak, weekend and last-minute rules; id is the turf id","turf id"],
  ["app_config","Commission, GST, cashback, referral settings, site content","–"],
- ["app_meta","Single row: global rev counter","check id = 1"]
+ ["app_meta","Single row: global rev counter, delta_from","check id = 1"],
+ ["deleted_rows","Tombstones so other servers drop deleted rows; last 50,000 writes kept","(tbl, id)"]
 ],
 idx:[
  "<code>bookings_live_slot_uniq</code> on (turf_id, slot_date, slot_hour) where status in confirmed, checked_in",
@@ -709,7 +722,8 @@ idx:[
  "No unique constraint spans tables, so a hold cannot conflict with a booking in the database. The rev lock covers it."
 ],
 rpc:[
- "<code>load_state()</code>: stable, returns every table as one jsonb plus rev",
+ "<code>load_state()</code>: whole state plus rev; now used only when a server starts or falls too far behind",
+ "<code>load_changes(since)</code>: only rows written after <code>since</code> plus deletions (from <code>deleted_rows</code>); about 22 bytes when nothing changed",
  "<code>apply_changes(changes, expected_rev)</code>: bumps rev only if it matches, else raises <code>store_conflict</code> (40001); null rev initialises",
  "<code>reset_state()</code>: truncates everything",
  "All three: revoked from public, anon, authenticated; granted to service_role only. Not SECURITY DEFINER."
@@ -730,7 +744,7 @@ enums:[
  "Partner and staff role unions: owner, manager, front_desk"
 ],
 dbrisks:[
- "<b>Whole database per request.</b> <code>load_state()</code> loops over every table with dynamic SQL; cost grows with every booking ever made.",
+ "<b>Fixed: whole database per request.</b> Each server now keeps a copy and fetches only changes. A cold start still loads everything, so keep old bookings out of the hot store (P10-14).",
  "<b>One global write lock.</b> Any two writes conflict, even for different turfs. After 5 retries the user sees a busy error.",
  "<b>No integrity in the database.</b> No foreign keys, CHECK constraints or enums, so a bug can write a negative wallet or an orphan booking.",
  "<b>Expired holds linger.</b> Expiry is app-side. <code>holds_slot_uniq</code> has no expiry predicate, so an expired hold blocks any insert path that does not purge first.",
@@ -798,7 +812,7 @@ gate:[
   ["DB-02","Unique constraints on critical data","pass","Slots, code, phone"],
   ["DB-03","Foreign keys and CHECK constraints","fail","None; JSON only"],
   ["DB-04","Migration idempotent and split for the SQL editor","pass","supabase/setup 1 to 4"],
-  ["DB-05","Pagination and scoped reads","fail","load_state returns everything"],
+  ["DB-05","Pagination and scoped reads","partial","Delta sync per request; history still held in memory; needs SQL step 5 in production"],
   ["DB-06","Backups and restore tested","manual","Enable PITR, test a restore"]]},
  {c:"DEPLOY",n:"Deployment",items:[
   ["DEPLOY-01","Health endpoint","pass","/api/health"],
@@ -832,7 +846,7 @@ gate:[
 ],
 
 debt:[
- ["1","Whole-database read and diff per request","store.ts, load_state","Cost grows with history; every page and write pays it","Scoped RPCs (P10-01)"],
+ ["1","Whole-store clone and diff per write; full load on cold start","store.ts","Cost grows with history, but no longer per read","P10-14, P10-15 (per-read cost fixed in P10-01)"],
  ["2","Global rev lock","apply_changes","All writers conflict; busy errors after 5 retries","Per-turf version (P10-02)"],
  ["3","Everything dynamic","(main)/layout.tsx connection()","No caching, no static pages, slow first byte","ISR plus tags (P10-03)"],
  ["4","No tests, no CI","repo root","Regressions in pricing and booking go unnoticed","P8"],
@@ -851,7 +865,8 @@ adr:[
  {t:"Pay at venue first",ctx:"No payment gateway yet; owners collect cash or UPI on site.",dec:"paymentMode venue, amountPaid 0; wallet is internal credit only.",tr:"Zero payment risk and fast launch; no-shows cost owners and commission is 0.",rev:"When no-show rate hurts owners (P11)."},
  {t:"Clerk is optional, device identity is the fallback",ctx:"Launch must work with no keys, and demos should not need accounts.",dec:"With the Clerk key, sign-in is required before paying; without it, a localStorage name and phone.",tr:"Easy local dev; the fallback is not authentication and weakens wallet and ticket security.",rev:"Make Clerk mandatory in production (P9-03)."},
  {t:"Custom cookie auth for admin and partner",ctx:"Few operator accounts, env-provisioned.",dec:"HMAC session cookie, scrypt hashes in the store, role matrix for partners.",tr:"Simple and dependency-free; no MFA, no revocation, in-memory lockout.",rev:"When more than a handful of operators exist (P9-09)."},
- {t:"Supabase Realtime broadcast for slot freshness",ctx:"Players must see a slot disappear while choosing.",dec:"Server posts a ping to slots:{turf}:{date}; clients refetch. Poll every 10 seconds as safety net.",tr:"Cheap and decoupled from RLS; topics are public and carry no data.",rev:"If payloads ever carry data, switch to private channels (P9-15)."}
+ {t:"Supabase Realtime broadcast for slot freshness",ctx:"Players must see a slot disappear while choosing.",dec:"Server posts a ping to slots:{turf}:{date}; clients refetch. Poll every 10 seconds as safety net.",tr:"Cheap and decoupled from RLS; topics are public and carry no data.",rev:"If payloads ever carry data, switch to private channels (P9-15)."},
+ {t:"Delta sync instead of loading everything per request",ctx:"Every request downloaded every table; at 1,000 users that was an estimated 100+ GB a month of database egress.",dec:"Each server keeps the store in memory and calls load_changes(since) for rows written after its revision; deletions leave tombstones. Writes still go through apply_changes with the rev check.",tr:"Tiny reads and no API change for 30+ pages; a cold start still loads everything, and memory grows with history.",rev:"When a cold-start load passes about 5 MB, or more than a few servers run at once (P10-14)."}
 ],
 
 env:[
@@ -1220,14 +1235,14 @@ be:{
   "No webhooks inbound (needed for payments).",
   "No audit log of who did what.",
   "No background worker or queue.",
-  "All reads load the whole database (see Database and Cost)."
+  "Each server holds the whole store in memory and syncs changes; history should move out of it (P10-14)."
  ]
 },
 
 hosting:[
  ["Frontend (pages)","Next.js pages and components","Vercel","Vercel Hobby to test. <b>Hobby forbids commercial use</b>, so move to Pro ($20 per seat a month) before real customers.","Vercel Pro; add a custom domain","Alternatives with free commercial tiers (Cloudflare, Netlify) exist; Next.js 16 needs more work there. Check their terms first."],
  ["Backend (server actions, API)","Same app as above, runs as Vercel Functions","Vercel Functions","Same plan. Pin the function region next to the database (Singapore) in project settings or <code>vercel.json</code>; the default region is US East, which adds a round trip per query. Verify what the project uses.","Same; tune region and memory","If functions become the limit, move to a container host (Fly.io, Render) later."],
- ["Database","Postgres, 15 tables","Supabase project <code>oyun</code>, Singapore, nano compute","Free: 500 MB, pauses after 7 days idle. Fine for building, risky for launch.","Supabase Pro $25 a month (8 GB, no pause, daily backups); compute add-ons when CPU is high","Best fix is still scoped reads (phase 10). Ideally move to Mumbai when you recreate it."],
+ ["Database","Postgres, 15 tables","Supabase project <code>oyun</code>, Singapore, nano compute","Free: 500 MB, pauses after 7 days idle. Fine for building, risky for launch.","Supabase Pro $25 a month (8 GB, no pause, daily backups); compute add-ons when CPU is high","Delta sync cut per-request reads; run SQL step 5. Ideally move to Mumbai when you recreate it."],
  ["Player login","Accounts and sessions","Clerk","Free to 10,000 monthly active users","Pro $25 a month plus $0.02 per extra user","Use live keys in production, test keys locally."],
  ["Owner and admin login","Custom signed cookie","In the app","No cost","MFA and per-user admin accounts","See security tab."],
  ["Realtime updates","Slot-changed pings","Supabase Realtime","Included; free tier has connection and message caps (verify current numbers)","Pro caps are higher","The 10-second poll is a fallback."],
@@ -1256,8 +1271,8 @@ cost:{
   ["users","Registered users",1000,"1"],["activePct","Active in a month (%)",40,"1"],["sessions","Sessions per active user a month",4,"1"],
   ["pages","Pages per session",5,"1"],["polls","Slot refreshes per session (10 s poll on a turf page)",20,"1"],
   ["bpa","Bookings per active user a month",1.5,"0.1"],["hpb","Hours per booking",1.3,"0.1"],["months","Months of bookings stored",3,"1"],
-  ["rowKB","KB per booking row (estimate, measure it)",1.2,"0.1"],["baseKB","KB of config data (turfs, pricing, settings)",120,"10"],
-  ["scopedKB","KB per request after scoped reads (phase 10)",15,"1"],["price","Average price per hour (₹)",900,"50"],
+  ["rowKB","KB per booking row (estimate)",1.2,"0.1"],["baseKB","KB of config data (measured about 11)",12,"1"],
+  ["inst","Warm servers at once (estimate)",3,"1"],["cold","Server cold starts a month (estimate)",1500,"100"],["price","Average price per hour (₹)",900,"50"],
   ["comm","OYUN commission (%)",10,"1"],["wa","WhatsApp messages per booking",2,"1"],["usd","₹ per US dollar (assumption)",90,"1"]
  ],
  stages:[
@@ -1268,7 +1283,7 @@ cost:{
  ],
  free:[
   ["Vercel Hobby","100 GB bandwidth, about 1M edge requests a month","Policy, not capacity: personal and non-commercial use only","Move to Pro before launch"],
-  ["Supabase Free","500 MB database, 5 GB egress, 50,000 MAU, 2 projects, pauses after 7 days idle","<b>Egress and pausing</b>: the app reads the whole database per request, so 5 GB goes fast","Pro, plus scoped reads"],
+  ["Supabase Free","500 MB database, 5 GB egress, 50,000 MAU, 2 projects, pauses after 7 days idle","<b>Pausing</b>, and egress from cold-start full loads as history grows","Pro, plus scoped reads"],
   ["Clerk Free","10,000 monthly active users","Not a limit at 1,000 users","Pro at 10,000+"],
   ["Resend Free","3,000 emails a month, 100 a day","Enough for about 1,500 bookings if one email each; a busy evening can pass 100","Pro $20"],
   ["Sentry Free","5,000 errors a month, 1 user","A noisy bug burns it in a day","Team plan"],
@@ -1433,7 +1448,8 @@ function drawCalc(){
   const rowsMo = active*v('bpa')*v('hpb');
   const rowsTot = rowsMo*v('months');
   const stateKB = v('baseKB')+rowsTot*v('rowKB');
-  const egNow = reqs*stateKB/1e6, egNew = reqs*v('scopedKB')/1e6;
+  const egNow = reqs*stateKB/1e6;
+  const egNew = (reqs*0.03 + rowsMo*3*v('rowKB')*v('inst') + v('cold')*stateKB)/1e6; // tiny syncs + each changed row once per server (hold, booking, release) + full load per cold start
   const dbMB = (v('baseKB')+rowsTot*v('rowKB')*2)/1000;
   const bw = active*v('sessions')*v('pages')*0.6/1000;
   const bookings = active*v('bpa');
@@ -1450,16 +1466,16 @@ function drawCalc(){
       <div class="box stat"><b class="num">${Math.round(active).toLocaleString('en-IN')}</b><span>active users a month</span></div>
       <div class="box stat"><b class="num">${Math.round(reqs/1000).toLocaleString('en-IN')}k</b><span>server requests a month (peak about ${Math.max(1,Math.round(peak))} a second)</span></div>
       <div class="box stat"><b class="num">${Math.round(rowsMo).toLocaleString('en-IN')}</b><span>booking rows added a month</span></div>
-      <div class="box stat ${stateKB>1000?'tint-crit':''}"><b class="num">${(stateKB/1000).toFixed(2)} MB</b><span>data read on every request today (after ${v('months')} months)</span></div>
+      <div class="box stat ${stateKB>1000?'tint-crit':''}"><b class="num">${(stateKB/1000).toFixed(2)} MB</b><span>full store after ${v('months')} months (read only on a cold start now)</span></div>
     </div>`+
-    `<h3 style="margin:6px 0">Free-plan fit with the app as it is today</h3>`+
-    meter('Supabase egress',egNow,5,'GB','whole database per request')+
+    `<h3 style="margin:6px 0">Free-plan fit with delta sync (after SQL step 5)</h3>`+
+    meter('Supabase egress',egNew,5,'GB','changed rows + full load per cold start')+
     meter('Supabase database',dbMB,500,'MB','rows plus indexes (estimate 2x)')+
     meter('Vercel bandwidth',bw,100,'GB','about 0.6 MB per page view')+
     meter('Clerk active users',active,10000,'users','free plan')+
     meter('Resend emails',emails,3000,'emails','one per booking, 100 a day cap')+
-    `<h3 style="margin:14px 0 6px">After scoped reads (phase 10)</h3>`+
-    meter('Supabase egress',egNew,5,'GB',v('scopedKB')+' KB per request')+
+    `<h3 style="margin:14px 0 6px">Before the fix (whole database per request)</h3>`+
+    meter('Supabase egress',egNow,5,'GB','what the old design would use')+
     `<h3 style="margin:14px 0 6px">Money, per month</h3>
     <div class="grid g4">
       <div class="box stat"><b class="num">${inr(infra)}</b><span>hosting at stage B (Vercel Pro + Supabase Pro)</span></div>
@@ -1468,7 +1484,7 @@ function drawCalc(){
       <div class="box stat"><b class="num">${inr(waCost)}</b><span>WhatsApp, ${Math.round(wa).toLocaleString('en-IN')} messages incl. GST</span></div>
     </div>
     <p class="muted" style="margin-top:10px">If payments were online, Razorpay would take about ${inr(rz)} (2% + GST). Hosting is covered when commission passes ${inr(infra)}, which needs about ${Math.ceil(infra/Math.max(1,v('price')*v('comm')/100))} paid hours a month at these numbers.</p>
-    <p class="note" style="margin-top:10px">${egNow>5?'<b>Verdict:</b> at '+Math.round(v('users')).toLocaleString('en-IN')+' users the current design passes the free 5 GB egress '+(egNow/5).toFixed(0)+' times over, and each request would read '+(stateKB/1000).toFixed(1)+' MB. Do phase 10 (scoped reads) before this target, and use Supabase Pro.':'<b>Verdict:</b> within the free plan on these numbers, but Vercel Hobby still forbids commercial use.'} Row size and request counts are estimates: measure the real size of <code>load_state()</code> first (task P10-00).</p>`;
+    <p class="note" style="margin-top:10px"><b>Verdict:</b> the old design would use about ${egNow.toFixed(0)} GB of egress a month here; delta sync needs about ${egNew.toFixed(1)} GB, ${egNew>5?'still over the free 5 GB, mostly from cold-start full loads. Keep old bookings out of memory (P10-14) and use Supabase Pro.':'within the free 5 GB. Supabase Pro is still advised so the database never pauses.'} Vercel Hobby forbids commercial use either way. Row size, warm servers and cold starts are estimates.</p>`;
 }
 
 DATA.tasks.push(
@@ -1482,7 +1498,12 @@ DATA.tasks.push(
  {id:"P8-20",p:"P8",t:"Accessibility audit: keyboard, focus, contrast; fix findings",s:"todo",pr:"P2"},
  {id:"P8-21",p:"P8",t:"Nightly database backup to a free bucket via GitHub Action; test a restore",s:"todo",pr:"P1"},
  {id:"P8-22",p:"P8",t:"Sentry and an uptime monitor on /api/health",s:"todo",pr:"P1"},
- {id:"P10-00",p:"P10",t:"Measure real load_state() payload size and requests per page; update the Cost calculator",s:"todo",pr:"P0",n:"The 1,000-user estimate assumes 1.2 KB per booking row and 120 KB of config."},
+ {id:"P10-00",p:"P10",t:"Measure the store payload; update the Cost calculator",s:"done",pr:"P0",n:"Launch data is about 11 KB; an unchanged delta is 22 bytes. Booking row size (1.2 KB) is still an estimate until real bookings exist."},
+ {id:"P10-13",p:"P10",t:"Run supabase/setup/5-delta-sync.sql on the production Supabase project",s:"todo",pr:"P0",n:"Until then the new code falls back to the old full load per request and logs a warning."},
+ {id:"P10-14",p:"P10",t:"Keep bookings older than 90 days out of the in-memory copy (archive table, read on demand)",s:"todo",pr:"P2",n:"Keeps cold-start loads and per-write clone and diff small as history grows."},
+ {id:"P10-15",p:"P10",t:"Avoid cloning and diffing the whole store on every write (row-level write helpers)",s:"todo",pr:"P2"},
+ {id:"P13-08",p:"P13",t:"Photo uploads for owners (Supabase Storage)",s:"todo",pr:"P2",n:"Owners paste image URLs today."},
+ {id:"P8-23",p:"P8",t:"Run a real booking end to end in the browser (hold, book, ticket, check-in, cancel) and log what breaks",s:"todo",pr:"P1"},
  {id:"P10-10",p:"P10",t:"Pin Vercel functions to Singapore next to the database; verify latency",s:"todo",pr:"P1",n:"Default function region is US East."},
  {id:"P10-11",p:"P10",t:"Upgrade Supabase to Pro before launch; set spend cap and usage alerts",s:"todo",pr:"P0"},
  {id:"P10-12",p:"P10",t:"1,000-user readiness test: 3 months of seeded bookings, k6 run, p95 under 800 ms",s:"todo",pr:"P1"}
