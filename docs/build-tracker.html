@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #22 (main at 2bf4459) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #27 (main at ba881eb) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1131,7 +1131,7 @@ featureGroups:[
   ["Price range, distance, amenity, date filters","planned","Not built","–"],
   ["Home page","built","Hero search, sport tiles, recommended slider (top 10), popular areas (top 4), list-your-turf call to action","(main)/page.tsx"],
   ["Mobile home feed","built","Next game, What do you want to play? sport cards, open slots today, featured promo, deals, top 3 rated, how it works, list-your-turf call to action","(main)/_home/"],
-  ["Sport photo cards","built","Football, Box Cricket, Badminton, Padel as photo cards with a dark fade and Explore venues; two across on a phone, four on a tablet; each opens the turfs list filtered by that sport. Phone and desktop share src/lib/sports.ts","_home/MobileHome.tsx, lib/sports.ts"],
+  ["Sport photo cards","built","Football, Box Cricket, Badminton, Padel as round image icons with names (60 to 88px, scrolls on narrow screens); each opens the turfs list filtered by that sport. Phone and desktop share src/lib/sports.ts. PR #26.","_home/MobileHome.tsx, lib/sports.ts"],
   ["Area chips, quick tiles, Browse by area grid, Why OYUN strip on the phone home","removed","Taken out at the owner's request (PR #20); areas are still reachable from the turfs list and the footer","–"],
   ["Area landing pages","built","One SEO page per area with copy","(main)/turfs/[area]"],
   ["Floating search sheet","built","Phone only","components/FloatingSearch.tsx"],
@@ -1199,7 +1199,7 @@ featureGroups:[
   ["Wallet as payment","built","Deducted at booking, capped at the subtotal, recorded as a transaction","lib/wallet.ts"],
   ["Online payment gateway (Razorpay)","planned","Nothing is charged today; no webhook, no capture","phase 11"],
   ["Full payment mode","planned","The type exists but nothing sets it","lib/types.ts"],
-  ["Refunds","partial","Credit the wallet only; the wallet-paid part is not returned and an advance that was never collected is credited anyway","admin-actions.ts, booking-actions.ts"],
+  ["Refunds","partial","Return wallet-paid money; cancel credits the wallet. Advance that was never collected still credited (risk R-14). PR #27.","admin-actions.ts, booking-actions.ts"],
   ["Walk-in payment","built","Cash or UPI, full amount recorded as paid","partner-actions.ts"],
   ["Payouts","partial","Weekly report only; no transfers are made","lib/reports.ts"]
  ]},
@@ -1268,7 +1268,7 @@ featureGroups:[
   ["Overview","built","Month revenue and 7-day chart (owner only), today's schedule, next 7 days, 30-day no-show rate, latest bookings","partner/(dashboard)/page.tsx"],
   ["Bookings list","built","Today, Upcoming, Past, Cancelled; search by name, phone or code; first 100 shown","partner/bookings"],
   ["Cancel with refund","built","Credits the wallet","partner-actions.ts"],
-  ["Walk-in booking","built","Name, phone, date up to 14 days, free-slot picker, cash or UPI, add-ons; no online offers","partner/bookings/WalkInForm"],
+  ["Walk-in booking","built","Name, phone, date up to 14 days (including current hour), free-slot picker, cash or UPI, add-ons; no online offers; recovers from load failures. PR #27.","partner/bookings/WalkInForm"],
   ["Phone menu for the owner dashboard","built","Slide-out drawer menu so the dashboard works in a phone browser (committed by the owner)","partner/(dashboard)/layout.tsx, MobileDrawerClose.tsx"],
   ["Roles","built","Owner: all nine permissions. Manager: all except staff and payouts. Front desk: bookings, check-in, slots","lib/partner-auth.ts"]
  ]},
@@ -1281,7 +1281,7 @@ featureGroups:[
  ]},
  {g:"Owner: slots, pricing, offers, add-ons",a:"Owner",subs:[
   ["Block and unblock slots","built","Per slot with a reason; cannot block over a booking; instant on the public site","partner/slots"],
-  ["Dashboard quick blocker","partial","Only 6, 7 and 8 PM and it ignores errors","partner/page.tsx"],
+  ["Dashboard quick blocker","built","Lists all turf hours, shows results and errors, rejects past dates and closed hours. PR #27.","partner/page.tsx"],
   ["Pricing rules page","built","Base price plus peak, weekend and last-minute rules","partner/pricing"],
   ["Offers","built","Create, pause, delete; happy hour or first-time; name up to 40","partner/offers"],
   ["Add-ons","built","Name up to 60, price 0 to 10,000, edit, hide, delete; sold only through walk-ins","partner/add-ons"],
@@ -1700,9 +1700,9 @@ DATA.tasks.push(
  {id:"P8-28",p:"P8",t:"After PR #17 deploys, check Admin → Settings in production: advance 10%, minimum 150, maximum 150 (per hour)",s:"todo",pr:"P0",n:"Production keeps its saved advance percent (it may still be 30)."},
  {id:"P8-24",p:"P8",t:"Update FAQ, Terms, the home Pay at the Turf card, BookingFlow comments, FEATURE_LIST and GO-LIVE for the advance flow",s:"todo",pr:"P1",n:"They still say pay at venue and no prepayment."},
  {id:"P8-25",p:"P8",t:"Replace the fake home stats banner and brand ad strip; fill the footer social links",s:"todo",pr:"P2",n:"100+ turfs, 50k+ players and sports-brand ads are placeholders."},
- {id:"P8-26",p:"P8",t:"Fix the owner dashboard quick slot blocker: only 6 to 8 PM, and it ignores errors",s:"todo",pr:"P2"},
- {id:"P8-27",p:"P8",t:"Apply evening and weekend rates from a turf application to the approved turf's pricing",s:"todo",pr:"P2",n:"Stored as a text note only today."},
- {id:"P9-17",p:"P9",t:"Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part",s:"todo",pr:"P0",n:"Needed before the advance is real money, and wrong today even with the wallet off."},
+ {id:"P8-26",p:"P8",t:"Fix the owner dashboard quick slot blocker: only 6 to 8 PM, and it ignores errors",s:"done",pr:"P2",n:"Lists all turf hours, shows results and errors, rejects past dates. PR #27."},
+ {id:"P8-27",p:"P8",t:"Apply evening and weekend rates from a turf application to the approved turf's pricing",s:"done",pr:"P2",n:"Approval turns owner's evening and weekend prices into turf's peak and weekend markups. PR #27."},
+ {id:"P9-17",p:"P9",t:"Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part",s:"doing",pr:"P0",n:"Half done in PR #27: cancels and refunds now return wallet-paid money, and a walk-in refund no longer credits a wallet. Still open: an advance that was recorded but never collected is credited to the wallet on refund (risk R-14) until Razorpay collects it."},
  {id:"P11-07",p:"P11",t:"Collect the per-hour advance through Razorpay; until then label it recorded, not paid",s:"todo",pr:"P0"},
  {id:"P13-09",p:"P13",t:"Let players pick add-ons at checkout",s:"todo",pr:"P2",n:"Owners can create add-ons; online checkout always sends none."},
  {id:"P13-10",p:"P13",t:"Turf photo gallery carousel and a real map pin per turf",s:"todo",pr:"P3"}
@@ -1719,7 +1719,16 @@ DATA.tasks.push(
  {id:"P8-29",p:"P8",t:"Fix checkout crash on a dev server that predates a new setting",s:"done",pr:"P2",n:"File mode now fills missing settings from defaults on every read; rupees() tolerates a missing value. PR #19."},
  {id:"P8-30",p:"P8",t:"Link the FAQ again somewhere on the phone (side menu or home) and keep a phone route to Privacy, Terms and Cookie settings",s:"todo",pr:"P2",n:"Removed from the phone menu in PR #20; the footer still has the legal links. Cookie settings must stay easy to reopen."},
  {id:"P8-31",p:"P8",t:"Check every hard-coded image link (sports, promos, turfs) for 404s and move them to our own files or storage",s:"todo",pr:"P2",n:"Two Unsplash links had already died (Padel card, launch promo). Add a link check to CI."},
- {id:"P8-32",p:"P8",t:"Make the local dev server re-read settings and data on code change, or warn when it is stale",s:"todo",pr:"P3",n:"A server started before a code change kept an old in-memory copy and crashed checkout."}
+ {id:"P8-32",p:"P8",t:"Make the local dev server re-read settings and data on code change, or warn when it is stale",s:"todo",pr:"P3",n:"A server started before a code change kept an old in-memory copy and crashed checkout."},
+ {id:"P7-15",p:"P7",t:"Sport cards as round image icons instead of photo cards",s:"done",pr:"P2",n:"Football, Box Cricket, Badminton, Padel icons (60–88px) with names; scrolls on narrow screens. PR #26."},
+ {id:"P8-33",p:"P8",t:"Build tracker updater agent and check-tracker.mjs script",s:"done",pr:"P2",n:"Validates task IDs, counts features and risks on every update. PR #23."},
+ {id:"P8-34",p:"P8",t:"Local dev: skip admin and partner login without losing production login",s:"done",pr:"P2",n:"npm run dev opens /admin and /partner; login pages redirect to dashboards. Production and next start still require login. PR #24."},
+ {id:"P8-35",p:"P8",t:"Rename slot-arena to oyun-arena",s:"done",pr:"P3",n:"package.json, dev store keys, docs. Vercel project, cookies, booking codes and GitHub repo left alone. PR #25."},
+ {id:"P8-36",p:"P8",t:"Admin and partner dashboard bug fixes: refunds, walk-ins, approvals, slot blocker",s:"done",pr:"P1",n:"Cancel and refund return wallet-paid money; a walk-in refund credits no wallet; refunding a checked-in booking takes the cashback back; approval applies the owner's evening and weekend prices and refuses a suspended owner; approve, reject and reset password ask first and keep every result on screen; walk-ins can book the current hour; the slot blocker uses the turf's hours; first-time offer returns after a refund. PR #27."},
+ {id:"P8-37",p:"P8",t:"Forms clear typed values after validation error",s:"todo",pr:"P2",n:"React 19 clears uncontrolled inputs after a failed action, so the Settings and New promo code forms lose what the admin typed. Found in the PR #27 review."},
+ {id:"P8-38",p:"P8",t:"Check-in time window and turf hours limits",s:"todo",pr:"P2",n:"Check-in only checks the date, so it works hours before or after the slot and triggers cashback; turf hours accept half hours and a close time after midnight silently drops the late slots. Found in the PR #27 review."},
+ {id:"P7-16",p:"P7",t:"Mobile menu keyboard navigation and input labels",s:"todo",pr:"P2",n:"The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review."},
+ {id:"P8-39",p:"P8",t:"Admin and partner list pagination",s:"todo",pr:"P2",n:"Admin bookings show the first 150, admin reviews 500, wallet activity the last 30, partner bookings 100, with no next page. Found in the PR #27 review."}
 );
 
 /* ===================== BOOT ===================== */
