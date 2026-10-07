@@ -14,7 +14,7 @@ import { buildQuote, getSlots, normalizePhone } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
 import { addDays, formatHour, isValidDate, istNow } from './time';
 import type { Booking, BookingAddOn, Database, PriceLine, Slot } from './types';
-import { createPlayer, findByReferralCode, walletTxn } from './wallet';
+import { createPlayer, findByReferralCode, refundDue, walletTxn } from './wallet';
 
 const MAX_DAYS_AHEAD = 14;
 const MAX_SLOTS = 6;
@@ -216,9 +216,10 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
       createdBy: null,
       addOns: quote.addOns,
       pricing: quote.breakdown,
-      // Players pay an advance online to confirm; the turf collects the rest at check-in
-      paymentMode: 'advance',
-      amountPaid: quote.breakdown.advance,
+      // Nothing is charged online. The advance (pricing.advance) and the balance are both paid at the turf,
+      // so nothing counts as paid until check-in.
+      paymentMode: 'venue',
+      amountPaid: 0,
       status: 'confirmed',
       checkedInAt: null,
       createdAt: new Date().toISOString(),
@@ -232,7 +233,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
   // Each hour carries its own advance (so 3 hours at ₹150 an hour is ₹450)
   const sum = (f: (b: Booking) => number) => bookings.reduce((s, b) => s + f(b), 0);
   const total = sum((b) => b.pricing.total);
-  const payNow = sum((b) => b.amountPaid);
+  const payNow = sum((b) => b.pricing.advance); // advance due at the turf
   const quote: SelectionQuote = {
     slots: bookings.map((b) => ({ hour: b.hour, label: b.timeLabel, price: b.pricing.slotPrice })),
     slotTotal: sum((b) => b.pricing.slotPrice),
@@ -242,7 +243,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
     walletBalance,
     walletDeduction: sum((b) => b.pricing.walletDeduction),
     total,
-    advancePercent: total > 0 ? Math.round((payNow / total) * 1000) / 10 : 0, // what is actually asked, after the minimum
+    advancePercent: total > 0 ? Math.round((payNow / total) * 1000) / 10 : 0, // what is actually asked, after the limits
     minAdvance: db.settings.minAdvance,
     maxAdvance: db.settings.maxAdvance,
     payNow,
@@ -316,7 +317,7 @@ export async function cancelMyBooking(bookingId: string): Promise<{ ok: true } |
       }
       booking.cancelledAt = new Date().toISOString();
       // The advance and anything paid from the wallet go back to the wallet
-      const refund = booking.amountPaid + (booking.pricing.walletDeduction ?? 0);
+      const refund = refundDue(booking);
       if (refund > 0 && booking.playerId) {
         const player = db.players.find((pl) => pl.id === booking.playerId);
         if (player) walletTxn(db, player, refund, 'refund', `Booking ${booking.code} cancelled`, booking.id);

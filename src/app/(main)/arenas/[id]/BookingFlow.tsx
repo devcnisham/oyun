@@ -270,7 +270,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     reserve(name, phoneDigits);
   };
 
-  // Confirms the held slots; the player pays the turf at the venue
+  // Confirms the held slots; nothing is charged online, the player pays the turf at the venue
   const reserve = (playerName: string, playerPhone: string) => {
     if (!playerName.trim()) return setError('Enter your name');
     if (playerPhone.length !== 10) return setError('Enter a 10-digit mobile number');
@@ -456,7 +456,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
               <section className={styles.venueNote}>
                 <h3>Payment</h3>
-                <p>💵 Pay {quote ? (quote.minAdvance === quote.maxAdvance ? `a flat ${rupees(quote.minAdvance)} per hour` : `an advance of ${rupees(quote.minAdvance)} to ${rupees(quote.maxAdvance)} per hour`) : 'a flat ₹150 per hour'} online to confirm your slots. The remaining amount will be paid at the turf when you arrive.</p>
+                <p>💵 Nothing is charged online. You pay at the turf by cash or UPI: {quote ? (quote.minAdvance === quote.maxAdvance ? `an advance of ${rupees(quote.minAdvance)} per hour` : `an advance of ${rupees(quote.minAdvance)} to ${rupees(quote.maxAdvance)} per hour`) : 'an advance of ₹150 per hour'} when you arrive, and the balance after you play.</p>
               </section>
 
               {quote && (
@@ -467,8 +467,8 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
                   ))}
                   {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
                   <div><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
-                  <div className={styles.billTotal}><span>Advance ({quote.minAdvance === quote.maxAdvance && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span><span>{rupees(quote.payNow)}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--text-muted)' }}><span>Pay at venue</span><span>{rupees(quote.payAtVenue)}</span></div>
+                  <div className={styles.billTotal}><span>Advance at the turf ({quote.minAdvance === quote.maxAdvance && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span><span>{rupees(quote.payNow)}</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--text-muted)' }}><span>Balance after you play</span><span>{rupees(quote.payAtVenue)}</span></div>
                   {cashback > 0 && <p className={styles.success}>💰 Earn {rupees(cashback)} cashback when you check in</p>}
                 </section>
               )}
@@ -479,10 +479,10 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
             <div className={styles.sheetFoot}>
               <div className={styles.barInfo}>
                 <b>{quote ? rupees(quote.payNow) : '…'}</b>
-                <span>Advance amount</span>
+                <span>Advance due at the turf</span>
               </div>
               <button className={styles.primary} onClick={pay} disabled={!quote || paying}>
-                {paying ? 'Reserving…' : account.signedIn ? 'Pay Advance' : 'Sign in to pay advance'}
+                {paying ? 'Reserving…' : account.signedIn ? 'Confirm booking' : 'Sign in to confirm'}
               </button>
             </div>
           </div>

@@ -7,7 +7,7 @@ import { DEFAULT_PRICING } from './pricing';
 import { hasSession } from './session';
 import { mutate, newId } from './store';
 import type { ActionResult, Database, TurfStatus } from './types';
-import { walletTxn } from './wallet';
+import { refundDue, walletTxn } from './wallet';
 import { recomputeTurfRating } from './reviews';
 
 async function requireAdmin() {
@@ -271,7 +271,7 @@ export async function refundBooking(_prev: ActionResult, fd: FormData): Promise<
       const notes: string[] = [];
       // Online money (the advance, and anything paid from the wallet) goes back to the wallet.
       // A walk-in was paid in cash or UPI at the desk, so there is nothing of ours to credit.
-      const refund = booking.amountPaid + (booking.pricing.walletDeduction ?? 0);
+      const refund = refundDue(booking);
       if (player && booking.source === 'online' && refund > 0) {
         walletTxn(db, player, refund, 'refund', `Refund for booking ${booking.code}`, booking.id);
         notes.push(`Refunded ₹${refund} to ${player.name}'s wallet`);

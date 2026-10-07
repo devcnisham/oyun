@@ -44,7 +44,7 @@ export default async function TermsPage() {
 
           <h2>3. Payments</h2>
           <ul>
-            <li>You reserve slots on OYUN and pay the turf at the venue, by cash or UPI, before you play. No payment is taken online.</li>
+            <li>You reserve slots on OYUN and pay the turf at the venue, by cash or UPI. Each booked hour needs an advance (₹150 by default) when you arrive, and the balance is paid after you play. No payment is taken online.</li>
             <li>Prices include GST where applicable. Invoices are available from your booking page.</li>
             <li>Wallet credits (cashback, referral rewards), when offered, can only be used for bookings on OYUN, have no cash value and cannot be transferred.</li>
           </ul>
