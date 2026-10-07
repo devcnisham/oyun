@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { canOptimize } from '@/lib/images';
+import { SPORTS, sportHref } from '@/lib/sports';
 import type { PromoCard, TurfSummary } from '@/lib/types';
 import CouponCard from './CouponCard';
 import NextGame from './NextGame';
@@ -15,14 +16,6 @@ interface Props {
 
 const TOP_RATED_SHOWN = 3;
 
-// `value` is what turfs list in their `sports`; it is also the /arenas filter
-const SPORTS = [
-  { value: 'Football', label: 'Football', icon: '⚽', tint: 'tileRed' },
-  { value: 'Box Cricket', label: 'Cricket', icon: '🏏', tint: 'tileAmber' },
-  { value: 'Badminton', label: 'Badminton', icon: '🏸', tint: 'tileGreen' },
-  { value: 'Padel', label: 'Padel', icon: '🎾', tint: 'tileBlue' },
-] as const;
-
 // The phone version of the home page: an app-style feed instead of the desktop landing page
 export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
   const openNow = [...turfs].filter((t) => t.availableToday > 0).sort((a, b) => b.availableToday - a.availableToday).slice(0, 8);
@@ -35,17 +28,16 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
         <h2 className={styles.title}>What do you want to play?</h2>
       </header>
 
-      <nav className={styles.quick} aria-label="Sports">
-        {SPORTS.map((sport) => {
-          const count = turfs.filter((t) => t.sports.includes(sport.value)).length;
-          return (
-            <Link key={sport.value} href={`/arenas?sport=${encodeURIComponent(sport.value)}`} className={`${styles.tile} ${styles[sport.tint]}`}>
-              <span aria-hidden>{sport.icon}</span>
+      <nav className={styles.sports} aria-label="Sports">
+        {SPORTS.map((sport) => (
+          <Link key={sport.value} href={sportHref(sport.value)} className={styles.sportCard}>
+            <Image src={sport.image} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" className={styles.sportImg} />
+            <div className={styles.sportInfo}>
               <b>{sport.label}</b>
-              <small>{count} turf{count === 1 ? '' : 's'}</small>
-            </Link>
-          );
-        })}
+              <span>Explore venues <span aria-hidden>→</span></span>
+            </div>
+          </Link>
+        ))}
       </nav>
 
       {openNow.length > 0 && (
