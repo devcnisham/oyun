@@ -1,0 +1,18 @@
+import type { Metadata } from 'next';
+import BackButton from '@/components/BackButton';
+import { getSettings } from '@/lib/queries';
+import SettingsList from './SettingsList';
+import styles from './Settings.module.css';
+
+export const metadata: Metadata = { title: 'Settings', robots: { index: false, follow: true } };
+
+export default async function SettingsPage() {
+  const s = await getSettings();
+  return (
+    <div className={`container ${styles.page}`}>
+      <BackButton fallback="/" />
+      <h1 className={styles.title}>Settings</h1>
+      <SettingsList supportEmail={s.supportEmail} />
+    </div>
+  );
+}

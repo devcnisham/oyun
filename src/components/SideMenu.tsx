@@ -55,6 +55,10 @@ export default function SideMenu({ open, onClose, firstName, upcoming }: SideMen
           <Link href="/saved" className={styles.item}><span aria-hidden>♡</span>Saved turfs</Link>
           <Link href="/profile" className={styles.item}><span aria-hidden>👤</span>Profile</Link>
 
+          <p className={styles.section}>Help &amp; settings</p>
+          <Link href="/help" className={styles.item}><span aria-hidden>❓</span>Help center</Link>
+          <Link href="/settings" className={styles.item}><span aria-hidden>⚙️</span>Settings</Link>
+
           <p className={styles.section}>Turf owners</p>
           <Link href="/list-turf" className={styles.item}><span aria-hidden>💼</span>List your turf</Link>
           <Link href="/partner/login" className={styles.item}><span aria-hidden>🔑</span>Partner login</Link>
