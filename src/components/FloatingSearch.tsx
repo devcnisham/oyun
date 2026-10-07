@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import styles from './FloatingSearch.module.css';
 
 // Round floating search button at the bottom-right on phones; opens a search sheet
-export default function FloatingSearch({ areas }: { areas: string[] }) {
+export default function FloatingSearch() {
   const pathname = usePathname() ?? '/';
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -59,16 +59,6 @@ export default function FloatingSearch({ areas }: { areas: string[] }) {
               />
               <button type="button" className={styles.close} onClick={() => setOpen(false)}>Cancel</button>
             </form>
-            {areas.length > 0 && (
-              <>
-                <p className={styles.label}>Popular areas</p>
-                <div className={styles.chips}>
-                  {areas.slice(0, 10).map((a) => (
-                    <button key={a} type="button" className={styles.chip} onClick={() => go(a)}>{a}</button>
-                  ))}
-                </div>
-              </>
-            )}
             <button type="button" className={styles.all} onClick={() => go('')}>Browse all turfs</button>
           </div>
         </div>

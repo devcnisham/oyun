@@ -165,7 +165,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
                 </select>
               </label>
               <span className={styles.chipDivider} aria-hidden />
-              {['All Sports', 'Football', 'Box Cricket', 'Badminton', 'Padel'].map((sport) => (
+              {['All Sports', 'Football', 'Box Cricket', 'Badminton', 'Padel', 'Pickleball'].map((sport) => (
                 <button
                   key={sport}
                   id={`filter-sport-${sport.replace(/\s+/g, '-').toLowerCase()}`}

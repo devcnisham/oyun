@@ -27,7 +27,7 @@ export default async function MainLayout({
       <Navbar areas={areas} />
       <main className="appMain">{children}</main>
       <Footer areas={areas} supportEmail={settings.supportEmail} />
-      <FloatingSearch areas={areas} />
+      <FloatingSearch />
     </>
   );
 }
