@@ -53,12 +53,12 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
       {(open.length > 0 || chosen) && (
         <section aria-live="polite">
           <div className={styles.sectionHead}>
-            <h2>{chosen ? `${chosen.label} open today` : 'Open slots today'}</h2>
+            <h2 className={styles.swap} key={sport ?? 'all'}>{chosen ? `${chosen.label} open today` : 'Open slots today'}</h2>
             <Link href={seeAll}>See all</Link>
           </div>
           {open.length > 0 ? (
             // Remount on a new choice so the rail starts from its first card
-            <div className={styles.rail} key={sport ?? 'all'}>
+            <div className={`${styles.rail} ${styles.railAnimated}`} key={sport ?? 'all'}>
               {open.map((t, i) => (
                 <Link key={t.id} href={`/arenas/${t.id}`} className={styles.railCard}>
                   <div className={styles.railImg}>
@@ -71,7 +71,7 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
               ))}
             </div>
           ) : (
-            <p className={styles.railEmpty}>
+            <p className={styles.railEmpty} key={sport ?? 'all'}>
               No {chosen?.label} venue has a slot left today. <Link href={sportHref(sport!)}>See all {chosen?.label} venues</Link>
             </p>
           )}
