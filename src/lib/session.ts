@@ -59,7 +59,18 @@ export async function deleteSession(role: Role) {
   (await cookies()).delete(sessionCookieName(role));
 }
 
+/*
+ * Local development only: `next dev` on your own machine skips the admin and partner login so you can
+ * walk straight into the dashboards. It is never active on a deployed site (Vercel, `next start`, any
+ * production build), where the real login always applies.
+ */
+export function devLoginSkipped() {
+  return process.env.NODE_ENV === 'development' && !process.env.VERCEL;
+}
+
 export async function getSessionSubject(role: Role) {
+  if (devLoginSkipped()) return role === 'admin' ? 'admin' : 'p:partner_oyun';
+
   const token = (await cookies()).get(sessionCookieName(role))?.value;
   return verifySessionToken(token, role);
 }

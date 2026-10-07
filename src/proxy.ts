@@ -1,7 +1,7 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { clerkEnabled } from '@/lib/clerk';
-import { sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
+import { devLoginSkipped, sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
 import { updateSession } from '@/utils/supabase/middleware';
 
 // Optimistic cookie check; dashboard layouts verify the session again on the server
@@ -14,6 +14,8 @@ function dashboardGuard(req: NextRequest) {
 
   const dashboardPath = `/${role}`;
   const loginPath = `/${role}/login`;
+  // Local dev: no login screen at all, go straight to the dashboard
+  if (devLoginSkipped()) return pathname === loginPath ? NextResponse.redirect(new URL(dashboardPath, req.url)) : null;
   const loggedIn = verifySessionToken(req.cookies.get(sessionCookieName(role))?.value, role) !== null;
 
   if (pathname === loginPath) {
