@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #31 (main at f875f31) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #33 (main at d51e188) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1190,17 +1190,17 @@ featureGroups:[
   ["Split payment, recurring bookings, waitlist","planned","Not built","–"]
  ]},
  {g:"Payment",a:"Player",subs:[
-  ["Advance payment percent","partial","Each hour booked carries an advance of 10% of that hour's price (Admin setting, 10 to 100%). Recorded as paid, but no money is taken yet","pricing.ts advanceDue"],
+  ["Advance payment percent","partial","The advance is what the turf collects at arrival, nothing is charged online; 10% of each hour's price (Admin setting, 10 to 100%)","pricing.ts advanceDue"],
   ["Minimum advance per hour","built","Never under ₹150 an hour (Admin setting): a ₹1,000 hour asks ₹150, which is 15%","pricing.ts, admin settings"],
   ["Maximum advance per hour","built","Never over ₹150 an hour (Admin setting), so by default every hour asks a flat ₹150","pricing.ts, admin settings"],
   ["Advance never above the hour's price","built","A ₹120 hour asks ₹120","pricing.ts"],
   ["Advance adds up per hour","built","3 hours at ₹150 an hour asks 150 + 150 + 150 = ₹450; each hour keeps its own advance","pricing.ts, booking-actions.ts"],
-  ["Advance shown at checkout","built","The bill shows the total, for example 3 × ₹150, and the checkout text says per hour","BookingFlow.tsx"],
-  ["Pay the rest at the venue","built","Balance shown to player and to staff at check-in; cash or UPI","check-in desk"],
+  ["Advance shown at checkout","built","Shows \"Advance at the turf\" and \"Balance after you play\"; button is Confirm booking","BookingFlow.tsx"],
+  ["Balance after you play","built","The checkout shows Balance after you play; staff shows it at check-in; cash or UPI","BookingFlow.tsx, check-in desk"],
   ["Wallet as payment","built","Deducted at booking, capped at the subtotal, recorded as a transaction","lib/wallet.ts"],
   ["Online payment gateway (Razorpay)","planned","Nothing is charged today; no webhook, no capture","phase 11"],
   ["Full payment mode","planned","The type exists but nothing sets it","lib/types.ts"],
-  ["Refunds","partial","Return wallet-paid money; cancel credits the wallet. Advance that was never collected still credited (risk R-14). PR #27.","admin-actions.ts, booking-actions.ts"],
+  ["Refunds","built","Only wallet money really paid in goes back to the wallet; online refunds need the gateway (phase 11)","admin-actions.ts, booking-actions.ts"],
   ["Walk-in payment","built","Cash or UPI, full amount recorded as paid","partner-actions.ts"],
   ["Payouts","partial","Weekly report only; no transfers are made","lib/reports.ts"]
  ]},
@@ -1703,12 +1703,12 @@ DATA.tasks.push(
  {id:"P8-25",p:"P8",t:"Replace the fake home stats banner and brand ad strip; fill the footer social links",s:"todo",pr:"P2",n:"100+ turfs, 50k+ players and sports-brand ads are placeholders."},
  {id:"P8-26",p:"P8",t:"Fix the owner dashboard quick slot blocker: only 6 to 8 PM, and it ignores errors",s:"done",pr:"P2",n:"Lists all turf hours, shows results and errors, rejects past dates. PR #27."},
  {id:"P8-27",p:"P8",t:"Apply evening and weekend rates from a turf application to the approved turf's pricing",s:"done",pr:"P2",n:"Approval turns owner's evening and weekend prices into turf's peak and weekend markups. PR #27."},
- {id:"P9-17",p:"P9",t:"Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part",s:"doing",pr:"P0",n:"Half done in PR #27: cancels and refunds now return wallet-paid money, and a walk-in refund no longer credits a wallet. Still open: an advance that was recorded but never collected is credited to the wallet on refund (risk R-14) until Razorpay collects it."},
- {id:"P11-07",p:"P11",t:"Collect the per-hour advance through Razorpay; until then label it recorded, not paid",s:"todo",pr:"P0"},
+ {id:"P9-17",p:"P9",t:"Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part",s:"done",pr:"P0",n:"Wallet-paid part returned and the uncollected advance is no longer credited (it is no longer recorded as paid). Gateway refunds remain under phase 11. PR #33."},
+ {id:"P11-07",p:"P11",t:"When Razorpay is added, collect the per-hour advance through Razorpay",s:"todo",pr:"P0",n:"The advance is paid at the turf for now, so this is the step that makes it an online payment."},
  {id:"P13-09",p:"P13",t:"Let players pick add-ons at checkout",s:"todo",pr:"P2",n:"Owners can create add-ons; online checkout always sends none."},
  {id:"P13-10",p:"P13",t:"Turf photo gallery carousel and a real map pin per turf",s:"todo",pr:"P3"}
 );
-DATA.risks.push({id:"R-14",t:"Advance recorded as paid but never collected",sev:"High",stride:"R, T",d:[6,8,5,6,5],ev:"Bookings set amountPaid to the advance with no gateway. Cancel and admin refund credit that amount to the wallet, so a player can cancel and spend wallet money that was never paid in; the wallet-paid part is not returned.",fix:"Refund only collected money; collect the advance through Razorpay.",task:"P9-17"});
+DATA.risks.push({id:"R-14",t:"Advance recorded as paid but never collected (fixed in PR #33)",sev:"Low",stride:"R, T",d:[2,2,2,1,1],ev:"Was: bookings set amountPaid to the advance with no gateway, so a cancel or refund credited the wallet with money nobody paid in. Fixed: a booking is now recorded as pay at the venue with nothing paid, and refunds go through refundDue(), which only returns wallet money really used. Old advance-mode bookings return nothing from the recorded advance. Becomes live again only if an advance is marked paid without a gateway.",fix:"When Razorpay is added, mark the advance paid only from a verified payment, and let refundDue() return it.",task:"P11-07"});
 
 
 DATA.tasks.push(
@@ -1734,15 +1734,22 @@ DATA.tasks.push(
  {id:"P7-18",p:"P7",t:"Search sheet: remove area chips; home sports icon: Pickleball replaces Padel",s:"done",pr:"P2",n:"Removes Popular areas chips and label from phone search sheet. Fourth home sport icon is now Pickleball with photo; turfs list filter offers both Padel and Pickleball. PR #30."},
  {id:"P7-19",p:"P7",t:"Phone home: animate sport icons and the Open slots rail",s:"done",pr:"P2",n:"Sport icons rise in staggered (70 ms apart), spring on hover and press, chosen icon pops with a larger ring. Rail title fades in, cards slide in one after another, loading shimmer, slots badge pop, hover zoom and enter press. All wrapped in prefers-reduced-motion. PR #31."},
  {id:"P7-20",p:"P7",t:"Phone side menu: remove items, add Help center page and Settings page",s:"todo",pr:"P2",n:"Waiting for the owner to confirm which menu items to remove and what the Help center (FAQ plus contact and policy links) and Settings page (cookie preferences, account and legal links) should contain."},
- {id:"P7-21",p:"P7",t:"Add two real Pickleball venues: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)",s:"todo",pr:"P2",n:"Waiting for hourly price, opening time, closing hour, phone, address and photo. They would show bookings under OYUN operations partner until they get their own login."},
- {id:"P7-22",p:"P7",t:"Decide whether the Padel Club stays a separate sport next to Pickleball on the home icons",s:"todo",pr:"P3",n:"Padel is only in the turfs list filter now; it is no longer on the home page."}
+ {id:"P7-21",p:"P7",t:"Make the two Pickleball venues live: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)",s:"doing",pr:"P2",n:"Added as hidden drafts in PR #34 (status pending, placeholder price 500 and hours 6 to 23). Still needed from the owners: real hourly price, opening time, phone, address and photo. Then set each to Active in Admin, Turfs. Bookings go to the OYUN Operations partner until they get their own login."},
+ {id:"P7-22",p:"P7",t:"Decide whether the Padel Club stays a separate sport next to Pickleball on the home icons",s:"todo",pr:"P3",n:"Padel is only in the turfs list filter now; it is no longer on the home page."},
+ {id:"P7-23",p:"P7",t:"Checkout and ticket wording: show Advance at the turf and Balance after you play; button is Confirm booking",s:"done",pr:"P2",n:"Checkout and ticket both show the two amounts separately. PR #33."}
 );
 
 
 DATA.tasks.push(
- {id:"P9-18",p:"P9",t:"Remove the hard-coded admin and partner credentials from LoginForm.tsx; set strong ADMIN_*/PARTNER_* values on the deployed site",s:"todo",pr:"P0",n:"The form posts a fixed email and password for each role from hidden inputs, so anyone who views the login page source has them. Do this before real owners or players use the site, and decide with the owner when the login comes back for the demo."}
+ {id:"P9-18",p:"P9",t:"Remove the hard-coded admin and partner credentials from LoginForm.tsx; set strong ADMIN_*/PARTNER_* values on the deployed site",s:"todo",pr:"P0",n:"The form posts a fixed email and password for each role from hidden inputs, so anyone who views the login page source has them. Do this before real owners or players use the site, and decide with the owner when the login comes back for the demo."},
+ {id:"P9-19",p:"P9",t:"Refunds use refundDue() to return only wallet money really paid in; the uncollected advance is no longer credited",s:"done",pr:"P0",n:"Cancels and refunds (player, owner, admin) call refundDue() which returns only wallet-paid money, not the recorded but uncollected advance. PR #33."}
 );
 DATA.risks.push({id:"R-15",t:"Login form ships hard-coded admin and partner credentials",sev:"High",stride:"S, E, I",d:[9,10,9,8,8],ev:"components/auth/LoginForm.tsx submits a fixed email and password for admin and for partner from hidden inputs, so they are visible in the page source of /admin/login and /partner/login. They sign in anyone whenever the deployed ADMIN_*/PARTNER_* values match them. Today the deployed site is behind Vercel's own login (all addresses except custom domains), which hides it from the public; a custom domain would expose it.",fix:"Remove the hidden inputs, set long random deployed credentials, rotate them, and add real login back.",task:"P9-18"});
+
+
+DATA.tasks.push(
+ {id:"P9-20",p:"P9",t:"Remove the seed fallback password for the OYUN Operations partner login and set PARTNER_EMAIL and PARTNER_PASSWORD on the deployed site",s:"todo",pr:"P1",n:"src/lib/seed.ts creates that partner with a fixed default password when PARTNER_PASSWORD is not set. If the deployed site never set it, that account can be signed into with the default."}
+);
 
 /* ===================== BOOT ===================== */
 function initControls(){
