@@ -368,8 +368,10 @@ export async function getDb(): Promise<Database> {
 
 export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
   if (!supabaseActive()) {
-    const db = fileDb();
+    // Work on a copy so a change that throws part-way (a booking that turns out to be taken) leaves nothing behind
+    const db = structuredClone(fileDb());
     const result = fn(db);
+    globalStore.__oyunArenaDb = db;
     saveFile(db);
     return result;
   }

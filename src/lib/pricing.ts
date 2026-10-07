@@ -74,7 +74,8 @@ export function rulesFor(db: Database, turfId: string) {
 const ACTIVE_BOOKING = new Set(['confirmed', 'checked_in', 'no_show']);
 
 // `holder` is the device checking out: its own holds count as available
-export function getSlots(db: Database, turf: Turf, date: string, now: IstNow, holder: string | null = null): Slot[] {
+// walkIn: the owner can still seat someone at the desk during the hour that has just started
+export function getSlots(db: Database, turf: Turf, date: string, now: IstNow, holder: string | null = null, walkIn = false): Slot[] {
   const rules = rulesFor(db, turf.id);
   const nowIso = new Date().toISOString();
   const holds = new Map(
@@ -88,7 +89,7 @@ export function getSlots(db: Database, turf: Turf, date: string, now: IstNow, ho
 
   return turfHours(turf).map((hour) => {
     const { basePrice, price, tags } = slotPrice(turf, rules, date, hour, now);
-    const past = date < now.date || (date === now.date && hour <= now.hour);
+    const past = date < now.date || (date === now.date && (walkIn ? hour < now.hour : hour <= now.hour));
     const heldBy = holds.get(hour);
     const heldByYou = heldBy !== undefined && heldBy === holder;
     const reason = past ? 'past' : booked.has(hour) ? 'booked' : blocked.has(hour) ? 'blocked' : heldBy !== undefined && !heldByYou ? 'held' : null;
@@ -154,7 +155,7 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
   const turf = db.turfs.find((t) => t.id === input.turfId);
   if (!turf) return null;
 
-  const slot = getSlots(db, turf, input.date, now, input.holder ?? null).find((s) => s.hour === input.hour);
+  const slot = getSlots(db, turf, input.date, now, input.holder ?? null, input.source === 'walk_in').find((s) => s.hour === input.hour);
   const slotError = !slot ? 'This slot does not exist' : slot.available ? null : slot.reason === 'held' ? 'Someone else is checking out this slot right now' : `This slot is ${slot.reason === 'past' ? 'over' : 'not available'}`;
 
   const { basePrice, adjustments, price: slotPriceValue } = slotPrice(turf, rulesFor(db, turf.id), input.date, input.hour, now);
@@ -164,7 +165,7 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
   const firstTime =
     input.source !== 'walk_in' &&
     phone.length === 10 &&
-    !db.bookings.some((b) => b.customerPhone === phone && b.status !== 'cancelled');
+    !db.bookings.some((b) => b.customerPhone === phone && b.status !== 'cancelled' && b.status !== 'refunded');
 
   const turfOffers = db.offers.filter((o) => o.turfId === turf.id);
   const offer = input.source === 'walk_in' ? null : bestOffer(turfOffers, input.hour, firstTime, slotPriceValue);

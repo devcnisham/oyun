@@ -3,8 +3,10 @@ import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
 import { bookingRevenue } from '@/lib/reports';
 import { getDb } from '@/lib/store';
-import { addDays, formatDate, formatSlotRange, istNow } from '@/lib/time';
+import { addDays, formatDate, formatHour, formatSlotRange, istNow } from '@/lib/time';
+import ActionForm from '@/components/dash/ActionForm';
 import { blockSlot } from '@/lib/partner-actions';
+import { turfHours } from '@/lib/pricing';
 import styles from './layout.module.css';
 
 export default async function PartnerDashboard() {
@@ -118,35 +120,29 @@ export default async function PartnerDashboard() {
           </p>
         </div>
 
-        <form
-          className={styles.slotBlockerForm}
-          action={async (formData) => {
-            "use server";
-            await blockSlot(null, formData);
-          }}
-        >
-          <div style={{ flex: 1, minWidth: '180px' }}>
-            <label className={dash.label} style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>Date</label>
-            <input type="date" name="date" style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} required />
-          </div>
-          <div style={{ flex: 1, minWidth: '180px' }}>
-            <label className={dash.label} style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>Time Slot</label>
-            <select name="hour" style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} required>
-              <option value="18">6:00 PM – 7:00 PM</option>
-              <option value="19">7:00 PM – 8:00 PM</option>
-              <option value="20">8:00 PM – 9:00 PM</option>
+        <ActionForm action={blockSlot} className={styles.slotBlockerForm} resetOnSuccess>
+          <label className={dash.field} style={{ flex: 1, minWidth: '180px' }}>
+            <span className={dash.label}>Date</span>
+            <input type="date" name="date" min={now.date} defaultValue={now.date} className={dash.input} required />
+          </label>
+          <label className={dash.field} style={{ flex: 1, minWidth: '180px' }}>
+            <span className={dash.label}>Time slot</span>
+            <select name="hour" className={dash.select} required>
+              {turfHours(ctx.turf).map((h) => (
+                <option key={h} value={h}>{formatHour(h)}</option>
+              ))}
             </select>
-          </div>
-          <div style={{ flex: 1, minWidth: '180px' }}>
-            <label className={dash.label} style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>Reason</label>
-            <input type="text" name="reason" placeholder="e.g., Maintenance / Phone booking" style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} required />
-          </div>
+          </label>
+          <label className={dash.field} style={{ flex: 1, minWidth: '180px' }}>
+            <span className={dash.label}>Reason</span>
+            <input type="text" name="reason" placeholder="e.g. Maintenance / Phone booking" className={dash.input} required />
+          </label>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <button type="submit" className={dash.btn} style={{ height: '42px', padding: '0 24px', background: 'var(--text-primary)', color: 'var(--bg-primary)' }}>
-              Block Slot
+              Block slot
             </button>
           </div>
-        </form>
+        </ActionForm>
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ export default async function AdminOverview() {
         <Stat label="Live turfs" value={db.turfs.filter((t) => t.status === 'active').length} hint={`${db.turfs.filter((t) => t.isVerified).length} verified`} />
         <Stat label="Players" value={db.players.length} hint={`${db.players.filter((p) => p.status === 'banned').length} banned`} />
         <Stat label="Bookings this month" value={monthBookings.filter((b) => bookingRevenue(b) > 0).length} />
-        <Stat label="Booking value this month" value={inr(gmv)} />
+        <Stat label="Collected this month" value={inr(gmv)} />
         <Stat label="Commission this month" value={inr(commission)} hint={`Default rate ${db.settings.commissionPercent}%`} />
       </div>
 

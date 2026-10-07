@@ -13,10 +13,10 @@ import {
 } from './action-utils';
 import { generateTempPassword, hashPassword } from './password';
 import { TURF_COOKIE, getPartnerContext, requirePartnerAction, type PartnerContext } from './partner-auth';
-import { buildQuote } from './pricing';
-import { mutate, newBookingCode, newId } from './store';
+import { buildQuote, getSlots, turfHours } from './pricing';
+import { getDb, mutate, newBookingCode, newId } from './store';
 import { formatHour, isValidDate, istNow } from './time';
-import type { ActionResult, Booking, Database, OfferType, StaffRole } from './types';
+import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from './types';
 import { createPlayer, rewardCheckIn, walletTxn } from './wallet';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
@@ -92,12 +92,13 @@ export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<
     return await mutate((db) => {
       const booking = bookingInTurf(db, ctx, str(fd, 'bookingId'));
       if (booking.status !== 'confirmed') throw new ValidationError('Only upcoming bookings can be cancelled');
-      // Online payments go back to the player's wallet
-      if (booking.source === 'online' && booking.amountPaid > 0 && booking.playerId) {
+      // Online payments, and anything paid from the wallet, go back to the player's wallet
+      const refund = booking.amountPaid + (booking.pricing.walletDeduction ?? 0);
+      if (booking.source === 'online' && refund > 0 && booking.playerId) {
         const player = db.players.find((p) => p.id === booking.playerId);
-        if (player) walletTxn(db, player, booking.amountPaid, 'refund', `Booking ${booking.code} cancelled by the turf`, booking.id);
+        if (player) walletTxn(db, player, refund, 'refund', `Booking ${booking.code} cancelled by the turf`, booking.id);
         booking.status = 'refunded';
-        return { ok: `Cancelled. ₹${booking.amountPaid} refunded to ${booking.customerName}'s wallet.` };
+        return { ok: `Cancelled. ₹${refund} refunded to ${booking.customerName}'s wallet.` };
       }
       booking.status = 'cancelled';
       return { ok: 'Booking cancelled' };
@@ -159,6 +160,13 @@ export async function markNoShow(_prev: ActionResult, fd: FormData): Promise<Act
 
 /* ---------- slots ---------- */
 
+// Free slots for the walk-in form: the owner's own turf, any status, and the hour that has just started
+export async function getWalkInSlots(date: string): Promise<Slot[]> {
+  const ctx = await requirePartnerAction('bookings');
+  if (!isValidDate(String(date))) return [];
+  return getSlots(await getDb(), ctx.turf, String(date), istNow(), null, true);
+}
+
 export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('slots');
@@ -166,6 +174,8 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
     if (!isValidDate(date)) throw new ValidationError('Pick a valid date');
     const hour = int(fd, 'hour', { min: 0, max: 23, label: 'Slot' });
     const reason = required(fd, 'reason', 'Reason', 120);
+    if (date < istNow().date) throw new ValidationError('That date has already passed');
+    if (!turfHours(ctx.turf).includes(hour)) throw new ValidationError(`${ctx.turf.name} is not open at ${formatHour(hour)}`);
 
     return await mutate((db) => {
       const taken = db.bookings.some(
