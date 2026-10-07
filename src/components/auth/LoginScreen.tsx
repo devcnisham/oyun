@@ -7,16 +7,14 @@ import styles from './LoginScreen.module.css';
 const copy = {
   admin: {
     tag: 'Admin Control Center',
-    subtitle: 'Enter your credentials to access the admin portal',
-    emailPlaceholder: 'admin@oyun.in',
+    subtitle: 'Enter the admin portal',
     prompt: 'Are you a turf owner?',
     altHref: '/partner/login',
     altLabel: 'Go to Partner Portal',
   },
   partner: {
     tag: 'Partner Portal',
-    subtitle: 'Enter your credentials to manage your turf',
-    emailPlaceholder: 'owner@yourturf.in',
+    subtitle: 'Enter the partner portal to manage your turf',
     prompt: 'Not a partner yet?',
     altHref: '/list-turf',
     altLabel: 'List your turf for free',
@@ -56,7 +54,7 @@ export default async function LoginScreen({ role }: { role: Role }) {
             <p>{c.subtitle}</p>
           </div>
 
-          <LoginForm role={role} emailPlaceholder={c.emailPlaceholder} />
+          <LoginForm role={role} />
 
           <div className={styles.partnerPrompt}>
             <p>{c.prompt}</p>
