@@ -39,7 +39,7 @@ const SESSIONS = [
   { name: 'Night', icon: '🌙', from: 21, to: 24 },
 ];
 
-const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+const rupees = (n: number) => `₹${(n ?? 0).toLocaleString('en-IN')}`;
 const shortHour = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
 
 // "7 PM – 9 PM" for consecutive hours, "7 PM, 9 PM" otherwise

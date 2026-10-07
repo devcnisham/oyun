@@ -314,7 +314,9 @@ function fileDb(): Database {
   // Reload if db.json was deleted (manual reset), but never reseed on every request when the disk is read-only
   const fileGone = globalStore.__slotArenaPersisted === true && !existsSync(DATA_FILE);
   if (!globalStore.__slotArenaDb || fileGone) globalStore.__slotArenaDb = loadFile();
-  return globalStore.__slotArenaDb;
+  // A dev server keeps this copy across code reloads, so settings added since it started (like
+  // minAdvance) would be missing; migrate fills them in from the defaults and is safe to repeat
+  return migrate(globalStore.__slotArenaDb);
 }
 
 /* ---------------- public API ---------------- */
