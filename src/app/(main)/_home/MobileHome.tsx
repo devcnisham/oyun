@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { canOptimize } from '@/lib/images';
-import { SPORTS, sportHref } from '@/lib/sports';
 import type { PromoCard, TurfSummary } from '@/lib/types';
 import CouponCard from './CouponCard';
 import NextGame from './NextGame';
+import SportRail, { type RailTurf } from './SportRail';
 import styles from './MobileHome.module.css';
 
 interface Props {
@@ -18,7 +18,8 @@ const TOP_RATED_SHOWN = 3;
 
 // The phone version of the home page: an app-style feed instead of the desktop landing page
 export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
-  const openNow = [...turfs].filter((t) => t.availableToday > 0).sort((a, b) => b.availableToday - a.availableToday).slice(0, 8);
+  // Only what the rail needs, since it runs in the browser
+  const railTurfs: RailTurf[] = turfs.map((t) => ({ id: t.id, name: t.name, area: t.area, pricePerHour: t.pricePerHour, image: t.images[0], availableToday: t.availableToday, sports: t.sports }));
   const topRated = [...turfs].sort((a, b) => b.rating - a.rating).slice(0, TOP_RATED_SHOWN);
 
   return (
@@ -28,37 +29,7 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
         <h2 className={styles.title}>What do you want to play?</h2>
       </header>
 
-      <nav className={styles.sports} aria-label="Sports">
-        {SPORTS.map((sport) => (
-          <Link key={sport.value} href={sportHref(sport.value)} className={styles.sportIcon}>
-            <span className={styles.sportIconImg}>
-              <Image src={sport.image} alt="" fill sizes="88px" />
-            </span>
-            <b>{sport.label}</b>
-          </Link>
-        ))}
-      </nav>
-
-      {openNow.length > 0 && (
-        <section>
-          <div className={styles.sectionHead}>
-            <h2>Open slots today</h2>
-            <Link href="/arenas?sort=availability">See all</Link>
-          </div>
-          <div className={styles.rail}>
-            {openNow.map((t, i) => (
-              <Link key={t.id} href={`/arenas/${t.id}`} className={styles.railCard}>
-                <div className={styles.railImg}>
-                  <Image src={t.images[0]} alt={`${t.name} turf in ${t.area}`} fill sizes="220px" loading={i < 2 ? 'eager' : 'lazy'} unoptimized={!canOptimize(t.images[0])} />
-                  <span className={styles.badge}>{t.availableToday} slots left</span>
-                </div>
-                <b>{t.name}</b>
-                <span>{t.area} · ₹{t.pricePerHour.toLocaleString('en-IN')}/hr</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <SportRail turfs={railTurfs} />
 
       {promos.length > 0 && (
         <section className={styles.promos} tabIndex={0} aria-label="Featured">
@@ -120,15 +91,6 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
           ))}
         </div>
         <Link href="/arenas" className={styles.seeAll}>See all {turfs.length} turfs</Link>
-      </section>
-
-      <section className={styles.how}>
-        <h2>How OYUN works</h2>
-        <ol>
-          <li><span aria-hidden>1</span><div><b>Pick your slots</b><small>Choose a date and one or more hours, like cinema seats.</small></div></li>
-          <li><span aria-hidden>2</span><div><b>We hold them for 8 minutes</b><small>Nobody else can take them while you pay.</small></div></li>
-          <li><span aria-hidden>3</span><div><b>Show your QR, play and pay</b><small>Pay at the turf by cash or UPI. Your ticket is under My games.</small></div></li>
-        </ol>
       </section>
 
       <Link href="/list-turf" className={styles.ownerCta}>
