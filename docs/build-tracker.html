@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #33 (main at d51e188) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #35 (main at 3fabd6c) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1138,7 +1138,8 @@ featureGroups:[
   ["Floating search sheet","built","Phone only","components/FloatingSearch.tsx"],
   ["Phone side menu","partial","Home, My bookings, Saved turfs, Profile, Turf owners links. Turfs by area, Help & FAQ, Privacy, Terms and Cookie settings were removed (PR #20); the legal links remain only in the page footer and the FAQ is linked from nowhere on the phone","components/SideMenu.tsx"],
   ["Launch promo card","built","Featured card and popup ad; its dead Unsplash photo was replaced by a turf photo and existing databases are healed on load (PR #22)","lib/seed.ts"],
-  ["Stats banner and brand ad strip on home","partial","Static placeholder content (100+ turfs, 50k+ players, sports brand ads); not real data","(main)/page.tsx"]
+  ["Stats banner and brand ad strip on home","partial","Static placeholder content (100+ turfs, 50k+ players, sports brand ads); not real data","(main)/page.tsx"],
+  ["Pickleball venues","partial","The two venues exist as hidden drafts and are not yet live, so the Pickleball icon shows no venues","data/turfs.ts"]
  ]},
  {g:"Turf detail page",a:"Player",subs:[
   ["Photo gallery","partial","First image only with a 1/N counter; no carousel","arenas/[id]/TurfDetail.tsx"],
@@ -1310,6 +1311,7 @@ featureGroups:[
   ["Overview","built","Pending approvals, live turfs, players and bans, month bookings, value and commission, warning if storage is not shared","admin/page.tsx"],
   ["Approvals","built","Approve creates the owner login and a live verified turf; reject with a note","PendingApplications.tsx"],
   ["Turfs","built","Search, quick toggles, full editor: status, partner, commission, rating, verified, featured","admin/turfs"],
+  ["Draft venues","built","Venues added after launch start as pending drafts in Admin, Turfs, hidden from players and the sitemap until the admin sets Active","lib/seed.ts, data/turfs.ts"],
   ["Partners","built","Suspend, reactivate, reset password, edit details","admin/partners"],
   ["Players","built","Search, bookings, no-shows, referrals, wallet adjust, ban","admin/users"],
   ["Bookings and refunds","built","Filters; first 150 shown; refund credits the wallet","admin/transactions"],
@@ -1706,7 +1708,8 @@ DATA.tasks.push(
  {id:"P9-17",p:"P9",t:"Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part",s:"done",pr:"P0",n:"Wallet-paid part returned and the uncollected advance is no longer credited (it is no longer recorded as paid). Gateway refunds remain under phase 11. PR #33."},
  {id:"P11-07",p:"P11",t:"When Razorpay is added, collect the per-hour advance through Razorpay",s:"todo",pr:"P0",n:"The advance is paid at the turf for now, so this is the step that makes it an online payment."},
  {id:"P13-09",p:"P13",t:"Let players pick add-ons at checkout",s:"todo",pr:"P2",n:"Owners can create add-ons; online checkout always sends none."},
- {id:"P13-10",p:"P13",t:"Turf photo gallery carousel and a real map pin per turf",s:"todo",pr:"P3"}
+ {id:"P13-10",p:"P13",t:"Turf photo gallery carousel and a real map pin per turf",s:"todo",pr:"P3"},
+ {id:"P7-24",p:"P7",t:"Add the OneLve and TheCourtyard Pickleball venues as hidden drafts (lateTurfSeeds, added to existing databases on load)",s:"done",pr:"P2",n:"PR #34. Venues are pending, not visible to players or in sitemap; admin sets them Active. Price (₹500), hours (6 am), photo and amenities are placeholders."}
 );
 DATA.risks.push({id:"R-14",t:"Advance recorded as paid but never collected (fixed in PR #33)",sev:"Low",stride:"R, T",d:[2,2,2,1,1],ev:"Was: bookings set amountPaid to the advance with no gateway, so a cancel or refund credited the wallet with money nobody paid in. Fixed: a booking is now recorded as pay at the venue with nothing paid, and refunds go through refundDue(), which only returns wallet money really used. Old advance-mode bookings return nothing from the recorded advance. Becomes live again only if an advance is marked paid without a gateway.",fix:"When Razorpay is added, mark the advance paid only from a verified payment, and let refundDue() return it.",task:"P11-07"});
 
