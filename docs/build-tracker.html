@@ -1,0 +1,1523 @@
+<title>OYUN Build Tracker</title>
+<style>
+/* Layout concept: OYUN red-gradient masthead, white sticky tab rail, dense white panels on a light-grey ground, exactly like the site shell. */
+:root{
+  --p50:#fef2f2; --p100:#fee2e2; --p200:#fecaca; --p500:#ef4444; --p700:#d31027; --p800:#991b1b; --p900:#180000;
+  --grad:linear-gradient(135deg,#180000 0%,#d31027 100%);
+  --grad-h:linear-gradient(135deg,#2a0000 0%,#ee2e24 100%);
+  --bg:#f3f5f7; --surface:#ffffff; --surface2:#f8f9fa; --fg:#222222; --fg2:#4a4a4a; --muted:#626262; --line:#e0e0e0;
+  --accent:#d31027; --accent-fg:#ffffff; --accent-soft:#fee2e2;
+  --crit:#b00020; --high:#b8520a; --med:#8a6500; --low:#1f6f9a; --ok:#1a7f45; --info:#5f6b73;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08); --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  --r-sm:4px; --r-md:8px; --r-lg:12px;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --p50:#2a1215; --p100:#3a1519; --p200:#5a1d24; --p500:#ff5a6a; --p700:#ff4a5e; --p800:#ff8d99; --p900:#0d0405;
+  --grad:linear-gradient(135deg,#0d0405 0%,#8f0b1c 100%);
+  --grad-h:linear-gradient(135deg,#1a0508 0%,#b3162b 100%);
+  --bg:#120a0b; --surface:#1c1112; --surface2:#251718; --fg:#f4eaea; --fg2:#d8c6c8; --muted:#b09a9d; --line:#3a2427;
+  --accent:#ff4a5e; --accent-fg:#1a0508; --accent-soft:#3a1519;
+  --crit:#ff7d8a; --high:#f0a35e; --med:#e3c04a; --low:#6cb4d8; --ok:#4fcf88; --info:#a9b4ba; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --p50:#2a1215; --p100:#3a1519; --p200:#5a1d24; --p500:#ff5a6a; --p700:#ff4a5e; --p800:#ff8d99; --p900:#0d0405;
+  --grad:linear-gradient(135deg,#0d0405 0%,#8f0b1c 100%);
+  --grad-h:linear-gradient(135deg,#1a0508 0%,#b3162b 100%);
+  --bg:#120a0b; --surface:#1c1112; --surface2:#251718; --fg:#f4eaea; --fg2:#d8c6c8; --muted:#b09a9d; --line:#3a2427;
+  --accent:#ff4a5e; --accent-fg:#1a0508; --accent-soft:#3a1519;
+  --crit:#ff7d8a; --high:#f0a35e; --med:#e3c04a; --low:#6cb4d8; --ok:#4fcf88; --info:#a9b4ba; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:16px}
+h1,h2,h3,h4{font-family:var(--f-body);font-weight:700;text-wrap:balance;margin:0;line-height:1.2;color:var(--fg)}
+h2{font-size:24px;font-weight:800;letter-spacing:-.02em}
+h3{font-size:15px}
+h4{font-size:13px;color:var(--fg2)}
+p{margin:0}
+a{color:var(--accent)}
+code,.mono{font-family:var(--f-mono);font-size:12.5px}
+code{background:var(--surface2);border:1px solid var(--line);padding:0 5px;border-radius:4px}
+pre{margin:0;background:var(--surface2);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;overflow-x:auto;font:12.5px/1.6 var(--f-mono)}
+pre code{border:0;background:none;padding:0}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.section-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+
+/* masthead */
+header.top{background:var(--grad);color:#fff;position:relative;overflow:hidden}
+header.top .wrap{padding-block:26px 22px;position:relative}
+.pitch{position:absolute;right:-20px;top:-30px;width:380px;max-width:60%;color:#fff;opacity:.12;pointer-events:none}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:44px;height:44px;border-radius:50%;flex:none}
+.brand b{font-size:20px;font-weight:800;letter-spacing:.02em}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+header.top h1{font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:-.02em;margin-top:14px;color:#fff}
+.sub{max-width:64ch;margin-top:8px;opacity:.88;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-size:11.5px;font-weight:600;padding:3px 10px;border:1px solid rgba(255,255,255,.35);border-radius:99px;background:rgba(255,255,255,.1);color:#fff}
+
+/* tabs */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin}
+nav.tabs button{font:600 13px var(--f-body);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:13px 12px 10px;cursor:pointer;white-space:nowrap}
+nav.tabs button:hover{color:var(--fg)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+
+main{padding-block:24px 64px}
+section.panel{display:none}
+section.panel.on{display:block}
+.panel>header{margin-bottom:18px;display:flex;flex-direction:column;gap:6px}
+.panel>header p{color:var(--muted);max-width:74ch}
+.stack{display:flex;flex-direction:column;gap:22px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow-sm);min-width:0}
+.box h3{margin-bottom:10px}
+.box ul,.box ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font:800 32px var(--f-body);letter-spacing:-.02em}
+.stat span{color:var(--muted);font-size:12.5px}
+.tint-crit{border-color:color-mix(in srgb,var(--crit) 45%,var(--line))}
+.tint-ok{border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
+
+/* badges, like the site */
+.pill{display:inline-block;font:700 10.5px var(--f-body);text-transform:uppercase;letter-spacing:.03em;padding:3px 8px;border-radius:2px;border:1px solid currentColor;white-space:nowrap}
+.s-done,.s-pass,.s-ok,.s-built{color:var(--ok)}
+.s-doing,.s-active,.s-partial{color:var(--low)}
+.s-blocked,.s-fail,.s-crit,.s-critical{color:var(--crit)}
+.s-high{color:var(--high)}
+.s-low{color:var(--low)}
+.s-med,.s-manual,.s-medium{color:var(--med)}
+.s-todo,.s-planned,.s-skip,.s-info{color:var(--info)}
+.pill.fill{color:#fff;background:var(--crit);border-color:var(--crit)}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--shadow-sm)}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:700 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td.k{font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+
+/* bars */
+.bar{height:8px;background:var(--surface2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:99px}
+.bar.crit i{background:var(--crit)} .bar.high i{background:var(--high)} .bar.med i{background:var(--med)} .bar.low i{background:var(--low)} .bar.acc i{background:var(--accent)}
+.row{display:grid;grid-template-columns:minmax(0,230px) 1fr auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:0}
+@media(max-width:560px){.row{grid-template-columns:1fr auto}.row .bar{grid-column:1/-1;order:3}}
+
+/* buttons, like the site */
+.btn{font:700 14px var(--f-body);border:0;border-radius:var(--r-sm);padding:10px 18px;cursor:pointer;color:#fff;background:var(--grad)}
+.btn:hover{background:var(--grad-h)}
+.btn.sec{background:var(--surface);color:var(--fg);border:1px solid var(--line)}
+.btn.sec:hover{background:var(--surface2)}
+
+/* diagrams */
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;box-shadow:var(--shadow-sm)}
+figure .scroll{overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto;color:var(--fg)}
+figcaption{color:var(--muted);font-size:13px;margin-top:10px;max-width:80ch}
+svg text{font-family:var(--f-body);font-size:12px;fill:currentColor}
+svg .mono{font-family:var(--f-mono);font-size:11px}
+svg .bx{fill:var(--surface2);stroke:var(--line);stroke-width:1.2}
+svg .bx.acc{fill:var(--accent-soft);stroke:var(--accent)}
+svg .ln{stroke:currentColor;stroke-width:1.4;fill:none}
+svg .ln.dash{stroke-dasharray:5 4}
+svg .ln.acc{stroke:var(--accent)}
+svg .ln.bad{stroke:var(--crit)}
+svg .lbl{fill:var(--muted);font-size:11px}
+svg .t{font-weight:700}
+svg .cont{fill:none;stroke:var(--line);stroke-width:1.4;stroke-dasharray:6 4}
+
+/* tracker controls */
+.ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.ctl input,.ctl select,.st select,.calc input,.calc select{font:13px var(--f-body);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px}
+.ctl input[type=search]{flex:1 1 200px;min-width:0}
+.ph{margin-bottom:16px}
+.ph>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.ph>summary::-webkit-details-marker{display:none}
+.ph[open]>summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ph .pid{font:800 20px var(--f-body);color:var(--accent);min-width:2.4em}
+.ph .pt{font-weight:700}
+.ph .pm{font-size:12.5px;color:var(--muted)}
+.tl{border:1px solid var(--line);border-top:0;border-radius:0 0 var(--r-lg) var(--r-lg);background:var(--surface)}
+.t-row{display:grid;grid-template-columns:62px minmax(0,1fr) auto auto;gap:10px;align-items:start;padding:10px 14px;border-top:1px solid var(--line)}
+.t-row:first-child{border-top:0}
+.t-row .tt{min-width:0}
+.t-row .tn{font-size:12.5px;color:var(--muted);margin-top:2px}
+.t-row.is-done .tt b{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 50%,transparent)}
+.who{font-size:11.5px;color:var(--muted);margin-top:2px}
+@media(max-width:620px){.t-row{grid-template-columns:1fr auto}.t-row>.mono:first-child{grid-column:1/-1}}
+.note{padding:10px 14px;border-radius:var(--r-md);background:var(--p50);border:1px solid var(--p200);color:var(--fg2);font-size:13px}
+.verdict{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.tight li{margin:0}
+
+/* swatches + calculator */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.sw div{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.sw i{display:block;height:44px}
+.sw span{display:block;padding:6px 8px;font:11.5px var(--f-mono)}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.calc label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:600}
+.calc input{width:100%}
+.meter{display:grid;grid-template-columns:minmax(0,200px) 1fr auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.meter:last-child{border-bottom:0}
+@media(max-width:560px){.meter{grid-template-columns:1fr auto}.meter .bar{grid-column:1/-1;order:3}}
+.tree{font:12.5px/1.7 var(--f-mono);white-space:pre;overflow-x:auto}
+footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--muted);font-size:12.5px;background:var(--surface)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s}}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+<header class="top">
+  <svg class="pitch" viewBox="0 0 400 260" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <rect x="4" y="4" width="392" height="252" rx="4"/><line x1="200" y1="4" x2="200" y2="256"/>
+    <circle cx="200" cy="130" r="38"/><rect x="4" y="76" width="62" height="108"/><rect x="334" y="76" width="62" height="108"/>
+    <rect x="4" y="104" width="24" height="52"/><rect x="372" y="104" width="24" height="52"/>
+  </svg>
+  <div class="wrap">
+    <div class="brand">
+      <svg width="44" height="44" viewBox="0 0 40 40" fill="none" aria-hidden="true"><defs><linearGradient id="sg" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse"><stop stop-color="#e0182d"/><stop offset="1" stop-color="#4A0000"/></linearGradient></defs><circle cx="20" cy="20" r="18" fill="url(#sg)" stroke="#fff" stroke-opacity=".5"/><path d="M 12 12 L 18 22 L 27 16 L 31 19" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="12" r="2.5" fill="#fff"/><path d="M 14 28 Q 22 32 30 24" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/></svg>
+      <div><b>OYUN</b><div class="eyebrow">Mangalore · turf booking</div></div>
+    </div>
+    <h1>Build Tracker</h1>
+    <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
+    <div class="chips" id="stackchips"></div>
+    <div class="eyebrow" style="margin-top:12px">Static review of commit 7755471 (PR #13) · prices checked 7 Oct 2026</div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sections"><div class="wrap" id="tabs" role="tablist"></div></nav>
+
+<main class="wrap">
+
+<!-- ================= OVERVIEW ================= -->
+<section class="panel" id="p-overview" role="tabpanel">
+  <header><h2>Where the build stands</h2><p>A working pay-at-venue booking product shipped in two days. The next gates are quality (no tests, no CI), security (identity and wallet), and storage scale, all before online payments.</p></header>
+  <div class="stack">
+    <div class="grid g4" id="ov-stats"></div>
+    <div class="box tint-crit"><div class="section-label">First target: 1,000 users</div>
+      <h3 style="font-size:18px;margin:4px 0 10px">What has to be true before you invite them</h3>
+      <div class="grid g2">
+        <ol>
+          <li><b>Move off Vercel Hobby.</b> It forbids commercial use. Use Vercel Pro ($20 a month) once owners and players are real.</li>
+          <li><b>Move the database to Supabase Pro ($25 a month).</b> Free projects pause after 7 days idle; two of your other projects already show as paused.</li>
+          <li><b>Stop reading the whole database per request</b> (task P10-01). At 1,000 users this alone would pass the free egress limit many times over. Use the calculator in the Cost &amp; scale tab.</li>
+          <li><b>Add tests and CI</b> for pricing and double-booking (P8-02, P8-04, P8-08).</li>
+        </ol>
+        <ol start="5">
+          <li><b>Close the money and identity risks</b>: rotate the old Supabase key, bind wallet to the signed-in account, shared rate limiting (P9-01, 03, 06).</li>
+          <li><b>Backups and monitoring</b>: nightly dump, Sentry, uptime check on /api/health.</li>
+          <li><b>Paper</b>: partner agreement, refund and commission policy, privacy review, a custom domain.</li>
+          <li><b>Pay at venue is fine for this stage.</b> Online payments (Razorpay) can wait until the 1,000-user pilot works.</li>
+        </ol>
+      </div></div>
+    <div class="grid g2">
+      <div class="box"><h3>Progress by phase</h3><div id="ov-phases"></div></div>
+      <div class="box"><h3>Three biggest gaps</h3>
+        <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px">
+          <li><b>No tests and no CI.</b> Pricing, cancellation and the double-booking guard have no automated check. A change to <code>src/lib/pricing.ts</code> ships unverified.</li>
+          <li><b>Whole database read on every request.</b> <code>load_state()</code> returns every table; each write reloads, diffs and retries behind one global <code>rev</code>. Fine for a pilot, not for traffic.</li>
+          <li><b>Player identity is weak.</b> Without Clerk it is a localStorage name and phone. Wallet spend is keyed by a typed phone number, and a ticket link exposes name and phone to anyone holding it.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="box"><h3>What works today</h3>
+        <ul class="tight">
+          <li>Browse 10 launch turfs, filter by area and sport, live hourly slots for the next 14 days.</li>
+          <li>8-minute slot holds per device, up to 6 slots per booking, promo, referral and add-ons, server-side quote.</li>
+          <li>Pay-at-venue booking, ticket with QR, invoice, calendar file, self-cancel until 2 hours before.</li>
+          <li>Reviews after check-in, saved turfs, WhatsApp share.</li>
+          <li>Owner dashboard (pricing rules, offers, blocks, check-in desk, payouts CSV, staff roles) and admin console.</li>
+        </ul></div>
+      <div class="box"><h3>What does not exist</h3>
+        <ul class="tight">
+          <li>Online payments (Razorpay is documented as "later"). <code>advancePercent</code> is computed but unused.</li>
+          <li>Any outbound message: no SMS, WhatsApp, email or push. Only the error webhook.</li>
+          <li>Tests, CI, staging, backups policy, uptime monitor.</li>
+          <li>Find players, tournaments, weather alerts, real map, admin analytics.</li>
+        </ul></div>
+    </div>
+    <div class="box" id="ov-gate"></div>
+    <p class="note">Everything on this page comes from reading the code. The worktree has no <code>node_modules</code>, so lint, type-check, build and tests were not run, and Next.js 16 docs under <code>node_modules/next/dist/docs/</code> were not read (AGENTS.md asks for that before writing code).</p>
+  </div>
+</section>
+
+<!-- ================= ARCHITECTURE ================= -->
+<section class="panel" id="p-architecture" role="tabpanel">
+  <header><h2>Architecture</h2><p>A modular monolith: one Next.js 16 app on Vercel, one Supabase Postgres used as a document store behind the service-role key. The browser never talks to the database.</p></header>
+  <div class="stack">
+
+  <figure>
+    <div class="scroll"><svg viewBox="0 0 880 410" role="img" aria-label="System context: three kinds of users reach one Next.js app on Vercel, which talks to Supabase Postgres, Supabase Realtime and Clerk">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="bx" x="20" y="43" width="150" height="50" rx="8"/><text class="t" x="95" y="64" text-anchor="middle">Player</text><text class="lbl" x="95" y="80" text-anchor="middle">anonymous or Clerk</text>
+      <rect class="bx" x="20" y="150" width="150" height="50" rx="8"/><text class="t" x="95" y="171" text-anchor="middle">Owner / staff</text><text class="lbl" x="95" y="187" text-anchor="middle">owner · manager · front desk</text>
+      <rect class="bx" x="20" y="270" width="150" height="50" rx="8"/><text class="t" x="95" y="291" text-anchor="middle">Admin</text><text class="lbl" x="95" y="307" text-anchor="middle">env credential</text>
+      <line class="ln" x1="170" y1="68" x2="258" y2="68" marker-end="url(#ah)"/><line class="ln" x1="170" y1="175" x2="240" y2="175" marker-end="url(#ah)"/><line class="ln" x1="170" y1="295" x2="240" y2="295" marker-end="url(#ah)"/>
+      <text class="lbl" x="178" y="62">HTTPS</text>
+      <rect class="cont" x="240" y="20" width="400" height="380" rx="10"/>
+      <text class="t" x="256" y="42" style="font-size:13px">Next.js 16 · Vercel</text>
+      <rect class="bx acc" x="260" y="52" width="360" height="34" rx="6"/><text class="mono" x="440" y="73" text-anchor="middle">proxy.ts · HTTPS redirect · cookie guard · Clerk</text>
+      <rect class="bx" x="260" y="104" width="112" height="46" rx="6"/><text x="316" y="124" text-anchor="middle" class="t">(main)</text><text class="lbl" x="316" y="140" text-anchor="middle">public site</text>
+      <rect class="bx" x="384" y="104" width="112" height="46" rx="6"/><text x="440" y="124" text-anchor="middle" class="t">/partner</text><text class="lbl" x="440" y="140" text-anchor="middle">owner tools</text>
+      <rect class="bx" x="508" y="104" width="112" height="46" rx="6"/><text x="564" y="124" text-anchor="middle" class="t">/admin</text><text class="lbl" x="564" y="140" text-anchor="middle">console</text>
+      <rect class="bx" x="260" y="170" width="360" height="58" rx="6"/><text class="t" x="440" y="192" text-anchor="middle">Server actions · src/lib</text><text class="lbl" x="440" y="210" text-anchor="middle">booking · pricing · wallet · partner · admin · session</text>
+      <rect class="bx acc" x="260" y="256" width="360" height="44" rx="6"/><text class="mono" x="440" y="283" text-anchor="middle">store.ts · getDb() · mutate(fn)</text>
+      <rect class="bx" x="260" y="328" width="170" height="40" rx="6"/><text class="mono" x="345" y="353" text-anchor="middle">monitoring.ts</text>
+      <rect class="bx" x="450" y="328" width="170" height="40" rx="6"/><text class="mono" x="535" y="353" text-anchor="middle">realtime.ts</text>
+      <line class="ln" x1="440" y1="86" x2="440" y2="104"/><line class="ln" x1="440" y1="150" x2="440" y2="170" marker-end="url(#ah)"/><line class="ln" x1="440" y1="228" x2="440" y2="256" marker-end="url(#ah)"/>
+      <rect class="bx" x="700" y="33" width="170" height="70" rx="8"/><text class="t" x="785" y="56" text-anchor="middle">Clerk</text><text class="lbl" x="785" y="72" text-anchor="middle">player sign-in</text><text class="lbl" x="785" y="88" text-anchor="middle">optional via env key</text>
+      <line class="ln" x1="620" y1="68" x2="700" y2="68" marker-end="url(#ah)"/>
+      <rect class="bx" x="700" y="140" width="170" height="52" rx="8" style="stroke-dasharray:5 4"/><text class="mono" x="785" y="162" text-anchor="middle">.data/db.json</text><text class="lbl" x="785" y="179" text-anchor="middle">fallback, no key set</text>
+      <line class="ln dash" x1="785" y1="192" x2="785" y2="226"/>
+      <rect class="bx acc" x="700" y="226" width="170" height="80" rx="8"/><text class="t" x="785" y="248" text-anchor="middle">Supabase Postgres</text><text class="lbl" x="785" y="265" text-anchor="middle">14 jsonb tables · app_meta.rev</text><text class="lbl" x="785" y="281" text-anchor="middle">RPCs: service_role only</text><text class="lbl" x="785" y="297" text-anchor="middle">RLS on, no policies</text>
+      <line class="ln acc" x1="620" y1="278" x2="700" y2="278" marker-end="url(#ah)"/>
+      <text class="lbl" x="625" y="270">rpc</text>
+      <rect class="bx" x="700" y="318" width="170" height="60" rx="8"/><text class="t" x="785" y="341" text-anchor="middle">Supabase Realtime</text><text class="lbl mono" x="785" y="359" text-anchor="middle">slots:{turf}:{date}</text>
+      <line class="ln" x1="620" y1="348" x2="700" y2="348" marker-end="url(#ah)"/><text class="lbl" x="625" y="342">broadcast</text>
+    </svg></div>
+    <figcaption>Only the server holds the Supabase secret key. Browsers subscribe to Realtime broadcast with the publishable key and receive a "slot changed" ping, then refetch through a server action. Analytics (GA4, Vercel Analytics, Speed Insights) load in the browser only after cookie consent.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="scroll"><svg viewBox="0 0 880 230" role="img" aria-label="Write path: load state, run the change on a copy, diff, apply with revision check, retry on conflict">
+      <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--crit)"/></marker></defs>
+      <g>
+        <rect class="bx" x="20" y="40" width="122" height="58" rx="6"/><text class="t" x="81" y="63" text-anchor="middle">Server action</text><text class="lbl" x="81" y="80" text-anchor="middle">mutate(fn)</text>
+        <rect class="bx" x="162" y="40" width="122" height="58" rx="6"/><text class="t" x="223" y="63" text-anchor="middle">load_state()</text><text class="lbl" x="223" y="80" text-anchor="middle">all tables + rev</text>
+        <rect class="bx" x="304" y="40" width="122" height="58" rx="6"/><text class="t" x="365" y="63" text-anchor="middle">Run fn</text><text class="lbl" x="365" y="80" text-anchor="middle">on in-memory copy</text>
+        <rect class="bx" x="446" y="40" width="122" height="58" rx="6"/><text class="t" x="507" y="63" text-anchor="middle">Diff</text><text class="lbl" x="507" y="80" text-anchor="middle">upserts + deletes</text>
+        <rect class="bx acc" x="588" y="40" width="130" height="58" rx="6"/><text class="t" x="653" y="63" text-anchor="middle">apply_changes</text><text class="lbl" x="653" y="80" text-anchor="middle">(changes, rev)</text>
+        <rect class="bx" x="738" y="40" width="122" height="58" rx="6"/><text class="t" x="799" y="63" text-anchor="middle">Broadcast</text><text class="lbl" x="799" y="80" text-anchor="middle">+ revalidatePath</text>
+      </g>
+      <line class="ln" x1="142" y1="69" x2="162" y2="69" marker-end="url(#ah2)"/><line class="ln" x1="284" y1="69" x2="304" y2="69" marker-end="url(#ah2)"/><line class="ln" x1="426" y1="69" x2="446" y2="69" marker-end="url(#ah2)"/><line class="ln" x1="568" y1="69" x2="588" y2="69" marker-end="url(#ah2)"/><line class="ln" x1="718" y1="69" x2="738" y2="69" marker-end="url(#ah2)"/>
+      <text class="lbl" x="722" y="34">rev matches</text>
+      <path class="ln bad" d="M653 98 V150 H223 V98" marker-end="url(#ah3)"/>
+      <text x="438" y="144" text-anchor="middle" style="fill:var(--crit);font-size:12px">rev moved → store_conflict (40001) → retry up to 5×, jittered</text>
+      <text class="lbl" x="20" y="190">Backstop: partial unique indexes on bookings, blocks and holds raise a unique violation, mapped to a friendly "slot taken" error.</text>
+      <text class="lbl" x="20" y="208">Cost: every write is serialised behind one global counter and reloads the whole database.</text>
+    </svg></div>
+    <figcaption>Optimistic concurrency with a single global revision. It makes cross-table checks (a block against a booking, a hold against a booking) safe without database constraints, at the price of write contention and a full load per request.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="scroll"><svg viewBox="0 0 880 270" role="img" aria-label="Slot and booking lifecycle: free, held, confirmed, checked in, reviewed, with cancelled, no-show and refunded branches">
+      <defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="bx" x="20" y="70" width="120" height="48" rx="24"/><text class="t" x="80" y="99" text-anchor="middle">Free slot</text>
+      <rect class="bx" x="190" y="70" width="140" height="48" rx="24"/><text class="t" x="260" y="91" text-anchor="middle">Held</text><text class="lbl" x="260" y="107" text-anchor="middle">8 min · device hash</text>
+      <rect class="bx acc" x="380" y="70" width="140" height="48" rx="24"/><text class="t" x="450" y="91" text-anchor="middle">confirmed</text><text class="lbl" x="450" y="107" text-anchor="middle">pay at venue</text>
+      <rect class="bx acc" x="570" y="70" width="120" height="48" rx="24"/><text class="t" x="630" y="99" text-anchor="middle">checked_in</text>
+      <rect class="bx" x="740" y="70" width="120" height="48" rx="24"/><text class="t" x="800" y="91" text-anchor="middle">Reviewed</text><text class="lbl" x="800" y="107" text-anchor="middle">1 per booking</text>
+      <line class="ln" x1="140" y1="94" x2="190" y2="94" marker-end="url(#ah4)"/><text class="lbl" x="143" y="86">holdSlots</text>
+      <line class="ln" x1="330" y1="94" x2="380" y2="94" marker-end="url(#ah4)"/><text class="lbl" x="334" y="86">createBookings</text>
+      <line class="ln" x1="520" y1="94" x2="570" y2="94" marker-end="url(#ah4)"/><text class="lbl" x="524" y="86">QR check-in</text>
+      <line class="ln" x1="690" y1="94" x2="740" y2="94" marker-end="url(#ah4)"/><text class="lbl" x="694" y="86">submitReview</text>
+      <path class="ln dash" d="M260 70 V36 H80 V70" marker-end="url(#ah4)"/><text class="lbl" x="170" y="30" text-anchor="middle">expires or beacon release</text>
+      <rect class="bx" x="300" y="190" width="120" height="44" rx="22"/><text class="t" x="360" y="217" text-anchor="middle">cancelled</text>
+      <rect class="bx" x="450" y="190" width="120" height="44" rx="22"/><text class="t" x="510" y="217" text-anchor="middle">no_show</text>
+      <rect class="bx" x="600" y="190" width="120" height="44" rx="22"/><text class="t" x="660" y="217" text-anchor="middle">refunded</text>
+      <path class="ln" d="M420 118 V160 H360 V190" marker-end="url(#ah4)"/><text class="lbl" x="288" y="156" text-anchor="end">self-cancel ≥2h, partner, admin</text>
+      <path class="ln" d="M470 118 V160 H510 V190" marker-end="url(#ah4)"/><text class="lbl" x="516" y="156">partner marks</text>
+      <path class="ln" d="M650 118 V190" marker-end="url(#ah4)"/><text class="lbl" x="656" y="156">admin refund</text>
+      <text class="lbl" x="20" y="262">Live-slot uniqueness: only confirmed and checked_in occupy a slot in the unique index; cancelled, no_show and refunded free it.</text>
+    </svg></div>
+    <figcaption>Booking statuses are TypeScript unions in <code>src/lib/types.ts</code>, not database enums. Multi-slot bookings create one booking row per hour, all inside one <code>mutate()</code>.</figcaption>
+  </figure>
+
+  <div class="grid g2">
+    <div class="box"><h3>Module map</h3>
+      <dl class="kv">
+        <dt><code>src/app/(main)</code></dt><dd>public site, arenas, tickets, profile, saved, list-turf, FAQ, legal</dd>
+        <dt><code>src/app/(auth)</code></dt><dd>Clerk sign-in/up or device-form fallback</dd>
+        <dt><code>src/app/partner</code></dt><dd>owner dashboard, permission-gated pages, payouts CSV</dd>
+        <dt><code>src/app/admin</code></dt><dd>approvals, turfs, partners, players, refunds, settings</dd>
+        <dt><code>src/app/api</code></dt><dd><code>health</code>, <code>holds/release</code>, <code>client-error</code></dd>
+        <dt><code>src/lib</code></dt><dd>domain: store, pricing, wallet, reports, reviews, session, rate-limit, realtime</dd>
+        <dt><code>src/utils/supabase</code></dt><dd>admin (secret key), browser, server, middleware helpers</dd>
+        <dt><code>src/components</code></dt><dd>shell, turf cards, consent, dash UI kit, invoice</dd>
+      </dl></div>
+    <div class="box"><h3>Conventions worth knowing</h3>
+      <ul>
+        <li>Next 16 style: <code>proxy.ts</code> not middleware, async <code>params</code>, <code>connection()</code>, <code>after()</code>.</li>
+        <li>Styling is CSS Modules plus tokens in <code>globals.css</code>. No Tailwind, no UI library.</li>
+        <li>No client state library. Server state per request through <code>getDb()</code>; mutations are server actions plus <code>revalidatePath('/', 'layout')</code>.</li>
+        <li>Device state (profile, favourites, booking ids) in localStorage, synced by DOM events.</li>
+        <li>Prices come from one function used for both the quote and the charge, so they cannot drift.</li>
+        <li>Times are IST helpers in <code>lib/time.ts</code>.</li>
+      </ul></div>
+  </div>
+
+  <div class="stack">
+    <h3>Route and action inventory</h3>
+    <div class="tw"><table id="routes"></table></div>
+    <h3>Partner permission matrix</h3>
+    <div class="tw"><table id="perms"></table></div>
+  </div>
+  </div>
+</section>
+
+<!-- ================= DATA ================= -->
+<section class="panel" id="p-data" role="tabpanel">
+  <header><h2>Data model</h2><p>Fourteen identical document tables and one meta row, all behind the service-role key. Relationships live inside the JSON, so the database cannot enforce them.</p></header>
+  <div class="stack">
+    <div class="tw"><table id="tables"></table></div>
+    <div class="grid g2">
+      <div class="box"><h3>Uniqueness backstops</h3><ul id="idx" class="tight"></ul></div>
+      <div class="box"><h3>RPC functions</h3><ul id="rpc" class="tight"></ul></div>
+    </div>
+    <div class="grid g2">
+      <div class="box"><h3>Logical relationships</h3><ul id="rels" class="tight"></ul></div>
+      <div class="box"><h3>Enums (TypeScript only)</h3><ul id="enums" class="tight"></ul></div>
+    </div>
+    <div class="box tint-crit"><h3>Where this design bites</h3><ul id="dbrisks"></ul></div>
+  </div>
+</section>
+
+<!-- ================= PHASES ================= -->
+<section class="panel" id="p-phases" role="tabpanel">
+  <header><h2>Phases</h2><p>Phases 0 to 7 are rebuilt from 49 commits and 13 pull requests between 5 and 6 October 2026. Phases 8 to 13 are the plan. Status is computed from the tracker, so ticking tasks moves these cards.</p></header>
+  <div class="stack">
+    <div class="grid g2" id="phasecards"></div>
+  </div>
+</section>
+
+<!-- ================= TRACKER ================= -->
+<section class="panel" id="p-tracker" role="tabpanel">
+  <header><h2>Task tracker</h2><p id="trk-sub">Change a status from the dropdown. Changes are saved to the shared page store and show for everyone who has it open.</p></header>
+  <div class="ctl">
+    <input id="q" type="search" placeholder="Search tasks, ids, commits" aria-label="Search tasks">
+    <select id="f-phase" aria-label="Phase"></select>
+    <select id="f-status" aria-label="Status"><option value="">All statuses</option><option value="todo">todo</option><option value="doing">doing</option><option value="blocked">blocked</option><option value="done">done</option></select>
+    <select id="f-prio" aria-label="Priority"><option value="">All priorities</option><option>P0</option><option>P1</option><option>P2</option><option>P3</option></select>
+    <label class="muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="f-open" style="flex:none"> open only</label>
+  </div>
+  <div id="trk-list"></div>
+</section>
+
+<!-- ================= SECURITY ================= -->
+<section class="panel" id="p-security" role="tabpanel">
+  <header><h2>Security</h2><p>Threat model (STRIDE) and a risk register scored with DREAD. Findings come from reading the code; nothing was exploited or run. Scores are analyst estimates for ranking, not measurements.</p></header>
+  <div class="stack">
+    <div class="grid g2">
+      <div class="box"><h3>Risks ranked by DREAD average</h3><div id="dread"></div></div>
+      <div class="box"><h3>Controls already in place</h3><ul id="controls" class="tight"></ul></div>
+    </div>
+    <h3>Risk register</h3>
+    <div class="tw"><table id="risks"></table></div>
+    <h3>STRIDE by element</h3>
+    <div class="tw"><table id="stride"></table></div>
+    <p class="note">DREAD = Damage, Reproducibility, Exploitability, Affected users, Discoverability, each 1 to 10. Anything at 6 or above needs a named owner before the next release.</p>
+  </div>
+</section>
+
+<!-- ================= SHIP GATE ================= -->
+<section class="panel" id="p-gate" role="tabpanel">
+  <header><h2>Ship gate</h2><p>Eight-category pre-launch audit, answered from the code. A check marked MANUAL needs a person to confirm it; SKIP does not apply to this stack.</p></header>
+  <div class="stack">
+    <div class="grid g4" id="gate-stats"></div>
+    <div class="box" id="gate-verdict"></div>
+    <div id="gate-list" class="stack"></div>
+  </div>
+</section>
+
+<!-- ================= DEBT ================= -->
+<section class="panel" id="p-debt" role="tabpanel">
+  <header><h2>Tech debt and scale</h2><p>Ordered by what hurts first as traffic and team size grow.</p></header>
+  <div class="stack">
+    <div class="tw"><table id="debt"></table></div>
+    <div class="box"><h3>Target direction for storage</h3>
+      <p class="muted" style="margin-bottom:8px">Keep the jsonb tables for low-churn config (turfs, partners, pricing) and move the hot path to scoped reads and per-row locking.</p>
+      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+        <li>Add RPCs that read one turf and one date range instead of <code>load_state()</code>.</li>
+        <li>Replace the global <code>rev</code> with a version per turf (or per slot) so two turfs never conflict.</li>
+        <li>Promote bookings, holds and wallet transactions to typed columns with CHECK constraints and foreign keys.</li>
+        <li>Cache public pages (ISR plus tag revalidation on writes) so browsing never touches the store.</li>
+      </ol></div>
+  </div>
+</section>
+
+<!-- ================= DECISIONS ================= -->
+<section class="panel" id="p-adr" role="tabpanel">
+  <header><h2>Decision log</h2><p>Architecture decisions inferred from the code and history, with the trigger that should reopen each one.</p></header>
+  <div class="stack" id="adr"></div>
+</section>
+
+<!-- ================= OPS ================= -->
+<section class="panel" id="p-ops" role="tabpanel">
+  <header><h2>Operations</h2><p>Environment, deployment, runbook and the test strategy to adopt.</p></header>
+  <div class="stack">
+    <h3>Environment variables (names only)</h3>
+    <div class="tw"><table id="env"></table></div>
+    <div class="grid g2">
+      <div class="box"><h3>Deploy checklist</h3><ol id="deploy" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px"></ol></div>
+      <div class="box"><h3>Runbook</h3><ul id="runbook"></ul></div>
+    </div>
+    <h3>Test strategy to adopt</h3>
+    <div class="tw"><table id="tests"></table></div>
+  </div>
+</section>
+
+
+<section class="panel" id="p-start" role="tabpanel">
+  <header><h2>Start here</h2><p>For a new developer: run it, find your way around, know who owns what, and what to do in week one.</p></header>
+  <div class="stack" id="start-body"></div>
+</section>
+
+<section class="panel" id="p-features" role="tabpanel">
+  <header><h2>Features</h2><p>Every feature by audience, with its status and where the code lives.</p></header>
+  <div class="stack">
+    <div class="grid g3" id="feat-stats"></div>
+    <div class="ctl" id="feat-ctl"></div>
+    <div id="feat-table"></div>
+  </div>
+</section>
+
+<section class="panel" id="p-frontend" role="tabpanel">
+  <header><h2>Frontend and design system</h2><p>What the screens are made of. The colours below are the site's own tokens, and this tracker uses the same ones.</p></header>
+  <div class="stack" id="fe-body"></div>
+</section>
+
+<section class="panel" id="p-backend" role="tabpanel">
+  <header><h2>Backend</h2><p>There is no separate server. The backend is server actions and route handlers inside the same Next.js app.</p></header>
+  <div class="stack" id="be-body"></div>
+</section>
+
+<section class="panel" id="p-hosting" role="tabpanel">
+  <header><h2>Hosting and cloud</h2><p>Where the frontend, backend, database and every other piece should run, using free or cheap options first.</p></header>
+  <div class="stack" id="host-body"></div>
+</section>
+
+<section class="panel" id="p-cost" role="tabpanel">
+  <header><h2>Cost and scale</h2><p id="cost-target"></p></header>
+  <div class="stack">
+    <div class="box"><h3>Calculator: will the free plans hold?</h3><div class="calc" id="calc"></div></div>
+    <div id="calc-out"></div>
+    <div><h3 style="margin-bottom:8px">Cost by stage</h3><div id="cost-stages"></div></div>
+    <div><h3 style="margin-bottom:8px">What each free plan can handle</h3><div id="cost-free"></div></div>
+    <div><h3 style="margin-bottom:8px">If money comes in: what to upgrade, and when</h3><div id="cost-trig"></div></div>
+    <div><h3 style="margin-bottom:8px">If you get investment: spend in this order</h3><div id="cost-fund"></div></div>
+    <div class="box"><h3>Where these prices come from</h3><ul id="cost-src"></ul><p class="muted" style="margin-top:10px">Third-party summaries read on 7 Oct 2026. Vendors change prices and limits; check the vendor page before paying. Rupee amounts assume about ₹90 per US dollar. Capacity numbers are estimates from stated assumptions, not measurements.</p></div>
+  </div>
+</section>
+
+<section class="panel" id="p-docs" role="tabpanel">
+  <header><h2>Docs and team tools</h2><p>The documents a product like this should have, and the free tools to run a small team.</p></header>
+  <div class="stack">
+    <div><h3 style="margin-bottom:8px">Documents</h3><div id="docs-table"></div></div>
+    <div><h3 style="margin-bottom:8px">Tools for tracking and teamwork</h3><div id="tools-table"></div></div>
+    <div class="box"><h3>Which stack for which team size</h3><div id="tools-plan"></div></div>
+  </div>
+</section>
+
+</main>
+<footer class="foot"><div class="wrap">Built from a static read of the repository at commit 7755471; prices checked 7 Oct 2026. Facts to re-verify before acting: admin action bodies (each should call <code>requireAdmin</code>), wallet refund on cancel, and the contents of <code>.env.local</code> (not read).</div></footer>
+
+<script>
+/* ===================== DATA ===================== */
+const DATA = {
+stack:["Next.js 16.3.8","React 19.2","TypeScript strict","Supabase Postgres","Clerk (optional)","Vercel","CSS Modules","49 commits · 13 PRs","Target: 1,000 users"],
+
+phases:[
+ {id:"P0",name:"Bootstrap",when:"5 Oct",goal:"Scaffold the OYUN site with real turf cards and multi-slot booking.",exit:"Home, arena list and booking page render with seed turfs.",refs:"05c29c5 … 7e9ddad"},
+ {id:"P1",name:"Prototype detour",when:"6 Oct",goal:"Try standalone HTML prototypes for the PWA and owner dashboard.",exit:"Reverted within five minutes; React site restored.",refs:"cab5609, ef32b09, e60a7ba"},
+ {id:"P2",name:"Hardening and data",when:"6 Oct",goal:"Fix Vercel-breaking bugs, move storage to Supabase, add holds.",exit:"Persistent store, double-booking guard, 8-minute holds, PWA shell.",refs:"85378ad, 28f3a47, ccd190a"},
+ {id:"P3",name:"SEO, compliance, readiness",when:"6 Oct",goal:"Be findable, legal and monitored before any traffic.",exit:"Sitemap, JSON-LD, consent, privacy and terms, error alerts, spam guards. PR #1.",refs:"488e616 … 224c60d, PR #1"},
+ {id:"P4",name:"Mobile UI iteration",when:"6 Oct",goal:"Make the phone experience feel like an app.",exit:"Top bar, floating search, side menu, compact filters. PRs #2 to #5.",refs:"c9c21f5 … 593116b"},
+ {id:"P5",name:"Player sign-in (Clerk)",when:"6 Oct",goal:"Real accounts for players, required before paying.",exit:"Clerk sign-in and sign-up, sign-in gate at checkout. PRs #6 to #8.",refs:"22a0118 … dbe0512"},
+ {id:"P6",name:"Launch-ready",when:"6 Oct",goal:"Remove demo data and ship a real pay-at-venue product.",exit:"Real data only, live slot broadcast, idempotent migration, GO-LIVE guide. PR #9.",refs:"0c59315, e533525"},
+ {id:"P7",name:"Launch polish",when:"6 Oct",goal:"Operational extras and engagement features.",exit:"Health check, account-linked bookings, self-cancel, reviews, saved turfs. PRs #10 to #13.",refs:"7e4b881 … 1f4bdd9"},
+ {id:"P8",name:"Quality foundation",when:"next",goal:"Make change safe: tests, CI, typed checks, accurate docs.",exit:"CI blocks merges on lint, tsc, build and tests; double-booking race test passes."},
+ {id:"P9",name:"Security hardening",when:"next",goal:"Close the identity, wallet and rate-limit gaps before real money.",exit:"All Critical and High risks in the register closed or accepted in writing."},
+ {id:"P10",name:"Scale the store",when:"before traffic",goal:"Stop loading the whole database per request.",exit:"Scoped reads, per-turf versioning, cached public pages, load test at target traffic."},
+ {id:"P11",name:"Online payments",when:"after P8 + P9",goal:"Take advance or full payment through Razorpay.",exit:"Signature-verified orders, idempotent webhooks, refunds and payout reconciliation."},
+ {id:"P12",name:"Notifications",when:"after P11",goal:"Confirmations and reminders players and owners rely on.",exit:"WhatsApp or SMS confirmation, 2-hour reminder, owner alert, email receipt."},
+ {id:"P13",name:"Growth",when:"later",goal:"Features that bring players back.",exit:"Find players, tournaments, weather alerts, real map, analytics."}
+],
+
+tasks:[
+ // P0
+ {id:"P0-01",p:"P0",t:"Scaffold OYUN app with eight seed turfs",s:"done",pr:"P2",n:"7d2bbaf"},
+ {id:"P0-02",p:"P0",t:"Fix turf card grid height, add logo",s:"done",pr:"P3",n:"6299e47"},
+ {id:"P0-03",p:"P0",t:"Multi-slot booking and high-resolution logo",s:"done",pr:"P2",n:"91b7a81"},
+ {id:"P0-04",p:"P0",t:"Popup ad and demo login buttons",s:"done",pr:"P3",n:"7e9ddad. Demo pieces were removed again in P6."},
+ // P1
+ {id:"P1-01",p:"P1",t:"HTML PWA and owner-dashboard prototypes, redirect routes to them",s:"done",pr:"P3",n:"cab5609, ef32b09"},
+ {id:"P1-02",p:"P1",t:"Revert prototype rewrites, restore React site",s:"done",pr:"P2",n:"e60a7ba"},
+ // P2
+ {id:"P2-01",p:"P2",t:"Fix Vercel read-only reseed, camera Permissions-Policy, stale prerendered login pages",s:"done",pr:"P0",n:"85378ad"},
+ {id:"P2-02",p:"P2",t:"Login lockout (5 failures, 15 minutes) plus CSP and COOP headers",s:"done",pr:"P1",n:"85378ad"},
+ {id:"P2-03",p:"P2",t:"Supabase store: jsonb tables, load_state and apply_changes, optimistic rev lock",s:"done",pr:"P0",n:"28f3a47"},
+ {id:"P2-04",p:"P2",t:"Partial unique index on live bookings",s:"done",pr:"P0",n:"28f3a47"},
+ {id:"P2-05",p:"P2",t:"8-minute holds keyed by device-cookie hash, single-transaction multi-slot booking, quote dry-run",s:"done",pr:"P0",n:"ccd190a"},
+ {id:"P2-06",p:"P2",t:"PWA manifest and mobile app shell",s:"done",pr:"P2",n:"ccd190a. No service worker yet."},
+ // P3
+ {id:"P3-01",p:"P3",t:"SEO: metadata, sitemap, JSON-LD, area landing pages, 404",s:"done",pr:"P1",n:"488e616"},
+ {id:"P3-02",p:"P3",t:"Error monitoring: instrumentation hooks and Slack/Discord webhook",s:"done",pr:"P1",n:"488e616"},
+ {id:"P3-03",p:"P3",t:"Privacy policy, terms, cookie consent gating GA4 and Vercel analytics",s:"done",pr:"P1",n:"0660060"},
+ {id:"P3-04",p:"P3",t:"Spam protection (honeypot, timing, rate limit), validation, HTTPS redirect",s:"done",pr:"P1",n:"5d0b740"},
+ {id:"P3-05",p:"P3",t:"Launch and SEO playbook docs",s:"done",pr:"P3",n:"3019838"},
+ {id:"P3-06",p:"P3",t:"Local dev works with no keys (JSON file fallback)",s:"done",pr:"P2",n:"224c60d"},
+ // P4
+ {id:"P4-01",p:"P4",t:"Back buttons return to previous page",s:"done",pr:"P3",n:"c9c21f5"},
+ {id:"P4-02",p:"P4",t:"App-style top bar, floating search, remove bottom tab bar",s:"done",pr:"P3",n:"539a910, 39e1677"},
+ {id:"P4-03",p:"P4",t:"Side menu from top-left button",s:"done",pr:"P3",n:"e22fbb3"},
+ {id:"P4-04",p:"P4",t:"Compact filter bar, hide top bar on scroll down",s:"done",pr:"P3",n:"17e83be, 593116b"},
+ // P5
+ {id:"P5-01",p:"P5",t:"Clerk sign-in and sign-up pages",s:"done",pr:"P1",n:"22a0118"},
+ {id:"P5-02",p:"P5",t:"Richer mobile home: top rated, deals, quick actions, areas",s:"done",pr:"P3",n:"ebac848"},
+ {id:"P5-03",p:"P5",t:"Sign in before paying, professional auth screens",s:"done",pr:"P1",n:"ccf43b5"},
+ {id:"P5-04",p:"P5",t:"Greet signed-in players by name",s:"done",pr:"P3",n:"dbe0512"},
+ // P6
+ {id:"P6-01",p:"P6",t:"Real data only: remove demo accounts and fake content",s:"done",pr:"P0",n:"0c59315"},
+ {id:"P6-02",p:"P6",t:"Pay-at-venue booking mode",s:"done",pr:"P0",n:"0c59315. paymentMode venue, amountPaid 0."},
+ {id:"P6-03",p:"P6",t:"Live slot updates through Supabase Realtime broadcast",s:"done",pr:"P0",n:"0c59315"},
+ {id:"P6-04",p:"P6",t:"Idempotent migration, reset script, GO-LIVE guide",s:"done",pr:"P1",n:"0c59315"},
+ {id:"P6-05",p:"P6",t:"Cookie banner as full-width bottom bar",s:"done",pr:"P3",n:"e533525"},
+ // P7
+ {id:"P7-01",p:"P7",t:"Floating back button",s:"done",pr:"P3",n:"7e4b881"},
+ {id:"P7-02",p:"P7",t:"/api/health readiness endpoint",s:"done",pr:"P1",n:"7daa981"},
+ {id:"P7-03",p:"P7",t:"Bookings linked to Clerk account id",s:"done",pr:"P1",n:"7daa981"},
+ {id:"P7-04",p:"P7",t:"Hold release beacon on page leave",s:"done",pr:"P2",n:"7daa981"},
+ {id:"P7-05",p:"P7",t:"Self-cancel until 2 hours before the slot",s:"done",pr:"P1",n:"7daa981"},
+ {id:"P7-06",p:"P7",t:"Split database setup SQL into four small files",s:"done",pr:"P3",n:"d7cb633. A single paste had failed in the SQL editor."},
+ {id:"P7-07",p:"P7",t:"Ratings and reviews, saved turfs, calendar and WhatsApp ticket extras",s:"done",pr:"P2",n:"1f4bdd9. Reviews live inside the booking JSON."},
+
+ // P8
+ {id:"P8-00",p:"P8",t:"Architecture review and this tracker",s:"done",pr:"P1",n:"docs/build-tracker.html"},
+ {id:"P8-00b",p:"P8",t:"Sync local main checkout to origin/main and reinstall deps",s:"done",pr:"P1",n:"Local was at 3283c7a (PR #2), 26 commits behind 7755471 (PR #13), so localhost:3000 showed an older site than Vercel. Fast-forwarded, npm install, dev server restarted."},
+ {id:"P8-00d",p:"P8",t:"Fix scripts/check-dev.mjs falsely reporting @clerk/nextjs as not installed",s:"done",pr:"P1",n:"It used require.resolve('pkg/package.json'), which Clerk's exports map blocks, so npm run dev always refused to start. Now checks node_modules/<pkg>/package.json. Edited in the main checkout, not committed."},
+ {id:"P8-00e",p:"P8",t:"Clerk keys added to local .env.local; home and /login match Vercel",s:"done",pr:"P1",n:"Verified home and /login text equal on both. Still open: SUPABASE_SECRET_KEY (see P8-00c)."},
+ {id:"P8-00c",p:"P8",t:"Local and Vercel data parity: SUPABASE_SECRET_KEY still empty in .env.local",s:"todo",pr:"P1",n:"Local uses .data/db.json and device sign-in; Vercel uses Supabase and Clerk, so turfs, bookings and login differ. Production Supabase (nimfjwxzolkwiyqmnaat) sits under a different email account. Public URL and publishable key now in .env.local; still needed: SUPABASE_SECRET_KEY, Clerk keys. Note local writes then hit production data; a separate dev project is safer."},
+ {id:"P8-01",p:"P8",t:"Install deps and read node_modules/next/dist/docs for Next 16 conventions",s:"todo",pr:"P1",n:"AGENTS.md requires it; the review was done without docs."},
+ {id:"P8-02",p:"P8",t:"Add Vitest and unit tests for pricing.ts (peak, weekend, last-minute, offers, promo, GST, commission)",s:"todo",pr:"P0",n:"One function drives quote and charge, so test it hardest."},
+ {id:"P8-03",p:"P8",t:"Unit tests for cancel-policy.ts and IST time helpers",s:"todo",pr:"P1",n:"2-hour cutoff, midnight, DST-free IST."},
+ {id:"P8-04",p:"P8",t:"Integration test: N parallel createBookings for one slot yields exactly one booking",s:"todo",pr:"P0",n:"Run against local Supabase; proves rev lock plus unique index."},
+ {id:"P8-05",p:"P8",t:"Integration test: holds expire, release and cannot block a booking forever",s:"todo",pr:"P1",n:"holds_slot_uniq has no expiry predicate."},
+ {id:"P8-06",p:"P8",t:"Authorization test sweep: every admin and partner action rejects without a session",s:"todo",pr:"P0",n:"Confirms requireAdmin and requirePartnerAction on every export."},
+ {id:"P8-07",p:"P8",t:"Playwright e2e: browse, hold, book, ticket, cancel",s:"todo",pr:"P1"},
+ {id:"P8-08",p:"P8",t:"GitHub Actions: lint, tsc --noEmit, build, tests on every PR",s:"todo",pr:"P0",n:"No .github directory exists."},
+ {id:"P8-09",p:"P8",t:"Add typecheck script and a pre-commit hook",s:"todo",pr:"P2"},
+ {id:"P8-10",p:"P8",t:"Refresh FEATURE_LIST.md; delete root replace_colors.py, update_fonts.py, update_texts.py",s:"todo",pr:"P3",n:"FEATURE_LIST says backend, auth and reviews are Not Started."},
+ {id:"P8-11",p:"P8",t:"Add Dependabot and npm audit to CI",s:"todo",pr:"P2"},
+ {id:"P8-12",p:"P8",t:"Staging environment: Vercel preview plus Supabase branch",s:"todo",pr:"P1"},
+
+ // P9
+ {id:"P9-01",p:"P9",t:"Rotate the old Supabase secret key mentioned in GO-LIVE.md and confirm it is dead",s:"todo",pr:"P0",n:"The guide says an old key was shared in chat."},
+ {id:"P9-02",p:"P9",t:"Add import 'server-only' to utils/supabase/admin.ts, store.ts, realtime.ts",s:"todo",pr:"P0",n:"Today a comment is the only guard."},
+ {id:"P9-03",p:"P9",t:"Bind wallet spend and booking identity to the Clerk account, not a typed phone",s:"todo",pr:"P0",n:"Verify phone by OTP if phone login is kept."},
+ {id:"P9-04",p:"P9",t:"Refund walletDeduction when a booking is cancelled",s:"todo",pr:"P0",n:"Verify first: cancelMyBooking refunds only amountPaid, which is 0."},
+ {id:"P9-05",p:"P9",t:"Ticket page: hide phone, require account or signed token for details and actions",s:"todo",pr:"P1",n:"The bk_ id is a 48-bit bearer token shared over WhatsApp."},
+ {id:"P9-06",p:"P9",t:"Shared rate limiter (Redis or database) for login, holds, applications, client-error",s:"todo",pr:"P1",n:"Current limiter is per serverless instance."},
+ {id:"P9-07",p:"P9",t:"Lockout keyed by email plus IP, so an attacker cannot lock the admin out",s:"todo",pr:"P1"},
+ {id:"P9-08",p:"P9",t:"Promo codes: maxUses and per-player limit",s:"todo",pr:"P1"},
+ {id:"P9-09",p:"P9",t:"Admin: MFA, per-user accounts, session revocation, password rotation",s:"todo",pr:"P1",n:"Single env credential today."},
+ {id:"P9-10",p:"P9",t:"Strip passwordHash and phones from every object that can reach a client component",s:"todo",pr:"P1",n:"Introduce DTOs; getDb() returns the raw store."},
+ {id:"P9-11",p:"P9",t:"Check-in: require cash-collected confirmation before amountPaid is set",s:"todo",pr:"P2"},
+ {id:"P9-12",p:"P9",t:"Validate turf image URLs: reject //host, allowlist hosts",s:"todo",pr:"P2"},
+ {id:"P9-13",p:"P9",t:"CSP nonces to drop 'unsafe-inline' from script-src",s:"todo",pr:"P2"},
+ {id:"P9-14",p:"P9",t:"CHECK constraints: wallet balance not negative, amounts not negative",s:"todo",pr:"P2"},
+ {id:"P9-15",p:"P9",t:"Private Realtime channels with authorization, or accept public pings in writing",s:"todo",pr:"P3"},
+ {id:"P9-16",p:"P9",t:"Remove the unused Supabase auth proxy step or document why it stays",s:"todo",pr:"P3",n:"updateSession returns early; server.ts is unused."},
+
+ // P10
+ {id:"P10-01",p:"P10",t:"Scoped read RPCs (one turf, one date range) replacing load_state on hot paths",s:"todo",pr:"P0"},
+ {id:"P10-02",p:"P10",t:"Per-turf version instead of one global rev",s:"todo",pr:"P1",n:"Two turfs must not conflict."},
+ {id:"P10-03",p:"P10",t:"Cache public pages with ISR and tag revalidation; drop connection() from the public layout",s:"todo",pr:"P1"},
+ {id:"P10-04",p:"P10",t:"Replace the 10-second slot poll with Realtime plus on-focus refetch",s:"todo",pr:"P2"},
+ {id:"P10-05",p:"P10",t:"loading.tsx and Suspense for every data page",s:"todo",pr:"P2",n:"None exist today."},
+ {id:"P10-06",p:"P10",t:"pg_cron job to purge expired holds",s:"todo",pr:"P2"},
+ {id:"P10-07",p:"P10",t:"Typed columns and foreign keys for bookings, holds, wallet transactions",s:"todo",pr:"P2"},
+ {id:"P10-08",p:"P10",t:"k6 load test of the booking path at target traffic",s:"todo",pr:"P1"},
+ {id:"P10-09",p:"P10",t:"Optimise images: allowlist real hosts, move turf photos to Supabase Storage",s:"todo",pr:"P3"},
+
+ // P11
+ {id:"P11-01",p:"P11",t:"Razorpay order creation and server-side signature verification",s:"todo",pr:"P0"},
+ {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"todo",pr:"P0"},
+ {id:"P11-03",p:"P11",t:"Advance payment mode (advancePercent already computed)",s:"todo",pr:"P1"},
+ {id:"P11-04",p:"P11",t:"Gateway refunds tied to the cancel and refund flows",s:"todo",pr:"P1"},
+ {id:"P11-05",p:"P11",t:"Payout and commission reconciliation against gateway settlements",s:"todo",pr:"P1"},
+ {id:"P11-06",p:"P11",t:"Tests for every payment state: paid, failed, duplicate webhook, refund",s:"todo",pr:"P0"},
+
+ // P12
+ {id:"P12-01",p:"P12",t:"Booking confirmation by WhatsApp or SMS",s:"todo",pr:"P1"},
+ {id:"P12-02",p:"P12",t:"Reminder two hours before the slot (scheduled job)",s:"todo",pr:"P1"},
+ {id:"P12-03",p:"P12",t:"Owner alert on new booking and cancellation",s:"todo",pr:"P1"},
+ {id:"P12-04",p:"P12",t:"Email receipts through Resend",s:"todo",pr:"P2"},
+ {id:"P12-05",p:"P12",t:"Service worker and web push",s:"todo",pr:"P3"},
+
+ // P13
+ {id:"P13-01",p:"P13",t:"Find players and teams",s:"todo",pr:"P3"},
+ {id:"P13-02",p:"P13",t:"Tournaments",s:"todo",pr:"P3"},
+ {id:"P13-03",p:"P13",t:"Weather alerts for outdoor slots",s:"todo",pr:"P3"},
+ {id:"P13-04",p:"P13",t:"Filters: price range, date, amenities; real map",s:"todo",pr:"P2"},
+ {id:"P13-05",p:"P13",t:"Admin analytics dashboard",s:"todo",pr:"P2"},
+ {id:"P13-06",p:"P13",t:"Waitlist and recurring bookings",s:"todo",pr:"P3"},
+ {id:"P13-07",p:"P13",t:"Kannada interface",s:"todo",pr:"P3"}
+],
+
+routes:[
+ ["Public","/ · /arenas · /arenas/[id] · /turfs/[area]","Browse, filter, turf detail, slot picker, SEO landing pages"],
+ ["Public","/bookings · /bookings/[id] · …/invoice · …/calendar","My bookings, QR ticket, invoice, .ics file. Ticket is guarded only by an unguessable id"],
+ ["Public","/profile · /saved · /list-turf · /faq · /terms · /privacy","Account, favourites (localStorage), 4-step owner application, legal"],
+ ["Auth","/login · /signup","Clerk components, or a device-form fallback with no real authentication"],
+ ["Partner","/partner · bookings · check-in · slots · pricing · offers · add-ons · reviews · payouts · staff · turf · invoices/[id]","Layout calls requirePartner; actions call requirePartnerAction(permission)"],
+ ["Admin","/admin · turfs · partners · users · transactions · reviews · settings · customization","Layout calls hasSession('admin'); actions call requireAdmin"],
+ ["API","GET /api/health","Readiness flags only; 503 when storage is not durable"],
+ ["API","POST /api/holds/release","sendBeacon target, Origin-checked"],
+ ["API","POST /api/client-error","Browser error intake, rate-limited, size-capped"],
+ ["Action","booking-actions.ts","getSlotsForDate, holdSlots, releaseHolds, quoteSelection, createBookings, cancelMyBooking, submitReview, getBookingSummaries, submitApplication, checkReferralCode"],
+ ["Action","partner-actions.ts","walk-ins, cancel, check-in, no-show, block/unblock, pricing, offers, add-ons, staff, turf profile, business"],
+ ["Action","admin-actions.ts","approve/reject application, update turf, hide review, ban player, adjust wallet, partner status/reset, refund, settings, promo codes, site content"]
+],
+perms:{
+ head:["Permission","owner","manager","front desk"],
+ rows:[["bookings","✓","✓","✓"],["checkin","✓","✓","✓"],["slots","✓","✓","✓"],["pricing","✓","✓","–"],["offers","✓","✓","–"],["addons","✓","✓","–"],["turf","✓","✓","–"],["staff","✓","–","–"],["payouts","✓","–","–"]]
+},
+
+tables:[
+ ["turfs","Venue profile, hours, sport, rating, status","partnerId → partners"],
+ ["partners","Business owner accounts, commission, password hash","–"],
+ ["staff","Manager and front-desk logins per partner","partnerId"],
+ ["players","Phone, name, wallet balance, referral code and referrer","unique phone"],
+ ["bookings","One row per booked hour; price breakdown, add-ons, review, cashback","turfId, playerId, accountId (Clerk)"],
+ ["blocks","Owner-blocked slots","turfId · unique slot"],
+ ["holds","8-minute holds, holder is sha256 of device cookie","turfId · unique slot"],
+ ["offers","Happy hour and first-time offers","turfId"],
+ ["add_ons","Extras sold with a slot","turfId"],
+ ["applications","List-your-turf submissions awaiting approval","turfId on approval"],
+ ["wallet_txns","Cashback, referral, refund, payment, admin adjust","playerId, bookingId"],
+ ["promo_codes","Promo definitions and use counter","–"],
+ ["pricing","Peak, weekend and last-minute rules; id is the turf id","turf id"],
+ ["app_config","Commission, GST, cashback, referral settings, site content","–"],
+ ["app_meta","Single row: global rev counter","check id = 1"]
+],
+idx:[
+ "<code>bookings_live_slot_uniq</code> on (turf_id, slot_date, slot_hour) where status in confirmed, checked_in",
+ "<code>bookings_code_uniq</code> on the booking code",
+ "<code>blocks_slot_uniq</code> and <code>holds_slot_uniq</code> on (turf_id, slot_date, slot_hour)",
+ "<code>players_phone_uniq</code> on phone",
+ "No unique constraint spans tables, so a hold cannot conflict with a booking in the database. The rev lock covers it."
+],
+rpc:[
+ "<code>load_state()</code>: stable, returns every table as one jsonb plus rev",
+ "<code>apply_changes(changes, expected_rev)</code>: bumps rev only if it matches, else raises <code>store_conflict</code> (40001); null rev initialises",
+ "<code>reset_state()</code>: truncates everything",
+ "All three: revoked from public, anon, authenticated; granted to service_role only. Not SECURITY DEFINER."
+],
+rels:[
+ "turf.partnerId → partners; staff.partnerId → partners",
+ "booking.turfId, playerId, accountId (Clerk user id)",
+ "holds, blocks, offers, add_ons, pricing → turfId",
+ "wallet_txns.playerId and bookingId",
+ "application.turfId set on approval",
+ "None are foreign keys. Orphans are possible."
+],
+enums:[
+ "BookingStatus: confirmed, checked_in, no_show, cancelled, refunded",
+ "TurfStatus: active, pending, maintenance, suspended",
+ "PaymentMode: venue, full, advance, cash, upi",
+ "WalletTxnType: cashback, referral, referral_bonus, refund, booking_payment, admin_adjust",
+ "Partner and staff role unions: owner, manager, front_desk"
+],
+dbrisks:[
+ "<b>Whole database per request.</b> <code>load_state()</code> loops over every table with dynamic SQL; cost grows with every booking ever made.",
+ "<b>One global write lock.</b> Any two writes conflict, even for different turfs. After 5 retries the user sees a busy error.",
+ "<b>No integrity in the database.</b> No foreign keys, CHECK constraints or enums, so a bug can write a negative wallet or an orphan booking.",
+ "<b>Expired holds linger.</b> Expiry is app-side. <code>holds_slot_uniq</code> has no expiry predicate, so an expired hold blocks any insert path that does not purge first.",
+ "<b>Seed is code.</b> Launch turfs are written by <code>src/lib/seed.ts</code> on first load of an empty store, not by SQL."
+],
+
+risks:[
+ {id:"R-01",t:"Wallet spend and booking identity keyed by an unverified phone number",sev:"High",stride:"S, E",d:[5,9,7,4,5],ev:"lib/pricing.ts buildQuote and planBooking look up the player by typed phone; useWallet spends that balance. Wallet rewards default to off.",fix:"Tie to Clerk accountId, OTP-verify phone, reject mismatch.",task:"P9-03"},
+ {id:"R-02",t:"Old Supabase secret key may still be live",sev:"High",stride:"I, E",d:[9,4,3,10,3],ev:"docs/GO-LIVE.md tells the owner to delete the old secret key that was shared in chat. Whether it was rotated is unknown.",fix:"Rotate now, confirm the old key returns 401.",task:"P9-01"},
+ {id:"R-03",t:"In-memory rate limits and login lockout",sev:"High",stride:"D, S",d:[5,9,7,5,6],ev:"lib/rate-limit.ts and lib/auth-actions.ts keep counters per serverless instance. Lockout is keyed by email only: anyone can lock the admin out for 15 minutes; spreading attempts weakens guess limits.",fix:"Shared store; key by email plus IP; alert on lockouts.",task:"P9-06"},
+ {id:"R-04",t:"Slot hoarding with fresh device cookies",sev:"High",stride:"D",d:[4,8,7,6,6],ev:"Hold limits are per IP and per device cookie; a new cookie is a new device. IP comes from x-forwarded-for.",fix:"Account-bound hold limits, shared limiter, captcha on abuse.",task:"P9-06"},
+ {id:"R-05",t:"Service-role key is the only line of defence",sev:"Medium",stride:"I, T",d:[9,3,3,10,3],ev:"RLS has no policies by design. getDb() returns the raw store, including partner and staff passwordHash. utils/supabase/admin.ts has a comment, not server-only.",fix:"server-only imports, DTOs, never serialise getDb().",task:"P9-02"},
+ {id:"R-06",t:"Ticket link is a bearer token that shows name and phone",sev:"Medium",stride:"I, S",d:[6,6,4,5,3],ev:"bookings/[id] has no auth; id is bk_ plus 12 hex (48 bits). Anonymous bookings can be cancelled or reviewed by anyone holding it.",fix:"Mask phone, require account or signed token for actions.",task:"P9-05"},
+ {id:"R-07",t:"Admin is one env credential with no MFA or revocation",sev:"Medium",stride:"S, E",d:[9,3,3,10,4],ev:"lib/auth-actions.ts compares to ADMIN_EMAIL and ADMIN_PASSWORD; 8-hour HMAC cookie cannot be revoked.",fix:"Per-user admin accounts, MFA, revocation list.",task:"P9-09"},
+ {id:"R-08",t:"Promo codes have no use cap",sev:"Medium",stride:"T",d:[4,9,6,4,6],ev:"uses is incremented but never compared to a limit.",fix:"maxUses and per-player limit.",task:"P9-08"},
+ {id:"R-09",t:"Wallet deduction may not be refunded on cancel",sev:"Medium",stride:"R, T",d:[4,10,2,3,4],ev:"cancelMyBooking refunds amountPaid, which is 0 under pay-at-venue. Needs verification against partner and admin paths.",fix:"Refund walletDeduction and test it.",task:"P9-04"},
+ {id:"R-10",t:"CSP allows 'unsafe-inline' scripts",sev:"Medium",stride:"T, I",d:[6,5,3,6,5],ev:"next.config.ts script-src. Mitigated by React escaping; only two dangerouslySetInnerHTML uses (QR SVG, escaped JSON-LD).",fix:"Nonce-based CSP.",task:"P9-13"},
+ {id:"R-11",t:"Check-in marks cash as paid without confirmation",sev:"Medium",stride:"R",d:[3,9,4,3,3],ev:"Check-in sets amountPaid = total for venue bookings.",fix:"Require explicit cash-collected step and log it.",task:"P9-11"},
+ {id:"R-12",t:"Turf image URL accepts //host and any https host",sev:"Low",stride:"T",d:[2,7,3,3,3],ev:"parseTurfProfile accepts strings starting with / or https://.",fix:"Reject protocol-relative, allowlist.",task:"P9-12"},
+ {id:"R-13",t:"Realtime topics are public",sev:"Low",stride:"I, D",d:[1,8,5,2,3],ev:"Anyone with the publishable key can subscribe or send on slots:*. Payload is only a changed ping.",fix:"Private channels or accept in writing.",task:"P9-15"}
+],
+controls:[
+ "HMAC-signed, httpOnly, sameSite=lax session cookies, 8-hour life",
+ "scrypt password hashes; constant-time credential comparison",
+ "RLS enabled on all 15 tables; RPCs granted to service_role only",
+ "Secret key is server-side only; not NEXT_PUBLIC_",
+ "Every admin action calls requireAdmin; partner actions are permission-checked and turf-scoped",
+ "HSTS, X-Frame-Options, nosniff, Referrer-Policy, COOP and a strict CSP",
+ "Server-side input length caps, phone and time validation, honeypot and timing check on applications",
+ "CSV export neutralises formula injection",
+ "One quote function for display and charge",
+ "Unique indexes stop double bookings, duplicate blocks and holds, duplicate phones",
+ "Same-Origin check on the hold-release beacon",
+ "No file uploads, so no upload attack surface"
+],
+stride:[
+ ["Player (browser)","S","Device-only identity without Clerk; phone not verified","R-01, R-06"],
+ ["Player (browser)","D","Slot hoarding by cookie reset","R-04"],
+ ["Owner / staff","E","Role matrix enforced per action; turf scoping on every query","none known"],
+ ["Admin","S, E","Single credential, no MFA, no revocation","R-07"],
+ ["Server actions (process)","T","Quote and charge share one function; unique-index backstop","R-08"],
+ ["Server actions (process)","R","No audit log of admin or partner actions; check-in cash not confirmed","R-11"],
+ ["Server actions (process)","I","getDb() carries password hashes and phones in memory","R-05"],
+ ["Server actions (process)","D","Per-instance limiters; global rev lock under load","R-03"],
+ ["Data store","T, I","One key opens everything; no DB constraints beyond unique indexes","R-02, R-05"],
+ ["Data store","D","load_state per request","see Tech debt"],
+ ["Data flow: Realtime","I, D","Public topics, ping-only payload","R-13"],
+ ["Data flow: HTTPS","T, I","HSTS and redirect in proxy.ts and headers","none known"]
+],
+
+gate:[
+ {c:"SEC",n:"Security",items:[
+  ["SEC-01","No secrets in repo","pass","Only the publishable key and project ref in .env.example"],
+  ["SEC-02","Auth on every protected route","pass","Layout guard plus per-action checks; sweep test still needed"],
+  ["SEC-03","Rate limiting works across instances","fail","In-memory per instance"],
+  ["SEC-04","CSRF protection","pass","Next server-action Origin checks; manual check on beacon"],
+  ["SEC-05","HTTPS and HSTS","pass","proxy.ts redirect and header"],
+  ["SEC-06","CSP without unsafe-inline","fail","script-src allows unsafe-inline"],
+  ["SEC-07","Input validation server-side","pass","action-utils.ts, validation/application.ts"],
+  ["SEC-08","XSS review","pass","Two dangerouslySetInnerHTML uses, both safe"],
+  ["SEC-09","Admin MFA","fail","Not present"],
+  ["SEC-10","Key rotation confirmed","manual","See R-02"]]},
+ {c:"DB",n:"Database",items:[
+  ["DB-01","RLS enabled","pass","All 15 tables"],
+  ["DB-02","Unique constraints on critical data","pass","Slots, code, phone"],
+  ["DB-03","Foreign keys and CHECK constraints","fail","None; JSON only"],
+  ["DB-04","Migration idempotent and split for the SQL editor","pass","supabase/setup 1 to 4"],
+  ["DB-05","Pagination and scoped reads","fail","load_state returns everything"],
+  ["DB-06","Backups and restore tested","manual","Enable PITR, test a restore"]]},
+ {c:"DEPLOY",n:"Deployment",items:[
+  ["DEPLOY-01","Health endpoint","pass","/api/health"],
+  ["DEPLOY-02","Env vars documented","pass",".env.example and GO-LIVE.md"],
+  ["DEPLOY-03","Staging environment","fail","None"],
+  ["DEPLOY-04","Rollback plan","manual","Vercel instant rollback; database rollback not defined"],
+  ["DEPLOY-05","Destructive scripts guarded","manual","reset-before-launch.sql wipes data; keep out of production runs"]]},
+ {c:"CODE",n:"Code quality",items:[
+  ["CODE-01","Automated tests","fail","Zero tests, no framework"],
+  ["CODE-02","CI on pull requests","fail","No .github directory"],
+  ["CODE-03","TypeScript strict","pass","tsconfig strict"],
+  ["CODE-04","Lint config","pass","ESLint 9, next core-web-vitals; not run here"],
+  ["CODE-05","TODO and FIXME debt","pass","None found"],
+  ["CODE-06","console.log and empty catch sweep","manual","Not scanned"]]},
+ {c:"DEP",n:"Dependencies",items:[
+  ["DEP-01","Lockfile committed","pass","package-lock.json"],
+  ["DEP-02","npm audit clean","manual","Not run"],
+  ["DEP-03","Automated updates","fail","No Dependabot"]]},
+ {c:"AI",n:"AI and LLM",items:[["AI-01","LLM usage","skip","None detected"]]},
+ {c:"FE",n:"Frontend quality",items:[
+  ["FE-01","Meta, OG and Twitter images","pass","Generated routes"],
+  ["FE-02","Custom 404 and error boundaries","pass","not-found.tsx, error.tsx, global-error.tsx"],
+  ["FE-03","Loading states","fail","No loading.tsx files"],
+  ["FE-04","Sitemap and robots","pass","Dynamic; private areas disallowed"],
+  ["FE-05","Accessibility audit","manual","146 aria attributes; focus and contrast not audited"]]},
+ {c:"OBS",n:"Observability",items:[
+  ["OBS-01","Error capture","partial","JSON logs plus webhook; no tracing or grouping"],
+  ["OBS-02","Analytics with consent","pass","GA4, Vercel Analytics after consent"],
+  ["OBS-03","Uptime monitor on /api/health","manual","Not configured"],
+  ["OBS-04","Audit log of admin and partner actions","fail","None"]]}
+],
+
+debt:[
+ ["1","Whole-database read and diff per request","store.ts, load_state","Cost grows with history; every page and write pays it","Scoped RPCs (P10-01)"],
+ ["2","Global rev lock","apply_changes","All writers conflict; busy errors after 5 retries","Per-turf version (P10-02)"],
+ ["3","Everything dynamic","(main)/layout.tsx connection()","No caching, no static pages, slow first byte","ISR plus tags (P10-03)"],
+ ["4","No tests, no CI","repo root","Regressions in pricing and booking go unnoticed","P8"],
+ ["5","No loading states","app/**","Blank waits on slow data","P10-05"],
+ ["6","Stale docs","FEATURE_LIST.md","Misleads new contributors","P8-10"],
+ ["7","One-off scripts at repo root","replace_colors.py, update_fonts.py, update_texts.py","Clutter; one targets a missing path","Delete (P8-10)"],
+ ["8","Dead auth wiring","utils/supabase/server.ts, proxy updateSession","Runs on every request, does nothing","P9-16"],
+ ["9","Two slot freshness paths","use-slot-updates.ts","10-second poll plus Realtime","P10-04"],
+ ["10","Unverified Next 16 conventions","AGENTS.md","Docs not read; risk of deprecated APIs","P8-01"],
+ ["11","Local and deployed environments drift","main checkout, .env.local","Local fell 26 commits behind and has no Supabase or Clerk keys, so it behaves differently from Vercel","P8-00c, add a drift warning to check-dev.mjs"]
+],
+
+adr:[
+ {t:"Store data as jsonb documents in Postgres",ctx:"Two-day build, schema still moving, one developer.",dec:"Fourteen (id, data jsonb) tables with generated columns only where a unique index needs them.",tr:"Fast iteration and one write path; no referential integrity, whole-state reads.",rev:"Revisit before real traffic or when a second developer joins (P10)."},
+ {t:"Global revision lock plus partial unique indexes",ctx:"Double-booking is the one failure that breaks trust.",dec:"apply_changes succeeds only if the caller saw the latest rev; unique indexes catch the rest.",tr:"Cross-table checks are safe in app code; all writes serialise.",rev:"When busy errors appear in logs or two owners edit at once."},
+ {t:"Pay at venue first",ctx:"No payment gateway yet; owners collect cash or UPI on site.",dec:"paymentMode venue, amountPaid 0; wallet is internal credit only.",tr:"Zero payment risk and fast launch; no-shows cost owners and commission is 0.",rev:"When no-show rate hurts owners (P11)."},
+ {t:"Clerk is optional, device identity is the fallback",ctx:"Launch must work with no keys, and demos should not need accounts.",dec:"With the Clerk key, sign-in is required before paying; without it, a localStorage name and phone.",tr:"Easy local dev; the fallback is not authentication and weakens wallet and ticket security.",rev:"Make Clerk mandatory in production (P9-03)."},
+ {t:"Custom cookie auth for admin and partner",ctx:"Few operator accounts, env-provisioned.",dec:"HMAC session cookie, scrypt hashes in the store, role matrix for partners.",tr:"Simple and dependency-free; no MFA, no revocation, in-memory lockout.",rev:"When more than a handful of operators exist (P9-09)."},
+ {t:"Supabase Realtime broadcast for slot freshness",ctx:"Players must see a slot disappear while choosing.",dec:"Server posts a ping to slots:{turf}:{date}; clients refetch. Poll every 10 seconds as safety net.",tr:"Cheap and decoupled from RLS; topics are public and carry no data.",rev:"If payloads ever carry data, switch to private channels (P9-15)."}
+],
+
+env:[
+ ["NEXT_PUBLIC_SUPABASE_URL","Supabase project URL","public","Required for durable storage"],
+ ["NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY","Browser Realtime key","public","Safe in the browser"],
+ ["SUPABASE_SECRET_KEY","Server database and broadcast key","secret","Never NEXT_PUBLIC_. Without it, storage falls back to .data/db.json"],
+ ["NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY","Enables player sign-in","public","Also used to build the CSP host"],
+ ["CLERK_SECRET_KEY","Clerk server key","secret",""],
+ ["SESSION_SECRET","Signs admin and partner cookies","secret","32 random bytes; dev fallback exists only in development"],
+ ["ADMIN_EMAIL · ADMIN_PASSWORD","Admin login","secret","Single credential"],
+ ["PARTNER_EMAIL · PARTNER_PASSWORD","OYUN ops partner login","secret",""],
+ ["NEXT_PUBLIC_SITE_URL","Canonical URLs, sitemap, share images","public","Set before building"],
+ ["GOOGLE_SITE_VERIFICATION","Search Console tag","public","Optional"],
+ ["NEXT_PUBLIC_GA_ID","GA4 id","public","Loads after consent"],
+ ["ERROR_WEBHOOK_URL","Slack or Discord error alerts","secret","Optional"],
+ ["DATA_DIR · ALLOW_HTTP","Local overrides","internal","Referenced in code, not in .env.example"]
+],
+deploy:[
+ "Create the Supabase project; run <code>supabase/setup/1-tables.sql</code> to <code>4-reset-and-permissions.sql</code> in order.",
+ "Set the environment variables in Vercel; set <code>NEXT_PUBLIC_SITE_URL</code> before the build.",
+ "Deploy; open <code>/api/health</code> and confirm ready with a durable backend.",
+ "Load the site once so the seed writes the launch turfs.",
+ "Sign in to <code>/admin</code>; set commission, GST and promo codes.",
+ "Make a test booking, check in, cancel; confirm the Realtime ping updates a second browser.",
+ "Submit the sitemap in Search Console (docs/LAUNCH-SEO.md)."
+],
+runbook:[
+ "<b>Site shows 503 on health:</b> storage is the local file or the secret key is missing. Check <code>SUPABASE_SECRET_KEY</code> on the deployment.",
+ "<b>Users see \"server busy\":</b> five rev conflicts in a row. Check write volume; this is the sign to start P10.",
+ "<b>A slot looks stuck:</b> an expired hold. Any hold or booking attempt purges expired holds; otherwise delete the row.",
+ "<b>Admin locked out:</b> wait 15 minutes or redeploy to reset the in-memory counter.",
+ "<b>localhost differs from Vercel:</b> run <code>git fetch && git status</code> in the checkout the dev server runs from, then <code>npm install</code>. If code matches, compare env: missing Supabase and Clerk keys mean local data and sign-in differ by design.",
+ "<b>Never run</b> <code>reset-before-launch.sql</code> or <code>reset_state()</code> against production data.",
+ "<b>Rotate secrets:</b> Supabase secret key, Clerk secret, SESSION_SECRET (logs everyone out)."
+],
+tests:[
+ ["Unit","pricing.ts, cancel-policy.ts, time.ts, validation","Vitest","Table-driven cases for each pricing rule and cutoff boundary"],
+ ["Integration","createBookings race, hold expiry, apply_changes conflict","Vitest + local Supabase","Fire N parallel bookings for one slot; assert one winner"],
+ ["Authorization","Every admin and partner action without a session","Vitest","Enumerate exports of admin-actions.ts and partner-actions.ts"],
+ ["End to end","Browse, hold, book, ticket, cancel; owner check-in","Playwright","Run against a preview deployment"],
+ ["Load","Booking path at target concurrency","k6","Watch conflict rate and p95 latency"],
+ ["CI gate","lint, tsc --noEmit, build, tests, npm audit","GitHub Actions","Required status check on main"]
+]
+};
+
+/* ===================== HELPERS ===================== */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pill = (txt, cls) => `<span class="pill s-${cls||String(txt).toLowerCase()}">${esc(txt)}</span>`;
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
+const dreadAvg = d => d.reduce((a,b)=>a+b,0)/d.length;
+
+/* ===================== TASK STATE ===================== */
+let overrides = {};           // id -> {status, by, at} from db
+let canWrite = false, myId = null, userNs = null, dbNs = null, dbReady = false;
+const statusOf = t => (overrides[t.id] && overrides[t.id].status) || t.s;
+const phaseTasks = pid => DATA.tasks.filter(t => t.p === pid);
+function phaseState(pid){
+  const ts = phaseTasks(pid); const done = ts.filter(t=>statusOf(t)==='done').length;
+  const active = ts.some(t=>statusOf(t)==='doing'||statusOf(t)==='blocked');
+  const st = done===ts.length ? 'done' : (done>0||active ? 'active' : 'planned');
+  return {done, total:ts.length, st};
+}
+
+/* ===================== STATIC RENDER ===================== */
+function table(el, head, rows, opts={}){
+  el.innerHTML = '<thead><tr>'+head.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>'+
+    rows.map(r=>'<tr>'+r.map((c,i)=>`<td${i===0&&opts.key?' class="k"':''}>${c}</td>`).join('')+'</tr>').join('')+'</tbody>';
+}
+function renderStatic(){
+  $('#stackchips').innerHTML = DATA.stack.map(s=>`<span class="chip">${esc(s)}</span>`).join('');
+  table($('#routes'),['Kind','Path or file','Purpose'],DATA.routes.map(r=>[pill(r[0],'info'),`<code>${esc(r[1])}</code>`,esc(r[2])]));
+  table($('#perms'),DATA.perms.head,DATA.perms.rows.map(r=>r.map((c,i)=>i?`<span class="${c==='✓'?'s-ok':'muted'}">${c}</span>`:`<code>${c}</code>`)));
+  table($('#tables'),['Table','Holds','Links'],DATA.tables.map(r=>[`<code>${r[0]}</code>`,esc(r[1]),esc(r[2])]));
+  $('#idx').innerHTML = DATA.idx.map(x=>`<li>${x}</li>`).join('');
+  $('#rpc').innerHTML = DATA.rpc.map(x=>`<li>${x}</li>`).join('');
+  $('#rels').innerHTML = DATA.rels.map(x=>`<li>${esc(x)}</li>`).join('');
+  $('#enums').innerHTML = DATA.enums.map(x=>`<li>${esc(x)}</li>`).join('');
+  $('#dbrisks').innerHTML = DATA.dbrisks.map(x=>`<li>${x}</li>`).join('');
+  table($('#debt'),['#','Debt','Where','Effect','Fix'],DATA.debt.map(r=>[r[0],`<b>${esc(r[1])}</b>`,`<code>${esc(r[2])}</code>`,esc(r[3]),esc(r[4])]));
+  $('#adr').innerHTML = DATA.adr.map((a,i)=>`<div class="box"><div class="eyebrow">ADR-${String(i+1).padStart(2,'0')}</div><h3 style="font-size:17px;margin:4px 0 10px">${esc(a.t)}</h3>
+    <dl class="kv"><dt>Context</dt><dd>${esc(a.ctx)}</dd><dt>Decision</dt><dd>${esc(a.dec)}</dd><dt>Trade-off</dt><dd>${esc(a.tr)}</dd><dt>Reopen when</dt><dd>${esc(a.rev)}</dd></dl></div>`).join('');
+  table($('#env'),['Variable','Used for','Exposure','Note'],DATA.env.map(r=>[`<code>${esc(r[0])}</code>`,esc(r[1]),pill(r[2],r[2]==='secret'?'crit':(r[2]==='public'?'ok':'info')),esc(r[3])]));
+  $('#deploy').innerHTML = DATA.deploy.map(x=>`<li>${x}</li>`).join('');
+  $('#runbook').innerHTML = DATA.runbook.map(x=>`<li>${x}</li>`).join('');
+  table($('#tests'),['Layer','Covers','Tool','How'],DATA.tests.map(r=>[`<b>${esc(r[0])}</b>`,esc(r[1]),esc(r[2]),esc(r[3])]));
+
+  // security
+  const rs = DATA.risks.map(r=>({...r,avg:dreadAvg(r.d)})).sort((a,b)=>b.avg-a.avg);
+  $('#dread').innerHTML = rs.map(r=>`<div class="row"><span><b class="mono">${r.id}</b> ${esc(r.t)}</span><div class="bar ${r.sev.toLowerCase()==='high'?'high':r.sev.toLowerCase()==='medium'?'med':'low'}"><i style="width:${r.avg*10}%"></i></div><span class="mono num">${r.avg.toFixed(1)}</span></div>`).join('');
+  $('#controls').innerHTML = DATA.controls.map(c=>`<li>${esc(c)}</li>`).join('');
+  table($('#risks'),['ID','Risk','Sev','STRIDE','D · R · E · A · Di','Evidence','Fix','Task'],rs.map(r=>[
+    `<b class="mono">${r.id}</b>`,`<b>${esc(r.t)}</b>`,pill(r.sev,r.sev.toLowerCase()),esc(r.stride),
+    `<span class="mono num">${r.d.join(' · ')}<br><b>${r.avg.toFixed(1)}</b></span>`,esc(r.ev),esc(r.fix),`<code>${r.task}</code>`]));
+  table($('#stride'),['Element','Threat','Finding','Risk'],DATA.stride.map(r=>[`<b>${esc(r[0])}</b>`,`<span class="mono">${esc(r[1])}</span>`,esc(r[2]),esc(r[3])]));
+
+  // gate
+  const all = DATA.gate.flatMap(g=>g.items);
+  const cnt = k => all.filter(i=>i[2]===k).length;
+  $('#gate-stats').innerHTML = [['pass','Pass'],['fail','Fail'],['manual','Manual'],['skip','Skip / partial']].map(([k,l])=>
+    `<div class="box stat"><b class="s-${k}">${k==='skip'?cnt('skip')+cnt('partial'):cnt(k)}</b><span>${l}</span></div>`).join('');
+  $('#gate-verdict').innerHTML = `<div class="verdict"><h3>Verdict</h3>${pill('SHIP WITH CAUTION','high')}<span>pay-at-venue pilot with trusted owners</span></div>
+    <div class="verdict" style="margin-top:8px">${pill('DO NOT SHIP','crit')}<span>online payments or open public launch until P8 and P9 close the failing items</span></div>
+    <p class="muted" style="margin-top:10px">Severity guide: Critical blocks any release, High should be fixed first, Advisory is recommended. No check here is Critical for a pilot with cash on site; R-01, R-02 and R-03 become blocking once real money moves.</p>`;
+  $('#gate-list').innerHTML = DATA.gate.map(g=>`<div><h3 style="margin-bottom:8px">${g.c} · ${g.n}</h3><div class="tw"><table><thead><tr><th>ID</th><th>Check</th><th>Result</th><th>Evidence</th></tr></thead><tbody>${
+    g.items.map(i=>`<tr><td class="k">${i[0]}</td><td>${esc(i[1])}</td><td>${pill(i[2].toUpperCase(),i[2])}</td><td>${esc(i[3])}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
+  $('#ov-gate').innerHTML = `<h3>Ship gate snapshot</h3><div class="verdict">${pill('SHIP WITH CAUTION','high')}<span>for the pay-at-venue pilot</span> ${pill('DO NOT SHIP','crit')}<span>for online payments</span></div>
+    <p class="muted" style="margin-top:8px">${cnt('pass')} pass · ${cnt('fail')} fail · ${cnt('manual')} manual · from code reading only. Details in the Ship gate tab.</p>`;
+}
+
+/* ===================== DYNAMIC (task-driven) RENDER ===================== */
+function renderOverview(){
+  const ts = DATA.tasks, done = ts.filter(t=>statusOf(t)==='done').length;
+  const open = ts.filter(t=>statusOf(t)!=='done');
+  const p0 = open.filter(t=>t.pr==='P0').length;
+  const doing = ts.filter(t=>statusOf(t)==='doing').length, blocked = ts.filter(t=>statusOf(t)==='blocked').length;
+  const phDone = DATA.phases.filter(p=>phaseState(p.id).st==='done').length;
+  const hi = DATA.risks.filter(r=>r.sev==='High').length;
+  $('#ov-stats').innerHTML = [
+    [`${phDone}/${DATA.phases.length}`,'phases complete'],
+    [`${done}/${ts.length}`,'tasks done'],
+    [p0,'open P0 tasks'],
+    [hi,'High risks open']
+  ].map(([n,l],i)=>`<div class="box stat${i===2&&p0?' tint-crit':''}"><b class="num">${n}</b><span>${l}${i===1&&(doing||blocked)?` · ${doing} doing, ${blocked} blocked`:''}</span></div>`).join('');
+  $('#ov-phases').innerHTML = DATA.phases.map(p=>{const s=phaseState(p.id);
+    return `<div class="row"><span><b class="mono">${p.id}</b> ${esc(p.name)}</span><div class="bar"><i style="width:${s.total?s.done/s.total*100:0}%"></i></div><span class="mono num">${s.done}/${s.total}</span></div>`}).join('');
+}
+function renderPhases(){
+  $('#phasecards').innerHTML = DATA.phases.map(p=>{const s=phaseState(p.id);
+    const nextOpen = phaseTasks(p.id).filter(t=>statusOf(t)!=='done').slice(0,3);
+    return `<div class="box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><div><div class="eyebrow">${esc(p.when)}${p.refs?' · '+esc(p.refs):''}</div><h3 style="font-size:17px;margin-top:4px"><span class="mono" style="color:var(--accent)">${p.id}</span> ${esc(p.name)}</h3></div>${pill(s.st.toUpperCase(),s.st)}</div>
+      <p style="margin:10px 0 6px">${esc(p.goal)}</p>
+      <p class="muted"><b>Exit:</b> ${esc(p.exit)}</p>
+      <div class="bar" style="margin:12px 0 6px"><i style="width:${s.total?s.done/s.total*100:0}%"></i></div>
+      <div class="mono muted num">${s.done} of ${s.total} tasks</div>
+      ${nextOpen.length?`<ul class="tight" style="margin:10px 0 0;padding-left:18px">${nextOpen.map(t=>`<li>${esc(t.t)}</li>`).join('')}</ul>`:''}</div>`}).join('');
+}
+
+const F = {q:'',phase:'',status:'',prio:'',open:false};
+let whoNames = {};
+function renderTracker(){
+  const q = F.q.trim().toLowerCase();
+  const match = t => (!F.phase||t.p===F.phase) && (!F.status||statusOf(t)===F.status) && (!F.prio||t.pr===F.prio) && (!F.open||statusOf(t)!=='done') &&
+    (!q || (t.id+' '+t.t+' '+(t.n||'')).toLowerCase().includes(q));
+  const keepOpen = new Set([...document.querySelectorAll('#trk-list details[open]')].map(d=>d.dataset.p));
+  const filtering = !!(q||F.phase||F.status||F.prio||F.open);
+  let html='', any=false;
+  for(const p of DATA.phases){
+    const ts = phaseTasks(p.id).filter(match); if(!ts.length) continue; any=true;
+    const s = phaseState(p.id);
+    const open = filtering || keepOpen.has(p.id) || (keepOpen.size===0 && s.st!=='done');
+    html += `<details class="ph" data-p="${p.id}"${open?' open':''}><summary><span class="pid">${p.id}</span><span><span class="pt">${esc(p.name)}</span><br><span class="pm">${esc(p.goal)}</span></span><span style="display:flex;gap:8px;align-items:center">${pill(s.st.toUpperCase(),s.st)}<span class="mono num muted">${s.done}/${s.total}</span></span></summary><div class="tl">`+
+      ts.map(t=>{const st=statusOf(t), ov=overrides[t.id];
+        const who = ov&&ov.by ? `<div class="who">${esc(whoNames[ov.by]||'Someone')} · ${new Date(ov.at||0).toLocaleDateString(undefined,{day:'numeric',month:'short'})}</div>` : '';
+        return `<div class="t-row is-${st}"><span class="mono muted">${t.id}</span><div class="tt"><b>${esc(t.t)}</b>${t.n?`<div class="tn">${esc(t.n)}</div>`:''}${who}</div>${pill(t.pr,t.pr==='P0'?'crit':t.pr==='P1'?'high':t.pr==='P2'?'med':'info')}
+        <span class="st"><select data-id="${t.id}" aria-label="Status of ${esc(t.id)}"${canWrite?'':' disabled'}>${['todo','doing','blocked','done'].map(o=>`<option${o===st?' selected':''}>${o}</option>`).join('')}</select></span></div>`}).join('')+`</div></details>`;
+  }
+  $('#trk-list').innerHTML = any ? html : '<div class="box muted">No tasks match these filters.</div>';
+}
+const writing = {};
+async function setStatus(id, status){
+  if(!dbNs || writing[id]) return; writing[id]=true;
+  try{ await dbNs.doc('tasks/'+id).set({status, by: myId, at: Date.now()}); }
+  catch(e){ $('#trk-sub').textContent = e && e.code==='quota_exceeded' ? 'The page store is full; delete old task states.' : 'Could not save that change. You may have view-only access.'; if(e&&e.code!=='quota_exceeded'){canWrite=false;} renderTracker(); }
+  finally{ writing[id]=false; }
+}
+
+/* ===================== TABS ===================== */
+const TABS=[['overview','Overview'],['start','Start here'],['features','Features'],['frontend','Frontend'],['backend','Backend'],['architecture','Architecture'],['data','Database'],['hosting','Hosting'],['cost','Cost & scale'],['docs','Docs & tools'],['phases','Phases'],['tracker','Tracker'],['security','Security'],['gate','Ship gate'],['debt','Tech debt'],['adr','Decisions'],['ops','Operations']];
+function showTab(id, push){
+  if(!TABS.some(t=>t[0]===id)) id = 'overview';
+  TABS.forEach(([k])=>{ $('#p-'+k).classList.toggle('on',k===id); });
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected', b.dataset.t===id));
+  store.set('oyun-tab', id);
+  if(push && location.hash.slice(1)!==id) history.replaceState(null,'','#'+id);
+  window.scrollTo({top:0});
+}
+function initTabs(){
+  $('#tabs').innerHTML = TABS.map(([k,l])=>`<button role="tab" data-t="${k}" aria-selected="false">${l}</button>`).join('');
+  $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button'); if(b) showTab(b.dataset.t,true)});
+  window.addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
+  showTab(location.hash.slice(1) || store.get('oyun-tab') || 'overview', true);
+}
+
+/* ===================== EXTRA CONTENT (second data block) ===================== */
+const D2 = {
+start:{
+ intro:[
+  "OYUN is one Next.js app. The same code is the website (frontend) and the server (backend). It stores data in Supabase Postgres, logs players in with Clerk, and runs on Vercel.",
+  "Three audiences use it: players book turf slots, owners and their staff run a turf from /partner, and admins approve turfs and moderate from /admin.",
+  "There is no separate API server, no mobile app and no job runner. If a thing is not in <code>src/</code>, it does not exist yet."
+ ],
+ setup:`node -v                      # need 20.9 or newer
+git clone <your repo> && cd slot-arena
+npm install
+cp .env.example .env.local   # then fill SESSION_SECRET, ADMIN_*, PARTNER_*
+npm run dev                  # http://localhost:3000`,
+ setupNotes:[
+  "No Supabase key set: data goes to <code>.data/db.json</code> on your machine. Add <code>SUPABASE_SECRET_KEY</code> to use the shared database.",
+  "Admin login is <code>/admin/login</code> and partner login is <code>/partner/login</code>, using the ADMIN_* and PARTNER_* values in <code>.env.local</code>.",
+  "<code>AGENTS.md</code> says this Next.js 16 differs from older versions: read <code>node_modules/next/dist/docs/</code> before writing code.",
+  "<code>npm run dev</code> first runs <code>scripts/check-dev.mjs</code>, which explains setup problems in plain words."
+ ],
+ where:[
+  ["A new public page","<code>src/app/(main)/&lt;route&gt;/page.tsx</code>","Server component loads data with <code>getDb()</code>, hands it to a client component if it needs state"],
+  ["A new button that changes data","a server action in <code>src/lib/booking-actions.ts</code>, <code>partner-actions.ts</code> or <code>admin-actions.ts</code>","Always inside <code>mutate()</code>; check permission first"],
+  ["A new owner or admin screen","<code>src/app/partner/(dashboard)/…</code> or <code>src/app/admin/(dashboard)/…</code>","Reuse <code>components/dash/</code> (ActionForm, Badge, Stat, PageHeader)"],
+  ["A pricing or booking rule","<code>src/lib/pricing.ts</code>","One function drives both the quote and the charge; add a test with it"],
+  ["A new data field","<code>src/lib/types.ts</code>, then seed if needed","Data is JSON, so no migration for a new field. A new unique rule needs SQL in <code>supabase/</code>"],
+  ["A new table or index","<code>supabase/migrations/…sql</code> and the four <code>supabase/setup/*.sql</code> files","Keep both in sync; migrations must be safe to run twice"],
+  ["A colour, radius or font","<code>src/app/globals.css</code> variables","Do not hard-code hex values in components"],
+  ["A new environment variable","<code>.env.example</code>, <code>src/lib/env.ts</code>, <code>docs/GO-LIVE.md</code>, Vercel settings","Never prefix a secret with NEXT_PUBLIC_"]
+ ],
+ accounts:[
+  ["GitHub","Code, pull requests, CI","Free","Founder","Repo is devcnisham/oyun"],
+  ["Vercel","Hosting the app","Hobby (testing only)","Founder","Hobby forbids commercial use; Pro $20 per seat before real customers"],
+  ["Supabase","Database and Realtime","Free, then Pro $25","Founder","Production project is under a different email than the connected Supabase account; consolidate"],
+  ["Clerk","Player sign-in","Free to 10,000 MAU","Founder","Test keys are in use locally; production keys live in Vercel"],
+  ["Google","Analytics GA4, Search Console, Maps embed","Free","Founder","Needed for SEO playbook"],
+  ["Domain registrar","Your own address (oyun…)","About ₹700 to 1,200 a year","Founder","Point DNS at Vercel; Cloudflare DNS is free"],
+  ["Sentry","Error tracking","Free 5,000 errors a month","Dev","Replaces the Slack webhook alerts"],
+  ["Razorpay","Online payments (phase 11)","No setup fee","Founder","Needs business KYC; start early, approval takes days"],
+  ["Resend","Email receipts (phase 12)","Free 3,000 a month","Dev",""],
+  ["WhatsApp Business provider","Confirmations and reminders (phase 12)","Per message","Founder","Needs Meta business verification"]
+ ],
+ glossary:[
+  ["Turf / arena","A bookable ground. Has hours, price, sport, status."],
+  ["Slot","One hour on one turf on one date."],
+  ["Hold","A 8-minute reservation while a player checks out, tied to a device cookie."],
+  ["Block","A slot an owner switches off (maintenance, private event)."],
+  ["Partner","A turf business owner account. Staff belong to a partner."],
+  ["Walk-in","A booking the owner types in for someone at the venue."],
+  ["Check-in","Staff scans the QR or code when the player arrives; status becomes checked_in."],
+  ["Offer / add-on","Owner discount rule / extra sold with a slot (bibs, water)."],
+  ["Wallet","Internal credit for cashback, referral and refunds. Not real money yet."],
+  ["Payout","Weekly summary of what OYUN owes an owner after commission."],
+  ["rev","The global revision counter that makes writes safe. See Architecture."]
+ ],
+ week1:[
+  "Day 1: run it locally, click through player, partner and admin flows, read this page.",
+  "Day 2: read <code>src/lib/store.ts</code>, <code>pricing.ts</code> and <code>booking-actions.ts</code>. These three explain most of the app.",
+  "Day 3 to 5: pick tasks P8-01 (read Next 16 docs), P8-02 (pricing tests), P8-08 (CI). They make every later change safer."
+ ],
+ rules:[
+  "One branch per task, named <code>feature/short-name</code> or <code>fix/short-name</code>. Open a pull request into main; main is what Vercel deploys.",
+  "Keep pull requests small. One reviewer approves before merge once there are two developers.",
+  "Done means: it works locally, lint and type-check pass, a test exists for new rules, docs and the tracker are updated.",
+  "Never commit secrets or <code>.env.local</code>. Never run <code>reset-before-launch.sql</code> against production.",
+  "Ask before adding a dependency. The app has 7 runtime packages on purpose."
+ ]
+},
+
+features:[
+ // [audience, feature, status, where, note]
+ ["Player","Browse and search turfs by area, sport, sort; grid or map toggle","built","arenas/ArenasClient.tsx","Map is a Google Maps iframe, not an API integration"],
+ ["Player","Turf page: 14-day date strip, live slots, offers, reviews, share","built","arenas/[id]/TurfDetail.tsx",""],
+ ["Player","8-minute slot hold with live updates","built","booking-actions.ts, lib/client/use-slot-updates.ts","Realtime ping plus 10-second poll"],
+ ["Player","Book up to 6 slots, promo, referral, wallet, server quote","built","BookingFlow.tsx, pricing.ts","Add-ons are owner-side only; checkout add-ons were removed in P4"],
+ ["Player","Pay at venue","built","booking-actions.ts","paymentMode venue, amountPaid 0"],
+ ["Player","Pay online (Razorpay)","planned","","Phase 11"],
+ ["Player","Ticket with QR, invoice, calendar file, WhatsApp share","built","bookings/[id]/",""],
+ ["Player","Self-cancel up to 2 hours before","built","cancel-policy.ts","Wallet refund path needs verification"],
+ ["Player","Ratings and reviews after check-in","built","lib/reviews.ts","Admin can hide"],
+ ["Player","Saved turfs","built","saved/, lib/client/favourites.ts","localStorage, synced to Clerk metadata"],
+ ["Player","Sign in with Clerk, or device profile fallback","partial","(auth)/, lib/clerk.ts","Fallback is not real authentication"],
+ ["Player","Wallet, cashback, referral","partial","lib/wallet.ts","Rewards default to off"],
+ ["Player","PWA install","partial","manifest.ts","No service worker, no offline, no push"],
+ ["Player","SEO: sitemap, JSON-LD, area pages, OG images","built","sitemap.ts, lib/schema.ts, turfs/[area]",""],
+ ["Player","Booking reminders and confirmations","planned","","Phase 12"],
+ ["Player","Find players, teams, tournaments, weather alerts, waitlist, recurring bookings, Kannada","planned","","Phase 13"],
+ ["Owner","Dashboard: 7-day revenue, today's schedule","built","partner/(dashboard)/page.tsx",""],
+ ["Owner","Bookings list and walk-in booking","built","partner/…/bookings",""],
+ ["Owner","Check-in desk with camera QR scan or typed code, no-show","built","partner/…/check-in","Camera uses BarcodeDetector, not on every browser"],
+ ["Owner","Block and unblock slots","built","partner/…/slots",""],
+ ["Owner","Dynamic pricing: peak, weekend, last-minute","built","partner/…/pricing",""],
+ ["Owner","Offers (happy hour, first-time) and add-ons","built","partner/…/offers, add-ons",""],
+ ["Owner","Reviews view","built","partner/…/reviews",""],
+ ["Owner","Staff accounts with roles (owner, manager, front desk)","built","partner/…/staff, lib/partner-auth.ts",""],
+ ["Owner","Payouts, GST summary, CSV export, invoices","built","partner/…/payouts","Shows zero online settlement until payments exist"],
+ ["Owner","Turf profile and multi-turf switcher","built","partner/…/turf",""],
+ ["Owner","List your turf (4-step application)","built","(main)/list-turf","Honeypot, timing check, rate limit"],
+ ["Admin","Approve or reject applications, creates partner login and turf","built","admin/…/PendingApplications.tsx",""],
+ ["Admin","Manage turfs, partners, players (ban, wallet adjust)","built","admin/…/turfs, partners, users",""],
+ ["Admin","Bookings, refunds","built","admin/…/transactions",""],
+ ["Admin","Review moderation","built","admin/…/reviews",""],
+ ["Admin","Settings: commission, GST, cashback, referral, promo codes","built","admin/…/settings",""],
+ ["Admin","Homepage content, announcement bar, promo carousel","built","admin/…/customization",""],
+ ["Admin","Analytics dashboard, audit log","planned","","Not built"],
+ ["Platform","Health endpoint, error monitoring webhook, cookie consent","built","api/health, lib/monitoring.ts, components/consent",""],
+ ["Platform","Security headers, CSP, HTTPS redirect, login lockout","built","next.config.ts, proxy.ts",""],
+ ["Platform","Tests and CI","planned","","Phase 8"],
+ ["Platform","Email, SMS, WhatsApp, push","planned","","Phase 12"]
+],
+
+fe:{
+ stack:["Next.js 16.3.8 App Router","React 19.2","TypeScript strict","CSS Modules + globals.css tokens","framer-motion (one page)","qrcode (server SVG)","Clerk components","Vercel Analytics + Speed Insights (after consent)"],
+ swatches:[["--primary-50","#fef2f2"],["--primary-100","#fee2e2"],["--primary-200","#fecaca"],["--primary-300","#fca5a5"],["--primary-400","#f87171"],["--primary-500","#ef4444"],["--primary-600","#dc2626"],["--primary-700 (Nike red)","#d31027"],["--primary-800","#991b1b"],["--primary-900","#180000"],["--bg-primary","#f3f5f7"],["--bg-card","#ffffff"],["--bg-muted","#f8f9fa"],["--text-primary","#222222"],["--text-secondary","#4a4a4a"],["--text-muted","#626262"],["--border","#e0e0e0"],["badge offer","#f5a623"],["badge wizard","#cba052"]],
+ tokens:[
+  ["Primary gradient","linear-gradient(135deg, #180000, #d31027); hover #2a0000 to #ee2e24"],
+  ["Font","Inter, then system-ui. Declared in globals.css but not loaded anywhere, so phones and Macs show the system font"],
+  ["Radius","4px buttons and badges 2px, 8px inputs and cards, 12px panels, 16px sheets, full for pills"],
+  ["Shadow","sm 0 1px 3px, md 0 4px 12px, lg 0 10px 25px, all black at 8 to 10 percent"],
+  ["Motion","fadeInUp 0.5s with a spring ease; respect reduced motion in new code"],
+  ["Layout","Container up to 1440px with 32px side padding; phone breakpoint 768px; standalone PWA rules"],
+  ["Buttons","btn, btn--primary (gradient), btn--secondary (white, bordered), btn--ghost, btn--sm, btn--block"],
+  ["Badges","badge--primary, --secondary, --success, --offer (orange). Uppercase 11px bold"]
+ ],
+ components:[
+  ["Navbar, SideMenu, Footer","Site shell; side menu opens from the top-left button on phones"],
+  ["FloatingSearch, BackButton, NavTracker","Floating search button, glass back button, in-app navigation history"],
+  ["TurfCard, TurfSlider, Stars, FavouriteButton","Turf display and saving"],
+  ["PopupAd, JsonLd","Offer popup, schema.org data"],
+  ["Invoice, PrintButton, SignInGate","Printable invoice, inline sign-in at checkout"],
+  ["AuthProvider, ClerkAccount, ClerkProfileSync","Clerk wrapper, nav widget, copies name and phone into the device profile"],
+  ["auth/LoginForm, LoginScreen","Admin and partner password login"],
+  ["consent/*","Cookie banner and the gate for GA4 and Vercel analytics"],
+  ["dash/ActionForm, ui.tsx, TurfProfileFields, dash.module.css","Shared owner and admin UI kit"],
+  ["status/StatusPage","Ticket and health status screens"]
+ ],
+ patterns:[
+  "Server page loads data with <code>getDb()</code> (cached per request) and passes plain props to a client component when it needs state.",
+  "Mutations are server actions wired through <code>useActionState</code> in <code>ActionForm</code>; errors come back as messages, not exceptions.",
+  "Styling is one CSS Module per component using the global variables. No Tailwind, no UI library.",
+  "Device state (profile, saved turfs, booking ids) lives in localStorage and syncs through DOM events (<code>oyun:device</code>, <code>oyun:favourites</code>).",
+  "Phone first: the shell mimics an app (top bar hides on scroll, floating controls, safe-area padding)."
+ ],
+ gaps:[
+  "Inter is not loaded. Add <code>next/font/google</code> in <code>layout.tsx</code> so every device matches the design.",
+  "No design-system document or component gallery; this page is the first record.",
+  "Hard-coded hex values remain (#f5a623, #cba052 badges). Move to variables.",
+  "No dark mode in the site (this tracker supports it).",
+  "No loading.tsx or skeletons; slow data shows a blank wait.",
+  "Accessibility has 146 aria attributes but no keyboard, focus or contrast audit; the SEO doc's \"WCAG AA\" claim is unverified.",
+  "Only English; the audience speaks Kannada, Tulu and Konkani as well."
+ ]
+},
+
+be:{
+ layers:[
+  ["Route handlers","<code>src/app/api/*</code>","health, holds/release, client-error. Also CSV and .ics routes under partner and bookings"],
+  ["Server actions","<code>lib/booking-actions.ts, partner-actions.ts, admin-actions.ts, auth-actions.ts</code>","Every write. Callable only from this app's own pages, not by outside clients"],
+  ["Domain logic","<code>lib/pricing.ts, wallet.ts, reports.ts, reviews.ts, cancel-policy.ts, queries.ts</code>","Pure rules: price, cashback, payouts, rating maths, cutoffs"],
+  ["Data access","<code>lib/store.ts, types.ts, seed.ts, ids.ts</code>","<code>getDb()</code> read and <code>mutate(fn)</code> write with optimistic retry"],
+  ["Security","<code>lib/session.ts, partner-auth.ts, password.ts, rate-limit.ts, device-holder.ts, action-utils.ts, validation/</code>","Cookies, roles, hashing, throttling, input caps"],
+  ["Integrations","<code>lib/realtime.ts, monitoring.ts, clerk.ts, utils/supabase/*</code>","Realtime broadcast, error webhook, Clerk gate, Supabase clients"],
+  ["Edge","<code>src/proxy.ts</code>","HTTPS redirect, dashboard cookie guard, Clerk middleware"]
+ ],
+ conventions:[
+  "Check the caller first: <code>requireAdmin()</code> or <code>requirePartnerAction(permission)</code>, then validate input with the caps in <code>action-utils.ts</code>.",
+  "Do the whole change inside one <code>mutate()</code> so it is atomic and retried on conflict.",
+  "Throw <code>AccessError</code> for permission problems; map unique-index violations through <code>SLOT_TAKEN</code>.",
+  "After a write, broadcast the slot topic and call <code>revalidatePath('/', 'layout')</code>.",
+  "Times are IST. Use <code>lib/time.ts</code>, never the server's local zone."
+ ],
+ jobs:["No scheduled jobs exist. Expired holds are purged on the next hold or booking.","Reminders, payout runs and cleanup need a scheduler (Vercel Cron, Supabase pg_cron or GitHub Actions)."],
+ external:[
+  ["Supabase Postgres","Data; service-role key, server only"],
+  ["Supabase Realtime","Slot-changed pings"],
+  ["Clerk","Player identity when keys are set"],
+  ["Google Maps (iframe)","Venue maps, no key"],
+  ["GA4, Vercel Analytics","After cookie consent"],
+  ["Slack or Discord webhook","Error alerts (optional)"]
+ ],
+ gaps:[
+  "No public REST API. A mobile app or partner integration would need route handlers.",
+  "No webhooks inbound (needed for payments).",
+  "No audit log of who did what.",
+  "No background worker or queue.",
+  "All reads load the whole database (see Database and Cost)."
+ ]
+},
+
+hosting:[
+ ["Frontend (pages)","Next.js pages and components","Vercel","Vercel Hobby to test. <b>Hobby forbids commercial use</b>, so move to Pro ($20 per seat a month) before real customers.","Vercel Pro; add a custom domain","Alternatives with free commercial tiers (Cloudflare, Netlify) exist; Next.js 16 needs more work there. Check their terms first."],
+ ["Backend (server actions, API)","Same app as above, runs as Vercel Functions","Vercel Functions","Same plan. Pin the function region next to the database (Singapore) in project settings or <code>vercel.json</code>; the default region is US East, which adds a round trip per query. Verify what the project uses.","Same; tune region and memory","If functions become the limit, move to a container host (Fly.io, Render) later."],
+ ["Database","Postgres, 15 tables","Supabase project <code>oyun</code>, Singapore, nano compute","Free: 500 MB, pauses after 7 days idle. Fine for building, risky for launch.","Supabase Pro $25 a month (8 GB, no pause, daily backups); compute add-ons when CPU is high","Best fix is still scoped reads (phase 10). Ideally move to Mumbai when you recreate it."],
+ ["Player login","Accounts and sessions","Clerk","Free to 10,000 monthly active users","Pro $25 a month plus $0.02 per extra user","Use live keys in production, test keys locally."],
+ ["Owner and admin login","Custom signed cookie","In the app","No cost","MFA and per-user admin accounts","See security tab."],
+ ["Realtime updates","Slot-changed pings","Supabase Realtime","Included; free tier has connection and message caps (verify current numbers)","Pro caps are higher","The 10-second poll is a fallback."],
+ ["Images and files","Turf photos","<code>public/turfs</code> and Unsplash URLs","Keep; compress images","Supabase Storage (500 MB free) or Cloudflare R2 (10 GB free)","No uploads exist yet; owners paste URLs."],
+ ["Domain, DNS, CDN","Your address and caching","Not set (preview URL in use)","Domain about ₹700 to 1,200 a year; Cloudflare DNS free","Same","Vercel serves the CDN already."],
+ ["Email","Receipts","None","Resend free: 3,000 a month, 100 a day","Resend Pro $20 for 50,000","Verify your own domain."],
+ ["WhatsApp and SMS","Confirmations, reminders","None","WhatsApp utility message ₹0.145 each plus 18 percent GST, through a provider. SMS in India needs DLT registration.","Same, volume based","Marketing messages cost about ₹1.09 each."],
+ ["Payments","Advance and full payment","None","Razorpay 2 percent plus 18 percent GST per transaction, no setup fee","Negotiated rates at volume","Needs business KYC."],
+ ["Rate limits and cache","Shared counters","In-memory per instance","Upstash Redis free: 500K commands a month","Upstash pay as you go","Needed for login lockout and hold limits."],
+ ["Error tracking","Know when it breaks","Webhook to Slack or Discord","Sentry free: 5,000 errors a month","Sentry Team","Hook into <code>instrumentation.ts</code>."],
+ ["Uptime","Is it up","None","UptimeRobot or Better Stack free tier on <code>/api/health</code>","Paid status page","Verify free limits."],
+ ["Source and CI","Code and checks","GitHub (devcnisham/oyun), no CI","GitHub Actions free minutes on private repos (verify)","Paid minutes","Add lint, tsc, build, tests."],
+ ["Backups","Disaster recovery","None on free","Nightly <code>pg_dump</code> to a free bucket through a GitHub Action","Supabase daily backups (Pro) or PITR add-on","Test a restore once."],
+ ["Secrets","Keys and passwords","Vercel env, <code>.env.local</code>","Bitwarden free for the team","Doppler or 1Password","Rotate the old Supabase secret key."]
+],
+
+envs:[
+ ["Local","Your laptop, <code>npm run dev</code>","File store or a dev Supabase project; Clerk test keys","Developers"],
+ ["Preview","Vercel builds every branch and pull request","Should use a staging Supabase project, not production","Reviewers"],
+ ["Production","Vercel deploys <code>main</code>","Production Supabase, Clerk live keys, custom domain","Customers"]
+],
+
+cost:{
+ target:"First target: 1,000 registered users. The calculator below assumes 40 percent are active in a month. Change any number to match what you expect.",
+ inputs:[
+  ["users","Registered users",1000,"1"],["activePct","Active in a month (%)",40,"1"],["sessions","Sessions per active user a month",4,"1"],
+  ["pages","Pages per session",5,"1"],["polls","Slot refreshes per session (10 s poll on a turf page)",20,"1"],
+  ["bpa","Bookings per active user a month",1.5,"0.1"],["hpb","Hours per booking",1.3,"0.1"],["months","Months of bookings stored",3,"1"],
+  ["rowKB","KB per booking row (estimate, measure it)",1.2,"0.1"],["baseKB","KB of config data (turfs, pricing, settings)",120,"10"],
+  ["scopedKB","KB per request after scoped reads (phase 10)",15,"1"],["price","Average price per hour (₹)",900,"50"],
+  ["comm","OYUN commission (%)",10,"1"],["wa","WhatsApp messages per booking",2,"1"],["usd","₹ per US dollar (assumption)",90,"1"]
+ ],
+ stages:[
+  ["A. Build and test","Now","Vercel Hobby, Supabase Free, Clerk Free, GitHub Free, Sentry Free","₹0 a month, plus domain ₹60 to 100 a month","Not legal for paying customers on Vercel Hobby; Supabase pauses when idle"],
+  ["B. Soft launch to 1,000 users","Next","Vercel Pro $20, Supabase Pro $25, domain, Clerk Free, Sentry Free, Resend Free, Upstash Free","About $45 a month, roughly ₹4,000 to 4,500","Requires phase 10 scoped reads, or egress and latency will hurt even on Pro"],
+  ["C. Growth to 5,000 to 10,000 users","Later","Add WhatsApp messages, Razorpay fees, Resend Pro $20, Sentry Team, Supabase compute add-on, Clerk Pro past 10,000 active","About $100 to 150 a month plus per-use fees (estimate)","Per-use fees come out of bookings, not your pocket, if commission covers them"],
+  ["D. Funded team","If you raise money","Staging project, point-in-time backups, load testing, paid project tools, support tool, security review, part-time QA","Budget below","See the funding ladder"]
+ ],
+ free:[
+  ["Vercel Hobby","100 GB bandwidth, about 1M edge requests a month","Policy, not capacity: personal and non-commercial use only","Move to Pro before launch"],
+  ["Supabase Free","500 MB database, 5 GB egress, 50,000 MAU, 2 projects, pauses after 7 days idle","<b>Egress and pausing</b>: the app reads the whole database per request, so 5 GB goes fast","Pro, plus scoped reads"],
+  ["Clerk Free","10,000 monthly active users","Not a limit at 1,000 users","Pro at 10,000+"],
+  ["Resend Free","3,000 emails a month, 100 a day","Enough for about 1,500 bookings if one email each; a busy evening can pass 100","Pro $20"],
+  ["Sentry Free","5,000 errors a month, 1 user","A noisy bug burns it in a day","Team plan"],
+  ["Upstash Free","500K commands, 256 MB","Plenty for rate limits","Pay as you go"],
+  ["GitHub Free","Private repos, Actions minutes (verify)","Enough for CI at this size","Team plan"]
+ ],
+ triggers:[
+  ["Before the first paying customer","Vercel Pro and Supabase Pro","$45 a month"],
+  ["Players ask for online payment","Razorpay account (KYC) and webhook","2 percent plus GST of each payment, no fixed fee"],
+  ["No-show or support calls climb","WhatsApp confirmations and reminders","About ₹0.17 per message including GST"],
+  ["Database over 5 GB or CPU high","Supabase compute add-on, read replica, or scoped schema","Add-on prices vary; check the dashboard"],
+  ["More than 10,000 active players","Clerk Pro","$25 plus $0.02 per extra user"],
+  ["More than 3 developers","Linear or Jira paid, Slack Pro, staging project","About $8 to 10 per user per tool (verify)"],
+  ["You must prove uptime to owners","Status page, point-in-time backups, on-call","Quote at that time"]
+ ],
+ funding:[
+  ["1. Reliability","Pro tiers, staging project, backups, uptime monitor, Sentry","About ₹6,000 to 8,000 a month","Lets you sleep; prevents the outage that loses owners"],
+  ["2. Real money","Razorpay, payment tests, a lawyer or CA for partner agreement, GST and DPDP compliance","Mostly one-off fees plus 2 percent per payment","Unlocks revenue beyond commission at the venue"],
+  ["3. Messaging","WhatsApp and email, SMS if needed","Per message, scales with bookings","Cuts no-shows"],
+  ["4. People","A part-time QA or second developer, a field person to onboard turf owners","Largest line; set it by what you raise","Supply of turfs is the real growth limit"],
+  ["5. Marketing","Search ads, owner referral offers, local partnerships","Set a monthly cap","Only after steps 1 to 3"]
+ ]
+},
+
+docs:[
+ ["README","What it is, how to run","exists","Founder","Keep current"],
+ ["docs/GO-LIVE.md","Launch steps and env","exists","Dev","Current; fix the old-key note after rotation"],
+ ["docs/LAUNCH-SEO.md","SEO checklist","exists","Founder","Manual checklist"],
+ ["AGENTS.md","Rules for AI and developers on Next 16","exists","Dev","Read before coding"],
+ ["FEATURE_LIST.md","Feature status","stale","Dev","Replace by this tracker or refresh"],
+ ["ARCHITECTURE.md","System map, request path, data model","needed","Dev","Start from this tracker's Architecture and Database tabs"],
+ ["ENVIRONMENTS.md","Local, preview, production and their keys","needed","Dev","Table in this tracker's Hosting tab"],
+ ["CONTRIBUTING.md and PR template","Branches, reviews, definition of done","needed","Dev","Use the working agreement on Start here"],
+ ["docs/adr/","One file per decision","needed","Dev","Seed with the six decisions in the Decisions tab"],
+ ["Actions and API reference","Every server action: input, permission, effect","needed","Dev","Generate from the three action files"],
+ ["Database guide and migration policy","Schema, indexes, how to change safely","needed","Dev","Idempotent SQL, mirror in setup files"],
+ ["RUNBOOK and incident template","What to do when it breaks, post-mortem form","partial","Dev","Starter in Operations tab"],
+ ["SECURITY.md","How to report a vulnerability, threat model","needed","Dev","Link the Security tab"],
+ ["Test plan","What is tested and how","needed","Dev","Table in Operations tab"],
+ ["PRD per feature","Problem, users, rules, metrics","needed","Founder","One page each before building"],
+ ["Roadmap","Phases and dates","partial","Founder","Phases tab"],
+ ["CHANGELOG and release notes","What changed and when","needed","Dev","Generated from pull requests"],
+ ["Analytics tracking plan","Events, names, properties","needed","Founder","Before adding more analytics"],
+ ["Data dictionary","Every field, meaning, who can see it","needed","Dev","Drives privacy answers"],
+ ["Brand and design guide","Logo, colours, type, tone","partial","Founder","Token table in the Frontend tab"],
+ ["Privacy policy and data retention policy","What you keep and for how long; India's DPDP Act 2023 duties","partial","Founder + lawyer","Page exists; get legal review"],
+ ["Terms of use","Rules for players","exists","Founder + lawyer","Page exists"],
+ ["Turf partner agreement","Commission, payout days, cancellation, liability","needed","Founder + lawyer","Sign before onboarding owners"],
+ ["Refund and cancellation policy","Rules players see","partial","Founder","2-hour cutoff is in code only"],
+ ["Pricing and commission policy","How OYUN earns","needed","Founder","Commission defaults to 0 today"],
+ ["Owner onboarding guide and FAQ","How an owner sets up and runs a turf","needed","Founder","Short videos help"],
+ ["Support playbook","Common problems and replies","needed","Founder","Start as a shared note"],
+ ["Backup and restore guide","How to recover","needed","Dev","Test it once"],
+ ["Vendor and account register","Who owns each login, billing email, renewal date","needed","Founder","Stops lock-in on one person's email"],
+ ["Cost register","Monthly spend per service","needed","Founder","Fill from the Cost tab"]
+],
+
+tools:[
+ ["Code and pull requests","GitHub","Free private repos","Team plan at 5+ developers","Keep everything here to avoid extra tools"],
+ ["Issues and boards","GitHub Projects (zero extra tool), or Linear free (unlimited members, 2 teams, 250 issues)","Free","Linear or Jira paid at roughly $8 to 10 per user (verify)","Jira free is capped at 10 users and is heavy for a small team"],
+ ["Docs and wiki","Notion free (unlimited pages, 10 guests, 7-day history) or markdown in the repo","Free","Notion Plus roughly $10 per user (verify)","Put technical docs in the repo, business docs in Notion"],
+ ["Team chat","WhatsApp group now; Slack free later (90-day history, 10 integrations)","Free","Slack Pro for history","Route CI and error alerts to one channel"],
+ ["Design","Figma free","Free","Paid for shared libraries","Export tokens from this site's CSS"],
+ ["Errors","Sentry","Free 5,000 errors","Team plan","Replace the webhook"],
+ ["Uptime","UptimeRobot or Better Stack","Free","Status page","Watch <code>/api/health</code>"],
+ ["Product analytics","GA4 (already wired) plus PostHog free (verify limits)","Free","Usage based","Write the tracking plan first"],
+ ["Support","Shared Gmail and WhatsApp Business app","Free","Crisp or Freshdesk later","Do not buy a helpdesk before 100 tickets a month"],
+ ["Owner CRM","Notion database or Google Sheet","Free","HubSpot free then paid","Track each turf owner, stage, next step"],
+ ["Passwords and secrets","Bitwarden free","Free","Doppler or 1Password","Shared vault for service logins"],
+ ["Meetings and email","Google Workspace trial or free Meet","Free","Workspace per user","Use a company domain email, not personal"]
+],
+toolPlan:[
+ "Solo or 2 people, ₹0: GitHub (code, issues, projects, Actions), Notion (docs, owner list), WhatsApp group, Figma free, Sentry free, Bitwarden.",
+ "3 to 6 people: add Linear or keep GitHub Projects, Slack free, a staging environment, weekly planning from the Tracker tab.",
+ "More than 6, or investors ask for process: Jira or Linear paid, Slack Pro, status page, written runbooks, on-call rota."
+],
+sources:[
+ ["Vercel plans and Hobby limits","https://dev.to/nayankyada/vercel-pricing-2026-what-you-actually-pay-for-a-real-nextjs-project-33md"],
+ ["Supabase free and Pro limits","https://makerkit.dev/blog/saas/supabase-pricing"],
+ ["Clerk pricing","https://clerk.com/pricing"],
+ ["Razorpay pricing","https://razorpay.com/blog/razorpay-payment-gateway-pricing-explained/"],
+ ["Resend free tier","https://resend.com/blog/new-free-tier"],
+ ["WhatsApp India rates, October 2026","https://m.aisensy.com/blog/whatsapp-pricing-update-october-2026/"],
+ ["Sentry plans","https://last9.io/blog/sentry-pricing/"],
+ ["Upstash Redis free tier","https://upstash.com/blog/redis-new-pricing"],
+ ["Linear free plan","https://costbench.com/software/developer-tools/linear/free-plan"],
+ ["Notion free plan","https://costbench.com/software/project-management/notion/free-plan/"],
+ ["Slack free plan","https://costbench.com/software/communication/slack/free-plan"]
+]
+};
+
+/* ===================== EXTRA RENDERERS ===================== */
+const tb = (head, rows) => `<div class="tw"><table><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const bx = (title, inner, cls='') => `<div class="box ${cls}"><h3>${title}</h3>${inner}</div>`;
+const ul = a => `<ul class="tight">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+const ol = a => `<ol>${a.map(x=>`<li>${x}</li>`).join('')}</ol>`;
+
+function renderNew(){
+  const s = D2.start;
+  $('#start-body').innerHTML =
+    bx('What you are looking at', s.intro.map(t=>`<p style="margin-bottom:8px">${t}</p>`).join('')) +
+    `<div class="grid g2">${bx('Run it on your machine', `<pre><code>${esc(s.setup)}</code></pre><div style="height:10px"></div>${ul(s.setupNotes)}`)}${bx('Where to put new work', '<div class="tw" style="box-shadow:none"><table style="min-width:0"><tbody>'+s.where.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}<div class="muted" style="font-size:12.5px;margin-top:2px">${r[2]}</div></td></tr>`).join('')+'</tbody></table></div>')}</div>` +
+    `<div><h3 style="margin-bottom:8px">Accounts to create and who owns them</h3>${tb(['Service','Why','Plan now','Owner','Note'],s.accounts.map(r=>[`<b>${r[0]}</b>`,esc(r[1]),esc(r[2]),esc(r[3]),esc(r[4])]))}</div>` +
+    `<div class="grid g2">${bx('Glossary', '<dl class="kv">'+s.glossary.map(g=>`<dt><b>${g[0]}</b></dt><dd>${g[1]}</dd>`).join('')+'</dl>')}<div class="stack">${bx('Your first week', ul(s.week1))}${bx('Working agreement', ul(s.rules))}</div></div>`;
+
+  // features
+  const aud = ['All','Player','Owner','Admin','Platform'];
+  $('#feat-ctl').innerHTML = `<select id="feat-aud" aria-label="Audience">${aud.map(a=>`<option>${a}</option>`).join('')}</select><select id="feat-st" aria-label="Status"><option value="">All statuses</option><option value="built">built</option><option value="partial">partial</option><option value="planned">planned</option></select><span class="muted" id="feat-count"></span>`;
+  const drawFeat = ()=>{
+    const a=$('#feat-aud').value, st=$('#feat-st').value;
+    const rows = D2.features.filter(f=>(a==='All'||f[0]===a)&&(!st||f[2]===st));
+    $('#feat-count').textContent = rows.length+' of '+D2.features.length;
+    $('#feat-table').innerHTML = tb(['Who','Feature','Status','Where','Note'],rows.map(f=>[esc(f[0]),`<b>${esc(f[1])}</b>`,pill(f[2].toUpperCase(),f[2]),f[3]?`<code>${esc(f[3])}</code>`:'<span class="muted">not built</span>',esc(f[4])]));
+    const c=k=>D2.features.filter(f=>f[2]===k).length;
+    $('#feat-stats').innerHTML=[['built','Built'],['partial','Partial'],['planned','Planned']].map(([k,l])=>`<div class="box stat"><b class="s-${k}">${c(k)}</b><span>${l}</span></div>`).join('');
+  };
+  $('#feat-aud').onchange=drawFeat; $('#feat-st').onchange=drawFeat; drawFeat();
+
+  // frontend
+  const f = D2.fe;
+  $('#fe-body').innerHTML =
+    `<div class="grid g2">${bx('Stack', `<div class="chips" style="margin:0">${f.stack.map(x=>`<span class="chip" style="background:var(--surface2);color:var(--fg);border-color:var(--line)">${esc(x)}</span>`).join('')}</div>`)}${bx('How pages are built', ul(f.patterns))}</div>` +
+    bx('Colour tokens from <code>globals.css</code>', `<div class="sw">${f.swatches.map(c=>`<div><i style="background:${c[1]}"></i><span>${esc(c[0])}<br>${c[1]}</span></div>`).join('')}</div>`) +
+    `<div><h3 style="margin-bottom:8px">Design system</h3>${tb(['Token group','Value'],f.tokens.map(t=>[`<b>${esc(t[0])}</b>`,esc(t[1])]))}</div>` +
+    `<div><h3 style="margin-bottom:8px">Components</h3>${tb(['Component','What it does'],f.components.map(c=>[`<code>${esc(c[0])}</code>`,esc(c[1])]))}</div>` +
+    bx('Frontend gaps to know about', ul(f.gaps), 'tint-crit');
+
+  // backend
+  const b = D2.be;
+  $('#be-body').innerHTML =
+    `<div><h3 style="margin-bottom:8px">Layers</h3>${tb(['Layer','Files','Job'],b.layers.map(l=>[`<b>${l[0]}</b>`,l[1],l[2]]))}</div>` +
+    `<div class="grid g2">${bx('Rules every action follows', ol(b.conventions))}${bx('Background work', ul(b.jobs))}</div>` +
+    `<div class="grid g2">${bx('External services it talks to', '<dl class="kv">'+b.external.map(e=>`<dt><b>${e[0]}</b></dt><dd>${e[1]}</dd>`).join('')+'</dl>')}${bx('Backend gaps', ul(b.gaps),'tint-crit')}</div>`;
+
+  // hosting
+  $('#host-body').innerHTML =
+    `<div><h3 style="margin-bottom:8px">Where each piece runs, and what to use</h3>${tb(['Piece','What it is','Today','Free or cheap now','When you grow','Note'],D2.hosting.map(r=>[`<b>${r[0]}</b>`,esc(r[1]),r[2],r[3],r[4],r[5]]))}</div>` +
+    `<div><h3 style="margin-bottom:8px">Environments</h3>${tb(['Environment','Where','Data and keys','Who sees it'],D2.envs.map(r=>[`<b>${r[0]}</b>`,r[1],r[2],r[3]]))}</div>` +
+    `<p class="note">The Vercel address in use (<code>…git-main…vercel.app</code>) is the main-branch preview URL and asks for a Vercel login. Connect a custom domain for launch.</p>`;
+
+  // cost
+  const c = D2.cost;
+  $('#cost-target').textContent = c.target;
+  $('#calc').innerHTML = c.inputs.map(i=>`<label>${esc(i[1])}<input id="c-${i[0]}" type="number" min="0" step="${i[3]}" value="${i[2]}"></label>`).join('');
+  $('#calc').addEventListener('input',drawCalc); drawCalc();
+  $('#cost-stages').innerHTML = tb(['Stage','When','Services','Monthly cost','Watch out'],c.stages.map(r=>[`<b>${r[0]}</b>`,r[1],r[2],r[3],r[4]]));
+  $('#cost-free').innerHTML = tb(['Service','Free limit','What it means for OYUN','Upgrade'],c.free.map(r=>[`<b>${r[0]}</b>`,r[1],r[2],r[3]]));
+  $('#cost-trig').innerHTML = tb(['When this happens','Upgrade to','Cost'],c.triggers.map(r=>r.map(esc)));
+  $('#cost-fund').innerHTML = tb(['Spend order','What for','Rough size','Why'],c.funding.map(r=>[`<b>${r[0]}</b>`,r[1],r[2],r[3]]));
+  $('#cost-src').innerHTML = D2.sources.map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a></li>`).join('');
+
+  // docs
+  $('#docs-table').innerHTML = tb(['Document','Purpose','Status','Owner','Note'],D2.docs.map(d=>[`<b>${esc(d[0])}</b>`,esc(d[1]),pill(d[2].toUpperCase(),d[2]==='exists'?'done':d[2]==='needed'?'crit':'med'),esc(d[3]),esc(d[4])]));
+  $('#tools-table').innerHTML = tb(['Need','Use','Free tier','Pay when','Note'],D2.tools.map(d=>[`<b>${esc(d[0])}</b>`,d[1],esc(d[2]),esc(d[3]),d[4]]));
+  $('#tools-plan').innerHTML = ul(D2.toolPlan);
+}
+
+function drawCalc(){
+  const v = id => parseFloat($('#c-'+id).value)||0;
+  const active = v('users')*v('activePct')/100;
+  const reqs = active*v('sessions')*(v('pages')+v('polls'));
+  const rowsMo = active*v('bpa')*v('hpb');
+  const rowsTot = rowsMo*v('months');
+  const stateKB = v('baseKB')+rowsTot*v('rowKB');
+  const egNow = reqs*stateKB/1e6, egNew = reqs*v('scopedKB')/1e6;
+  const dbMB = (v('baseKB')+rowsTot*v('rowKB')*2)/1000;
+  const bw = active*v('sessions')*v('pages')*0.6/1000;
+  const bookings = active*v('bpa');
+  const emails = bookings, wa = bookings*v('wa');
+  const gmv = rowsMo*v('price');
+  const waCost = wa*0.145*1.18, rz = gmv*0.02*1.18, comm = gmv*v('comm')/100;
+  const infra = 45*v('usd');
+  const peak = reqs/(30*24*3600)*20;
+  const meter = (label,val,lim,unit,note)=>{const p=lim?val/lim*100:0;const cls=p>100?'crit':p>70?'high':'';
+    return `<div class="meter"><span><b>${label}</b><br><span class="muted" style="font-size:12px">${note}</span></span><div class="bar ${cls}"><i style="width:${Math.min(100,p)}%"></i></div><span class="mono num ${p>100?'s-crit':''}">${val<10?val.toFixed(2):Math.round(val).toLocaleString('en-IN')} / ${lim.toLocaleString('en-IN')} ${unit}</span></div>`};
+  const inr = n => '₹'+Math.round(n).toLocaleString('en-IN');
+  $('#calc-out').innerHTML =
+    `<div class="grid g4" style="margin-bottom:14px">
+      <div class="box stat"><b class="num">${Math.round(active).toLocaleString('en-IN')}</b><span>active users a month</span></div>
+      <div class="box stat"><b class="num">${Math.round(reqs/1000).toLocaleString('en-IN')}k</b><span>server requests a month (peak about ${Math.max(1,Math.round(peak))} a second)</span></div>
+      <div class="box stat"><b class="num">${Math.round(rowsMo).toLocaleString('en-IN')}</b><span>booking rows added a month</span></div>
+      <div class="box stat ${stateKB>1000?'tint-crit':''}"><b class="num">${(stateKB/1000).toFixed(2)} MB</b><span>data read on every request today (after ${v('months')} months)</span></div>
+    </div>`+
+    `<h3 style="margin:6px 0">Free-plan fit with the app as it is today</h3>`+
+    meter('Supabase egress',egNow,5,'GB','whole database per request')+
+    meter('Supabase database',dbMB,500,'MB','rows plus indexes (estimate 2x)')+
+    meter('Vercel bandwidth',bw,100,'GB','about 0.6 MB per page view')+
+    meter('Clerk active users',active,10000,'users','free plan')+
+    meter('Resend emails',emails,3000,'emails','one per booking, 100 a day cap')+
+    `<h3 style="margin:14px 0 6px">After scoped reads (phase 10)</h3>`+
+    meter('Supabase egress',egNew,5,'GB',v('scopedKB')+' KB per request')+
+    `<h3 style="margin:14px 0 6px">Money, per month</h3>
+    <div class="grid g4">
+      <div class="box stat"><b class="num">${inr(infra)}</b><span>hosting at stage B (Vercel Pro + Supabase Pro)</span></div>
+      <div class="box stat"><b class="num">${inr(gmv)}</b><span>booking value (GMV)</span></div>
+      <div class="box stat ${comm>=infra?'tint-ok':''}"><b class="num">${inr(comm)}</b><span>commission at ${v('comm')}% (today it is 0)</span></div>
+      <div class="box stat"><b class="num">${inr(waCost)}</b><span>WhatsApp, ${Math.round(wa).toLocaleString('en-IN')} messages incl. GST</span></div>
+    </div>
+    <p class="muted" style="margin-top:10px">If payments were online, Razorpay would take about ${inr(rz)} (2% + GST). Hosting is covered when commission passes ${inr(infra)}, which needs about ${Math.ceil(infra/Math.max(1,v('price')*v('comm')/100))} paid hours a month at these numbers.</p>
+    <p class="note" style="margin-top:10px">${egNow>5?'<b>Verdict:</b> at '+Math.round(v('users')).toLocaleString('en-IN')+' users the current design passes the free 5 GB egress '+(egNow/5).toFixed(0)+' times over, and each request would read '+(stateKB/1000).toFixed(1)+' MB. Do phase 10 (scoped reads) before this target, and use Supabase Pro.':'<b>Verdict:</b> within the free plan on these numbers, but Vercel Hobby still forbids commercial use.'} Row size and request counts are estimates: measure the real size of <code>load_state()</code> first (task P10-00).</p>`;
+}
+
+DATA.tasks.push(
+ {id:"P8-13",p:"P8",t:"Decide commercial hosting: Vercel Pro (recommended) or a free commercial host",s:"todo",pr:"P0",n:"Vercel Hobby forbids commercial use. Pro is $20 per seat a month."},
+ {id:"P8-14",p:"P8",t:"Write ARCHITECTURE.md, ENVIRONMENTS.md, CONTRIBUTING.md, PR template, docs/adr",s:"todo",pr:"P2",n:"Seed from the Architecture, Hosting and Decisions tabs."},
+ {id:"P8-15",p:"P8",t:"Vendor and account register; move production Supabase under the company email",s:"todo",pr:"P1",n:"Production project sits under a different email than the one used for tooling."},
+ {id:"P8-16",p:"P8",t:"Partner agreement, refund and commission policy, DPDP privacy review with a lawyer or CA",s:"todo",pr:"P1"},
+ {id:"P8-17",p:"P8",t:"Pick team tools: GitHub Projects or Linear, Notion, Slack or WhatsApp, Bitwarden",s:"todo",pr:"P2"},
+ {id:"P8-18",p:"P8",t:"Load Inter with next/font so every device matches the design",s:"todo",pr:"P2",n:"globals.css names Inter but nothing loads it."},
+ {id:"P8-19",p:"P8",t:"Replace hard-coded hex values (#f5a623, #cba052) with CSS variables",s:"todo",pr:"P3"},
+ {id:"P8-20",p:"P8",t:"Accessibility audit: keyboard, focus, contrast; fix findings",s:"todo",pr:"P2"},
+ {id:"P8-21",p:"P8",t:"Nightly database backup to a free bucket via GitHub Action; test a restore",s:"todo",pr:"P1"},
+ {id:"P8-22",p:"P8",t:"Sentry and an uptime monitor on /api/health",s:"todo",pr:"P1"},
+ {id:"P10-00",p:"P10",t:"Measure real load_state() payload size and requests per page; update the Cost calculator",s:"todo",pr:"P0",n:"The 1,000-user estimate assumes 1.2 KB per booking row and 120 KB of config."},
+ {id:"P10-10",p:"P10",t:"Pin Vercel functions to Singapore next to the database; verify latency",s:"todo",pr:"P1",n:"Default function region is US East."},
+ {id:"P10-11",p:"P10",t:"Upgrade Supabase to Pro before launch; set spend cap and usage alerts",s:"todo",pr:"P0"},
+ {id:"P10-12",p:"P10",t:"1,000-user readiness test: 3 months of seeded bookings, k6 run, p95 under 800 ms",s:"todo",pr:"P1"}
+);
+
+/* ===================== BOOT ===================== */
+function initControls(){
+  $('#f-phase').innerHTML = '<option value="">All phases</option>'+DATA.phases.map(p=>`<option value="${p.id}">${p.id} ${esc(p.name)}</option>`).join('');
+  const saved = (()=>{try{return JSON.parse(store.get('oyun-filters')||'{}')}catch(e){return {}}})();
+  Object.assign(F, {phase:saved.phase||'', status:saved.status||'', prio:saved.prio||'', open:!!saved.open});
+  $('#f-phase').value=F.phase; $('#f-status').value=F.status; $('#f-prio').value=F.prio; $('#f-open').checked=F.open;
+  const upd = ()=>{ F.q=$('#q').value; F.phase=$('#f-phase').value; F.status=$('#f-status').value; F.prio=$('#f-prio').value; F.open=$('#f-open').checked;
+    store.set('oyun-filters',JSON.stringify({phase:F.phase,status:F.status,prio:F.prio,open:F.open})); renderTracker(); };
+  ['q','f-phase','f-status','f-prio','f-open'].forEach(id=>$('#'+id).addEventListener('input',upd));
+  $('#trk-list').addEventListener('change',e=>{ const s=e.target.closest('select[data-id]'); if(s) setStatus(s.dataset.id, s.value); });
+}
+function refresh(){ renderOverview(); renderPhases(); renderTracker(); }
+
+async function connect(){
+  const c = window.claude; if(!c || !c.use){ $('#trk-sub').textContent='Read-only here: task changes are saved only when the page is opened in Claude.'; return; }
+  try{ userNs = await c.use('user'); }catch(e){}
+  try{ dbNs = await c.use('db'); }catch(e){}
+  if(!dbNs){ $('#trk-sub').textContent='Sign in to see and change shared task status. Showing default statuses.'; return; }
+  try{ myId = userNs ? await userNs.id() : null; }catch(e){}
+  let cw = null; try{ cw = userNs ? await userNs.can('data.write') : null; }catch(e){}
+  canWrite = cw !== false;
+  if(!canWrite) $('#trk-sub').textContent='You have view-only access. Ask the owner for Contributor access to change task status.';
+  dbNs.collection('tasks').onSnapshot(async snap=>{
+    const o={}; snap.docs.forEach(d=>{ const v=d.data(); if(v && v.status) o[d.id]=v; });
+    overrides=o; dbReady=true;
+    const ids=[...new Set(Object.values(o).map(v=>v.by).filter(Boolean))];
+    if(userNs && ids.length){ try{ const ps=await userNs.profiles(ids); ids.forEach(i=>{whoNames[i]=ps[i]&&ps[i].name||''}); }catch(e){} }
+    refresh();
+  }, err=>{ if(err && err.code==='revoked'){ canWrite=false; renderTracker(); } });
+}
+
+renderStatic(); renderNew(); initControls(); initTabs(); refresh(); connect();
+</script>

@@ -12,14 +12,9 @@ if (major < 20 || (major === 20 && minor < 9)) {
 }
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-const missing = Object.keys(pkg.dependencies ?? {}).filter((name) => {
-  try {
-    require.resolve(`${name}/package.json`);
-    return false;
-  } catch {
-    return true;
-  }
-});
+const missing = Object.keys(pkg.dependencies ?? {}).filter(
+  (name) => !existsSync(new URL(`../node_modules/${name}/package.json`, import.meta.url)),
+);
 if (missing.length) problems.push(`Packages not installed: ${missing.join(', ')}. Run: npm install`);
 
 const envFile = ['.env.local', '.env.development.local', '.env'].find((f) => existsSync(f));
