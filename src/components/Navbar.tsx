@@ -160,7 +160,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
         <Link href="/list-turf" className={styles.pill}>List your turf</Link>
       </div>
 
-      <SideMenu open={menuOpen} onClose={closeMenu} firstName={firstName} upcoming={upcoming} areas={areas} />
+      <SideMenu open={menuOpen} onClose={closeMenu} firstName={firstName} upcoming={upcoming} />
 
       {areaSheet && (
         <div className={styles.sheetOverlay} onClick={(e) => e.target === e.currentTarget && setAreaSheet(false)}>
