@@ -9,6 +9,7 @@ import TurfSlider from '@/components/TurfSlider';
 import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
 import { getDb } from '@/lib/store';
 import HeroSearchBar from './HeroSearchBar';
+import { SPORTS, sportHref } from '@/lib/sports';
 import PopupAd from '@/components/PopupAd';
 import MobileHome from './_home/MobileHome';
 import styles from './page.module.css';
@@ -129,16 +130,11 @@ export default async function Home() {
           <h2 className={styles.sectionTitle}>Browse by Sport</h2>
         </div>
         <div className={styles.sportGrid}>
-          {[
-            { name: 'Football', image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop', link: '/arenas?sport=Football' },
-            { name: 'Box Cricket', image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=600&auto=format&fit=crop', link: '/arenas?sport=Box%20Cricket' },
-            { name: 'Badminton', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=600&auto=format&fit=crop', link: '/arenas?sport=Badminton' },
-            { name: 'Padel', image: 'https://images.unsplash.com/photo-1698246473105-df6c1032d667?q=80&w=600&auto=format&fit=crop', link: '/arenas?sport=Padel' },
-          ].map((sport, i) => (
-            <Link href={sport.link} key={i} className={styles.sportCard}>
-              <Image src={sport.image} alt={sport.name} fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
+          {SPORTS.map((sport) => (
+            <Link href={sportHref(sport.value)} key={sport.value} className={styles.sportCard}>
+              <Image src={sport.image} alt={sport.label} fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
               <div className={styles.sportInfo}>
-                <h3 className={styles.sportName}>{sport.name}</h3>
+                <h3 className={styles.sportName}>{sport.label}</h3>
                 <div className={styles.sportAction}>Explore venues <span>→</span></div>
               </div>
             </Link>

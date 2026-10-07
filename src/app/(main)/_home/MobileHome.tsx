@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { canOptimize } from '@/lib/images';
+import { SPORTS, sportHref } from '@/lib/sports';
 import type { PromoCard, TurfSummary } from '@/lib/types';
 import CouponCard from './CouponCard';
 import NextGame from './NextGame';
@@ -24,8 +25,20 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
     <div className={styles.home}>
       <header className={styles.head}>
         <NextGame />
-        <h2 className={styles.title}>Where do you want to play today?</h2>
+        <h2 className={styles.title}>What do you want to play?</h2>
       </header>
+
+      <nav className={styles.sports} aria-label="Sports">
+        {SPORTS.map((sport) => (
+          <Link key={sport.value} href={sportHref(sport.value)} className={styles.sportCard}>
+            <Image src={sport.image} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" className={styles.sportImg} />
+            <div className={styles.sportInfo}>
+              <b>{sport.label}</b>
+              <span>Explore venues <span aria-hidden>→</span></span>
+            </div>
+          </Link>
+        ))}
+      </nav>
 
       {openNow.length > 0 && (
         <section>
