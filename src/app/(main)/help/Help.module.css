@@ -1,0 +1,25 @@
+.page { max-width: 640px; padding-top: 24px; padding-bottom: 56px; display: flex; flex-direction: column; gap: 16px; }
+.title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.card h2 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.hint { font-size: 14px; color: var(--text-muted); }
+.contact { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.contactBtn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 16px; border-radius: 12px; background: var(--primary-50); color: var(--primary-800); font-weight: 700; font-size: 14px; text-decoration: none; overflow-wrap: anywhere; }
+.rows { list-style: none; display: flex; flex-direction: column; margin-top: 8px; }
+.rows li + li { border-top: 1px solid var(--border); }
+.rows a { display: grid; grid-template-columns: 32px 1fr; column-gap: 12px; padding: 12px 0; text-decoration: none; color: var(--text-primary); align-items: center; }
+.rows a span { grid-row: span 2; font-size: 22px; }
+.rows b { font-size: 15px; }
+.rows i { font-style: normal; font-size: 13px; color: var(--text-muted); }
+.faq { display: flex; flex-direction: column; margin-top: 4px; }
+.faq details { border-top: 1px solid var(--border); padding: 12px 0; }
+.faq details:first-child { border-top: 0; }
+.faq summary { cursor: pointer; font-weight: 700; font-size: 15px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; font-size: 20px; line-height: 1; color: var(--primary-700); flex: none; transition: transform 0.2s ease; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq p { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+.legal { text-align: center; font-size: 13px; color: var(--text-muted); }
+.legal a, .linkBtn { color: var(--primary-700); font-weight: 600; }
+.linkBtn { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .faq summary::after { transition: none; } }

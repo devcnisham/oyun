@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         // Private dashboards, personal booking pages and server endpoints
-        disallow: ['/admin', '/partner', '/bookings', '/profile', '/api/', '/*?*ref='],
+        disallow: ['/admin', '/partner', '/bookings', '/profile', '/settings', '/api/', '/*?*ref='],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

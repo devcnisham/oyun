@@ -1,0 +1,18 @@
+.page { max-width: 640px; padding-top: 24px; padding-bottom: 56px; display: flex; flex-direction: column; gap: 16px; }
+.title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px 8px; }
+.card h2 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }
+.rows { list-style: none; display: flex; flex-direction: column; }
+.rows li + li { border-top: 1px solid var(--border); }
+.rows a, .rows button, .static {
+  display: grid; grid-template-columns: 32px 1fr auto; column-gap: 12px; align-items: center; width: 100%;
+  padding: 13px 0; text-align: left; text-decoration: none; color: var(--text-primary); background: none; border: 0; font: inherit; cursor: pointer;
+}
+.rows a::after, .rows button::after { content: '›'; grid-column: 3; grid-row: 1 / span 2; font-size: 22px; color: var(--text-muted); }
+.static { cursor: default; }
+.rows span { grid-row: span 2; font-size: 22px; }
+.rows b { font-size: 15px; }
+.rows i { font-style: normal; font-size: 13px; color: var(--text-muted); overflow-wrap: anywhere; }
+.rows a:active, .rows button:active { background: var(--bg-muted); }
+.about { text-align: center; font-size: 13px; color: var(--text-muted); }
+.rows .static { grid-template-columns: 32px 1fr; }
