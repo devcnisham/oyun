@@ -7,6 +7,7 @@ import { DEFAULT_PRICING } from './pricing';
 import { hasSession } from './session';
 import { mutate, newId } from './store';
 import type { ActionResult, Database, TurfStatus } from './types';
+import { MAX_SPONSOR_ADS, isAllowedAdLink, isAllowedImage } from './validation/site-content';
 import { refundDue, walletTxn } from './wallet';
 import { recomputeTurfRating } from './reviews';
 
@@ -381,14 +382,17 @@ export async function saveSiteContent(_prev: ActionResult, fd: FormData): Promis
   });
 }
 
+function imageLink(fd: FormData) {
+  const image = required(fd, 'image', 'Image link', 500);
+  if (!isAllowedImage(image)) throw new ValidationError('Use an image from /public (e.g. /turfs/turf_1.jpg) or an images.unsplash.com link');
+  return image;
+}
+
 export async function savePromoCard(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
     const id = str(fd, 'promoId');
-    const image = required(fd, 'image', 'Image link', 500);
-    if (!image.startsWith('https://images.unsplash.com/') && !image.startsWith('/')) {
-      throw new ValidationError('Use an image from /public (e.g. /turfs/turf_1.jpg) or an images.unsplash.com link');
-    }
+    const image = imageLink(fd);
     const card = { title: required(fd, 'title', 'Title', 60), subtitle: required(fd, 'subtitle', 'Subtitle', 120), image };
     return await mutate((db) => {
       if (id) {
@@ -413,3 +417,41 @@ export async function deletePromoCard(_prev: ActionResult, fd: FormData): Promis
   });
 }
 
+/* ---------- sponsor ads (home page strip) ---------- */
+
+export async function saveSponsorAd(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    await requireAdmin();
+    const id = str(fd, 'adId');
+    const link = str(fd, 'link', 500);
+    if (link && !isAllowedAdLink(link)) throw new ValidationError('Link must be an https:// address or a path on this site, e.g. /arenas');
+    const ad = {
+      brand: required(fd, 'brand', 'Sponsor name', 40),
+      title: required(fd, 'title', 'Headline', 60),
+      subtitle: required(fd, 'subtitle', 'Text', 120),
+      image: imageLink(fd),
+      link,
+    };
+    return await mutate((db) => {
+      if (id) {
+        const existing = db.site.ads.find((a) => a.id === id);
+        if (!existing) throw new ValidationError('Ad not found');
+        Object.assign(existing, ad);
+        return { ok: 'Ad saved' };
+      }
+      if (db.site.ads.length >= MAX_SPONSOR_ADS) throw new ValidationError(`At most ${MAX_SPONSOR_ADS} ads. Remove one first.`);
+      db.site.ads.push({ id: newId('ad'), ...ad });
+      return { ok: 'Ad added' };
+    });
+  });
+}
+
+export async function deleteSponsorAd(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    await requireAdmin();
+    await mutate((db) => {
+      db.site.ads = db.site.ads.filter((a) => a.id !== str(fd, 'adId'));
+    });
+    return { ok: 'Ad removed' };
+  });
+}
