@@ -139,31 +139,45 @@ export default async function Home() {
         viewAllLink="/arenas" 
       />
 
-      {/* Promotional Carousel */}
-      <section className={styles.promoSection}>
-        <div className={styles.marqueeContainer}>
-          <div className={styles.marqueeTrack}>
-            {/* Rendered twice for a seamless marquee loop */}
-            {[0, 1].map((copy) =>
-              [
-                { id: '1', brand: "Nike", title: "Just Do It.", subtitle: "New Mercurial Vapor 15. Available now.", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2000&auto=format&fit=crop" },
-                { id: '2', brand: "Apple", title: "Shot on iPhone 15 Pro", subtitle: "Capture every goal in stunning 4K 60fps.", image: "https://images.unsplash.com/photo-1491933382434-500287f9b54b?q=80&w=2000&auto=format&fit=crop" },
-                { id: '3', brand: "Puma", title: "Forever Faster.", subtitle: "Lighter, Faster, Stronger.", image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=2000&auto=format&fit=crop" },
-                { id: '4', brand: "Adidas", title: "Predator Accuracy", subtitle: "Miss nothing. Score everything.", image: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?q=80&w=2000&auto=format&fit=crop" }
-              ].map((ad) => (
-                <div key={`${copy}-${ad.id}`} className={styles.promoCard} aria-hidden={copy === 1}>
-                  <Image src={ad.image} alt={ad.brand} fill sizes="600px" className={styles.promoImg} />
-                  <div className={styles.promoContent}>
-                    <div className={styles.adBrand}>{ad.brand}</div>
-                    <h2>{ad.title}</h2>
-                    <p>{ad.subtitle}</p>
-                  </div>
-                </div>
-              ))
-            )}
+      {/* Sponsor ad strip: managed in Admin → Customization, hidden while there are no real sponsors */}
+      {site.ads.length > 0 && (
+        <section className={styles.promoSection} aria-label="Sponsors">
+          <div className={styles.marqueeContainer}>
+            <div className={styles.marqueeTrack}>
+              {/* Rendered twice for a seamless marquee loop */}
+              {[0, 1].map((copy) =>
+                site.ads.map((ad) => {
+                  const card = (
+                    <>
+                      <Image src={ad.image} alt={copy === 0 ? ad.brand : ''} fill sizes="600px" className={styles.promoImg} />
+                      <div className={styles.promoContent}>
+                        <div className={styles.adBrand}>{ad.brand} · Sponsored</div>
+                        <h2>{ad.title}</h2>
+                        <p>{ad.subtitle}</p>
+                      </div>
+                    </>
+                  );
+                  const key = `${copy}-${ad.id}`;
+                  if (!ad.link) return <div key={key} className={styles.promoCard} aria-hidden={copy === 1}>{card}</div>;
+                  const external = !ad.link.startsWith('/');
+                  return (
+                    <a
+                      key={key}
+                      href={ad.link}
+                      className={styles.promoCard}
+                      aria-hidden={copy === 1}
+                      tabIndex={copy === 1 ? -1 : undefined}
+                      {...(external ? { target: '_blank', rel: 'sponsored noopener noreferrer' } : {})}
+                    >
+                      {card}
+                    </a>
+                  );
+                })
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Explore By Area (OYO Style Categories) */}
       <section className={styles.bgSection}>

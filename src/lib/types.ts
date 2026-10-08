@@ -262,11 +262,22 @@ export interface PromoCard {
   image: string;
 }
 
+// A paid sponsor in the home page ad strip. Empty by default: only real sponsors go here.
+export interface SponsorAd {
+  id: string;
+  brand: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  link: string; // optional: '' when the card is not clickable
+}
+
 export interface SiteContent {
   heroTitle: string;
   announcement: string;
   announcementActive: boolean;
   promos: PromoCard[];
+  ads: SponsorAd[];
 }
 
 export interface Application {
