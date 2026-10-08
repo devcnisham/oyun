@@ -69,7 +69,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
 
         {/* Quick facts right under the address */}
         <ul className={styles.facts}>
-          <li><span aria-hidden>🏟️</span>{turf.surface}</li>
           <li><span aria-hidden>💡</span>Open {turf.openTime} – {turf.closeTime}</li>
           {turf.isVerified && <li><span aria-hidden>✓</span>Verified by OYUN</li>}
         </ul>
