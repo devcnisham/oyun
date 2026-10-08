@@ -108,8 +108,26 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         )}
         </aside>
 
-        {/* Left column (bottom on mobile): full details */}
+        {/* Left column (bottom on mobile): location, about, amenities, reviews */}
         <div className={styles.more}>
+        <div className={styles.mapSection}>
+          <h2>Location</h2>
+          <div className={styles.mapContainer}>
+            <iframe
+              title={`${turf.name} on map`}
+              src={`https://www.google.com/maps?q=${encodeURIComponent(turf.name + ' ' + turf.location)}&output=embed`}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+
+        <hr className={styles.divider} />
+
         <div className={styles.detailsSection}>
           <h2>About {turf.name}</h2>
           <p className={styles.description}>{turf.description}</p>
@@ -171,24 +189,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
               </ul>
             </>
           )}
-        </div>
-
-        <hr className={styles.divider} />
-
-        <div className={styles.mapSection}>
-          <h2>Location</h2>
-          <div className={styles.mapContainer}>
-            <iframe
-              title={`${turf.name} on map`}
-              src={`https://www.google.com/maps?q=${encodeURIComponent(turf.name + ' ' + turf.location)}&output=embed`}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
         </div>
 
         </div>
