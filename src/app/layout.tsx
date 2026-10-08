@@ -3,6 +3,7 @@ import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import ConsentManager from "@/components/consent/ConsentManager";
 import NavTracker from "@/components/NavTracker";
+import BottomNav from "@/components/BottomNav";
 import AuthProvider from "@/components/AuthProvider";
 
 
@@ -48,6 +49,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
         {children}
+        <BottomNav />
         <ConsentManager />
         <NavTracker />
         </AuthProvider>

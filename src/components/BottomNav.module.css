@@ -1,7 +1,10 @@
-.nav { display: none; }
+.nav, .spacer { display: none; }
 
 @media (max-width: 768px) {
+  .spacer { display: block; height: var(--bottom-nav-h); }
   .nav {
+    box-sizing: border-box;
+    height: var(--bottom-nav-h);
     --nav-bg: #f7f7f8;
     position: fixed;
     left: 0;
@@ -31,5 +34,5 @@
   .tab:active svg { transform: scale(0.88); }
   .active { color: var(--primary-700); }
 }
-@media print { .nav { display: none !important; } }
+@media print { .nav, .spacer { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { .tab svg { transition: none; } }
