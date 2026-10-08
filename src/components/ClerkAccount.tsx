@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 
-// Header account control when Clerk is on: "Sign in ›" when signed out, name + account menu when signed in
+// Header account control when Clerk is on: "Sign in ›" when signed out; name + photo linking to Profile when signed in.
+// Manage account and Sign out live on the Profile page, not in a pop-up here.
 export default function ClerkAccount({ className, nameClassName }: { className?: string; nameClassName?: string }) {
   const { isLoaded, isSignedIn, user } = useUser();
 
@@ -19,12 +20,12 @@ export default function ClerkAccount({ className, nameClassName }: { className?:
     );
   }
 
+  const name = user.firstName || user.username || user.primaryEmailAddress?.emailAddress.split('@')[0] || 'player';
   return (
-    <span className={className}>
-      <Link href="/profile" className={nameClassName} style={{ color: 'inherit', textDecoration: 'none' }}>
-        Hi, {user.firstName || user.username || user.primaryEmailAddress?.emailAddress.split('@')[0] || 'player'} <span aria-hidden>›</span>
-      </Link>
-      <UserButton appearance={{ elements: { avatarBox: { width: 28, height: 28 } } }} />
-    </span>
+    <Link href="/profile" className={className} aria-label={`Account of ${name}`}>
+      <span className={nameClassName}>Hi, {name} <span aria-hidden>›</span></span>
+      {/* eslint-disable-next-line @next/next/no-img-element -- Clerk serves the sized photo */}
+      <img src={user.imageUrl} alt="" width={28} height={28} style={{ borderRadius: '50%', objectFit: 'cover' }} />
+    </Link>
   );
 }
