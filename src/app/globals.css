@@ -210,8 +210,8 @@ html {
 
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
-  /* Room so the floating search button never covers the last item */
-  .appMain { padding-bottom: calc(84px + env(safe-area-inset-bottom)); min-height: 100dvh; }
+  /* Room so the bottom tab bar and floating search button never cover the last item */
+  .appMain { padding-bottom: calc(150px + env(safe-area-inset-bottom)); min-height: 100dvh; }
   /* Apps don't have a website footer; links live on the Profile tab */
   .appMain ~ footer { display: none; }
   button, a { touch-action: manipulation; }
