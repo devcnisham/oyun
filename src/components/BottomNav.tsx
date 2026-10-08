@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import FloatingSearch from './FloatingSearch';
+import ProfileTabIcon from './ProfileTabIcon';
 import styles from './BottomNav.module.css';
 
 const ICONS = {
@@ -39,7 +40,7 @@ export default function BottomNav() {
         const active = t.match(path);
         const tab = (
           <Link key={t.href} href={t.href} className={`${styles.tab} ${active ? styles.active : ''}`} aria-current={active ? 'page' : undefined}>
-            <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden>{ICONS[t.icon]}</svg>
+            {t.icon === 'profile' ? <ProfileTabIcon /> : <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden>{ICONS[t.icon]}</svg>}
             <span>{t.label}</span>
           </Link>
         );
