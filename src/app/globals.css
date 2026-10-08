@@ -215,8 +215,8 @@ html {
 
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
-  /* Room so the floating search button never covers the last item (the tab bar adds its own spacer) */
-  .appMain { padding-bottom: 84px; min-height: 100dvh; }
+  /* A little air above the tab bar (it adds its own spacer) */
+  .appMain { padding-bottom: 24px; min-height: 100dvh; }
   /* Apps don't have a website footer; links live on the Profile tab */
   .appMain ~ footer { display: none; }
   button, a { touch-action: manipulation; }

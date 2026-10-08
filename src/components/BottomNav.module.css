@@ -12,7 +12,8 @@
     bottom: 0;
     z-index: 1050;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    align-items: start;
     padding: 8px 4px calc(6px + env(safe-area-inset-bottom));
     background: var(--nav-bg);
     border-top: 1px solid var(--border);
@@ -33,6 +34,23 @@
   .tab svg { transition: transform 0.15s ease; }
   .tab:active svg { transform: scale(0.88); }
   .active { color: var(--primary-700); }
+  .search {
+    justify-self: center;
+    width: 58px;
+    height: 58px;
+    margin-top: -26px; /* rises out of the bar */
+    border-radius: 50%;
+    border: 4px solid var(--nav-bg);
+    background: var(--primary-700);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 8px 18px rgba(211, 16, 39, 0.35);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease;
+  }
+  .search:active { transform: scale(0.92); }
 }
 @media print { .nav, .spacer { display: none !important; } }
-@media (prefers-reduced-motion: reduce) { .tab svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .tab svg, .search { transition: none; } }
