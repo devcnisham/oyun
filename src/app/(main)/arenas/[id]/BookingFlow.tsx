@@ -18,7 +18,8 @@ import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
-import type { Slot, Turf } from '@/lib/types';
+import { hourlyRate } from '@/lib/pricing';
+import type { PitchSize, Slot, Turf } from '@/lib/types';
 import styles from './BookingFlow.module.css';
 
 export interface BookingFlowProps {
@@ -61,6 +62,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [date, setDate] = useState(initialDate);
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [selected, setSelected] = useState<number[]>([]);
+  const [size, setSize] = useState<PitchSize>('full'); // whole pitch or one half (turfs that split)
   const [loadingSlots, startSlotLoad] = useTransition();
   const [toast, setToast] = useState('');
 
@@ -107,7 +109,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   // Keep the slot map live, like a cinema seat map
   const refreshSlots = useCallback(
     async (forDate: string) => {
-      const fresh = await getSlotsForDate(turf.id, forDate);
+      const fresh = await getSlotsForDate(turf.id, forDate, size);
       setSlots(fresh);
       setSelected((prev) => {
         const still = prev.filter((h) => fresh.find((s) => s.hour === h)?.available);
@@ -115,7 +117,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         return still;
       });
     },
-    [turf.id, flash]
+    [turf.id, size, flash]
   );
 
   // Live seat map: other players' holds and bookings show up within a second
@@ -174,6 +176,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         addOns: [],
         useWallet,
         phone: phoneDigits,
+        size,
       });
       if (cancelled) return;
       if ('error' in result) setError(result.error);
@@ -183,14 +186,24 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       cancelled = true;
       window.clearTimeout(t);
     };
-  }, [inCheckout, turf.id, date, selected, promo, useWallet, phoneDigits]);
+  }, [inCheckout, turf.id, date, selected, promo, useWallet, phoneDigits, size]);
 
   const changeDate = (next: string) => {
     if (next === date) return;
     setDate(next);
     setSelected([]);
     startSlotLoad(async () => {
-      setSlots(await getSlotsForDate(turf.id, next));
+      setSlots(await getSlotsForDate(turf.id, next, size));
+    });
+  };
+
+  // Full pitch or half: a different price and availability, so start the pick again
+  const changeSize = (next: PitchSize) => {
+    if (next === size) return;
+    setSize(next);
+    setSelected([]);
+    startSlotLoad(async () => {
+      setSlots(await getSlotsForDate(turf.id, date, next));
     });
   };
 
@@ -213,7 +226,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     if (selected.length === 0 || holding) return;
     setHolding(true);
     try {
-      const result = await holdSlots(turf.id, date, selected);
+      const result = await holdSlots(turf.id, date, selected, size);
       setSlots(result.slots);
       if (!result.ok) {
         setSelected((prev) => prev.filter((h) => result.slots.find((s) => s.hour === h)?.available));
@@ -238,7 +251,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     }
     const entered = code.trim().toUpperCase();
     if (!entered) return;
-    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: [], useWallet, phone: phoneDigits });
+    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: [], useWallet, phone: phoneDigits, size });
     if (!('error' in tryPromo) && tryPromo.promoCode && !tryPromo.promoError) {
       setPromo(tryPromo.promoCode);
       setCodeError('');
@@ -285,6 +298,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         useWallet,
         phone: playerPhone,
         name: playerName,
+        size,
         referralCode: rewards.referralEnabled && referral?.status === 'valid' ? code : null,
       });
       if (!result.ids) {
@@ -321,14 +335,47 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         ))}
       </div>
 
-      {/* 2 · Slot map */}
+      {/* 2 · Full or half pitch (only on turfs that split down the middle) */}
+      {turf.halfPitch && (
+        <>
+          <div className={styles.stepHead}>
+            <h3>Choose pitch</h3>
+          </div>
+          <div className={styles.pitchPick} role="radiogroup" aria-label="Pitch">
+            {(['full', 'half'] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                role="radio"
+                aria-checked={size === s}
+                className={`${styles.pitchOption} ${size === s ? styles.pitchOptionOn : ''}`}
+                onClick={() => changeSize(s)}
+              >
+                <svg viewBox="0 0 60 38" width="60" height="38" aria-hidden className={styles.pitchArt}>
+                  <rect x="1" y="1" width="58" height="36" rx="3" className={styles.pitchGrass} />
+                  {s === 'half' && <rect x="30" y="1" width="29" height="36" rx="0" className={styles.pitchOff} />}
+                  <rect x="1" y="1" width="58" height="36" rx="3" className={styles.pitchLines} />
+                  <line x1="30" y1="1" x2="30" y2="37" className={styles.pitchLines} />
+                  <circle cx="30" cy="19" r="6" className={styles.pitchLines} />
+                  <rect x="1" y="11" width="7" height="16" className={styles.pitchLines} />
+                  <rect x="52" y="11" width="7" height="16" className={styles.pitchLines} />
+                </svg>
+                <b>{s === 'full' ? 'Full pitch' : 'Half pitch'}</b>
+                <small>{s === 'full' ? turf.size : 'Smaller games'} · from {rupees(hourlyRate(turf, s))}/hr</small>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* 3 · Slot map */}
       <div className={styles.stepHead}>
         <h3>Pick your slots</h3>
         <span className={styles.muted}>{loadingSlots ? 'Updating…' : `${availableCount} open`}</span>
       </div>
 
       <div className={styles.pitch} aria-hidden>
-        <span>⚽ {turf.size} pitch · {dateInfo?.label}</span>
+        <span>⚽ {size === 'half' ? 'Half pitch' : `${turf.size} pitch`} · {dateInfo?.label}</span>
       </div>
 
       <div className={`${styles.map} ${loadingSlots ? styles.mapLoading : ''}`}>
@@ -407,7 +454,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
               <div className={styles.ticket}>
                 <div>
                   <b>{turf.name}</b>
-                  <span className={styles.muted}>{turf.area} · {turf.size}</span>
+                  <span className={styles.muted}>{turf.area} · {size === 'half' ? 'Half pitch' : turf.size}</span>
                 </div>
                 <div className={styles.ticketRow}>
                   <span>{dateInfo?.label}</span>

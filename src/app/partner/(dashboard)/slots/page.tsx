@@ -46,7 +46,9 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
 
         <div className={dash.slotGrid}>
           {slots.map((s) => {
-            const booking = bookings.find((b) => b.hour === s.hour);
+            // A pitch that splits can have two bookings in one hour (half A and half B)
+            const hourBookings = bookings.filter((b) => b.hour === s.hour);
+            const booking = hourBookings[0];
             const block = blocks.find((b) => b.hour === s.hour);
             const cls = s.reason === 'past' ? dash.slotPast : booking ? dash.slotBooked : block ? dash.slotBlocked : dash.slotFree;
             return (
@@ -54,7 +56,11 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                 <span className={dash.slotTime}>{formatSlotRange(s.hour)}</span>
                 <span>₹{s.price}{s.tags.length > 0 && <span className={dash.muted}> · {s.tags.join(', ')}</span>}</span>
                 {booking ? (
-                  <span>📅 {booking.customerName}{booking.source === 'walk_in' ? ' (walk-in)' : ''}</span>
+                  hourBookings.map((b) => (
+                    <span key={b.id}>
+                      📅 {b.customerName}{b.source === 'walk_in' ? ' (walk-in)' : ''}{b.pitch && b.pitch !== 'full' ? ` · half ${b.pitch}` : ''}
+                    </span>
+                  ))
                 ) : block ? (
                   <>
                     <span>⛔ {block.reason}</span>

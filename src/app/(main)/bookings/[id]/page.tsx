@@ -10,6 +10,7 @@ import BackButton from '@/components/BackButton';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/lib/cancel-policy';
 import CancelBooking from './CancelBooking';
 import ReviewForm from './ReviewForm';
+import { halfNote } from '@/lib/pricing';
 
 const STATUS_TEXT: Record<string, string> = {
   confirmed: 'Booking confirmed',
@@ -52,7 +53,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
         </div>
         <h1 className={styles.turf}>{turf.name}</h1>
         <p className={styles.when}>
-          {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {formatSlotRange(booking.hour)}
+          {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {formatSlotRange(booking.hour)}{halfNote(booking.pitch)}
         </p>
         <p className={styles.where}>{turf.location}</p>
 

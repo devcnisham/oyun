@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getSlots } from '@/lib/pricing';
 import { getPublicTurf } from '@/lib/queries';
 import { getDb } from '@/lib/store';
-import { addDays, formatDate, isValidDate, istNow } from '@/lib/time';
+import { BOOKING_DAYS, addDays, formatDate, isValidDate, istNow } from '@/lib/time';
 import { deviceHolder } from '@/lib/device-holder';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbSchema, turfSchema } from '@/lib/schema';
@@ -39,7 +39,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
 
   const db = await getDb();
   const now = istNow();
-  const dates = Array.from({ length: 14 }, (_, i) => {
+  const dates = Array.from({ length: BOOKING_DAYS }, (_, i) => {
     const date = addDays(now.date, i);
     const d = new Date(`${date}T00:00:00+05:30`);
     return {

@@ -5,6 +5,7 @@ import { checkInBooking, markNoShow } from '@/lib/partner-actions';
 import { getDb } from '@/lib/store';
 import { addDays, formatDate, formatDateTime, formatSlotRange, istNow } from '@/lib/time';
 import CheckInDesk from './CheckInDesk';
+import { halfNote } from '@/lib/pricing';
 
 export default async function CheckInPage() {
   const ctx = await requirePartner('checkin');
@@ -57,7 +58,7 @@ export default async function CheckInPage() {
                   const started = b.hour <= now.hour;
                   return (
                     <tr key={b.id}>
-                      <td className={dash.strong}>{formatSlotRange(b.hour)}</td>
+                      <td className={dash.strong}>{formatSlotRange(b.hour)}{halfNote(b.pitch)}</td>
                       <td>{b.customerName}<div className={dash.muted}>{b.customerPhone}</div></td>
                       <td className={dash.muted}>{b.code}</td>
                       <td>
@@ -106,7 +107,7 @@ export default async function CheckInPage() {
                 <div key={b.id} className={dash.listItem}>
                   <div>
                     <div className={dash.strong}>{b.customerName}</div>
-                    <div className={dash.muted}>{formatDate(b.date)} · {b.timeLabel}</div>
+                    <div className={dash.muted}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</div>
                   </div>
                   <ActionForm action={markNoShow} inline>
                     <input type="hidden" name="bookingId" value={b.id} />

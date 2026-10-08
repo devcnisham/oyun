@@ -10,13 +10,13 @@ import { ValidationError, refreshAll } from './action-utils';
 import { rateLimit } from './rate-limit';
 import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
 import { deviceHolder } from './device-holder';
-import { buildQuote, getSlots, normalizePhone } from './pricing';
+import { buildQuote, freePart, getSlots, normalizePhone } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
-import { addDays, formatHour, isValidDate, istNow } from './time';
-import type { Booking, BookingAddOn, Database, PriceLine, Slot } from './types';
+import { BOOKING_DAYS, addDays, formatHour, isValidDate, istNow } from './time';
+import type { Booking, BookingAddOn, Database, PitchSize, PriceLine, Slot } from './types';
 import { createPlayer, findByReferralCode, refundDue, walletTxn } from './wallet';
 
-const MAX_DAYS_AHEAD = 14;
+const MAX_DAYS_AHEAD = BOOKING_DAYS - 1;
 const MAX_SLOTS = 6;
 const HOLD_MINUTES = 8;
 
@@ -56,21 +56,24 @@ function cleanHours(hours: unknown): number[] {
 
 /* ---------- slots ---------- */
 
-export async function getSlotsForDate(turfId: string, date: string): Promise<Slot[]> {
+const cleanSize = (size: unknown): PitchSize => (size === 'half' ? 'half' : 'full');
+
+export async function getSlotsForDate(turfId: string, date: string, size: PitchSize = 'full'): Promise<Slot[]> {
   const db = await getDb();
   const turf = bookableTurf(db, String(turfId));
   if (!turf || !checkDate(String(date))) return [];
-  return getSlots(db, turf, date, istNow(), await deviceHolder(false));
+  return getSlots(db, turf, date, istNow(), await deviceHolder(false), false, cleanSize(size));
 }
 
 export type HoldResult = { ok: true; expiresInMs: number; slots: Slot[] } | { ok: false; error: string; slots: Slot[] };
 
 // Lock the chosen slots for this device while it checks out. Replaces any earlier hold.
-export async function holdSlots(turfId: string, date: string, hours: number[]): Promise<HoldResult> {
+export async function holdSlots(turfId: string, date: string, hours: number[], size: PitchSize = 'full'): Promise<HoldResult> {
   const holder = (await deviceHolder(true))!;
+  const pitchSize = cleanSize(size);
   try {
     await throttle('hold', 60, holder, 15);
-    if (!checkDate(String(date))) throw new ValidationError('Pick a date within the next two weeks');
+    if (!checkDate(String(date))) throw new ValidationError('Pick a date within the next week');
     const wanted = cleanHours(hours);
     const expiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString();
     await mutate((db) => {
@@ -78,20 +81,22 @@ export async function holdSlots(turfId: string, date: string, hours: number[]): 
       if (!turf) throw new ValidationError('This turf is not taking bookings right now');
       purgeExpiredHolds(db);
       db.holds = db.holds.filter((h) => h.holder !== holder);
-      const slots = getSlots(db, turf, date, istNow(), holder);
+      const slots = getSlots(db, turf, date, istNow(), holder, false, pitchSize);
       for (const hour of wanted) {
         const slot = slots.find((s) => s.hour === hour);
-        if (!slot?.available) {
+        const pitch = slot?.available ? freePart(db, turf, date, hour, pitchSize, holder) : null;
+        if (!slot?.available || !pitch) {
           const what = slot?.reason === 'held' ? 'is being booked by someone else right now' : 'was just taken';
           throw new ValidationError(`${slot?.label ?? formatHour(hour)} ${what}. Please pick another slot.`);
         }
-        db.holds.push({ id: newId('hold'), turfId: turf.id, date, hour, holder, expiresAt });
+        // Holding a half claims a specific half (A or B), so the booking lands on the same one
+        db.holds.push({ id: newId('hold'), turfId: turf.id, date, hour, holder, pitch, expiresAt });
       }
     });
-    return { ok: true, expiresInMs: HOLD_MINUTES * 60_000, slots: await getSlotsForDate(turfId, date) };
+    return { ok: true, expiresInMs: HOLD_MINUTES * 60_000, slots: await getSlotsForDate(turfId, date, pitchSize) };
   } catch (err) {
     if (!(err instanceof ValidationError)) throw err;
-    return { ok: false, error: err.message, slots: await getSlotsForDate(turfId, date) };
+    return { ok: false, error: err.message, slots: await getSlotsForDate(turfId, date, pitchSize) };
   }
 }
 
@@ -128,6 +133,7 @@ export interface SelectionRequest {
   addOns: { id: string; qty: number }[];
   useWallet: boolean;
   phone: string;
+  size?: PitchSize; // full pitch (default) or one half
 }
 
 export interface BookingRequest extends SelectionRequest {
@@ -163,6 +169,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
   const turf = bookableTurf(db, req.turfId);
   if (!turf) throw new ValidationError('This turf is not taking bookings right now');
   const hours = cleanHours(req.hours);
+  const size = turf.halfPitch ? cleanSize(req.size) : 'full';
   const phone = normalizePhone(req.phone);
   const name = req.name.trim().slice(0, 80) || 'Player';
   const now = istNow();
@@ -187,7 +194,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
   hours.forEach((hour, i) => {
     const quote = buildQuote(
       db,
-      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, source: 'online', holder },
+      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, source: 'online', holder, size },
       now
     );
     if (!quote) throw new ValidationError('Turf not found');
@@ -202,6 +209,11 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
       if (promo) promo.uses += 1;
     }
 
+    // Land on the half this device is holding, else the first free one (the quote skips this check)
+    const held = db.holds.find((h) => h.holder === holder && h.turfId === turf.id && h.date === req.date && h.hour === hour);
+    const heldPart = held && ((held.pitch ?? 'full') === 'full') === (size === 'full') ? (held.pitch ?? 'full') : null;
+    const pitch = heldPart ?? freePart(db, turf, req.date, hour, size, holder) ?? (size === 'half' ? 'A' : 'full');
+
     const booking: Booking = {
       id: newId('bk'),
       code: newBookingCode(db),
@@ -209,6 +221,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
       date: req.date,
       hour,
       timeLabel: formatHour(hour),
+      ...(pitch !== 'full' ? { pitch } : {}),
       customerName: name,
       customerPhone: phone,
       playerId: player.id,
@@ -257,7 +270,7 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
 
 export async function quoteSelection(req: SelectionRequest): Promise<SelectionQuote | { error: string }> {
   try {
-    if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next two weeks');
+    if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next week');
     await throttle('quote', 300);
     const db = await getDb();
     const holder = await deviceHolder(false);
@@ -275,7 +288,7 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
     if (clerkEnabled && !accountId) throw new ValidationError('Please sign in to book');
     if (!String(req.name ?? '').trim()) throw new ValidationError('Enter your name');
     if (normalizePhone(String(req.phone ?? '')).length !== 10) throw new ValidationError('Enter a 10-digit mobile number');
-    if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next two weeks');
+    if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next week');
     const holder = await deviceHolder(true);
     await throttle('book', 30, holder, 10);
 
@@ -390,6 +403,7 @@ export interface BookingSummary {
   date: string;
   hour: number;
   timeLabel: string;
+  pitch?: Booking['pitch'];
   status: Booking['status'];
   total: number;
   due: number;
@@ -417,6 +431,7 @@ export async function getBookingSummaries(ids: string[]): Promise<BookingSummary
         date: b.date,
         hour: b.hour,
         timeLabel: b.timeLabel,
+        pitch: b.pitch,
         status: b.status,
         total: b.pricing.total,
         due: b.pricing.total - b.amountPaid,

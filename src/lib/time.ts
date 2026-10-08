@@ -1,3 +1,6 @@
+// Players can book today and the next 6 days (one week shown in the date picker)
+export const BOOKING_DAYS = 7;
+
 // All booking times are in India Standard Time, regardless of server timezone
 const IST = 'Asia/Kolkata';
 

@@ -6,7 +6,7 @@ import { getDb } from '@/lib/store';
 import { addDays, formatDate, formatHour, formatSlotRange, istNow } from '@/lib/time';
 import ActionForm from '@/components/dash/ActionForm';
 import { blockSlot } from '@/lib/partner-actions';
-import { turfHours } from '@/lib/pricing';
+import { halfNote, turfHours } from '@/lib/pricing';
 import styles from './layout.module.css';
 
 export default async function PartnerDashboard() {
@@ -75,7 +75,7 @@ export default async function PartnerDashboard() {
               {today.map((b) => (
                 <div key={b.id} className={dash.listItem}>
                   <div>
-                    <div className={dash.strong}>{formatSlotRange(b.hour)}</div>
+                    <div className={dash.strong}>{formatSlotRange(b.hour)}{halfNote(b.pitch)}</div>
                     <div className={dash.muted}>{b.customerName} · {b.source === 'walk_in' ? 'Walk-in' : 'Online'}</div>
                   </div>
                   <Badge status={b.status} />
@@ -100,7 +100,7 @@ export default async function PartnerDashboard() {
               {recent.map((b) => (
                 <tr key={b.id}>
                   <td className={dash.strong}>{b.customerName}</td>
-                  <td>{formatDate(b.date)} · {b.timeLabel}</td>
+                  <td>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</td>
                   <td>{b.source === 'walk_in' ? 'Walk-in' : 'Online'}</td>
                   <td><Badge status={b.status} /></td>
                   <td className={dash.num}>{inr(b.pricing.total)}</td>
