@@ -3,7 +3,7 @@
   position: fixed;
   z-index: 1000;
   right: 16px;
-  bottom: calc(18px + env(safe-area-inset-bottom));
+  bottom: calc(84px + env(safe-area-inset-bottom)); /* above the bottom tab bar */
   width: 56px;
   height: 56px;
   border-radius: 50%;
