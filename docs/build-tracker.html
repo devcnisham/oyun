@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #41 (main at 07af38d) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #52 (main at f177758) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1136,14 +1136,14 @@ featureGroups:[
   ["Area chips, quick tiles, Browse by area grid, Why OYUN strip, and How OYUN works card on the phone home","removed","Taken out at the owner's request (PR #20, #28); areas are still reachable from the turfs list and the footer","–"],
   ["Area landing pages","built","One SEO page per area with copy","(main)/turfs/[area]"],
   ["Floating search sheet","built","Phone only","components/FloatingSearch.tsx"],
-  ["Phone side menu","built","Home, My bookings, Saved turfs, Profile, Turf owners links; Help & settings section with Help center and Settings links. Turfs by area was removed (PR #20); legal links remain in footer and Help center (PR #37).","components/SideMenu.tsx"],
+  ["Phone side menu","removed","Opened from top-left button with Home, Bookings, Saved, Profile, Help & settings. Bookings, Saved, Turfs and Help & settings links now in Profile in Book / Help & settings sections (PR #43). Home link removed; press home icon in bottom tab bar instead (PR #40, #41).","components/SideMenu.tsx"],
   ["Launch promo card","built","Featured card and popup ad; its dead Unsplash photo was replaced by a turf photo and existing databases are healed on load (PR #22)","lib/seed.ts"],
   ["Stats banner and brand ad strip on home","partial","Static placeholder content (100+ turfs, 50k+ players, sports brand ads); not real data","(main)/page.tsx"],
   ["Pickleball venues","partial","TheCourtyard (Bikarnakatte, 05:00–23:00, ₹600/hour, synthetic, washroom, water, parking, paddle and ball rental, house rules); OneLve (Bejai mall, 3 open + 2 being built, synthetic). Both pending until admin activates. OneLve missing: price, opening time, phone, real photos; migrate() refreshes drafts that carry placeholder description. Source: PR #39 Playo and Daijiworld Sep 2025.","data/turfs.ts"]
  ]},
  {g:"Turf detail page",a:"Player",subs:[
   ["Photo gallery","partial","First image only with a 1/N counter; no carousel","arenas/[id]/TurfDetail.tsx"],
-  ["Turf information","built","Size and surface, address with maps link, offers strip, perks, sports and formats, amenities, tap-to-call","TurfDetail.tsx"],
+  ["Turf information","built","Badge (New/★ beside name) with heart on same row (PR #49). Opening-hours chip (and Verified, review count) above address. Size and surface, address with maps link, offers strip, perks, sports and formats, amenities, tap-to-call. Surface chip removed (stays in badge above name). Why book this turf? section removed (PR #49-#52). Leftover divider removed (PR #49-#52).","TurfDetail.tsx"],
   ["Reviews on the page","built","Latest 10 with the aggregate rating","TurfDetail.tsx"],
   ["Embedded map","built","Google Maps iframe","TurfDetail.tsx"],
   ["Maintenance state","built","Visible but not bookable, with a notice","TurfDetail.tsx"],
@@ -1237,7 +1237,7 @@ featureGroups:[
  {g:"Player account and sign-in",a:"Player",subs:[
   ["Clerk sign-in and sign-up","built","When the Clerk key is set; also a modal at checkout and a header account menu","(auth)/, lib/clerk.ts"],
   ["Device account (no Clerk)","partial","Name plus a 10-digit Indian mobile in localStorage; no OTP, anyone can claim a number","(auth)/_shell/PlayerForm.tsx"],
-  ["Profile page","built","Name edit (device mode), menu links, sign out","(main)/profile"],
+  ["Profile page","built","Photo (Clerk photo or initial for device sign-in, red ring when active), name (edit in device mode), email, Manage account (openUserProfile), Sign out. Sections: Book (Bookings, Saved turfs, all turfs from sidebar), Help & settings (Help center, Settings, support links, turf owner links moved from side menu). PR #43, #45, #48.","(main)/profile"],
   ["Wallet page, photo, password recovery","planned","Wallet shows only on the ticket page","–"]
  ]},
  {g:"Wallet, cashback and referral",a:"Player",subs:[
@@ -1255,8 +1255,8 @@ featureGroups:[
  ]},
  {g:"App feel (PWA and mobile)",a:"Player",subs:[
   ["Install manifest","built","Standalone, portrait, red theme, icons, two shortcuts","manifest.ts"],
-  ["Phone shell","built","Hide-on-scroll header, slide-in menu, bottom booking bar, area picker, floating controls","components/"],
-  ["Bottom tab bar","built","Home, Turfs, Bookings, Profile with icon over label, active state in red. On all player pages; hidden on admin/partner dashboards. Sits below slot selection bar and floating search via CSS var --bottom-nav-h; spacer keeps page ends clear. PR #40, #41.","components/BottomNav.tsx"],
+  ["Phone shell","built","Hide-on-scroll logo inset header with \"Book · Play · Repeat\" tagline and city chip (Mangalore with pulsing live dot linking /arenas); faint pitch markings in top bar. Side menu removed, menu now on Profile (PR #43). Clerk account and bookings icons in header removed; use Profile tab instead (PR #45). \"Playing in\" area picker strip removed (PR #45). Bottom tab bar with search button in middle, area picker and List your turf pill removed (PR #44, #45).","components/"],
+  ["Bottom tab bar","built","Home, Turfs, Bookings, Profile with icon over label, active state in red. Middle raises a red search button; sheet portaled to body. On all player pages; hidden on admin/partner dashboards. Sits below slot selection bar via CSS var --bottom-nav-h; spacer keeps page ends clear. PR #40, #41, #44.","components/BottomNav.tsx"],
   ["Service worker, offline, push, install prompt","planned","Not built","–"]
  ]},
  {g:"SEO, legal and analytics",a:"Platform",subs:[
@@ -1757,6 +1757,20 @@ DATA.risks.push({id:"R-15",t:"Login form ships hard-coded admin and partner cred
 
 DATA.tasks.push(
  {id:"P9-20",p:"P9",t:"Remove the seed fallback password for the OYUN Operations partner login and set PARTNER_EMAIL and PARTNER_PASSWORD on the deployed site",s:"todo",pr:"P1",n:"src/lib/seed.ts creates that partner with a fixed default password when PARTNER_PASSWORD is not set. If the deployed site never set it, that account can be signed into with the default."}
+);
+
+
+DATA.tasks.push(
+ {id:"P7-27",p:"P7",t:"Remove side menu; move all links to Profile page (Book and Help & settings sections with subsections)",s:"done",pr:"P1",n:"Bookings, Saved turfs and all turfs moved under Book. Help center, Settings, support, cookies, List your turf and partner login moved under Help & settings. PR #43."},
+ {id:"P7-28",p:"P7",t:"Move floating search button into the middle of the bottom tab bar as a raised red round button; sheet portaled to body",s:"done",pr:"P2",n:"Floating search no longer on every screen. PR #44."},
+ {id:"P7-29",p:"P7",t:"Remove Clerk UserButton pop-up from header; move account functions to Profile tab",s:"done",pr:"P2",n:"Profile shows signed-in player's photo (Clerk photo or device initial), name, email. Manage account button opens Clerk's profile. Sign out link. PR #45."},
+ {id:"P7-30",p:"P7",t:"Hide phone header account link and bookings icon; remove \"Playing in Mangalore\" area picker strip and List your turf pill from phone (desktop keeps both)",s:"done",pr:"P2",n:"Desktop header still shows account menu and bookings icon. PR #45."},
+ {id:"P7-31",p:"P7",t:"Add home sport filter notes: \"coming soon\" when a sport has no live venue (Pickleball), \"every slot taken today\" when all full",s:"done",pr:"P2",n:"Appears in place of the Open slots rail when no slots exist. PR #46."},
+ {id:"P7-32",p:"P7",t:"Phone top bar redesign: logo inset, \"Book · Play · Repeat\" tagline, Mangalore city chip with pulsing live dot linking /arenas, faint pitch markings",s:"done",pr:"P1",n:"All motion respects prefers-reduced-motion. PR #47."},
+ {id:"P7-33",p:"P7",t:"Profile tab shows signed-in player's picture (Clerk photo or initial for device sign-in), ring red when active",s:"done",pr:"P2",n:"Visible on bottom tab bar. PR #48."},
+ {id:"P7-34",p:"P7",t:"Turf page: New/★ badge beside name with heart on same row; opening-hours chip (and Verified, review count) above address",s:"done",pr:"P2",n:"PR #52. Restructures the title and info rows."},
+ {id:"P7-35",p:"P7",t:"Remove surface chip from turf page address section (surface stays in badge above name)",s:"done",pr:"P2",n:"Surface still shows in the badge above the name. PR #51."},
+ {id:"P7-36",p:"P7",t:"Remove Why book this turf? section and leftover divider from turf page",s:"done",pr:"P2",n:"Its facts became chips under the address (PR #49); leftover divider removed (PR #50)."}
 );
 
 /* ===================== BOOT ===================== */
