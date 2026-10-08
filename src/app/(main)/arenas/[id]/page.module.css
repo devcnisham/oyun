@@ -137,33 +137,24 @@
 }
 
 /* Why Book */
-.whyBook h2 {
-  font-size: 18px;
-  margin-bottom: 16px;
-}
-
-.perk {
+.facts {
+  list-style: none;
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }
-
-.perkIcon {
-  font-size: 20px;
-  margin-top: 2px;
-}
-
-.perkTitle {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.perkDesc {
+.facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
   font-size: 13px;
-  color: var(--text-muted);
-  margin-top: 4px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* Slots */
