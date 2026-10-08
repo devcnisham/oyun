@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import { isAllowedAdLink, isAllowedImage } from './site-content.ts';
 
 test('images come from /public or Unsplash only', () => {

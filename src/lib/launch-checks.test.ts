@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import { launchProblems, loginChecks, realtimeConfigured } from './launch-checks.ts';
 
 const logins = { adminLogin: true, partnerLogin: true, sessionSecretStrong: true, loginPasswordsStrong: true };
