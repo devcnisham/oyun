@@ -67,6 +67,13 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink}>View on map</a>
         </div>
 
+        {/* Quick facts right under the address */}
+        <ul className={styles.facts}>
+          <li><span aria-hidden>🏟️</span>{turf.surface}</li>
+          <li><span aria-hidden>💡</span>Open {turf.openTime} – {turf.closeTime}</li>
+          {turf.isVerified && <li><span aria-hidden>✓</span>Verified by OYUN</li>}
+        </ul>
+
         {offers.length > 0 && (
           <div className={styles.offerStrip}>
             {offers.map((o) => (
@@ -80,23 +87,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
 
         <hr className={styles.divider} />
 
-        <div className={styles.whyBook}>
-          <h2>Why book this turf?</h2>
-          <div className={styles.perk}>
-            <span className={styles.perkIcon}>🏟️</span>
-            <div><h3 className={styles.perkTitle}>{turf.surface}</h3></div>
-          </div>
-          {turf.isVerified && (
-            <div className={styles.perk}>
-              <span className={styles.perkIcon}>✓</span>
-              <div><h3 className={styles.perkTitle}>Inspected and verified by OYUN</h3></div>
-            </div>
-          )}
-          <div className={styles.perk}>
-            <span className={styles.perkIcon}>💡</span>
-            <div><h3 className={styles.perkTitle}>Open {turf.openTime} – {turf.closeTime}</h3></div>
-          </div>
-        </div>
 
         </div>
 
