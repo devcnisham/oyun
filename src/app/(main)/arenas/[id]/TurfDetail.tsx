@@ -84,10 +84,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             ))}
           </div>
         )}
-
-        <hr className={styles.divider} />
-
-
         </div>
 
         {/* Right column: booking panel, sticky on desktop */}
