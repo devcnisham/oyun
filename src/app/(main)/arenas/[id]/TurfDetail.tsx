@@ -48,20 +48,25 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         {/* Left column (top on mobile): turf name and highlights */}
         <div className={styles.info}>
         <span className={styles.typeBadge}>{turf.size} · {turf.surface}</span>
-        {/* Name with its rating or "New" badge, heart on the right */}
+        {/* Name, badge and address on the left; hours and map link on the right */}
         <div className={styles.titleRow}>
-          <h1 className={styles.title}>
-            {turf.name}{' '}
-            <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
-          </h1>
-          {/* Save and share sit on the photo; the opening hours take this spot */}
-          <span className={styles.hours}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 2" />
-            </svg>
-            {turf.openTime} – {turf.closeTime}
-          </span>
+          <div className={styles.titleMain}>
+            <h1 className={styles.title}>
+              {turf.name}{' '}
+              <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
+            </h1>
+            <p className={styles.addressBlock}>{turf.location}</p>
+          </div>
+          <div className={styles.titleSide}>
+            <span className={styles.hours}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              {turf.openTime} – {turf.closeTime}
+            </span>
+            <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink}>View on map</a>
+          </div>
         </div>
 
         {(turf.isVerified || turf.reviewCount > 0) && (
@@ -73,10 +78,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           </ul>
         )}
 
-        <div className={styles.addressBlock}>
-          <p>{turf.location}</p>
-          <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink}>View on map</a>
-        </div>
 
         {offers.length > 0 && (
           <div className={styles.offerStrip}>
