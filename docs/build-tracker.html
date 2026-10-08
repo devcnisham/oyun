@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #52 (main at f177758) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #55 (main at 2af0d5a) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1143,7 +1143,7 @@ featureGroups:[
  ]},
  {g:"Turf detail page",a:"Player",subs:[
   ["Photo gallery","partial","First image only with a 1/N counter; no carousel","arenas/[id]/TurfDetail.tsx"],
-  ["Turf information","built","Badge (New/★ beside name) with heart on same row (PR #49). Opening-hours chip (and Verified, review count) above address. Size and surface, address with maps link, offers strip, perks, sports and formats, amenities, tap-to-call. Surface chip removed (stays in badge above name). Why book this turf? section removed (PR #49-#52). Leftover divider removed (PR #49-#52).","TurfDetail.tsx"],
+  ["Turf information","built","Name with New/★ badge inline, address under it; on the right a clock pill with opening hours and View on map under it (PR #54, #55). Verified and review-count chips below when present. Back, save and share are round see-through buttons on the photo; no second heart by the name (PR #54). Size and surface badge above the name, offers strip, sports and formats, amenities, tap-to-call. Why book this turf? section, surface chip and its divider removed (PR #49-#51).","TurfDetail.tsx"],
   ["Reviews on the page","built","Latest 10 with the aggregate rating","TurfDetail.tsx"],
   ["Embedded map","built","Google Maps iframe","TurfDetail.tsx"],
   ["Maintenance state","built","Visible but not bookable, with a notice","TurfDetail.tsx"],
@@ -1770,7 +1770,9 @@ DATA.tasks.push(
  {id:"P7-33",p:"P7",t:"Profile tab shows signed-in player's picture (Clerk photo or initial for device sign-in), ring red when active",s:"done",pr:"P2",n:"Visible on bottom tab bar. PR #48."},
  {id:"P7-34",p:"P7",t:"Turf page: New/★ badge beside name with heart on same row; opening-hours chip (and Verified, review count) above address",s:"done",pr:"P2",n:"PR #52. Restructures the title and info rows."},
  {id:"P7-35",p:"P7",t:"Remove surface chip from turf page address section (surface stays in badge above name)",s:"done",pr:"P2",n:"Surface still shows in the badge above the name. PR #51."},
- {id:"P7-36",p:"P7",t:"Remove Why book this turf? section and leftover divider from turf page",s:"done",pr:"P2",n:"Its facts became chips under the address (PR #49); leftover divider removed (PR #50)."}
+ {id:"P7-36",p:"P7",t:"Remove Why book this turf? section and leftover divider from turf page",s:"done",pr:"P2",n:"Its facts became chips under the address (PR #49); leftover divider removed (PR #50)."},
+ {id:"P7-37",p:"P7",t:"Turf page: hours pill beside the name, round photo buttons, one heart",s:"done",pr:"P2",n:"Duplicate heart removed; back, save and share are round circles on the photo; hours as a clock pill at the right of the name. PR #54."},
+ {id:"P7-38",p:"P7",t:"Turf page: View on map under the opening hours, address under the name",s:"done",pr:"P2",n:"PR #55."}
 );
 
 /* ===================== BOOT ===================== */
