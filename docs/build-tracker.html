@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #55 (main at 2af0d5a) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #58 (main at 3b774d8) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -233,7 +233,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <div class="grid g2">
       <div class="box"><h3>What works today</h3>
         <ul class="tight">
-          <li>Browse 10 launch turfs, filter by area and sport, live hourly slots for the next 14 days.</li>
+          <li>Browse 10 launch turfs, filter by area and sport, live hourly slots for the next 7 days, full or half pitch where the turf splits.</li>
           <li>8-minute slot holds per device, up to 6 slots per booking, promo, referral and add-ons, server-side quote.</li>
           <li>Booking with a flat ₹150 advance per hour (10% of the hour's price, never under or over ₹150, so 3 hours is ₹450), the rest paid at the venue; ticket with QR, invoice, calendar file, self-cancel until 2 hours before.</li>
           <li>Reviews after check-in, saved turfs, WhatsApp share.</li>
@@ -1152,14 +1152,15 @@ featureGroups:[
   ["Deep links","built","?date= sets the date, ?ref= fills the referral code","page.tsx"]
  ]},
  {g:"Slots, holds and live updates",a:"Player",subs:[
-  ["Booking window","built","Today plus 14 days, 14 date chips","lib/pricing.ts (MAX_DAYS_AHEAD)"],
+  ["Booking window","built","Today plus 6 days: 7 date chips; the server refuses later dates (PR #58)","lib/time.ts (BOOKING_DAYS), booking-actions.ts"],
+  ["Pitch selection (full or half)","built","On turfs marked \"Can be booked as two halves\": a Choose pitch step with Full and Half cards. Half A and half B can go to different groups in the same hour; a full booking needs both halves free; blocks close both. Half price = halfPricePercent of the full rate (default 50%, rounded to ₹10) before peak, weekend and last-minute rules. Holds claim a specific half. Tickets, invoices and lists show Half pitch (A/B). PR #58.","lib/pricing.ts (freePart, getSlots), BookingFlow.tsx"],
   ["Hourly slot grid","built","Open to close, grouped Morning, Afternoon, Evening, Night; a close time at or before open means midnight","lib/pricing.ts getSlots"],
   ["Slot states","built","past, booked, blocked, held; a slot is past once its start hour is reached","lib/pricing.ts"],
   ["Hold while checking out","built","8 minutes, per device cookie (only a hash is stored); a new hold replaces the old one","booking-actions.ts, device-holder.ts"],
   ["Hold release","built","On leaving checkout, on page hide by beacon, or on timeout","api/holds/release"],
   ["Countdown timer","built","Shown in checkout; slots are released at zero","BookingFlow.tsx"],
   ["Max slots per booking","built","6, need not be consecutive","booking-actions.ts (MAX_SLOTS)"],
-  ["Double-booking protection","built","Database unique indexes on live booking, block and hold per slot","supabase migrations"],
+  ["Double-booking protection","built","Database unique indexes on live booking, block and hold per slot. With halves: one index per half for bookings and holds, a full booking counts against both (PR #58, needs supabase/setup/6-half-pitch.sql on production).","supabase migrations"],
   ["Live updates","built","Realtime broadcast per turf and date; also a 10-second poll and refresh on tab focus","lib/realtime.ts, use-slot-updates.ts"],
   ["Request limits","partial","Hold 60 per IP and 15 per device per 10 minutes; in memory per server","booking-actions.ts"]
  ]},
@@ -1772,7 +1773,12 @@ DATA.tasks.push(
  {id:"P7-35",p:"P7",t:"Remove surface chip from turf page address section (surface stays in badge above name)",s:"done",pr:"P2",n:"Surface still shows in the badge above the name. PR #51."},
  {id:"P7-36",p:"P7",t:"Remove Why book this turf? section and leftover divider from turf page",s:"done",pr:"P2",n:"Its facts became chips under the address (PR #49); leftover divider removed (PR #50)."},
  {id:"P7-37",p:"P7",t:"Turf page: hours pill beside the name, round photo buttons, one heart",s:"done",pr:"P2",n:"Duplicate heart removed; back, save and share are round circles on the photo; hours as a clock pill at the right of the name. PR #54."},
- {id:"P7-38",p:"P7",t:"Turf page: View on map under the opening hours, address under the name",s:"done",pr:"P2",n:"PR #55."}
+ {id:"P7-38",p:"P7",t:"Turf page: View on map under the opening hours, address under the name",s:"done",pr:"P2",n:"PR #55."},
+ {id:"P7-39",p:"P7",t:"Turf page: sections ordered Location, About, Amenities, Player reviews",s:"done",pr:"P3",n:"PR #57."},
+ {id:"P7-40",p:"P7",t:"Pitch selection: book the full pitch or one half (A or B)",s:"done",pr:"P1",n:"Admin switch per turf plus half price %. Tested locally: A and B in one hour, full blocked once a half is taken. PR #58."},
+ {id:"P7-41",p:"P7",t:"Booking date picker limited to one week (today + 6 days)",s:"done",pr:"P2",n:"PR #58."},
+ {id:"P7-42",p:"P7",t:"Admin turf form refuses to save a turf with no contact phone",s:"todo",pr:"P2",n:"Seen while testing PR #58. Blocks editing the Pickleball drafts, which have no phone yet."},
+ {id:"P10-16",p:"P10",t:"Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves",s:"todo",pr:"P1",n:"Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on."}
 );
 
 /* ===================== BOOT ===================== */
