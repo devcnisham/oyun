@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { launchProblems, realtimeConfigured } from './launch-checks.ts';
+import { launchProblems, loginChecks, realtimeConfigured } from './launch-checks.ts';
 
-const live = { storage: 'supabase', shared: true, realtime: true } as const;
+const logins = { adminLogin: true, partnerLogin: true, sessionSecretStrong: true, loginPasswordsStrong: true };
+const live = { storage: 'supabase', shared: true, realtime: true, ...logins } as const;
 const checks = (input: Parameters<typeof launchProblems>[0]) => launchProblems(input).map((p) => p.check);
 
 test('a fully connected production site has no problems', () => {
@@ -10,7 +11,7 @@ test('a fully connected production site has no problems', () => {
 });
 
 test('Vercel without Supabase fails storage, sharing and realtime', () => {
-  assert.deepEqual(checks({ storage: 'local-file', shared: false, realtime: false }), [
+  assert.deepEqual(checks({ ...live, storage: 'local-file', shared: false, realtime: false }), [
     'storage',
     'bookingsSharedBetweenPlayers',
     'realtimeSlotUpdates',
@@ -38,6 +39,41 @@ test('realtime needs all three Supabase variables', () => {
 });
 
 test('problem text never contains environment values', () => {
-  const text = JSON.stringify(launchProblems({ storage: 'local-file', shared: false, realtime: false }));
+  const text = JSON.stringify(launchProblems({ storage: 'local-file', shared: false, realtime: false, adminLogin: false, partnerLogin: false, sessionSecretStrong: false, loginPasswordsStrong: false }));
   assert.doesNotMatch(text, /sb_secret|sk_live|sk_test|eyJ/);
+});
+
+const secret = 'x'.repeat(32);
+const adminEnv = { ADMIN_EMAIL: 'admin@example.com', ADMIN_PASSWORD: 'long-enough-pass', SESSION_SECRET: secret };
+
+test('admin login needs email, password and session secret', () => {
+  assert.equal(loginChecks(adminEnv).adminLogin, true);
+  for (const name of Object.keys(adminEnv)) {
+    assert.equal(loginChecks({ ...adminEnv, [name]: undefined }).adminLogin, false, `${name} missing`);
+  }
+});
+
+test('the operations partner login is optional and not a launch problem', () => {
+  const result = loginChecks(adminEnv);
+  assert.equal(result.partnerLogin, false);
+  assert.deepEqual(checks({ ...live, ...result }), []);
+  assert.equal(loginChecks({ ...adminEnv, PARTNER_EMAIL: 'ops@example.com', PARTNER_PASSWORD: 'another-long-pass' }).partnerLogin, true);
+});
+
+test('a missing admin login blocks launch', () => {
+  assert.deepEqual(checks({ ...live, ...loginChecks({}) }), ['adminLogin', 'sessionSecretStrong']);
+});
+
+test('a short session secret blocks launch', () => {
+  const result = loginChecks({ ...adminEnv, SESSION_SECRET: 'short' });
+  assert.equal(result.adminLogin, true);
+  assert.deepEqual(checks({ ...live, ...result }), ['sessionSecretStrong']);
+});
+
+test('short admin or operations passwords block launch', () => {
+  assert.deepEqual(checks({ ...live, ...loginChecks({ ...adminEnv, ADMIN_PASSWORD: 'short' }) }), ['loginPasswordsStrong']);
+  assert.deepEqual(
+    checks({ ...live, ...loginChecks({ ...adminEnv, PARTNER_EMAIL: 'ops@example.com', PARTNER_PASSWORD: 'short' }) }),
+    ['loginPasswordsStrong']
+  );
 });

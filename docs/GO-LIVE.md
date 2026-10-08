@@ -39,6 +39,23 @@ Then **Deployments → ⋯ → Redeploy**. The first page load fills the empty d
 **Without `SUPABASE_SECRET_KEY` the live site does not save bookings**: each Vercel server keeps its own temporary copy,
 so players can't see each other's holds and bookings disappear. This step is required.
 
+### Admin and partner logins
+
+These are the only variables the logins read. Set them for **Production** (and Preview if you test there), then redeploy.
+
+| Login | Page | Variables it needs | Rules |
+|---|---|---|---|
+| Admin | `/admin/login` | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SESSION_SECRET` | Required. Password at least 12 characters. |
+| OYUN operations partner | `/partner/login` | `PARTNER_EMAIL`, `PARTNER_PASSWORD`, `SESSION_SECRET` | Optional; runs the launch turfs until each owner joins. Password at least 12 characters. |
+| Turf owners and staff | `/partner/login` | none | Accounts live in the database (created when you approve a listing or an owner adds staff). |
+
+- `SESSION_SECRET` signs both login cookies and must be random text of at least 32 characters. Make one with
+  `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`. Changing it signs everyone out.
+- The email match ignores capitals and spaces; the password is exact. Changes apply on the next login after the redeploy.
+- After 5 failed logins the account is locked for 15 minutes. Today this is counted per server instance (shared counting comes with R011).
+- `/api/health` shows `adminLogin`, `partnerLogin`, `sessionSecretStrong` and `loginPasswordsStrong` as true or false.
+  It never shows the values.
+
 ## Check it's connected
 
 After the redeploy, open `https://<your-site>/api/health` and tick each line:
@@ -50,7 +67,9 @@ After the redeploy, open `https://<your-site>/api/health` and tick each line:
 - [ ] `"bookingsSharedBetweenPlayers": true`
 - [ ] `"realtimeSlotUpdates": true`
 - [ ] `"database": "ok"` and `"turfs"` is 10 or more
-- [ ] `"adminLogin": true` (and `"partnerLogin": true` if you use the operations login)
+- [ ] `"adminLogin": true`, `"sessionSecretStrong": true` and `"loginPasswordsStrong": true`
+- [ ] `"partnerLogin": true` if you use the OYUN operations login
+- [ ] Sign in at `/admin/login` and at `/partner/login` with the values you set
 - [ ] Sign in at `/admin`: there is **no** red "Not ready for live bookings" banner at the top
 
 `problems` names each failing check. Until it is empty, every admin page shows a red banner listing what to fix.
