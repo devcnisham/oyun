@@ -191,7 +191,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #37 (main at d13514c) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #41 (main at 07af38d) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1139,7 +1139,7 @@ featureGroups:[
   ["Phone side menu","built","Home, My bookings, Saved turfs, Profile, Turf owners links; Help & settings section with Help center and Settings links. Turfs by area was removed (PR #20); legal links remain in footer and Help center (PR #37).","components/SideMenu.tsx"],
   ["Launch promo card","built","Featured card and popup ad; its dead Unsplash photo was replaced by a turf photo and existing databases are healed on load (PR #22)","lib/seed.ts"],
   ["Stats banner and brand ad strip on home","partial","Static placeholder content (100+ turfs, 50k+ players, sports brand ads); not real data","(main)/page.tsx"],
-  ["Pickleball venues","partial","The two venues exist as hidden drafts and are not yet live, so the Pickleball icon shows no venues","data/turfs.ts"]
+  ["Pickleball venues","partial","TheCourtyard (Bikarnakatte, 05:00–23:00, ₹600/hour, synthetic, washroom, water, parking, paddle and ball rental, house rules); OneLve (Bejai mall, 3 open + 2 being built, synthetic). Both pending until admin activates. OneLve missing: price, opening time, phone, real photos; migrate() refreshes drafts that carry placeholder description. Source: PR #39 Playo and Daijiworld Sep 2025.","data/turfs.ts"]
  ]},
  {g:"Turf detail page",a:"Player",subs:[
   ["Photo gallery","partial","First image only with a 1/N counter; no carousel","arenas/[id]/TurfDetail.tsx"],
@@ -1256,6 +1256,7 @@ featureGroups:[
  {g:"App feel (PWA and mobile)",a:"Player",subs:[
   ["Install manifest","built","Standalone, portrait, red theme, icons, two shortcuts","manifest.ts"],
   ["Phone shell","built","Hide-on-scroll header, slide-in menu, bottom booking bar, area picker, floating controls","components/"],
+  ["Bottom tab bar","built","Home, Turfs, Bookings, Profile with icon over label, active state in red. On all player pages; hidden on admin/partner dashboards. Sits below slot selection bar and floating search via CSS var --bottom-nav-h; spacer keeps page ends clear. PR #40, #41.","components/BottomNav.tsx"],
   ["Service worker, offline, push, install prompt","planned","Not built","–"]
  ]},
  {g:"SEO, legal and analytics",a:"Platform",subs:[
@@ -1739,9 +1740,11 @@ DATA.tasks.push(
  {id:"P7-18",p:"P7",t:"Search sheet: remove area chips; home sports icon: Pickleball replaces Padel",s:"done",pr:"P2",n:"Removes Popular areas chips and label from phone search sheet. Fourth home sport icon is now Pickleball with photo; turfs list filter offers both Padel and Pickleball. PR #30."},
  {id:"P7-19",p:"P7",t:"Phone home: animate sport icons and the Open slots rail",s:"done",pr:"P2",n:"Sport icons rise in staggered (70 ms apart), spring on hover and press, chosen icon pops with a larger ring. Rail title fades in, cards slide in one after another, loading shimmer, slots badge pop, hover zoom and enter press. All wrapped in prefers-reduced-motion. PR #31."},
  {id:"P7-20",p:"P7",t:"Phone side menu: remove items, add Help center page and Settings page",s:"done",pr:"P2",n:"PR #37. Help center has support email/phone, quick links, FAQ accordion (shared via src/lib/faq.ts), legal links. Settings has account links, cookie preferences, notifications/language (info only), help and legal links. Help & settings section added to side menu; /help in sitemap, /settings disallowed in robots."},
- {id:"P7-21",p:"P7",t:"Make the two Pickleball venues live: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)",s:"doing",pr:"P2",n:"Added as hidden drafts in PR #34 (status pending, placeholder price 500 and hours 6 to 23). Still needed from the owners: real hourly price, opening time, phone, address and photo. Then set each to Active in Admin, Turfs. Bookings go to the OYUN Operations partner until they get their own login."},
+ {id:"P7-21",p:"P7",t:"Make the two Pickleball venues live: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)",s:"doing",pr:"P2",n:"PR #34 added hidden drafts. PR #39 filled TheCourtyard with real data (Bikarnakatte address, ₹600/hour, 05:00–23:00, synthetic, amenities); OneLve still needs price, opening time, phone and real photos. Both pending, migrate() refreshes those with placeholder description. Then set each to Active in Admin, Turfs."},
  {id:"P7-22",p:"P7",t:"Decide whether the Padel Club stays a separate sport next to Pickleball on the home icons",s:"todo",pr:"P3",n:"Padel is only in the turfs list filter now; it is no longer on the home page."},
- {id:"P7-23",p:"P7",t:"Checkout and ticket wording: show Advance at the turf and Balance after you play; button is Confirm booking",s:"done",pr:"P2",n:"Checkout and ticket both show the two amounts separately. PR #33."}
+ {id:"P7-23",p:"P7",t:"Checkout and ticket wording: show Advance at the turf and Balance after you play; button is Confirm booking",s:"done",pr:"P2",n:"Checkout and ticket both show the two amounts separately. PR #33."},
+ {id:"P7-25",p:"P7",t:"Bottom tab bar on phones: Home, Turfs, Bookings, Profile with icons and labels",s:"done",pr:"P2",n:"In root layout on every player page; hidden on admin/partner dashboards. Icon over label, active red. Slot selection bar and floating search sit above it via CSS var --bottom-nav-h. PR #40, #41."},
+ {id:"P7-26",p:"P7",t:"OneLve Pickleball: get hourly price, opening time, phone number and real photos from the owner",s:"todo",pr:"P2",n:"Still using placeholders ₹500 and 06:00. Two courts (3 open + 2 being built) at Bejai mall. After approval, move off OYUN Operations partner to their own login."}
 );
 
 
