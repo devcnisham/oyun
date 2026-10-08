@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import { broadcastRequest } from './realtime-request.ts';
 
 const messages = [{ topic: 'slots:t1:2026-10-09', event: 'changed', payload: { at: 1 } }];

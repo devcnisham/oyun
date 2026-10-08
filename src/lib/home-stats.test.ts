@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import { homeStats } from './home-stats.ts';
 
 const turf = (area: string, status: 'active' | 'pending' | 'maintenance' | 'suspended' = 'active') => ({ area, status });
