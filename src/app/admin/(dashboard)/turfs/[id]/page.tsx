@@ -62,7 +62,7 @@ export default async function AdminTurfEdit({ params }: { params: Promise<{ id: 
           </div>
 
           <h2 className={dash.cardTitle} style={{ marginTop: 8 }}>Turf details</h2>
-          <TurfProfileFields turf={turf} />
+          <TurfProfileFields turf={turf} phoneOptional />
           <div className={dash.actions}><button className={dash.btn}>Save turf</button></div>
         </ActionForm>
       </div>
