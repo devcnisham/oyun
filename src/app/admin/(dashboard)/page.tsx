@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
 import { commissionFor } from '@/lib/pricing';
 import { bookingRevenue, onlineCollected } from '@/lib/reports';
-import { getDb, storageInfo } from '@/lib/store';
+import { getDb } from '@/lib/store';
 import { formatDate, istNow } from '@/lib/time';
 import PendingApplications from './PendingApplications';
 
@@ -25,16 +25,6 @@ export default async function AdminOverview() {
     <div className={dash.page}>
       <PageHeader title="Platform overview" desc={formatDate(now.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} />
 
-      {!storageInfo().shared && (
-        <div className={dash.card} role="alert" style={{ borderColor: '#fecaca', background: '#fef2f2' }}>
-          <h2 className={dash.cardTitle} style={{ color: '#991b1b' }}>⚠️ Bookings are not being saved</h2>
-          <p className={dash.cardDesc} style={{ color: '#7f1d1d' }}>
-            The database isn&apos;t connected, so each server keeps its own temporary copy: players can&apos;t see each other&apos;s
-            holds and bookings can disappear. Add <code>SUPABASE_SECRET_KEY</code> in Vercel, run the SQL in
-            <code> supabase/migrations</code>, then redeploy. See docs/GO-LIVE.md.
-          </p>
-        </div>
-      )}
 
       <div className={dash.stats}>
         <Stat label="Pending approvals" value={pending.length} />

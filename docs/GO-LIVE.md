@@ -41,8 +41,20 @@ so players can't see each other's holds and bookings disappear. This step is req
 
 ## Check it's connected
 
-Open `https://<your-site>/api/health`. You want `"ready": true`, `"storage": "supabase"` and
-`"bookingsSharedBetweenPlayers": true`. The admin dashboard also shows a red warning while bookings are not being saved.
+After the redeploy, open `https://<your-site>/api/health` and tick each line:
+
+- [ ] HTTP status is **200** (it is 503 while anything below is wrong)
+- [ ] `"ready": true`
+- [ ] `"problems": []`
+- [ ] `"storage": "supabase"`
+- [ ] `"bookingsSharedBetweenPlayers": true`
+- [ ] `"realtimeSlotUpdates": true`
+- [ ] `"database": "ok"` and `"turfs"` is 10 or more
+- [ ] `"adminLogin": true` (and `"partnerLogin": true` if you use the operations login)
+- [ ] Sign in at `/admin`: there is **no** red "Not ready for live bookings" banner at the top
+
+`problems` names each failing check. Until it is empty, every admin page shows a red banner listing what to fix.
+The endpoint only ever reports yes/no flags, never keys or data.
 
 ## 3. Real-time slot updates
 
