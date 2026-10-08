@@ -147,6 +147,33 @@
   .account, .bookings { display: none; }
 }
 
+/* Logo text with a short tagline under it */
+.logoText { display: flex; flex-direction: column; line-height: 1.05; }
+.tagline {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 3px;
+}
+
+/* City chip (phones only) */
+.cityChip { display: none; }
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3ddc84;
+  box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6);
+  animation: livePulse 2s ease-out infinite;
+}
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6); }
+  70%, 100% { box-shadow: 0 0 0 7px rgba(61, 220, 132, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .liveDot { animation: none; } }
+
 
 /* Secondary Nav */
 .cityNav {
@@ -224,9 +251,38 @@
     box-shadow: 0 2px 12px rgba(24, 0, 0, 0.25) !important;
   }
   .inner {
-    height: 56px;
+    height: 60px;
     justify-content: space-between;
   }
+  .left { padding-left: 12px; }
+  /* Faint pitch markings behind the bar */
+  .navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.09;
+    background:
+      radial-gradient(circle at 50% 100%, transparent 26px, #fff 27px, #fff 28.5px, transparent 29.5px),
+      linear-gradient(#fff, #fff) 50% 0 / 1.5px 100% no-repeat,
+      radial-gradient(circle at 100% 50%, transparent 38px, #fff 39px, #fff 40.5px, transparent 41.5px);
+  }
+  .inner { position: relative; }
+  .cityChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px 7px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    backdrop-filter: blur(6px);
+  }
+  .cityChip:active { transform: scale(0.96); }
   .desktopOnly { display: none !important; }
   .right { gap: 14px; }
   .accountName { font-size: 14px; max-width: 110px; }
@@ -248,11 +304,11 @@
   .cityNav { display: none; }
 }
 
-/* Narrow phones (iPhone SE and similar): keep menu, logo, account and bookings on one row */
+/* Narrow phones (iPhone SE and similar): keep the logo and city chip on one row */
 @media (max-width: 380px) {
   .left { gap: 4px; }
   .logo { gap: 6px; }
-  .logo svg { width: 28px; height: 28px; }
+  .logo svg { width: 32px; height: 32px; }
   .logoName { font-size: 16px; }
   .right { gap: 10px; }
   .accountName { font-size: 13px; max-width: 72px; }
