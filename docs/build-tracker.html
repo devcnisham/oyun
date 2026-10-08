@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #58 (main at 3b774d8) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #60 (main at ce541b9) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1335,7 +1335,7 @@ featureGroups:[
  {g:"Admin console",a:"Admin",subs:[
   ["Overview","built","Pending approvals, live turfs, players and bans, month bookings, value and commission, warning if storage is not shared","admin/page.tsx"],
   ["Approvals","built","Approve creates the owner login and a live verified turf; reject with a note","PendingApplications.tsx"],
-  ["Turfs","built","Search, quick toggles, full editor: status, partner, commission, rating, verified, featured","admin/turfs"],
+  ["Turfs","built","Search, quick toggles, full editor: status, partner, commission, rating, verified, featured, Can be booked as two halves with half price % (PR #58). Contact phone optional here so drafts save before the number is known (PR #60).","admin/turfs"],
   ["Draft venues","built","Venues added after launch start as pending drafts in Admin, Turfs, hidden from players and the sitemap until the admin sets Active","lib/seed.ts, data/turfs.ts"],
   ["Partners","built","Suspend, reactivate, reset password, edit details","admin/partners"],
   ["Players","built","Search, bookings, no-shows, referrals, wallet adjust, ban","admin/users"],
@@ -2127,7 +2127,7 @@ DATA.tasks.push(
  {id:"P7-39",p:"P7",t:"Turf page: sections ordered Location, About, Amenities, Player reviews",s:"done",pr:"P3",n:"PR #57."},
  {id:"P7-40",p:"P7",t:"Pitch selection: book the full pitch or one half (A or B)",s:"done",pr:"P1",n:"Admin switch per turf plus half price %. Tested locally: A and B in one hour, full blocked once a half is taken. PR #58."},
  {id:"P7-41",p:"P7",t:"Booking date picker limited to one week (today + 6 days)",s:"done",pr:"P2",n:"PR #58."},
- {id:"P7-42",p:"P7",t:"Admin turf form refuses to save a turf with no contact phone",s:"todo",pr:"P2",n:"Seen while testing PR #58. Blocks editing the Pickleball drafts, which have no phone yet."},
+ {id:"P7-42",p:"P7",t:"Admin turf form refuses to save a turf with no contact phone",s:"done",pr:"P2",n:"Admin editor now marks the phone optional and saves without it; the partner My turf page still requires it. PR #60."},
  {id:"P10-16",p:"P10",t:"Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves",s:"todo",pr:"P1",n:"Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on."}
 );
 
