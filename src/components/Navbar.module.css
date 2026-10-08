@@ -142,78 +142,11 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 .account:active, .bookings:active { opacity: 0.7; }
+/* Phones reach the account and bookings from the bottom tab bar */
+@media (max-width: 768px) {
+  .account, .bookings { display: none; }
+}
 
-/* Phone-only "Playing in" strip */
-.locationStrip { display: none; }
-.locationStrip {
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 16px;
-  background: #3b0a10;
-  color: #fff;
-}
-.location {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  background: none;
-  border: none;
-  padding: 4px 0;
-  cursor: pointer;
-}
-.location span:not(.chevron) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chevron { font-size: 14px; opacity: 0.85; margin-top: -4px; }
-.pill {
-  flex: none;
-  padding: 7px 14px;
-  border-radius: 99px;
-  background: #fff;
-  color: var(--primary-700);
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
-}
-.sheetOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1400;
-  background: rgba(10, 12, 16, 0.45);
-  display: flex;
-  align-items: flex-end;
-}
-.sheet {
-  width: 100%;
-  max-height: 75dvh;
-  overflow-y: auto;
-  background: #fff;
-  border-radius: 22px 22px 0 0;
-  padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
-}
-.sheetHead { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
-.sheetHead b { font-size: 17px; }
-.sheetHead button { font: inherit; font-weight: 700; color: var(--primary-700); background: none; border: none; cursor: pointer; }
-.areaOption {
-  display: block;
-  width: 100%;
-  text-align: left;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 14px 4px;
-  border: none;
-  border-top: 1px solid #f0f1f3;
-  background: none;
-  color: var(--text-primary);
-  cursor: pointer;
-}
-.areaOn { color: var(--primary-700); }
-.areaOn::after { content: ' ✓'; }
 
 /* Secondary Nav */
 .cityNav {
@@ -295,7 +228,6 @@
     justify-content: space-between;
   }
   .desktopOnly { display: none !important; }
-  .locationStrip { display: flex; }
   .right { gap: 14px; }
   .accountName { font-size: 14px; max-width: 110px; }
   .logoName { font-size: 18px; }
