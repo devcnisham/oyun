@@ -92,11 +92,23 @@ export default function Navbar() {
                 </linearGradient>
               </defs>
             </svg>
-            <span className={styles.logoName}>OYUN</span>
+            <span className={styles.logoText}>
+              <span className={styles.logoName}>OYUN</span>
+              <small className={styles.tagline}>Book · Play · Repeat</small>
+            </span>
           </Link>
           </div>
 
           <div className={styles.right}>
+            {/* Phones: city chip with a live dot, opens every turf */}
+            <Link href="/arenas" className={styles.cityChip} aria-label="Turfs in Mangalore">
+              <span className={styles.liveDot} aria-hidden />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
+                <circle cx="12" cy="9.5" r="2.5" />
+              </svg>
+              Mangalore
+            </Link>
             {/* Desktop only: partner call to action */}
             <Link href="/list-turf" className={`${styles.navItem} ${styles.desktopOnly}`}>
               <span className={styles.navIcon} aria-hidden>💼</span>
