@@ -34,6 +34,23 @@
   .tab svg { transition: transform 0.15s ease; }
   .tab:active svg { transform: scale(0.88); }
   .active { color: var(--primary-700); }
+  /* Signed-in player's picture on the Profile tab; red ring when the tab is open */
+  .avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 2px var(--nav-bg), 0 0 0 3.5px #c4c8ce;
+  }
+  .active .avatar { box-shadow: 0 0 0 2px var(--nav-bg), 0 0 0 3.5px var(--primary-700); }
+  .initial {
+    display: grid;
+    place-items: center;
+    background: var(--primary-700);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+  }
   .search {
     justify-self: center;
     width: 58px;
