@@ -27,6 +27,7 @@ Search for these exact strings to find the spot.
 - **Tasks:** the `DATA.tasks = [ ... ]` list near the top of the script, and later blocks that start with `DATA.tasks.push(` just above the line `/* ===================== BOOT`. **Add new tasks by appending to the last `DATA.tasks.push(` block** (before its closing `);`). Do not edit old tasks except to change `s:"todo"` to `s:"done"` when a merged PR finished them.
 - **Features:** `featureGroups:[` holds groups `{g:"Name",a:"Audience",subs:[ [name, status, detail, files], ... ]}`. Add a part to the matching group. If no group fits, add a new group at the end of the list.
 - **Risks:** `DATA.risks.push(` (security register). Do not add or re-score risks yourself. If a PR looks security-relevant, say so in your report.
+- **Checklists:** `D2.lists = [` holds lists `{id,st,name,goal,items:[ [id, text, priority, done, note], ... ]}`. When a merged PR makes an item true, change its fourth value from `0` to `1` and put the PR number in the note. Do not add or remove lists unless asked.
 - **Decisions:** the `adr:[` list. Add one only for a real architecture decision, and say so in your report.
 
 ## Formats (copy these exactly)

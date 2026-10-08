@@ -153,6 +153,11 @@ svg .cont{fill:none;stroke:var(--line);stroke-width:1.4;stroke-dasharray:6 4}
 .t-row .tn{font-size:12.5px;color:var(--muted);margin-top:2px}
 .t-row.is-done .tt b{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 50%,transparent)}
 .who{font-size:11.5px;color:var(--muted);margin-top:2px}
+.ck-row{grid-template-columns:auto minmax(0,1fr) auto}
+.ck-row input[type=checkbox]{width:18px;height:18px;margin:2px 0 0;accent-color:var(--ok);cursor:pointer}
+.ck-row input[type=checkbox]:disabled{cursor:not-allowed}
+.ck-row label{cursor:pointer}
+.ck-row.is-done .tt b{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 50%,transparent)}
 @media(max-width:620px){.t-row{grid-template-columns:1fr auto}.t-row>.mono:first-child{grid-column:1/-1}}
 .note{padding:10px 14px;border-radius:var(--r-md);background:var(--p50);border:1px solid var(--p200);color:var(--fg2);font-size:13px}
 .verdict{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -414,6 +419,22 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <label class="muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="f-open" style="flex:none"> open only</label>
   </div>
   <div id="trk-list"></div>
+</section>
+
+<!-- ================= CHECKLISTS ================= -->
+<section class="panel" id="p-lists" role="tabpanel">
+  <header><h2>Checklists</h2><p>Every list a turf-booking site needs, from the first owner interview to scaling past one city: plan, build, ship, run, grow. Tick an item when it is true in production. Ticks are saved to the shared page store.</p><p class="muted" id="ls-sub" style="margin-top:6px"></p></header>
+  <div class="stack">
+    <div class="grid g4" id="ls-stats"></div>
+    <div class="grid g2"><div class="box" id="ls-todo"></div><div class="box" id="ls-stages"></div></div>
+    <div class="ctl" style="margin:0">
+      <input id="ls-q" type="search" placeholder="Search checklists" aria-label="Search checklists">
+      <select id="ls-stage" aria-label="Stage"></select>
+      <select id="ls-prio" aria-label="Priority"><option value="">All priorities</option><option>P0</option><option>P1</option><option>P2</option><option>P3</option></select>
+      <label class="muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="ls-open" style="flex:none"> open only</label>
+    </div>
+    <div id="ls-list"></div>
+  </div>
 </section>
 
 <!-- ================= SECURITY ================= -->
@@ -1035,7 +1056,7 @@ async function setStatus(id, status){
 }
 
 /* ===================== TABS ===================== */
-const TABS=[['overview','Overview'],['start','Start here'],['features','Features'],['frontend','Frontend'],['backend','Backend'],['architecture','Architecture'],['data','Database'],['hosting','Hosting'],['cost','Cost & scale'],['docs','Docs & tools'],['phases','Phases'],['tracker','Tracker'],['security','Security'],['gate','Ship gate'],['debt','Tech debt'],['adr','Decisions'],['ops','Operations']];
+const TABS=[['overview','Overview'],['start','Start here'],['features','Features'],['frontend','Frontend'],['backend','Backend'],['architecture','Architecture'],['data','Database'],['hosting','Hosting'],['cost','Cost & scale'],['docs','Docs & tools'],['phases','Phases'],['tracker','Tracker'],['lists','Checklists'],['security','Security'],['gate','Ship gate'],['debt','Tech debt'],['adr','Decisions'],['ops','Operations']];
 function showTab(id, push){
   if(!TABS.some(t=>t[0]===id)) id = 'overview';
   TABS.forEach(([k])=>{ $('#p-'+k).classList.toggle('on',k===id); });
@@ -1557,6 +1578,335 @@ sources:[
 ]
 };
 
+/* ===================== CHECKLISTS DATA ===================== */
+// Stages run start to end. Item: [id, text, priority, done by default (1 = already true in the code), note]
+D2.stages = [
+ ["plan","Plan","Before building: prove demand, set up the business, fix the scope."],
+ ["build","Build","Make the product correct, tested and safe."],
+ ["ship","Ship","Deploy, onboard owners, launch."],
+ ["run","Run","Keep it working every day once players book."],
+ ["grow","Grow and scale","More players, more turfs, more cities, a bigger team."]
+];
+D2.lists = [
+ {id:"DISC",st:"plan",name:"Discovery and validation",goal:"Prove players and turf owners want this before building more.",items:[
+  ["DISC-01","Talk to 20 players about how they book a turf today (WhatsApp, phone call, walk-in)","P1",0],
+  ["DISC-02","Talk to 10 turf owners: how they track slots, no-shows, payments and peak hours","P0",0],
+  ["DISC-03","List every turf in Mangalore: area, sports, price per hour, owner contact","P1",0],
+  ["DISC-04","Study competitors (Playo, Hudle, KheloMore, local WhatsApp groups): fees, features, gaps","P2",0],
+  ["DISC-05","Write the one-line promise and who it is for","P2",0],
+  ["DISC-06","Pick 3 to 5 pilot turfs that agree to take bookings through OYUN","P0",0],
+  ["DISC-07","Agree pilot terms: commission, who collects the advance, who handles cancellations","P0",0],
+  ["DISC-08","Set pilot success numbers: bookings a week, repeat players, owners who stay","P1",0]
+ ]},
+ {id:"BIZ",st:"plan",name:"Business and legal setup",goal:"A real company that can sign owners, take money and answer to the law.",items:[
+  ["BIZ-01","Choose the company form (proprietorship, LLP or private limited) and register it","P1",0],
+  ["BIZ-02","PAN and a current bank account in the business name","P1",0],
+  ["BIZ-03","GST registration and marketplace tax rules checked with a CA before taking money online","P1",0],
+  ["BIZ-04","Domain bought and company email set up on it","P1",0],
+  ["BIZ-05","Trademark search for the OYUN name and logo","P2",0],
+  ["BIZ-06","Turf partner agreement: commission, payout days, cancellations, liability","P0",0],
+  ["BIZ-07","Terms of use and privacy policy reviewed by a lawyer","P1",0,"Pages exist; legal review not done."],
+  ["BIZ-08","Refund and cancellation policy page that matches the code","P1",0,"2-hour cutoff is in code only."],
+  ["BIZ-09","Grievance officer named on the site with contact details","P1",0,"Required by the IT Rules 2021 and the DPDP Act."],
+  ["BIZ-10","Every service login on a company email, with 2FA, listed in a vendor register","P1",0],
+  ["BIZ-11","Accountant or CA for monthly books and GST filings","P2",0]
+ ]},
+ {id:"PRD",st:"plan",name:"Product scope and design",goal:"Know what the MVP is, what waits, and how each screen behaves.",items:[
+  ["PRD-01","Player flow: find turf, pick slots, sign in, confirm, play, review","P0",1,"Built in phases P0 to P7."],
+  ["PRD-02","Owner flow: partner login, see bookings, run the turf from /partner","P0",1],
+  ["PRD-03","Admin flow: approve turfs, moderate, edit turf settings from /admin","P0",1],
+  ["PRD-04","Write the MVP scope: what is in, what waits","P1",0],
+  ["PRD-05","Booking rules in one document: slot length, holds, cutoffs, advance, half pitch, week window","P1",0],
+  ["PRD-06","Every screen checked at 360px phone width","P1",0],
+  ["PRD-07","Accessibility pass on the booking flow: contrast, labels, keyboard, screen reader","P2",0],
+  ["PRD-08","One-page spec before each new feature (problem, users, rules, metric)","P2",0],
+  ["PRD-09","Design tokens and components written down","P3",0,"Token table is in the Frontend tab."],
+  ["PRD-10","Kannada and Hindi text for key screens","P3",0]
+ ]},
+ {id:"DEV",st:"build",name:"Development standards",goal:"Every change is small, reviewed and safe to ship.",items:[
+  ["DEV-01","Every change goes through a pull request","P1",1,"PRs #1 to #60."],
+  ["DEV-02","TypeScript strict mode on","P1",1],
+  ["DEV-03","Database changes as idempotent SQL files in supabase/setup","P1",1],
+  ["DEV-04","Main branch protected: no direct pushes, PR needs a passing check","P1",0],
+  ["DEV-05","CI on every PR: lint, type check, build, tests","P0",0],
+  ["DEV-06",".env.example lists every variable with no real values","P1",0],
+  ["DEV-07","No secrets in git history; rotate any key that was ever committed","P0",0],
+  ["DEV-08","Lint and type check pass locally before opening a PR","P1",0],
+  ["DEV-09","Error and loading states on every page and server action","P1",0],
+  ["DEV-10","Dependency updates checked monthly (Dependabot or Renovate)","P2",0],
+  ["DEV-11","PR template with a review checklist","P2",0]
+ ]},
+ {id:"BOOK",st:"build",name:"Booking engine correctness",goal:"The core promise: a booked slot is never sold twice and the times are right.",items:[
+  ["BOOK-01","Database refuses two bookings for the same turf, pitch and hour","P0",1,"Double-booking guard, phase P2."],
+  ["BOOK-02","Slot holds expire after 8 minutes","P0",1],
+  ["BOOK-03","Live slot updates so two players do not pick the same slot","P1",1,"PR #9."],
+  ["BOOK-04","Full pitch or half A or B; full blocked once a half is taken","P1",1,"PR #58. Run 6-half-pitch.sql on production before turning halves on."],
+  ["BOOK-05","Booking window limited to today plus 6 days","P2",1,"PR #58."],
+  ["BOOK-06","Player can cancel their own booking before the cutoff","P1",1],
+  ["BOOK-07","All times stored and shown in India time; no mistakes around midnight","P0",0],
+  ["BOOK-08","Automated test: two requests for one slot at once, exactly one wins","P0",0],
+  ["BOOK-09","Booking reference the player can show at the venue","P1",0],
+  ["BOOK-10","Owner can block slots for maintenance or walk-ins","P1",0],
+  ["BOOK-11","No-show handling: owner marks no-show, repeat no-shows flagged","P2",0],
+  ["BOOK-12","Price rules: peak, off-peak, weekend and holiday prices","P2",0],
+  ["BOOK-13","Recurring weekly bookings for teams","P3",0]
+ ]},
+ {id:"QA",st:"build",name:"Testing and QA",goal:"Know a change works before players find out it does not.",items:[
+  ["QA-01","Pick test tools: Vitest for rules, Playwright for full flows","P1",0],
+  ["QA-02","Unit tests for price, slot, hold and cutoff rules","P0",0],
+  ["QA-03","End-to-end test: home page to booking confirmed","P0",0],
+  ["QA-04","Sign-in, sign-out and expired session at checkout tested","P1",0],
+  ["QA-05","Tested on real phones: cheap Android on 4G and iPhone Safari","P1",0],
+  ["QA-06","Network drops mid-booking: the hold clears and the slot frees","P2",0],
+  ["QA-07","10-minute manual smoke test written and run before each release","P1",0],
+  ["QA-08","Staging site with test data to try changes before production","P1",0],
+  ["QA-09","Lighthouse mobile score above 80 on home, turf and booking pages","P2",0]
+ ]},
+ {id:"SEC",st:"build",name:"Security",goal:"No one can see, change or cancel what is not theirs.",items:[
+  ["SEC-01","Spam guards on public forms","P2",1,"Phase P3."],
+  ["SEC-02","Every admin and partner action checks the role on the server","P0",0,"Confirm each admin action calls requireAdmin."],
+  ["SEC-03","Players can only see and cancel their own bookings","P0",0],
+  ["SEC-04","Supabase service key only on the server, never sent to the browser","P0",0],
+  ["SEC-05","Row Level Security on every Supabase table, or no public table access","P0",0],
+  ["SEC-06","Seed fallback partner password removed; PARTNER_PASSWORD set in production","P1",0,"Task P9-20."],
+  ["SEC-07","2FA on GitHub, Vercel, Supabase, Clerk and the domain registrar","P0",0],
+  ["SEC-08","Rate limits on sign-in, booking and review actions","P1",0],
+  ["SEC-09","Every server action input checked against a schema","P1",0],
+  ["SEC-10","Security headers: CSP, HSTS, frame and referrer policy","P1",0],
+  ["SEC-11","npm audit has no High or Critical","P1",0],
+  ["SEC-12","Security tab risks reviewed before each release","P1",0],
+  ["SEC-13","SECURITY.md says how to report a bug","P3",0]
+ ]},
+ {id:"PAY",st:"build",name:"Online payments (Razorpay)",goal:"Take money online without losing a rupee or a booking.",items:[
+  ["PAY-01","Razorpay account with KYC done and settlement bank verified","P0",0],
+  ["PAY-02","Order created on the server; the amount is never taken from the browser","P0",0],
+  ["PAY-03","Payment signature checked on the server before a booking is confirmed","P0",0],
+  ["PAY-04","Webhook is idempotent: the same event twice makes one booking","P0",0],
+  ["PAY-05","Slot released when a payment fails or times out","P0",0],
+  ["PAY-06","Full test-mode run including a refund before going live","P0",0],
+  ["PAY-07","Refunds follow the policy and are logged with a reason","P1",0],
+  ["PAY-08","Owner payouts: Razorpay Route or a weekly transfer with a statement","P1",0],
+  ["PAY-09","Daily check: bookings match Razorpay settlements","P1",0],
+  ["PAY-10","UPI shown first, then cards and wallets","P2",0],
+  ["PAY-11","GST invoice for commission or convenience fee","P2",0]
+ ]},
+ {id:"NOTIF",st:"build",name:"Notifications",goal:"Players and owners always know what was booked.",items:[
+  ["NOTIF-01","Booking confirmation on WhatsApp or SMS with the booking reference","P1",0],
+  ["NOTIF-02","Owner alert for every new booking and cancellation","P1",0],
+  ["NOTIF-03","SMS sender and templates registered on DLT (TRAI rule)","P1",0],
+  ["NOTIF-04","Players can opt out of marketing messages","P1",0],
+  ["NOTIF-05","Reminder 2 hours before the slot","P2",0],
+  ["NOTIF-06","WhatsApp Business API templates approved","P2",0],
+  ["NOTIF-07","Email receipt","P2",0]
+ ]},
+ {id:"DEP",st:"ship",name:"Deployment and environments",goal:"Shipping is boring, repeatable and reversible.",items:[
+  ["DEP-01","Production deploys to Vercel from main","P0",1],
+  ["DEP-02","Preview deploy for every pull request","P2",1],
+  ["DEP-03","Custom domain connected with HTTPS","P0",0,"Current address is the main-branch preview URL."],
+  ["DEP-04","Every production variable set; /api/health reports green","P0",0],
+  ["DEP-05","Supabase backups on and a restore tested once","P0",0],
+  ["DEP-06","SQL files run on production before the code that needs them","P1",0,"6-half-pitch.sql is pending (task P10-16)."],
+  ["DEP-07","Separate Supabase projects for staging and production","P1",0],
+  ["DEP-08","Rollback known: promote the previous Vercel deploy","P1",0],
+  ["DEP-09","Vercel functions and Supabase both in the Mumbai region","P1",0],
+  ["DEP-10","Release notes for each deploy","P3",0]
+ ]},
+ {id:"PRE",st:"ship",name:"Pre-launch readiness",goal:"Nothing a first player sees is broken, empty or missing.",items:[
+  ["PRE-01","Demo data removed; real turfs only","P0",1,"PR #9."],
+  ["PRE-02","Sitemap and robots.txt","P1",1],
+  ["PRE-03","Structured data (JSON-LD) for turfs","P2",1],
+  ["PRE-04","Cookie consent","P1",1],
+  ["PRE-05","Privacy and terms pages","P1",1],
+  ["PRE-06","Health check at /api/health","P1",1],
+  ["PRE-07","Error alerts reach a person","P1",1,"Webhook today; Sentry is better."],
+  ["PRE-08","Every live turf has photos, price, hours, address, map pin and phone","P0",0],
+  ["PRE-09","Support WhatsApp number and email visible on the site","P0",0],
+  ["PRE-10","Full booking tested on production by 3 people on their own phones","P0",0],
+  ["PRE-11","No failing item in the Ship gate tab for this launch type","P0",0],
+  ["PRE-12","Uptime monitor watching /api/health","P1",0],
+  ["PRE-13","Google Search Console and Google Business Profile set up","P1",0],
+  ["PRE-14","Share image and app icons checked on WhatsApp and home screen","P2",0]
+ ]},
+ {id:"LAUNCH",st:"ship",name:"Launch day",goal:"A calm first day with someone watching.",items:[
+  ["LAUNCH-01","Owners briefed: how bookings arrive and how to check players in","P0",0],
+  ["LAUNCH-02","One person watches errors and bookings all day","P0",0],
+  ["LAUNCH-03","Code frozen 24 hours before; only fixes go in","P1",0],
+  ["LAUNCH-04","Announced in local football and cricket WhatsApp groups and Instagram","P1",0],
+  ["LAUNCH-05","Every problem written in one shared list; top 3 fixed the next day","P1",0],
+  ["LAUNCH-06","End-of-day count: visits, bookings, failures, support messages","P1",0],
+  ["LAUNCH-07","Launch offer with a clear end date","P2",0]
+ ]},
+ {id:"OWN",st:"ship",name:"Turf owner onboarding",goal:"Each new turf goes live the same way, with nothing forgotten.",items:[
+  ["OWN-01","Partner agreement signed","P0",0],
+  ["OWN-02","Turf listed with photos, hours and prices; admin approves it","P0",0,"Approval flow is built."],
+  ["OWN-03","Owner and staff logins work on their own phones","P0",0],
+  ["OWN-04","30-minute training: view bookings, block slots, check players in","P1",0],
+  ["OWN-05","Payout details collected: bank or UPI, GST number if any","P1",0],
+  ["OWN-06","Owner knows the cancellation and refund rules","P1",0],
+  ["OWN-07","QR poster at the turf linking to its OYUN page","P2",0],
+  ["OWN-08","Check-in call after the first week","P2",0]
+ ]},
+ {id:"OPS",st:"run",name:"Daily, weekly and monthly routine",goal:"Small habits that catch problems early.",items:[
+  ["OPS-01","Daily: read error alerts and failed bookings","P1",0],
+  ["OPS-02","Daily: answer every support message within 2 hours","P1",0],
+  ["OPS-03","Daily: advances collected match bookings","P1",0],
+  ["OPS-04","Weekly: bookings, no-shows and cancellations per turf","P2",0],
+  ["OPS-05","Weekly: approve or reject waiting turfs and reviews","P2",0],
+  ["OPS-06","Weekly: GitHub security and dependency alerts","P2",0],
+  ["OPS-07","Monthly: spend per service against the Cost tab","P2",0],
+  ["OPS-08","Monthly: restore a backup into a scratch project","P2",0],
+  ["OPS-09","Quarterly: who has production access, remove anyone who left","P2",0]
+ ]},
+ {id:"INC",st:"run",name:"Incident response",goal:"When it breaks, everyone knows what to do.",items:[
+  ["INC-01","Data breach plan: report to CERT-In within 6 hours and tell affected people","P0",0,"CERT-In directions 2022; DPDP Act also requires notice."],
+  ["INC-02","Runbook for: site down, bookings failing, payments failing, data leak","P1",0,"Starter in the Operations tab."],
+  ["INC-03","Who is on call and how to reach them","P1",0],
+  ["INC-04","Logs kept long enough to investigate","P1",0,"CERT-In asks for 180 days."],
+  ["INC-05","Status message ready to post on WhatsApp and Instagram","P2",0],
+  ["INC-06","Blameless post-mortem within 3 days of any incident","P2",0]
+ ]},
+ {id:"SUP",st:"run",name:"Customer support",goal:"Every player and owner gets a fast, consistent answer.",items:[
+  ["SUP-01","One support WhatsApp Business number and one email","P0",0],
+  ["SUP-02","Refund decision rules anyone on the team can apply","P1",0],
+  ["SUP-03","Help center answers booking, cancel, refund and reaching the turf","P1",0,"Help center page exists (PR #43); check the answers."],
+  ["SUP-04","Saved replies for the top 10 questions","P2",0],
+  ["SUP-05","Every complaint logged with turf, date and fix","P2",0],
+  ["SUP-06","Ask for a review after each played booking","P2",0,"Reviews are built."]
+ ]},
+ {id:"DATA",st:"run",name:"Privacy and compliance (DPDP Act 2023)",goal:"Keep only what you need, say why, and delete on request.",items:[
+  ["DATA-01","List of all personal data kept: name, phone, email, bookings, device ids","P1",0],
+  ["DATA-02","Plain-language notice before personal data is collected","P1",0],
+  ["DATA-03","Players can get and delete their data on request","P1",0],
+  ["DATA-04","No personal data in logs, URLs or analytics events","P1",0],
+  ["DATA-05","Analytics load only after cookie consent","P1",0],
+  ["DATA-06","Retention rule: old bookings deleted or anonymised after a set time","P2",0],
+  ["DATA-07","List of processors: Supabase, Clerk, Vercel, Google Analytics, Razorpay","P2",0]
+ ]},
+ {id:"MON",st:"run",name:"Monitoring and analytics",goal:"See problems and growth in numbers, not guesses.",items:[
+  ["MON-01","Google Analytics 4 installed","P2",1],
+  ["MON-02","Error tracking with stack traces (Sentry free)","P1",0],
+  ["MON-03","Uptime alerts to a phone","P1",0],
+  ["MON-04","Tracking plan: search, view turf, pick slot, checkout, booked, cancel","P1",0],
+  ["MON-05","Supabase and Vercel usage alerts before free limits run out","P1",0],
+  ["MON-06","Funnel: visit to booking conversion","P2",0],
+  ["MON-07","Weekly numbers: bookings, booking value, repeat rate, occupancy per turf","P2",0]
+ ]},
+ {id:"GROW",st:"grow",name:"Growth and marketing",goal:"More bookings per turf, more players coming back.",items:[
+  ["GROW-01","Local SEO: a page per turf and per area (for example turf in Kadri)","P1",0],
+  ["GROW-02","Ask happy players for Google reviews","P2",0],
+  ["GROW-03","Weekly Google Business Profile posts","P2",0],
+  ["GROW-04","Instagram reels from games at partner turfs","P2",0],
+  ["GROW-05","Colleges, offices and academies for weekday slots","P2",0],
+  ["GROW-06","Off-peak discounts shown on home to fill empty slots","P2",0],
+  ["GROW-07","Cost per booking measured for each channel","P2",0],
+  ["GROW-08","Referral: invite a friend, both get money off","P3",0],
+  ["GROW-09","Captains program: regular bookers get perks","P3",0]
+ ]},
+ {id:"SCALE1",st:"grow",name:"Scale to 1,000 users (Mangalore)",goal:"The free and cheap stack holds a full city of weekend traffic.",items:[
+  ["SCALE1-01","Stop loading the whole database on each request (delta sync, scoped reads)","P0",0,"Phase P10."],
+  ["SCALE1-02","Indexes on bookings by turf and date","P1",0],
+  ["SCALE1-03","Public pages cached and refreshed on change","P1",0],
+  ["SCALE1-04","Load test at 10 times the Sunday-evening peak","P1",0],
+  ["SCALE1-05","Supabase connection pooler used by the server","P2",0],
+  ["SCALE1-06","Images resized and served through a CDN","P2",0],
+  ["SCALE1-07","Paid tiers bought when the Cost tab triggers fire, not before","P2",0]
+ ]},
+ {id:"SCALE2",st:"grow",name:"Scale to 10,000+ users and new cities",goal:"Many cities and owners without the founders doing everything by hand.",items:[
+  ["SCALE2-01","City as a field everywhere; city picker and city pages","P1",0],
+  ["SCALE2-02","Job runner for reminders, payouts and cleanup (Vercel Cron, Supabase cron or Inngest)","P1",0],
+  ["SCALE2-03","Owner self-serve onboarding without admin hand-holding","P1",0],
+  ["SCALE2-04","Audit log of every admin and owner change","P1",0],
+  ["SCALE2-05","Point-in-time restore and a written recovery-time target","P1",0],
+  ["SCALE2-06","Cache layer (Redis) or read replica for busy reads","P2",0],
+  ["SCALE2-07","Owner app with push notifications","P2",0],
+  ["SCALE2-08","Player app on the Play Store (TWA from the PWA first)","P2",0],
+  ["SCALE2-09","Kannada, Hindi and Malayalam interface","P3",0]
+ ]},
+ {id:"TEAM",st:"grow",name:"Team and process",goal:"New people are useful in a week and nothing depends on one person.",items:[
+  ["TEAM-01","Onboarding guide for a new developer","P2",1,"Start here tab."],
+  ["TEAM-02","CONTRIBUTING.md and PR template","P2",0],
+  ["TEAM-03","Definition of done: tested, reviewed, tracker updated","P2",0],
+  ["TEAM-04","Weekly planning from the Tracker tab; one owner per task","P2",0],
+  ["TEAM-05","Off-boarding list: remove access when someone leaves","P2",0],
+  ["TEAM-06","Hiring order agreed: second developer, owner operations, marketing","P3",0]
+ ]},
+ {id:"NEXT",st:"grow",name:"Next features",goal:"What to build after the core is solid.",items:[
+  ["NEXT-01","Owner analytics: occupancy, revenue, peak hours","P2",0],
+  ["NEXT-02","Real map with distance from the player","P2",0],
+  ["NEXT-03","Find players to complete a team","P3",0],
+  ["NEXT-04","Tournaments and leagues with fixtures","P3",0],
+  ["NEXT-05","Prepaid packs and memberships (for example 10 hours)","P3",0],
+  ["NEXT-06","Split the payment among team members","P3",0],
+  ["NEXT-07","Coaching and academy slots","P3",0],
+  ["NEXT-08","Rain alerts for open turfs in the monsoon","P3",0]
+ ]}
+];
+
+/* ===================== CHECKLISTS RENDER ===================== */
+let checks = {};              // item id -> {done, by, at} from db, or from this browser when no db
+const LF = {q:'',stage:'',prio:'',open:false};
+const isChecked = x => checks[x[0]] ? !!checks[x[0]].done : !!x[3];
+const prioCls = p => p==='P0'?'crit':p==='P1'?'high':p==='P2'?'med':'info';
+function renderLists(){
+  const all = D2.lists.flatMap(l=>l.items), done = all.filter(isChecked).length;
+  const p0 = all.filter(x=>x[2]==='P0'&&!isChecked(x));
+  $('#ls-stats').innerHTML = [
+    [`${done}/${all.length}`,'checks done'],
+    [`${D2.lists.filter(l=>l.items.every(isChecked)).length}/${D2.lists.length}`,'lists complete'],
+    [p0.length,'open P0 checks'],
+    [DATA.tasks.filter(t=>statusOf(t)!=='done'&&t.pr==='P0').length,'open P0 tasks']
+  ].map(([n,l],i)=>`<div class="box stat${i===2&&n?' tint-crit':''}"><b class="num">${n}</b><span>${l}</span></div>`).join('');
+
+  // to-do now: work in progress, then open P0 tasks, then open P0 checks from the earliest stage
+  const order = {doing:0,blocked:1,todo:2};
+  const tasks = DATA.tasks.filter(t=>statusOf(t)!=='done'&&(statusOf(t)!=='todo'||t.pr==='P0'||t.pr==='P1'))
+    .sort((a,b)=>order[statusOf(a)]-order[statusOf(b)]||a.pr.localeCompare(b.pr)).slice(0,8);
+  const stIdx = Object.fromEntries(D2.stages.map((s,i)=>[s[0],i]));
+  const checksOpen = D2.lists.slice().sort((a,b)=>stIdx[a.st]-stIdx[b.st]).flatMap(l=>l.items.filter(x=>x[2]==='P0'&&!isChecked(x)).map(x=>[x,l])).slice(0,8);
+  $('#ls-todo').innerHTML = `<h3>To do now</h3><p class="muted" style="margin-bottom:8px">Tracker tasks in progress or P0/P1, then the earliest open P0 checks.</p><ul class="tight">`+
+    tasks.map(t=>`<li><span class="mono muted">${t.id}</span> ${esc(t.t)} ${pill(statusOf(t),statusOf(t))} ${pill(t.pr,prioCls(t.pr))}</li>`).join('')+
+    checksOpen.map(([x,l])=>`<li><span class="mono muted">${x[0]}</span> ${esc(x[1])} <span class="muted">· ${esc(l.name)}</span></li>`).join('')+`</ul>`;
+
+  $('#ls-stages').innerHTML = `<h3>Start to end</h3>`+D2.stages.map(s=>{const it=D2.lists.filter(l=>l.st===s[0]).flatMap(l=>l.items), d=it.filter(isChecked).length;
+    return `<div class="row"><span><b>${esc(s[1])}</b><br><span class="muted" style="font-size:12.5px">${esc(s[2])}</span></span><div class="bar"><i style="width:${it.length?d/it.length*100:0}%"></i></div><span class="mono num">${d}/${it.length}</span></div>`}).join('');
+
+  const q = LF.q.trim().toLowerCase();
+  const match = (x,l) => (!LF.stage||l.st===LF.stage) && (!LF.prio||x[2]===LF.prio) && (!LF.open||!isChecked(x)) &&
+    (!q || (x[0]+' '+x[1]+' '+(x[4]||'')+' '+l.name).toLowerCase().includes(q));
+  const keepOpen = new Set([...document.querySelectorAll('#ls-list details[open]')].map(d=>d.dataset.l));
+  const filtering = !!(q||LF.stage||LF.prio||LF.open);
+  const ro = !!dbNs && !canWrite;
+  let html = '';
+  for(const s of D2.stages){
+    const lists = D2.lists.filter(l=>l.st===s[0]).map(l=>[l,l.items.filter(x=>match(x,l))]).filter(([,xs])=>xs.length);
+    if(!lists.length) continue;
+    html += `<h3 style="margin:18px 0 8px">${esc(s[1])}</h3>`;
+    for(const [l,xs] of lists){
+      const d = l.items.filter(isChecked).length, full = d===l.items.length;
+      const open = filtering || keepOpen.has(l.id);
+      html += `<details class="ph" data-l="${l.id}"${open?' open':''}><summary><span class="pid" style="font-size:13px;letter-spacing:.04em">${l.id}</span><span><span class="pt">${esc(l.name)}</span><br><span class="pm">${esc(l.goal)}</span></span><span style="display:flex;gap:8px;align-items:center">${pill(full?'DONE':d?'ACTIVE':'TODO',full?'done':d?'active':'todo')}<span class="mono num muted">${d}/${l.items.length}</span></span></summary><div class="tl">`+
+        xs.map(x=>{const on=isChecked(x), ov=checks[x[0]];
+          const who = ov&&ov.by ? `<div class="who">${esc(whoNames[ov.by]||'Someone')} · ${new Date(ov.at||0).toLocaleDateString(undefined,{day:'numeric',month:'short'})}</div>` : '';
+          return `<div class="t-row ck-row${on?' is-done':''}"><input type="checkbox" id="ck-${x[0]}" data-ck="${x[0]}"${on?' checked':''}${ro?' disabled':''}><label class="tt" for="ck-${x[0]}"><b>${esc(x[1])}</b><div class="tn"><span class="mono">${x[0]}</span>${x[4]?' · '+esc(x[4]):''}</div>${who}</label>${pill(x[2],prioCls(x[2]))}</div>`}).join('')+`</div></details>`;
+    }
+  }
+  $('#ls-list').innerHTML = html || '<div class="box muted">No checks match these filters.</div>';
+}
+async function setCheck(id, done){
+  if(!dbNs){ checks[id] = {done, at: Date.now()}; store.set('oyun-checks', JSON.stringify(checks)); renderLists(); return; }
+  if(writing['ck-'+id]) return; writing['ck-'+id]=true;
+  try{ await dbNs.doc('checks/'+id).set({done, by: myId, at: Date.now()}); }
+  catch(e){ $('#ls-sub').textContent = 'Could not save that tick. You may have view-only access.'; canWrite=false; renderLists(); }
+  finally{ writing['ck-'+id]=false; }
+}
+function initLists(){
+  try{ checks = JSON.parse(store.get('oyun-checks')||'{}') || {}; }catch(e){ checks = {}; }
+  $('#ls-stage').innerHTML = '<option value="">All stages</option>'+D2.stages.map(s=>`<option value="${s[0]}">${esc(s[1])}</option>`).join('');
+  const upd = ()=>{ LF.q=$('#ls-q').value; LF.stage=$('#ls-stage').value; LF.prio=$('#ls-prio').value; LF.open=$('#ls-open').checked; renderLists(); };
+  ['ls-q','ls-stage','ls-prio','ls-open'].forEach(id=>$('#'+id).addEventListener('input',upd));
+  $('#ls-list').addEventListener('change',e=>{ const c=e.target.closest('input[data-ck]'); if(c) setCheck(c.dataset.ck, c.checked); });
+}
+
 /* ===================== EXTRA RENDERERS ===================== */
 const tb = (head, rows) => `<div class="tw"><table><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 const bx = (title, inner, cls='') => `<div class="box ${cls}"><h3>${title}</h3>${inner}</div>`;
@@ -1792,13 +2142,13 @@ function initControls(){
   ['q','f-phase','f-status','f-prio','f-open'].forEach(id=>$('#'+id).addEventListener('input',upd));
   $('#trk-list').addEventListener('change',e=>{ const s=e.target.closest('select[data-id]'); if(s) setStatus(s.dataset.id, s.value); });
 }
-function refresh(){ renderOverview(); renderPhases(); renderTracker(); }
+function refresh(){ renderOverview(); renderPhases(); renderTracker(); renderLists(); }
 
 async function connect(){
-  const c = window.claude; if(!c || !c.use){ $('#trk-sub').textContent='Read-only here: task changes are saved only when the page is opened in Claude.'; return; }
+  const c = window.claude; if(!c || !c.use){ $('#ls-sub').textContent='Ticks are saved in this browser only. Open the page in Claude to share them.'; $('#trk-sub').textContent='Read-only here: task changes are saved only when the page is opened in Claude.'; return; }
   try{ userNs = await c.use('user'); }catch(e){}
   try{ dbNs = await c.use('db'); }catch(e){}
-  if(!dbNs){ $('#trk-sub').textContent='Sign in to see and change shared task status. Showing default statuses.'; return; }
+  if(!dbNs){ $('#ls-sub').textContent='Ticks are saved in this browser only. Open the page in Claude to share them.'; $('#trk-sub').textContent='Sign in to see and change shared task status. Showing default statuses.'; return; }
   try{ myId = userNs ? await userNs.id() : null; }catch(e){}
   let cw = null; try{ cw = userNs ? await userNs.can('data.write') : null; }catch(e){}
   canWrite = cw !== false;
@@ -1810,7 +2160,15 @@ async function connect(){
     if(userNs && ids.length){ try{ const ps=await userNs.profiles(ids); ids.forEach(i=>{whoNames[i]=ps[i]&&ps[i].name||''}); }catch(e){} }
     refresh();
   }, err=>{ if(err && err.code==='revoked'){ canWrite=false; renderTracker(); } });
+  checks = {}; renderLists();
+  dbNs.collection('checks').onSnapshot(async snap=>{
+    const o={}; snap.docs.forEach(d=>{ const v=d.data(); if(v && typeof v.done==='boolean') o[d.id]=v; });
+    checks=o;
+    const ids=[...new Set(Object.values(o).map(v=>v.by).filter(Boolean))].filter(i=>!(i in whoNames));
+    if(userNs && ids.length){ try{ const ps=await userNs.profiles(ids); ids.forEach(i=>{whoNames[i]=ps[i]&&ps[i].name||''}); }catch(e){} }
+    renderLists();
+  }, err=>{ if(err && err.code==='revoked'){ canWrite=false; renderLists(); } });
 }
 
-renderStatic(); renderNew(); initControls(); initTabs(); refresh(); connect();
+renderStatic(); renderNew(); initControls(); initLists(); initTabs(); refresh(); connect();
 </script>
