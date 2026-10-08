@@ -1,11 +1,19 @@
 import { dash } from '@/components/dash/ui';
 import { launchProblems, loginChecks, realtimeConfigured } from '@/lib/launch-checks';
+import { realtimeBroadcastWorks } from '@/lib/realtime';
 import { storageInfo } from '@/lib/store';
 
 // Shown on every admin page until production is connected. Not dismissible: fix the setup to clear it.
-export default function LaunchBanner() {
+export default async function LaunchBanner() {
   const storage = storageInfo();
-  const problems = launchProblems({ storage: storage.backend, shared: storage.shared, realtime: realtimeConfigured(), ...loginChecks() });
+  const realtime = realtimeConfigured();
+  const problems = launchProblems({
+    storage: storage.backend,
+    shared: storage.shared,
+    realtime,
+    realtimeBroadcast: realtime && (await realtimeBroadcastWorks()),
+    ...loginChecks(),
+  });
   if (problems.length === 0) return null;
 
   return (

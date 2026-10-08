@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { launchProblems, loginChecks, realtimeConfigured } from './launch-checks.ts';
 
 const logins = { adminLogin: true, partnerLogin: true, sessionSecretStrong: true, loginPasswordsStrong: true };
-const live = { storage: 'supabase', shared: true, realtime: true, ...logins } as const;
+const live = { storage: 'supabase', shared: true, realtime: true, realtimeBroadcast: true, ...logins } as const;
 const checks = (input: Parameters<typeof launchProblems>[0]) => launchProblems(input).map((p) => p.check);
 
 test('a fully connected production site has no problems', () => {
@@ -23,7 +23,11 @@ test('local-file storage is flagged even when it is shared (single dev server)',
 });
 
 test('missing realtime alone is flagged', () => {
-  assert.deepEqual(checks({ ...live, realtime: false }), ['realtimeSlotUpdates']);
+  assert.deepEqual(checks({ ...live, realtime: false, realtimeBroadcast: false }), ['realtimeSlotUpdates']);
+});
+
+test('configured realtime that cannot broadcast is flagged', () => {
+  assert.deepEqual(checks({ ...live, realtimeBroadcast: false }), ['realtimeBroadcast']);
 });
 
 test('realtime needs all three Supabase variables', () => {
@@ -39,7 +43,7 @@ test('realtime needs all three Supabase variables', () => {
 });
 
 test('problem text never contains environment values', () => {
-  const text = JSON.stringify(launchProblems({ storage: 'local-file', shared: false, realtime: false, adminLogin: false, partnerLogin: false, sessionSecretStrong: false, loginPasswordsStrong: false }));
+  const text = JSON.stringify(launchProblems({ storage: 'local-file', shared: false, realtime: false, realtimeBroadcast: false, adminLogin: false, partnerLogin: false, sessionSecretStrong: false, loginPasswordsStrong: false }));
   assert.doesNotMatch(text, /sb_secret|sk_live|sk_test|eyJ/);
 });
 
