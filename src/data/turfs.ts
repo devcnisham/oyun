@@ -230,6 +230,12 @@ export const turfSeeds: TurfSeed[] = [
 // Venues added after launch. A new database starts with them; an existing one gets any it is missing the next time it
 // loads (see migrate() in src/lib/seed.ts). They start as drafts that players cannot see: open Admin, Turfs, fill in the
 // real price, hours, phone, address and photo with each owner, then set the status to Active.
+// Descriptions the first Pickleball drafts were stored with; a stored venue still showing one gets the seed's real details
+export const draftTurfDescriptions = [
+  "Pickleball courts in Bejai. Details are being confirmed with the venue.",
+  "Pickleball court in Kadri. Details are being confirmed with the venue.",
+];
+
 export const lateTurfSeeds: TurfSeed[] = [
   {
     id: "onelve-pickleball-bejai",
@@ -240,40 +246,40 @@ export const lateTurfSeeds: TurfSeed[] = [
     reviewCount: 0,
     pricePerHour: 500, // placeholder until the owner confirms
     sports: ["Pickleball"],
-    amenities: ["Pickleball Courts"],
+    amenities: ["3 Indoor Courts"],
     size: "Pickleball court",
-    formats: ["Doubles"],
-    surface: "Court",
+    formats: ["Singles", "Doubles"],
+    surface: "Indoor synthetic",
     openTime: "06:00", // placeholder; closes 11:30 pm, rounded down to whole hours
     closeTime: "23:00",
     images: ["/turfs/turf_0.jpg"],
     isVerified: false,
     isFeatured: false,
-    description: "Pickleball courts in Bejai. Details are being confirmed with the venue.",
+    description: "Mangaluru's first dedicated pickleball centre: indoor synthetic courts inside a mall on Bejai Main Road, opposite the KSRTC bus stand. Three courts are open, with two more being built.",
     ownerName: "OneLve",
     phone: "",
     status: "pending",
   },
   {
-    id: "courtyard-pickleball-kadri",
-    name: "TheCourtyard Pickleball Court",
-    location: "Kadri, Mangalore",
-    area: "Kadri",
+    id: "courtyard-pickleball-kadri", // id kept from the first draft so stored data still matches
+    name: "The Courtyard Pickleball",
+    location: "Ground of Padavu, Megina Mane, Kandettu, Bikarnakatte, Mangalore 575005",
+    area: "Bikarnakatte",
     rating: 0,
     reviewCount: 0,
-    pricePerHour: 500, // placeholder until the owner confirms
+    pricePerHour: 600, // Playo price chart, Oct 2026: ₹600/hour every day, holidays too
     sports: ["Pickleball"],
-    amenities: ["Pickleball Courts"],
+    amenities: ["Washroom", "Drinking Water", "Parking", "Paddle & Ball Rental"],
     size: "Pickleball court",
-    formats: ["Doubles"],
-    surface: "Court",
-    openTime: "06:00", // placeholder; closes 11 pm
+    formats: ["Singles", "Doubles"],
+    surface: "Indoor synthetic",
+    openTime: "05:00",
     closeTime: "23:00",
     images: ["/turfs/turf_0.jpg"],
     isVerified: false,
     isFeatured: false,
-    description: "Pickleball court in Kadri. Details are being confirmed with the venue.",
-    ownerName: "TheCourtyard",
+    description: "Indoor synthetic pickleball court near Kadri Hills, Bikarnakatte. Non-marking shoes are compulsory, no barefoot play, up to 4 players per court. Paddles and balls can be rented; bring socks if you rent shoes.",
+    ownerName: "The Courtyard",
     phone: "",
     status: "pending",
   },

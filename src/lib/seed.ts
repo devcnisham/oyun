@@ -1,4 +1,4 @@
-import { lateTurfSeeds, turfSeeds } from '@/data/turfs';
+import { draftTurfDescriptions, lateTurfSeeds, turfSeeds } from '@/data/turfs';
 import { DEFAULT_PRICING } from './pricing';
 import { generateTempPassword, hashPassword } from './password';
 import type { Database, PlatformSettings } from './types';
@@ -37,7 +37,14 @@ export function migrate(data: Database): Database {
   const opsPartner = data.partners.find((p) => p.id === 'partner_oyun') ?? data.partners[0];
   if (opsPartner) {
     for (const t of lateTurfSeeds) {
-      if (data.turfs.some((x) => x.id === t.id)) continue;
+      const stored = data.turfs.find((x) => x.id === t.id);
+      if (stored) {
+        // Fill in real venue details over the first draft, keeping status, owner and anything an admin set
+        if (draftTurfDescriptions.includes(stored.description)) {
+          Object.assign(stored, { ...t, status: stored.status });
+        }
+        continue;
+      }
       data.turfs.push({ ...t, city: 'Mangalore', status: t.status ?? 'active', partnerId: opsPartner.id, commissionPercent: null, createdAt: new Date().toISOString() });
       data.pricing[t.id] ??= { ...DEFAULT_PRICING };
     }
