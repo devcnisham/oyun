@@ -86,12 +86,26 @@ export default function ProfileScreen({ supportEmail }: { supportEmail: string }
         </section>
       )}
 
-      <nav className={styles.menu} aria-label="Account">
-        <Link href="/bookings">My bookings<i aria-hidden>›</i></Link>
-        <Link href="/saved">Saved turfs<i aria-hidden>›</i></Link>
-        <Link href="/faq">Help &amp; FAQ<i aria-hidden>›</i></Link>
-        <a href={`mailto:${supportEmail}`}>Contact support<i aria-hidden>›</i></a>
-        <button type="button" onClick={openConsentSettings}>Cookie settings<i aria-hidden>›</i></button>
+      {/* Everything the old side menu held now lives here */}
+      <h2 className={styles.menuTitle}>Book</h2>
+      <nav className={styles.menu} aria-label="Book">
+        <Link href="/bookings"><span aria-hidden>🎟️</span>My bookings<i aria-hidden>›</i></Link>
+        <Link href="/saved"><span aria-hidden>♡</span>Saved turfs<i aria-hidden>›</i></Link>
+        <Link href="/arenas"><span aria-hidden>🏟️</span>All turfs<i aria-hidden>›</i></Link>
+      </nav>
+
+      <h2 className={styles.menuTitle}>Help &amp; settings</h2>
+      <nav className={styles.menu} aria-label="Help and settings">
+        <Link href="/help"><span aria-hidden>❓</span>Help center<i aria-hidden>›</i></Link>
+        <Link href="/settings"><span aria-hidden>⚙️</span>Settings<i aria-hidden>›</i></Link>
+        <a href={`mailto:${supportEmail}`}><span aria-hidden>✉️</span>Contact support<i aria-hidden>›</i></a>
+        <button type="button" onClick={openConsentSettings}><span aria-hidden>🍪</span>Cookie settings<i aria-hidden>›</i></button>
+      </nav>
+
+      <h2 className={styles.menuTitle}>Turf owners</h2>
+      <nav className={styles.menu} aria-label="Turf owners">
+        <Link href="/list-turf"><span aria-hidden>💼</span>List your turf<i aria-hidden>›</i></Link>
+        <Link href="/partner/login"><span aria-hidden>🔑</span>Partner login<i aria-hidden>›</i></Link>
       </nav>
 
       <p className={styles.legal}>
