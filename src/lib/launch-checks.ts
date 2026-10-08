@@ -5,6 +5,8 @@ export type LaunchCheckInput = {
   storage: 'supabase' | 'local-file';
   shared: boolean;
   realtime: boolean;
+  // Result of a live broadcast from the server; only checked when realtime is configured
+  realtimeBroadcast: boolean;
 } & LoginChecks;
 
 export type LoginChecks = {
@@ -19,6 +21,7 @@ export type LaunchProblem = {
     | 'storage'
     | 'bookingsSharedBetweenPlayers'
     | 'realtimeSlotUpdates'
+    | 'realtimeBroadcast'
     | 'adminLogin'
     | 'sessionSecretStrong'
     | 'loginPasswordsStrong';
@@ -72,6 +75,13 @@ export function launchProblems(input: LaunchCheckInput): LaunchProblem[] {
       check: 'realtimeSlotUpdates',
       title: 'Live slot updates are off',
       fix: 'Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY and SUPABASE_SECRET_KEY in Vercel, then redeploy.',
+    });
+  }
+  if (input.realtime && !input.realtimeBroadcast) {
+    problems.push({
+      check: 'realtimeBroadcast',
+      title: 'Live slot updates are configured but the server cannot send them',
+      fix: 'Check SUPABASE_SECRET_KEY is the current secret key for this project and NEXT_PUBLIC_SUPABASE_URL is right, then redeploy. Server logs show the status code.',
     });
   }
   if (!input.adminLogin) {

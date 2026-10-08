@@ -65,7 +65,7 @@ After the redeploy, open `https://<your-site>/api/health` and tick each line:
 - [ ] `"problems": []`
 - [ ] `"storage": "supabase"`
 - [ ] `"bookingsSharedBetweenPlayers": true`
-- [ ] `"realtimeSlotUpdates": true`
+- [ ] `"realtimeSlotUpdates": true` and `"realtimeBroadcast": "ok"` (the server really sent a test message)
 - [ ] `"database": "ok"` and `"turfs"` is 10 or more
 - [ ] `"adminLogin": true`, `"sessionSecretStrong": true` and `"loginPasswordsStrong": true`
 - [ ] `"partnerLogin": true` if you use the OYUN operations login
@@ -80,6 +80,17 @@ The endpoint only ever reports yes/no flags, never keys or data.
 Nothing to set up: when anyone holds, books or releases a slot, everyone looking at that turf and day sees it change
 within a second (Supabase Realtime), with a refresh every 10 seconds as a safety net. If you turned off
 **Realtime → Settings → "Allow public access"** in Supabase, turn it back on.
+
+It needs `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (browsers listen) and `SUPABASE_SECRET_KEY`
+(the server sends). The two `NEXT_PUBLIC_` values are built into the page, so **redeploy after changing them**.
+
+Check it in production:
+
+- [ ] `/api/health` shows `"realtimeSlotUpdates": true` and `"realtimeBroadcast": "ok"`. `"failed"` means the server
+  could not send a test message (wrong secret key or URL; Vercel logs show the status code). The result is cached for
+  5 minutes, 1 minute after a failure.
+- [ ] Open the same turf and day on two phones (one can be signed out). Hold a slot on one: the other shows it held
+  within about a second, without refreshing. Let the hold lapse or release it: it frees on both.
 
 ## 4. Before Monday (admin and partner dashboards)
 
