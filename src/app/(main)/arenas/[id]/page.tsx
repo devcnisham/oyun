@@ -10,6 +10,7 @@ import { breadcrumbSchema, turfSchema } from '@/lib/schema';
 import { areaSlug } from '@/lib/site';
 import { turfReviews } from '@/lib/reviews';
 import TurfDetail from './TurfDetail';
+import { primarySport } from '@/lib/sports';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -20,14 +21,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const turf = await getPublicTurf(id);
   if (!turf) return { title: 'Turf not found', robots: { index: false } };
-  const title = `${turf.name}, ${turf.area} | ${turf.size} Football Turf from ₹${turf.pricePerHour}/hr`;
-  const description = `Book ${turf.name} in ${turf.area}, ${turf.city}: ${turf.size} ${turf.surface.toLowerCase()} turf, open ${turf.openTime}–${turf.closeTime}. ${turf.amenities.slice(0, 3).join(', ')}. See live slots and book online.`.slice(0, 300);
+  const sport = primarySport(turf);
+  const place = sport.place === 'court' ? 'Court' : 'Turf';
+  const title = `${turf.name}, ${turf.area} | ${sport.label} ${place} from ₹${turf.pricePerHour}/hr`;
+  const description = `Book ${turf.name} in ${turf.area}, ${turf.city}: ${turf.sports.join(', ')}, ${turf.size}, ${turf.surface.toLowerCase()}, open ${turf.openTime}–${turf.closeTime}. ${turf.amenities.slice(0, 3).join(', ')}. See live slots and book online.`.slice(0, 300);
   const image = turf.images[0];
   return {
     title,
     description,
     alternates: { canonical: `/arenas/${turf.id}` },
-    openGraph: { type: 'website', url: `/arenas/${turf.id}`, title, description, images: image ? [{ url: image, alt: `${turf.name} football turf in ${turf.area}` }] : undefined },
+    openGraph: { type: 'website', url: `/arenas/${turf.id}`, title, description, images: image ? [{ url: image, alt: `${turf.name}, ${sport.label.toLowerCase()} ${sport.place} in ${turf.area}` }] : undefined },
   };
 }
 

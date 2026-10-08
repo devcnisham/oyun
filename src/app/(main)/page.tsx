@@ -16,7 +16,7 @@ import MobileHome from './_home/MobileHome';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-  title: { absolute: 'OYUN | Book Football Turfs in Mangalore Online' },
+  title: { absolute: 'OYUN | Book Sports Turfs & Courts in Mangalore Online' },
   description: SITE_DESCRIPTION,
   alternates: { canonical: '/' },
 };

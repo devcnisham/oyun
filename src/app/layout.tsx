@@ -10,19 +10,19 @@ import AuthProvider from "@/components/AuthProvider";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "OYUN | Book Football Turfs in Mangalore Online",
+    default: "OYUN | Book Sports Turfs & Courts in Mangalore Online",
     template: "%s | OYUN",
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  keywords: ["football turf Mangalore", "turf booking", "book turf near me", "5-a-side turf", "7-a-side football", "box cricket Mangalore", "sports arena booking"],
+  keywords: ["turf booking Mangalore", "football turf Mangalore", "box cricket Mangalore", "badminton court Mangalore", "pickleball Mangalore", "padel Mangalore", "book turf near me", "sports court booking"],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   openGraph: {
     type: "website",
     locale: "en_IN",
     siteName: SITE_NAME,
     url: "/",
-    title: "OYUN | Book Football Turfs in Mangalore Online",
+    title: "OYUN | Book Sports Turfs & Courts in Mangalore Online",
     description: SITE_DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },

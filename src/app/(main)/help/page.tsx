@@ -10,7 +10,7 @@ import styles from './Help.module.css';
 
 export const metadata: Metadata = {
   title: 'Help center | Bookings, payments & cancellations',
-  description: 'Get help with booking a football turf on OYUN: contact support, cancel a booking, how payment works and answers to common questions.',
+  description: 'Get help with booking a turf or court on OYUN: contact support, cancel a booking, how payment works and answers to common questions.',
   alternates: { canonical: '/help' },
 };
 

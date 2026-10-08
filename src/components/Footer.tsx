@@ -30,7 +30,7 @@ export default function Footer({ areas, supportEmail }: { areas: string[]; suppo
               </div>
             </div>
             <p className={styles.brandDesc}>
-              Discover and book premium football turfs near you. Play more, stress less.
+              Discover and book turfs and courts near you: football, box cricket, badminton, pickleball and padel. Play more, stress less.
             </p>
             <div className={styles.socialRow}>
               <a href="#" className={styles.social} aria-label="Instagram" id="footer-instagram">

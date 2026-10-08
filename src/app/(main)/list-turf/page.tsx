@@ -17,7 +17,7 @@ const surfaces = ['Artificial Grass', 'FIFA Certified Grass', 'FIFA Pro Artifici
 const mangaloreAreas = ['Kodialbail', 'Kankanady', 'Bejai', 'Hampankatta', 'Kadri', 'Falnir', 'Mangaladevi', 'Attavar', 'Bunder', 'Urwa', 'Other'];
 
 const perks = [
-  { icon: '🚀', title: 'Instant Reach', desc: 'Get discovered by thousands of football players in Mangalore looking to book now.' },
+  { icon: '🚀', title: 'Instant Reach', desc: 'Get discovered by players in Mangalore looking to book now.' },
   { icon: '📱', title: 'Easy Management', desc: 'Manage bookings, view availability and track revenue — all from your dashboard.' },
   { icon: '💰', title: 'Zero Commission', desc: 'During beta, listing is 100% free and we charge zero commission. List now before it changes.' },
   { icon: '✅', title: 'Verified Badge', desc: 'Get a verified badge after our team visits your turf — builds trust instantly with bookers.' },

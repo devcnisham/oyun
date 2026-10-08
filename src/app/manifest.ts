@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'OYUN — Turf Booking',
     short_name: 'OYUN',
-    description: 'Book football turfs near you in seconds.',
+    description: 'Book sports turfs and courts near you in seconds.',
     start_url: '/',
     scope: '/',
     display: 'standalone',

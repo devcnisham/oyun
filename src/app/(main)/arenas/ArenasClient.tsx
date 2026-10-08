@@ -6,6 +6,7 @@ import TurfCard from '@/components/TurfCard';
 import type { TurfSummary } from '@/lib/types';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
+import { SPORTS } from '@/lib/sports';
 
 const sortOptions = [
   { value: 'featured', label: 'Featured First' },
@@ -165,7 +166,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
                 </select>
               </label>
               <span className={styles.chipDivider} aria-hidden />
-              {['All Sports', 'Football', 'Box Cricket', 'Badminton', 'Padel', 'Pickleball'].map((sport) => (
+              {['All Sports', ...SPORTS.map((s) => s.value)].map((sport) => (
                 <button
                   key={sport}
                   id={`filter-sport-${sport.replace(/\s+/g, '-').toLowerCase()}`}
@@ -197,7 +198,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
             <div className={styles.mapContainer}>
               <iframe
                 title="Turfs on map"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(`football turf ${selectedArea !== 'All Areas' ? selectedArea : ''} ${selectedCity}`)}&output=embed`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(`${selectedSport !== 'All Sports' ? selectedSport.toLowerCase() : 'sports'} turf ${selectedArea !== 'All Areas' ? selectedArea : ''} ${selectedCity}`)}&output=embed`}
                 width="100%"
                 height="420"
                 style={{ border: 0, borderRadius: '12px' }}

@@ -8,6 +8,7 @@ import BookingFlow, { type BookingFlowProps } from './BookingFlow';
 import ShareButton from './ShareButton';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
+import { primarySport, sportInfo } from '@/lib/sports';
 
 interface TurfDetailProps {
   turf: Turf;
@@ -47,7 +48,9 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
       <div className={`container ${styles.content} ${styles.layout}`}>
         {/* Left column (top on mobile): turf name and highlights */}
         <div className={styles.info}>
-        <span className={styles.typeBadge}>{turf.size} · {turf.surface}</span>
+        <span className={styles.typeBadge}>
+          <span aria-hidden>{primarySport(turf).icon}</span> {primarySport(turf).label} · {turf.size} · {turf.surface}
+        </span>
         {/* Name, badge and address on the left; hours and map link on the right */}
         <div className={styles.titleRow}>
           <div className={styles.titleMain}>
@@ -134,7 +137,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           <div className={styles.infoGrid}>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>Sports</span>
-              <span className={styles.infoValue}>{turf.sports.join(', ')}</span>
+              <span className={styles.infoValue}>{turf.sports.map((s) => `${sportInfo(s).icon} ${sportInfo(s).label}`).join(', ')}</span>
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>Format</span>
