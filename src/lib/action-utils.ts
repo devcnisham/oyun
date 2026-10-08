@@ -62,8 +62,9 @@ export const AMENITY_OPTIONS = [
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-// Shared by the partner "My turf" page and the admin turf editor
-export function parseTurfProfile(fd: FormData): Partial<Turf> {
+// Shared by the partner "My turf" page and the admin turf editor.
+// phoneOptional: admins can save a venue before its number is known (drafts like the Pickleball venues)
+export function parseTurfProfile(fd: FormData, { phoneOptional = false } = {}): Partial<Turf> {
   const openTime = required(fd, 'openTime', 'Opening time', 5);
   const closeTime = required(fd, 'closeTime', 'Closing time', 5);
   if (!TIME_RE.test(openTime) || !TIME_RE.test(closeTime)) throw new ValidationError('Times must look like 06:00');
@@ -75,7 +76,7 @@ export function parseTurfProfile(fd: FormData): Partial<Turf> {
     name: required(fd, 'name', 'Turf name', 80),
     area: required(fd, 'area', 'Area', 60),
     location: required(fd, 'location', 'Location', 160),
-    phone: required(fd, 'phone', 'Contact phone', 20),
+    phone: phoneOptional ? str(fd, 'phone', 20) : required(fd, 'phone', 'Contact phone', 20),
     ownerName: required(fd, 'ownerName', 'Contact name', 80),
     description: required(fd, 'description', 'Description', 1000),
     pricePerHour: int(fd, 'pricePerHour', { min: 100, max: 20000, label: 'Base price' }),

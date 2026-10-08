@@ -3,7 +3,7 @@ import type { Turf } from '@/lib/types';
 import styles from './dash.module.css';
 
 // Inputs parsed by parseTurfProfile() — shared by the partner and admin turf editors
-export default function TurfProfileFields({ turf }: { turf: Turf }) {
+export default function TurfProfileFields({ turf, phoneOptional = false }: { turf: Turf; phoneOptional?: boolean }) {
   return (
     <>
       <div className={styles.formGrid}>
@@ -30,8 +30,8 @@ export default function TurfProfileFields({ turf }: { turf: Turf }) {
           <input name="ownerName" defaultValue={turf.ownerName} required className={styles.input} />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>Contact phone</span>
-          <input name="phone" defaultValue={turf.phone} required className={styles.input} />
+          <span className={styles.label}>Contact phone{phoneOptional ? ' (optional)' : ''}</span>
+          <input name="phone" defaultValue={turf.phone} required={!phoneOptional} className={styles.input} />
         </label>
         <label className={styles.field}>
           <span className={styles.label}>Opens</span>

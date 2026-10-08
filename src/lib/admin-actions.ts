@@ -120,7 +120,7 @@ const TURF_STATUSES: TurfStatus[] = ['active', 'pending', 'maintenance', 'suspen
 export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
-    const profile = parseTurfProfile(fd);
+    const profile = parseTurfProfile(fd, { phoneOptional: true });
     const status = str(fd, 'status') as TurfStatus;
     if (!TURF_STATUSES.includes(status)) throw new ValidationError('Invalid status');
     const commissionRaw = str(fd, 'commissionPercent');
