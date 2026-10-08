@@ -41,7 +41,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
   const origin = `${h.get('x-forwarded-proto') ?? 'http'}://${h.get('host') ?? 'localhost:3000'}`;
   const shareUrl = player ? `${origin}/arenas/${turf.id}?ref=${player.referralCode}` : '';
   const shareText = player
-    ? `Book football turfs on OYUN! Use my code ${player.referralCode} on your first booking and get ₹${s.refereeReward} in your wallet after you play: ${shareUrl}`
+    ? `Book turfs and courts on OYUN! Use my code ${player.referralCode} on your first booking and get ₹${s.refereeReward} in your wallet after you play: ${shareUrl}`
     : '';
 
   return (

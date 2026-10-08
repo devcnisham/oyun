@@ -44,7 +44,7 @@ export default function SettingsList({ supportEmail }: { supportEmail: string })
         </ul>
       </section>
 
-      <p className={styles.about}>OYUN · Football turfs in Mangalore</p>
+      <p className={styles.about}>OYUN · Sports turfs and courts in Mangalore</p>
     </>
   );
 }

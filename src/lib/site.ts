@@ -12,9 +12,9 @@ function siteUrl() {
 export const SITE_URL = siteUrl();
 export const SITE_NAME = 'OYUN';
 export const SITE_CITY = 'Mangalore';
-export const SITE_TAGLINE = 'Book football turfs in Mangalore';
+export const SITE_TAGLINE = 'Book turfs and courts in Mangalore';
 export const SITE_DESCRIPTION =
-  'Book football turfs in Mangalore in seconds. Compare 5-a-side and 7-a-side turfs, see live slot availability and prices, and pay online. Kodialbail, Kankanady, Ullal and more.';
+  'Book football and box cricket turfs and badminton, pickleball and padel courts in Mangalore. See live slot availability and prices and book in seconds. Kodialbail, Kankanady, Ullal and more.';
 
 export const absoluteUrl = (path = '/') => new URL(path, `${SITE_URL}/`).toString();
 

@@ -19,6 +19,7 @@ import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
 import { hourlyRate } from '@/lib/pricing';
+import { primarySport } from '@/lib/sports';
 import type { PitchSize, Slot, Turf } from '@/lib/types';
 import styles from './BookingFlow.module.css';
 
@@ -375,7 +376,9 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       </div>
 
       <div className={styles.pitch} aria-hidden>
-        <span>⚽ {size === 'half' ? 'Half pitch' : `${turf.size} pitch`} · {dateInfo?.label}</span>
+        <span>
+          {primarySport(turf).icon} {size === 'half' ? 'Half pitch' : primarySport(turf).place === 'court' ? turf.size : `${turf.size} pitch`} · {dateInfo?.label}
+        </span>
       </div>
 
       <div className={`${styles.map} ${loadingSlots ? styles.mapLoading : ''}`}>

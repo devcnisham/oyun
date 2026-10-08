@@ -7,6 +7,13 @@ import { listAreas, listPublicTurfs } from '@/lib/queries';
 import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
 import { areaSlug } from '@/lib/site';
 import styles from './page.module.css';
+import { sportInfo } from '@/lib/sports';
+
+// Sports played at these venues, e.g. "football and box cricket"
+function areaSports(turfs: { sports: string[] }[]) {
+  const names = [...new Set(turfs.flatMap((t) => t.sports.map((s) => sportInfo(s).label.toLowerCase())))];
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] ?? 'sports';
+}
 
 interface Props {
   params: Promise<{ area: string }>;
@@ -27,8 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { area, turfs } = data;
   const from = Math.min(...turfs.map((t) => t.pricePerHour));
   return {
-    title: `Football Turfs in ${area}, Mangalore | Book from ₹${from}/hr`,
-    description: `${turfs.length} football turf${turfs.length === 1 ? '' : 's'} in ${area}, Mangalore. Compare ${[...new Set(turfs.map((t) => t.size))].join(' and ')} turfs, check live slot availability and book online on OYUN.`,
+    title: `Turfs & Courts in ${area}, Mangalore | Book from ₹${from}/hr`,
+    description: `${turfs.length} venue${turfs.length === 1 ? '' : 's'} in ${area}, Mangalore for ${areaSports(turfs)}. Check live slot availability and book online on OYUN.`,
     alternates: { canonical: `/turfs/${slug}` },
     openGraph: { url: `/turfs/${slug}` },
   };
@@ -53,7 +60,7 @@ export default async function AreaPage({ params }: Props) {
             { name: 'Turfs in Mangalore', path: '/arenas' },
             { name: area, path: `/turfs/${slug}` },
           ]),
-          itemListSchema(turfs, `Football turfs in ${area}, Mangalore`),
+          itemListSchema(turfs, `Turfs and courts in ${area}, Mangalore`),
         ]}
       />
 
@@ -61,14 +68,14 @@ export default async function AreaPage({ params }: Props) {
         <Link href="/">Home</Link> <span aria-hidden>›</span> <Link href="/arenas">Turfs in Mangalore</Link> <span aria-hidden>›</span> <span aria-current="page">{area}</span>
       </nav>
 
-      <h1 className={styles.title}>Football turfs in {area}, Mangalore</h1>
+      <h1 className={styles.title}>Turfs and courts in {area}, Mangalore</h1>
       <p className={styles.lead}>
-        {turfs.length} turf{turfs.length === 1 ? '' : 's'} in {area} from ₹{from.toLocaleString('en-IN')} per hour
-        {openToday > 0 ? `, with ${openToday} open slot${openToday === 1 ? '' : 's'} today` : ''}. Pick a turf to see live availability and book in under a minute.
+        {turfs.length} venue{turfs.length === 1 ? '' : 's'} for {areaSports(turfs)} in {area} from ₹{from.toLocaleString('en-IN')} per hour
+        {openToday > 0 ? `, with ${openToday} open slot${openToday === 1 ? '' : 's'} today` : ''}. Pick a venue to see live availability and book in under a minute.
       </p>
 
       <section aria-labelledby="list-heading">
-        <h2 id="list-heading" className={styles.h2}>Turfs in {area}</h2>
+        <h2 id="list-heading" className={styles.h2}>Venues in {area}</h2>
         <div className={styles.grid}>
           {turfs.map((t) => (
             <TurfCard key={t.id} turf={t} />
@@ -77,11 +84,11 @@ export default async function AreaPage({ params }: Props) {
       </section>
 
       <section className={styles.about} aria-labelledby="about-heading">
-        <h2 id="about-heading" className={styles.h2}>Playing football in {area}</h2>
+        <h2 id="about-heading" className={styles.h2}>Playing sports in {area}</h2>
         <p>
-          Turfs in {area} offer {sizes.join(' and ')} pitches{amenities.length ? ` with ${amenities.join(', ').toLowerCase()}` : ''}. Evening slots between 6 PM and 10 PM
+          Venues in {area} offer {sizes.join(' and ')}{amenities.length ? ` with ${amenities.join(', ').toLowerCase()}` : ''}. Evening slots between 6 PM and 10 PM
           fill up fastest and cost a little more at peak time, while early-morning games are usually cheaper and often carry an Early Bird discount.
-          Book online on OYUN to lock your slot instantly, pay in full or a small advance, and check in at the turf with your QR code.
+          Book online on OYUN to lock your slot instantly, pay in full or a small advance, and check in at the venue with your QR code.
         </p>
       </section>
 

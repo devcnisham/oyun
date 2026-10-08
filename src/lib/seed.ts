@@ -28,12 +28,17 @@ const DEFAULT_SETTINGS: PlatformSettings = {
   refereeReward: 100,
 };
 
+const OLD_HERO_TITLE = "Book Mangalore's best football turfs in seconds";
+const NEW_HERO_TITLE = 'Book turfs and courts in Mangalore in seconds';
+
 // Fill in fields added after the database was first created, so older data keeps working
 export function migrate(data: Database): Database {
   data.settings = { ...DEFAULT_SETTINGS, ...data.settings };
   data.walletTxns ??= [];
   data.holds ??= [];
   if (data.site) data.site.ads ??= [];
+  // The old football-only default headline becomes the multi-sport one; a headline the admin wrote is kept
+  if (data.site?.heroTitle === OLD_HERO_TITLE) data.site.heroTitle = NEW_HERO_TITLE;
   // Venues added after launch show up in databases that were created before them
   const opsPartner = data.partners.find((p) => p.id === 'partner_oyun') ?? data.partners[0];
   if (opsPartner) {
@@ -83,7 +88,7 @@ export function seed(): Database {
     promoCodes: [],
     settings: { ...DEFAULT_SETTINGS },
     site: {
-      heroTitle: "Book Mangalore's best football turfs in seconds",
+      heroTitle: NEW_HERO_TITLE,
       announcement: '',
       announcementActive: false,
       promos: [
