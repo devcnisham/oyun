@@ -29,6 +29,8 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
     .filter((t) => t.availableToday > 0 && (!sport || t.sports.includes(sport)))
     .sort((a, b) => b.availableToday - a.availableToday)
     .slice(0, SHOWN);
+  // A sport with no live venue at all is "coming soon", not "full today"
+  const hasVenues = !sport || turfs.some((t) => t.sports.includes(sport));
   const seeAll = sport ? `${sportHref(sport)}&sort=availability` : '/arenas?sort=availability';
 
   return (
@@ -53,8 +55,8 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
       {(open.length > 0 || chosen) && (
         <section aria-live="polite">
           <div className={styles.sectionHead}>
-            <h2 className={styles.swap} key={sport ?? 'all'}>{chosen ? `${chosen.label} open today` : 'Open slots today'}</h2>
-            <Link href={seeAll}>See all</Link>
+            <h2 className={styles.swap} key={sport ?? 'all'}>{chosen ? (hasVenues ? `${chosen.label} open today` : chosen.label) : 'Open slots today'}</h2>
+            {hasVenues && <Link href={seeAll}>See all</Link>}
           </div>
           {open.length > 0 ? (
             // Remount on a new choice so the rail starts from its first card
@@ -70,9 +72,13 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
                 </Link>
               ))}
             </div>
+          ) : hasVenues ? (
+            <p className={styles.railEmpty} key={sport ?? 'all'}>
+              Every {chosen?.label} slot is taken today. <Link href={sportHref(sport!)}>Book another day</Link>
+            </p>
           ) : (
             <p className={styles.railEmpty} key={sport ?? 'all'}>
-              No {chosen?.label} venue has a slot left today. <Link href={sportHref(sport!)}>See all {chosen?.label} venues</Link>
+              {chosen?.label} venues are coming soon to OYUN. <Link href="/list-turf">Own one? List it</Link>
             </p>
           )}
         </section>
