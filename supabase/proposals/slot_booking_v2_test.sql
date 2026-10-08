@@ -109,3 +109,13 @@ select n, case when ok then 'PASS' else 'FAIL' end as result, test, left(info, 6
 select to_char(starts_at at time zone 'Asia/Kolkata','HH24:MI') as slot, price, state
   from oyun.available_slots('00000000-0000-0000-0000-00000000f001', (now() at time zone 'Asia/Kolkata')::date + 1)
  where to_char(starts_at at time zone 'Asia/Kolkata','HH24:MI') in ('06:00','08:00','09:00','17:00','18:00','19:00','21:00','00:00');
+
+-- Fail the run (non-zero exit with ON_ERROR_STOP) if any test failed, so CI catches it
+do $$
+declare failed int; total int;
+begin
+  select count(*) filter (where not ok), count(*) into failed, total from results;
+  if total = 0 then raise exception 'no SQL tests ran'; end if;
+  if failed > 0 then raise exception '% of % SQL tests failed', failed, total; end if;
+  raise notice 'all % SQL tests passed', total;
+end $$;

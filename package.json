@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test 'src/**/*.test.ts'"
+    "test": "node --test 'src/**/*.test.ts'",
+    "test:sql": "bash scripts/sql-tests.sh"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.11",
