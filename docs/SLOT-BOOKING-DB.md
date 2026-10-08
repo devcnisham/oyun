@@ -99,8 +99,12 @@ replay no-op, late payment after someone else took the slot → `refund_needed`;
 Run them yourself against a scratch database:
 
 ```bash
-psql "$SCRATCH_DB_URL" -f supabase/proposals/slot_booking_v2.sql -f supabase/proposals/slot_booking_v2_test.sql
+PGHOST=localhost PGPORT=5433 npm run test:sql
 ```
+
+`scripts/sql-tests.sh` creates two throwaway databases on that server, applies `supabase/migrations` (twice, to prove
+they re-run), then the proposal and its tests. It stops with an error if any test fails, and refuses Supabase hosts.
+CI (`.github/workflows/ci.yml`) runs the same script against Postgres 17 on every pull request.
 
 ## Moving the app over
 
