@@ -2,23 +2,20 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { getBookingSummaries } from '@/lib/booking-actions';
-import { DEVICE_EVENT, getMyBookingIds, getPreferredArea, getProfile, setPreferredArea } from '@/lib/client/device';
+import { DEVICE_EVENT, getMyBookingIds, getProfile } from '@/lib/client/device';
 import { clerkEnabled } from '@/lib/clerk';
 import ClerkAccount from './ClerkAccount';
 import styles from './Navbar.module.css';
 
-export default function Navbar({ areas = [] }: { areas?: string[] }) {
+export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const isArenaDetail = pathname?.startsWith('/arenas/') && pathname !== '/arenas';
   
-  const router = useRouter();
   const [firstName, setFirstName] = useState('');
   const [signedIn, setSignedIn] = useState(false);
-  const [area, setArea] = useState('');
-  const [areaSheet, setAreaSheet] = useState(false);
   const [upcoming, setUpcoming] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [overscrolled, setOverscrolled] = useState(false);
@@ -49,8 +46,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
     };
   }, []);
 
-  // Never hide while a menu or sheet from the header is open
-  const headerHidden = hidden && !areaSheet;
+  const headerHidden = hidden;
 
   // Name and upcoming-booking count come from what this device has saved
   useEffect(() => {
@@ -67,10 +63,7 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
         .then((list) => !cancelled && setUpcoming(list.filter((b) => b.status === 'confirmed' && b.date >= today).length))
         .catch(() => {});
     };
-    queueMicrotask(() => {
-      refresh();
-      setArea(getPreferredArea());
-    });
+    queueMicrotask(refresh);
     window.addEventListener(DEVICE_EVENT, refresh);
     return () => {
       cancelled = true;
@@ -140,56 +133,6 @@ export default function Navbar({ areas = [] }: { areas?: string[] }) {
       </header>
     </div>
 
-      <div className={`${styles.locationStrip} ${isArenaDetail ? styles.desktopOnlyNav : ''}`}>
-        <button type="button" className={styles.location} onClick={() => setAreaSheet(true)} aria-haspopup="dialog">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
-            <circle cx="12" cy="9.5" r="2.5" />
-          </svg>
-          <span>Playing in {area ? `${area}, Mangalore` : 'Mangalore'}</span>
-          <span aria-hidden className={styles.chevron}>⌄</span>
-        </button>
-        <Link href="/list-turf" className={styles.pill}>List your turf</Link>
-      </div>
-
-
-      {areaSheet && (
-        <div className={styles.sheetOverlay} onClick={(e) => e.target === e.currentTarget && setAreaSheet(false)}>
-          <div className={styles.sheet} role="dialog" aria-modal="true" aria-label="Choose your area">
-            <div className={styles.sheetHead}>
-              <b>Where do you want to play?</b>
-              <button type="button" onClick={() => setAreaSheet(false)}>Close</button>
-            </div>
-            <button
-              type="button"
-              className={`${styles.areaOption} ${area === '' ? styles.areaOn : ''}`}
-              onClick={() => {
-                setPreferredArea('');
-                setArea('');
-                setAreaSheet(false);
-                router.push('/arenas');
-              }}
-            >
-              All of Mangalore
-            </button>
-            {areas.map((a) => (
-              <button
-                key={a}
-                type="button"
-                className={`${styles.areaOption} ${area === a ? styles.areaOn : ''}`}
-                onClick={() => {
-                  setPreferredArea(a);
-                  setArea(a);
-                  setAreaSheet(false);
-                  router.push(`/arenas?area=${encodeURIComponent(a)}`);
-                }}
-              >
-                {a}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }
