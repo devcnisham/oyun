@@ -50,22 +50,28 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         <span className={styles.typeBadge}>{turf.size} · {turf.surface}</span>
         {/* Name with its rating or "New" badge, heart on the right */}
         <div className={styles.titleRow}>
-          <h1 className={styles.title}>{turf.name}</h1>
-          {turf.reviewCount > 0 ? (
-            <span className={styles.ratingBadge}>★ {turf.rating}</span>
-          ) : (
-            <span className={styles.ratingBadge}>New</span>
-          )}
-          <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.saveInline} />
+          <h1 className={styles.title}>
+            {turf.name}{' '}
+            <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
+          </h1>
+          {/* Save and share sit on the photo; the opening hours take this spot */}
+          <span className={styles.hours}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+            {turf.openTime} – {turf.closeTime}
+          </span>
         </div>
 
-        <ul className={styles.facts}>
-          <li><span aria-hidden>💡</span>Open {turf.openTime} – {turf.closeTime}</li>
-          {turf.isVerified && <li><span aria-hidden>✓</span>Verified by OYUN</li>}
-          {turf.reviewCount > 0 && (
-            <li><a href="#reviews" className={styles.ratingText}>{turf.reviewCount} rating{turf.reviewCount === 1 ? '' : 's'}</a></li>
-          )}
-        </ul>
+        {(turf.isVerified || turf.reviewCount > 0) && (
+          <ul className={styles.facts}>
+            {turf.isVerified && <li><span aria-hidden>✓</span>Verified by OYUN</li>}
+            {turf.reviewCount > 0 && (
+              <li><a href="#reviews" className={styles.ratingText}>{turf.reviewCount} rating{turf.reviewCount === 1 ? '' : 's'}</a></li>
+            )}
+          </ul>
+        )}
 
         <div className={styles.addressBlock}>
           <p>{turf.location}</p>
