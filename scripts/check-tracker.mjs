@@ -66,11 +66,18 @@ check(DATA.risks.every((r) => taskSet.has(r.task)), 'every risk points to an exi
 const statuses = new Set(['built', 'partial', 'planned', 'removed']);
 check(D2.featureGroups.every((g) => g.subs.every((x) => statuses.has(x[1]))), 'feature statuses are built, partial, planned or removed');
 check(els['#feat-table']?.innerHTML.length > 1000, 'Features tab rendered');
+const checkItems = D2.lists.flatMap((l) => l.items);
+const checkIds = checkItems.map((x) => x[0]);
+const stageIds = new Set(D2.stages.map((x) => x[0]));
+check(dupes(checkIds).length === 0, `checklist ids are unique${dupes(checkIds).length ? ': ' + [...new Set(dupes(checkIds))].join(', ') : ''}`);
+check(D2.lists.every((l) => stageIds.has(l.st)), 'every checklist belongs to a known stage');
+check(checkItems.every((x) => ['P0', 'P1', 'P2', 'P3'].includes(x[2])), 'checklist priorities are P0 to P3');
+check(els['#ls-list']?.innerHTML.length > 1000, 'Checklists tab rendered');
 check(els['#calc-out']?.innerHTML.length > 500, 'cost calculator rendered');
 
 const done = DATA.tasks.filter((t) => t.s === 'done').length;
 const parts = D2.featureGroups.reduce((n, g) => n + g.subs.length, 0);
-console.log(`\n${DATA.tasks.length} tasks (${done} done), ${DATA.risks.length} risks, ${D2.featureGroups.length} features with ${parts} parts, ${DATA.adr.length} decisions`);
+console.log(`\n${DATA.tasks.length} tasks (${done} done), ${DATA.risks.length} risks, ${D2.featureGroups.length} features with ${parts} parts, ${DATA.adr.length} decisions, ${D2.lists.length} checklists with ${checkItems.length} checks`);
 const header = html.match(/Updated after [^<·]*/)?.[0]?.trim();
 console.log(`Header note: ${header ?? 'not found'}`);
 console.log(failed ? `\n${failed} check(s) failed` : '\nAll checks passed');
