@@ -25,6 +25,9 @@ export interface Turf {
   status: TurfStatus;
   partnerId: string | null;
   commissionPercent: number | null; // null = platform default
+  // Pitch can be split down the middle into two halves (A and B) that are booked separately
+  halfPitch?: boolean;
+  halfPricePercent?: number; // price of one half as a % of the full pitch; default 50
   createdAt: string;
 }
 
@@ -34,6 +37,11 @@ export interface TurfSummary extends Turf {
 }
 
 export type SlotUnavailableReason = 'booked' | 'blocked' | 'past' | 'held';
+
+// What a player books: the whole pitch or one half of it
+export type PitchSize = 'full' | 'half';
+// What a booking or hold occupies: the whole pitch, or half A or half B
+export type PitchPart = 'full' | 'A' | 'B';
 
 export interface Slot {
   date: string; // YYYY-MM-DD (IST)
@@ -88,6 +96,7 @@ export interface SlotHold {
   date: string;
   hour: number;
   holder: string; // sha256 of the device cookie
+  pitch?: PitchPart; // missing means the whole pitch
   expiresAt: string; // ISO
 }
 
@@ -192,6 +201,7 @@ export interface Booking {
   date: string;
   hour: number;
   timeLabel: string;
+  pitch?: PitchPart; // missing means the whole pitch
   customerName: string;
   customerPhone: string;
   playerId: string | null;

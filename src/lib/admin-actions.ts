@@ -128,6 +128,8 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
     const rating = Number(str(fd, 'rating'));
     if (!Number.isFinite(rating) || rating < 0 || rating > 5) throw new ValidationError('Rating must be between 0 and 5');
     const partnerId = str(fd, 'partnerId') || null;
+    const halfPitch = bool(fd, 'halfPitch');
+    const halfPricePercent = halfPitch ? int(fd, 'halfPricePercent', { min: 30, max: 80, label: 'Half pitch price' }) : undefined;
 
     return await mutate((db) => {
       const turf = db.turfs.find((t) => t.id === str(fd, 'turfId'));
@@ -140,6 +142,8 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
         isVerified: bool(fd, 'isVerified'),
         isFeatured: bool(fd, 'isFeatured'),
         partnerId,
+        halfPitch,
+        halfPricePercent: halfPricePercent ?? turf.halfPricePercent,
       });
       return { ok: `${turf.name} saved` };
     });

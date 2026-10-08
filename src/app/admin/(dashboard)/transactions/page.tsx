@@ -6,6 +6,7 @@ import { bookingRevenue } from '@/lib/reports';
 import { getDb } from '@/lib/store';
 import { formatDate } from '@/lib/time';
 import type { BookingStatus } from '@/lib/types';
+import { halfNote } from '@/lib/pricing';
 
 const STATUSES: BookingStatus[] = ['confirmed', 'checked_in', 'no_show', 'cancelled', 'refunded'];
 
@@ -57,7 +58,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
             <tbody>
               {shown.map((b) => (
                 <tr key={b.id}>
-                  <td className={dash.strong}>{formatDate(b.date)} · {b.timeLabel}</td>
+                  <td className={dash.strong}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</td>
                   <td>{turfName(b.turfId)}</td>
                   <td>{b.customerName}<div className={dash.muted}>{b.customerPhone}</div></td>
                   <td className={dash.muted}>{b.code}</td>

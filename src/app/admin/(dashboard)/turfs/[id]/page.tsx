@@ -54,6 +54,11 @@ export default async function AdminTurfEdit({ params }: { params: Promise<{ id: 
           <div className={dash.inline}>
             <label className={dash.check}><input type="checkbox" name="isVerified" defaultChecked={turf.isVerified} /> Verified</label>
             <label className={dash.check}><input type="checkbox" name="isFeatured" defaultChecked={turf.isFeatured} /> Featured on homepage</label>
+            <label className={dash.check}><input type="checkbox" name="halfPitch" defaultChecked={turf.halfPitch ?? false} /> Can be booked as two halves</label>
+            <label className={dash.field} style={{ maxWidth: 220 }}>
+              <span className={dash.label}>Half pitch price (% of full)</span>
+              <input name="halfPricePercent" type="number" min={30} max={80} defaultValue={turf.halfPricePercent ?? 50} className={dash.input} />
+            </label>
           </div>
 
           <h2 className={dash.cardTitle} style={{ marginTop: 8 }}>Turf details</h2>

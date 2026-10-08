@@ -7,6 +7,7 @@ import { getBookingSummaries, type BookingSummary } from '@/lib/booking-actions'
 import { addMyBookingIds, getMyBookingIds } from '@/lib/client/device';
 import { canOptimize } from '@/lib/images';
 import styles from './MyBookings.module.css';
+import { halfNote } from '@/lib/pricing';
 
 const STATUS: Record<BookingSummary['status'], string> = {
   confirmed: 'Confirmed',
@@ -79,7 +80,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
               </div>
               <div className={styles.info}>
                 <b>{b.turfName}</b>
-                <span>{prettyDate(b.date)} · {b.timeLabel}</span>
+                <span>{prettyDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</span>
                 <span className={styles.meta}>
                   <em className={b.status === 'confirmed' || b.status === 'checked_in' ? styles.ok : styles.off}>{STATUS[b.status]}</em>
                   {b.due > 0 && b.status === 'confirmed' && <> · ₹{b.due} at venue</>}
