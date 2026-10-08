@@ -203,6 +203,11 @@ html, body {
 }
 
 /* ---------- App feel on phones ---------- */
+/* Height of the bottom tab bar; bars pinned to the bottom of the screen sit on top of it */
+:root { --bottom-nav-h: 0px; }
+@media (max-width: 768px) {
+  :root { --bottom-nav-h: calc(62px + env(safe-area-inset-bottom)); }
+}
 html {
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
@@ -210,8 +215,8 @@ html {
 
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
-  /* Room so the bottom tab bar and floating search button never cover the last item */
-  .appMain { padding-bottom: calc(150px + env(safe-area-inset-bottom)); min-height: 100dvh; }
+  /* Room so the floating search button never covers the last item (the tab bar adds its own spacer) */
+  .appMain { padding-bottom: 84px; min-height: 100dvh; }
   /* Apps don't have a website footer; links live on the Profile tab */
   .appMain ~ footer { display: none; }
   button, a { touch-action: manipulation; }

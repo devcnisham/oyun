@@ -24,12 +24,15 @@ const TABS = [
   { href: '/profile', label: 'Profile', icon: 'profile', match: (p: string) => ['/profile', '/settings', '/help', '/saved'].some((x) => p.startsWith(x)) },
 ] as const;
 
-// App-style tab bar on phones. Hidden on a turf page, where the booking bar takes the bottom of the screen.
+// App-style tab bar on phones, on every player-facing page. The admin and partner dashboards have their own menus.
 export default function BottomNav() {
   const path = usePathname() ?? '/';
-  if (/^\/arenas\/[^/]+/.test(path)) return null;
+  if (path.startsWith('/admin') || path.startsWith('/partner')) return null;
 
   return (
+    <>
+    {/* Keeps the end of the page clear of the fixed bar */}
+    <div className={styles.spacer} aria-hidden />
     <nav className={styles.nav} aria-label="Main">
       {TABS.map((t) => {
         const active = t.match(path);
@@ -41,5 +44,6 @@ export default function BottomNav() {
         );
       })}
     </nav>
+    </>
   );
 }

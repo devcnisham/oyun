@@ -1,7 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingSearch from "@/components/FloatingSearch";
-import BottomNav from "@/components/BottomNav";
 import { connection } from "next/server";
 import { getSettings, getSiteContent, listAreas, listPublicTurfs } from "@/lib/queries";
 
@@ -29,7 +28,6 @@ export default async function MainLayout({
       <main className="appMain">{children}</main>
       <Footer areas={areas} supportEmail={settings.supportEmail} />
       <FloatingSearch />
-      <BottomNav />
     </>
   );
 }
