@@ -221,6 +221,22 @@
   background: var(--bg-muted);
 }
 
+.menuTitle {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 8px 4px -6px;
+}
+
+.menu span {
+  width: 28px;
+  margin-right: 10px;
+  font-size: 18px;
+  text-align: center;
+}
+
 .menu i {
   margin-left: auto;
   font-style: normal;
