@@ -48,30 +48,29 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         {/* Left column (top on mobile): turf name and highlights */}
         <div className={styles.info}>
         <span className={styles.typeBadge}>{turf.size} · {turf.surface}</span>
-        <h1 className={styles.title}>{turf.name}</h1>
-
-        <div className={styles.ratingRow}>
-          <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.saveInline} />
+        {/* Name with its rating or "New" badge, heart on the right */}
+        <div className={styles.titleRow}>
+          <h1 className={styles.title}>{turf.name}</h1>
           {turf.reviewCount > 0 ? (
-            <>
-              <span className={styles.ratingBadge}>★ {turf.rating}</span>
-              <a href="#reviews" className={styles.ratingText}>({turf.reviewCount} rating{turf.reviewCount === 1 ? '' : 's'})</a>
-            </>
+            <span className={styles.ratingBadge}>★ {turf.rating}</span>
           ) : (
             <span className={styles.ratingBadge}>New</span>
           )}
+          <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.saveInline} />
         </div>
+
+        <ul className={styles.facts}>
+          <li><span aria-hidden>💡</span>Open {turf.openTime} – {turf.closeTime}</li>
+          {turf.isVerified && <li><span aria-hidden>✓</span>Verified by OYUN</li>}
+          {turf.reviewCount > 0 && (
+            <li><a href="#reviews" className={styles.ratingText}>{turf.reviewCount} rating{turf.reviewCount === 1 ? '' : 's'}</a></li>
+          )}
+        </ul>
 
         <div className={styles.addressBlock}>
           <p>{turf.location}</p>
           <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink}>View on map</a>
         </div>
-
-        {/* Quick facts right under the address */}
-        <ul className={styles.facts}>
-          <li><span aria-hidden>💡</span>Open {turf.openTime} – {turf.closeTime}</li>
-          {turf.isVerified && <li><span aria-hidden>✓</span>Verified by OYUN</li>}
-        </ul>
 
         {offers.length > 0 && (
           <div className={styles.offerStrip}>
