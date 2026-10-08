@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import TurfSlider from '@/components/TurfSlider';
 import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
+import { homeStats } from '@/lib/home-stats';
 import { getDb } from '@/lib/store';
 import HeroSearchBar from './HeroSearchBar';
 import { SPORTS, sportHref } from '@/lib/sports';
@@ -40,6 +41,7 @@ export default async function Home() {
 
   // Phone home feed extras: coupons, turf deals and every area with its turf count
   const db = await getDb();
+  const stats = homeStats(db.turfs, db.bookings);
   const coupons = db.promoCodes
     .filter((p) => p.active)
     .map((p) => ({
@@ -98,31 +100,19 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Stats Banner (Glassmorphism Overlay) */}
-        <div className={styles.statsBanner}>
-          <div className={`container ${styles.statsContainer}`}>
-            <div className={styles.statItem}>
-              <span className={styles.statIcon}>⚽</span>
-              <span><strong>100+</strong> turfs listed</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statIcon}>🌍</span>
-              <span><strong>5+</strong> cities</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statIcon}>👥</span>
-              <span><strong>50k+</strong> players hosted</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statIcon}>⭐</span>
-              <span><strong>100k+</strong> bookings made</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statIcon}>🏆</span>
-              <span>Since <strong>2024</strong></span>
+        {/* Stats Banner (Glassmorphism Overlay): real counts only, hidden until there is something to show */}
+        {stats.length > 0 && (
+          <div className={styles.statsBanner}>
+            <div className={`container ${styles.statsContainer}`}>
+              {stats.map((s) => (
+                <div key={s.key} className={styles.statItem}>
+                  <span className={styles.statIcon}>{s.icon}</span>
+                  <span><strong>{s.value.toLocaleString('en-IN')}</strong> {s.label}</span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </section>
       {/* Browse by Sport */}
       <section className={`container ${styles.section}`}>
