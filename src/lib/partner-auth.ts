@@ -17,7 +17,7 @@ export type Permission =
   | 'staff'
   | 'payouts';
 
-const PERMISSIONS: Record<PartnerRole, Permission[]> = {
+export const PERMISSIONS: Record<PartnerRole, Permission[]> = {
   owner: ['bookings', 'checkin', 'slots', 'pricing', 'offers', 'addons', 'turf', 'staff', 'payouts'],
   manager: ['bookings', 'checkin', 'slots', 'pricing', 'offers', 'addons', 'turf'],
   front_desk: ['bookings', 'checkin', 'slots'],
