@@ -204,10 +204,6 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
     if (i === 0) addOns = quote.addOns;
     addAdjustment(quote.breakdown.offer);
     addAdjustment(quote.breakdown.promo);
-    if (quote.promoCode) {
-      const promo = db.promoCodes.find((p) => p.code === quote.promoCode);
-      if (promo) promo.uses += 1;
-    }
 
     // Land on the half this device is holding, else the first free one (the quote skips this check)
     const held = db.holds.find((h) => h.holder === holder && h.turfId === turf.id && h.date === req.date && h.hour === hour);
@@ -242,6 +238,16 @@ function planBooking(db: Database, req: BookingRequest, holder: string | null, s
     walletTxn(db, player, -quote.breakdown.walletDeduction, 'booking_payment', `Booking ${booking.code}`, booking.id);
     bookings.push(booking);
   });
+
+  // A code is used up once per checkout, however many hours it covered. Every hour above was checked
+  // against the counts as they were before this checkout, so a 3-hour booking is not refused halfway.
+  if (promoCode) {
+    const used = db.promoCodes.find((p) => p.code === promoCode);
+    if (used) {
+      used.uses += 1;
+      if (phone.length === 10) used.redeemedBy = { ...used.redeemedBy, [phone]: (used.redeemedBy?.[phone] ?? 0) + 1 };
+    }
+  }
 
   // Each hour carries its own advance (so 3 hours at ₹150 an hour is ₹450)
   const sum = (f: (b: Booking) => number) => bookings.reduce((s, b) => s + f(b), 0);

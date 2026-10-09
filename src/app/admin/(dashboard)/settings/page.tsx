@@ -102,6 +102,20 @@ export default async function AdminSettings() {
                 <input name="maxDiscount" type="number" min={1} className={dash.input} />
               </label>
             </div>
+            <div className={dash.formGrid}>
+              <label className={dash.field}>
+                <span className={dash.label}>Last day (optional)</span>
+                <input name="expiresOn" type="date" className={dash.input} />
+              </label>
+              <label className={dash.field}>
+                <span className={dash.label}>Total uses (optional)</span>
+                <input name="maxUses" type="number" min={1} className={dash.input} />
+              </label>
+              <label className={dash.field}>
+                <span className={dash.label}>Uses per player (optional)</span>
+                <input name="perPlayerLimit" type="number" min={1} className={dash.input} />
+              </label>
+            </div>
             <label className={dash.check}><input type="checkbox" name="weekendOnly" /> Weekends only</label>
             <div className={dash.actions}><button className={dash.btn}>Create code</button></div>
           </ActionForm>
@@ -128,10 +142,13 @@ export default async function AdminSettings() {
                       <input name="value" type="number" min={1} defaultValue={p.value} className={dash.input} style={{ width: 80, padding: '6px' }} required />
                       <input name="maxDiscount" type="number" min={1} defaultValue={p.maxDiscount ?? ''} placeholder="max ₹" className={dash.input} style={{ width: 90, padding: '6px' }} />
                       <label className={dash.check}><input type="checkbox" name="weekendOnly" defaultChecked={p.weekendOnly} /> Weekends</label>
+                      <input name="expiresOn" type="date" defaultValue={p.expiresOn ?? ''} aria-label={`Last day for ${p.code}`} title="Last day" className={dash.input} style={{ width: 140, padding: '6px' }} />
+                      <input name="maxUses" type="number" min={1} defaultValue={p.maxUses ?? ''} placeholder="total uses" aria-label={`Total uses for ${p.code}`} className={dash.input} style={{ width: 100, padding: '6px' }} />
+                      <input name="perPlayerLimit" type="number" min={1} defaultValue={p.perPlayerLimit ?? ''} placeholder="per player" aria-label={`Uses per player for ${p.code}`} className={dash.input} style={{ width: 100, padding: '6px' }} />
                       <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Save</button>
                     </ActionForm>
                   </td>
-                  <td className={dash.num}>{p.uses}</td>
+                  <td className={dash.num}>{p.uses}{p.maxUses != null ? ` / ${p.maxUses}` : ''}</td>
                   <td><Badge status={p.active ? 'active' : 'cancelled'} label={p.active ? 'Active' : 'Paused'} /></td>
                   <td>
                     <div className={dash.inline}>
