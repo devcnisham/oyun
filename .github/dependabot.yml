@@ -9,6 +9,13 @@ updates:
       time: "06:00"
       timezone: Asia/Kolkata
     open-pull-requests-limit: 5
+    # Majors that break the lint or type-check toolchain today; remove an entry when its tools catch up:
+    # typescript-eslint rejects TypeScript 7, and eslint-plugin-react (via eslint-config-next) rejects ESLint 10.
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
     groups:
       minor-and-patch:
         update-types: [minor, patch]
