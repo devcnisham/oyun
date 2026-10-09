@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local demo database
 /.data
+.e2e-data/
+/test-results/
+/playwright-report/
