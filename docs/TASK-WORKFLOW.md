@@ -15,7 +15,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] R018 / P8-10 Refresh `FEATURE_LIST.md`; delete `replace_colors.py`, `update_fonts.py`, `update_texts.py` after checking nothing uses them.
 - [x] P8-01 Install deps, read Next 16 docs, note conventions in `docs/`.
 - [ ] P8-09 `typecheck` script and pre-commit hook.
-- [ ] P8-11 Dependabot and `npm audit` in CI.
+- [x] P8-11 Dependabot and `npm audit` in CI.
 - [ ] P8-04 Integration test: N parallel `createBookings` on one slot gives one booking.
 - [ ] P8-05 Integration test: holds expire and release.
 - [ ] P8-06 Authorization sweep: every admin and partner action rejects without a session.
