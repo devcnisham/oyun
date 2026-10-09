@@ -136,4 +136,8 @@ Last synced 9 Oct 2026 after PR #103: 13 issues moved (12 to Done, P9-05 to In P
 
 ## Development panel (branches, commits and pull requests on each issue)
 
-Needs the **GitHub for Atlassian** app (free, by Atlassian) connected to `devcnisham/oyun`. As of 9 Oct 2026 it is **not** connected: the Development field on an issue shows "Connect development tools". Once connected, issues show their branches and pull requests by Jira key; see `docs/BRANCHING.md` for how to name things. Connecting is done by the site admin in Jira (Apps → Explore more apps → GitHub for Atlassian) and approved once on GitHub for this one repository.
+**Connected on 9 Oct 2026.** The "GitHub for Atlassian" app (free, by Atlassian, version 3.3.0) is installed on gaphatch, and the GitHub account `devcnisham` is connected with **only selected repositories** shared. An issue's Development field now lists the branches, pull requests and CI builds that mention its key; for example OYUN-67 shows 1 branch, 1 merged pull request and 1 passing build. Pull request titles from #70 to #102 were given their keys so older work shows up too.
+
+To change which repositories Jira can see: Jira → Apps → GitHub for Atlassian → the connected organization → the edit icon (opens GitHub's app settings). Keep it to `oyun` only. See `docs/BRANCHING.md` for how to name branches, commits and pull requests so they link.
+
+Note: Atlassian marks this app version "Legacy" (its platform is unsupported after January 2027); expect to move to the newer GitHub for Atlassian app before then.
