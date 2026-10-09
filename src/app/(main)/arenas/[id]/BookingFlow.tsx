@@ -20,11 +20,11 @@ import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
 import { hourlyRate } from '@/lib/pricing';
 import { primarySport } from '@/lib/sports';
-import type { PitchSize, Slot, Turf } from '@/lib/types';
+import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
 import styles from './BookingFlow.module.css';
 
 export interface BookingFlowProps {
-  turf: Turf;
+  turf: PublicTurf;
   dates: { date: string; label: string; day: string; num: string }[];
   initialDate: string;
   initialSlots: Slot[];

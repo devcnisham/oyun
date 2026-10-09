@@ -31,8 +31,11 @@ export interface Turf {
   createdAt: string;
 }
 
-// Turf plus today's availability, for listing pages
-export interface TurfSummary extends Turf {
+// A turf as the public site and its client components may see it: no owner account link, no commission
+export type PublicTurf = Omit<Turf, 'partnerId' | 'commissionPercent'>;
+
+// Public turf plus today's availability, for listing pages
+export interface TurfSummary extends PublicTurf {
   availableToday: number;
 }
 

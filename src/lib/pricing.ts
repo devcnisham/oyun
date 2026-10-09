@@ -11,6 +11,7 @@ import type {
   PitchSize,
   PromoCode,
   Slot,
+  PublicTurf,
   Turf,
 } from './types';
 import { formatHour, isWeekend, parseHour, type IstNow } from './time';
@@ -34,7 +35,7 @@ export function normalizePhone(phone: string) {
   return digits.length > 10 ? digits.slice(-10) : digits;
 }
 
-export function turfHours(turf: Turf) {
+export function turfHours(turf: PublicTurf) {
   const open = parseHour(turf.openTime);
   let close = parseHour(turf.closeTime);
   if (close <= open) close = 24; // e.g. open till midnight
@@ -46,7 +47,7 @@ export function turfHours(turf: Turf) {
 /* ---------- full or half pitch ---------- */
 
 // A half costs halfPricePercent of the full pitch (50% unless the turf says otherwise), rounded to ₹10
-export function hourlyRate(turf: Turf, size: PitchSize) {
+export function hourlyRate(turf: PublicTurf, size: PitchSize) {
   if (size === 'full' || !turf.halfPitch) return turf.pricePerHour;
   return Math.round((turf.pricePerHour * (turf.halfPricePercent ?? 50)) / 1000) * 10;
 }
@@ -63,7 +64,7 @@ export function pitchLabel(part: PitchPart | undefined) {
 }
 
 // Dynamic price of one slot: peak / weekend markups, then last-minute discount
-export function slotPrice(turf: Turf, rules: PricingRules, date: string, hour: number, now: IstNow, size: PitchSize = 'full') {
+export function slotPrice(turf: PublicTurf, rules: PricingRules, date: string, hour: number, now: IstNow, size: PitchSize = 'full') {
   const base = hourlyRate(turf, size);
   const adjustments: PriceLine[] = [];
   const tags: string[] = [];
@@ -95,7 +96,7 @@ export function rulesFor(db: Database, turfId: string) {
 const ACTIVE_BOOKING = new Set(['confirmed', 'checked_in', 'no_show']);
 
 // Halves of each hour already taken by live bookings, other devices' holds, or blocks (a block closes both halves)
-function takenHalves(db: Database, turf: Turf, date: string, holder: string | null) {
+function takenHalves(db: Database, turf: PublicTurf, date: string, holder: string | null) {
   const nowIso = new Date().toISOString();
   const booked = new Map<number, Set<string>>();
   const held = new Map<number, Set<string>>();
@@ -111,7 +112,7 @@ function takenHalves(db: Database, turf: Turf, date: string, holder: string | nu
 }
 
 // The part of the pitch a new booking takes: the whole pitch, or the first free half. Null when none is free.
-export function freePart(db: Database, turf: Turf, date: string, hour: number, size: PitchSize, holder: string | null): PitchPart | null {
+export function freePart(db: Database, turf: PublicTurf, date: string, hour: number, size: PitchSize, holder: string | null): PitchPart | null {
   const { booked, held, blocked } = takenHalves(db, turf, date, holder);
   if (blocked.has(hour)) return null;
   const taken = new Set([...(booked.get(hour) ?? []), ...(held.get(hour) ?? [])]);
@@ -122,7 +123,7 @@ export function freePart(db: Database, turf: Turf, date: string, hour: number, s
 // `holder` is the device checking out: its own holds count as available
 // walkIn: the owner can still seat someone at the desk during the hour that has just started
 // size: full pitch, or one half (any free half) on turfs that split
-export function getSlots(db: Database, turf: Turf, date: string, now: IstNow, holder: string | null = null, walkIn = false, size: PitchSize = 'full'): Slot[] {
+export function getSlots(db: Database, turf: PublicTurf, date: string, now: IstNow, holder: string | null = null, walkIn = false, size: PitchSize = 'full'): Slot[] {
   const rules = rulesFor(db, turf.id);
   const nowIso = new Date().toISOString();
   const half = size === 'half' && turf.halfPitch;

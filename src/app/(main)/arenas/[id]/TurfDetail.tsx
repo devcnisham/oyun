@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { canOptimize } from '@/lib/images';
-import type { Offer, Slot, Turf } from '@/lib/types';
+import type { Offer, PublicTurf, Slot } from '@/lib/types';
 import type { PublicReview } from '@/lib/reviews';
 import Stars from '@/components/Stars';
 import FavouriteButton from '@/components/FavouriteButton';
@@ -11,7 +11,7 @@ import BackButton from '@/components/BackButton';
 import { primarySport, sportInfo } from '@/lib/sports';
 
 interface TurfDetailProps {
-  turf: Turf;
+  turf: PublicTurf;
   dates: BookingFlowProps['dates'];
   initialDate: string;
   initialSlots: Slot[];

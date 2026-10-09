@@ -1,5 +1,5 @@
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from './site';
-import type { Turf } from './types';
+import type { PublicTurf } from './types';
 
 // schema.org JSON-LD builders
 
@@ -45,7 +45,7 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-export function turfSchema(turf: Turf) {
+export function turfSchema(turf: PublicTurf) {
   return {
     '@context': 'https://schema.org',
     '@type': 'SportsActivityLocation',
@@ -79,7 +79,7 @@ export function turfSchema(turf: Turf) {
   };
 }
 
-export function itemListSchema(turfs: Turf[], name: string) {
+export function itemListSchema(turfs: PublicTurf[], name: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
