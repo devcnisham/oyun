@@ -30,7 +30,7 @@ jobs:
       # Fails on a known High or Critical advisory in a package that ships to production
       - run: npm audit --omit=dev --audit-level=high
       - run: npm run lint
-      - run: npx tsc --noEmit
+      - run: npm run typecheck
       - run: npm test
       - run: npm run build
         env:

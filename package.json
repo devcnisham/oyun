@@ -10,10 +10,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:sql": "bash scripts/sql-tests.sh"
+    "test:sql": "bash scripts/sql-tests.sh",
+    "prepare": "node scripts/install-hooks.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.11",
