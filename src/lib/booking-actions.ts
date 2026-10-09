@@ -1,5 +1,6 @@
 'use server';
 
+import { BOOKINGS_NOT_SAVED_MESSAGE, bookingsAreSaved } from './booking-availability';
 import { randomBytes } from 'node:crypto';
 import { headers } from 'next/headers';
 import { auth } from '@clerk/nextjs/server';
@@ -11,7 +12,7 @@ import { rateLimit } from './rate-limit';
 import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
 import { deviceHolder } from './device-holder';
 import { buildQuote, freePart, getSlots, normalizePhone } from './pricing';
-import { getDb, mutate, newBookingCode, newId } from './store';
+import { getDb, mutate, newBookingCode, newId, storageInfo } from './store';
 import { BOOKING_DAYS, addDays, formatHour, isValidDate, istNow } from './time';
 import type { Booking, BookingAddOn, Database, PitchSize, PriceLine, Slot } from './types';
 import { createPlayer, findByReferralCode, refundDue, walletTxn } from './wallet';
@@ -39,6 +40,13 @@ async function throttle(action: string, perIp: number, holder?: string | null, p
   const ip = await clientIp();
   const ok = rateLimit(`${action}:ip:${ip}`, perIp, 10 * 60_000) && (!holder || !perDevice || rateLimit(`${action}:dev:${holder}`, perDevice, 10 * 60_000));
   if (!ok) throw new ValidationError('Too many attempts. Please wait a few minutes and try again.');
+}
+
+// Refuse new holds and bookings while the data would not be kept (see booking-availability.ts)
+function assertBookingsAreSaved() {
+  if (!bookingsAreSaved({ shared: storageInfo().shared, allowEphemeral: process.env.ALLOW_EPHEMERAL_BOOKINGS === 'true' })) {
+    throw new ValidationError(BOOKINGS_NOT_SAVED_MESSAGE);
+  }
 }
 
 function purgeExpiredHolds(db: Database) {
@@ -72,6 +80,7 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
   const holder = (await deviceHolder(true))!;
   const pitchSize = cleanSize(size);
   try {
+    assertBookingsAreSaved();
     await throttle('hold', 60, holder, 15);
     if (!checkDate(String(date))) throw new ValidationError('Pick a date within the next week');
     const wanted = cleanHours(hours);
@@ -289,6 +298,7 @@ export async function quoteSelection(req: SelectionRequest): Promise<SelectionQu
 
 export async function createBookings(req: BookingRequest): Promise<{ ids?: string[]; error?: string }> {
   try {
+    assertBookingsAreSaved();
     // With Clerk set up, only signed-in players can book, and the booking is saved to their account
     const accountId = await currentAccountId();
     if (clerkEnabled && !accountId) throw new ValidationError('Please sign in to book');

@@ -23,6 +23,7 @@ Never point local or preview at the production database with the secret key unle
 | `GOOGLE_SITE_VERIFICATION`, `NEXT_PUBLIC_GA_ID` | Search Console tag; GA4 id (loads only after cookie consent) | public |
 | `ERROR_WEBHOOK_URL` | Slack or Discord error alerts (optional) | **secret** |
 | `DATA_DIR`, `ALLOW_HTTP` | Local overrides | internal |
+| `ALLOW_EPHEMERAL_BOOKINGS` | Set to `true` only on a demo deployment with no database: it keeps booking open although bookings can vanish (see below) | internal |
 
 Rules: a secret never gets a `NEXT_PUBLIC_` prefix; `.env*` is git-ignored except `.env.example`, which lists names with no values. Add a new variable to `.env.example`, `src/lib/env.ts`, this file and `docs/GO-LIVE.md`.
 
@@ -31,3 +32,7 @@ Rules: a secret never gets a `NEXT_PUBLIC_` prefix; `.env*` is git-ignored excep
 ## Database changes
 
 Write the SQL as an idempotent file in `supabase/migrations/`, mirror it in `supabase/setup/`, run it against a scratch Postgres with `npm run test:sql`, and only then run it on production in the Supabase SQL editor (see `docs/GO-LIVE.md`). Never run `supabase/reset-before-launch.sql` or `reset_state()` on production data.
+
+## A deployment with no database
+
+On Vercel with no `SUPABASE_SECRET_KEY`, the app keeps data in a temporary file that belongs to one server instance. A booking made there can disappear (the next request may reach another instance), and the ticket link then shows "We can't find this booking". So holds and bookings are refused with "Booking is not open on this site yet" until the database is connected. Connect it by adding `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `SUPABASE_SECRET_KEY` for that environment in Vercel (Production and Preview are separate lists) and redeploying. Use a staging Supabase project for Preview rather than the production one. Check `/api/health`: it must show `"storage":"supabase"`.
