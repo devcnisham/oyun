@@ -634,7 +634,7 @@ tasks:[
  {id:"P8-01",p:"P8",t:"Install deps and read node_modules/next/dist/docs for Next 16 conventions",s:"done",pr:"P1",n:"AGENTS.md requires it; the review was done without docs."},
  {id:"P8-02",p:"P8",t:"Add Vitest and unit tests for pricing.ts (peak, weekend, last-minute, offers, promo, GST, commission)",s:"done",pr:"P0",n:"One function drives quote and charge, so test it hardest."},
  {id:"P8-03",p:"P8",t:"Unit tests for cancel-policy.ts and IST time helpers",s:"done",pr:"P1",n:"2-hour cutoff, midnight, DST-free IST."},
- {id:"P8-04",p:"P8",t:"Integration test: N parallel createBookings for one slot yields exactly one booking",s:"todo",pr:"P0",n:"Run against local Supabase; proves rev lock plus unique index."},
+ {id:"P8-04",p:"P8",t:"Integration test: N parallel createBookings for one slot yields exactly one booking",s:"done",pr:"P0",n:"Run against local Supabase; proves rev lock plus unique index."},
  {id:"P8-05",p:"P8",t:"Integration test: holds expire, release and cannot block a booking forever",s:"todo",pr:"P1",n:"holds_slot_uniq has no expiry predicate."},
  {id:"P8-06",p:"P8",t:"Authorization test sweep: every admin and partner action rejects without a session",s:"done",pr:"P0",n:"Confirms requireAdmin and requirePartnerAction on every export."},
  {id:"P8-07",p:"P8",t:"Playwright e2e: browse, hold, book, ticket, cancel",s:"done",pr:"P1"},
