@@ -18,7 +18,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P8-11 Dependabot and `npm audit` in CI.
 - [ ] P8-04 Integration test: N parallel `createBookings` on one slot gives one booking.
 - [ ] P8-05 Integration test: holds expire and release.
-- [ ] P8-06 Authorization sweep: every admin and partner action rejects without a session.
+- [x] P8-06 Authorization sweep: every admin and partner action rejects without a session.
 - [ ] R011 / P9-06 Persistent rate limits in Postgres, same function signature.
 - [x] P8-07 Playwright e2e: browse, hold, book, ticket, cancel; partner check-in; admin approve turf.
 - [ ] P8-12 Staging environment. GATE: Vercel and Supabase branch setup.
