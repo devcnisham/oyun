@@ -10,7 +10,7 @@ import styles from './page.module.css';
 export const metadata: Metadata = {
   title: 'Turfs & Courts in Mangalore | Compare Prices & Book Slots',
   description:
-    'Football and box cricket turfs and badminton, pickleball and padel courts in Mangalore in one place. Compare by sport, area, price and rating, check today\'s open slots and book online instantly.',
+    'Football and box cricket turfs and badminton and pickleball courts in Mangalore in one place. Compare by sport, area, price and rating, check today\'s open slots and book online instantly.',
   alternates: { canonical: '/arenas' },
   openGraph: { url: '/arenas' },
 };

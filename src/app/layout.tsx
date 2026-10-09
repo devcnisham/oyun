@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  keywords: ["turf booking Mangalore", "football turf Mangalore", "box cricket Mangalore", "badminton court Mangalore", "pickleball Mangalore", "padel Mangalore", "book turf near me", "sports court booking"],
+  keywords: ["turf booking Mangalore", "football turf Mangalore", "box cricket Mangalore", "badminton court Mangalore", "pickleball Mangalore", "book turf near me", "sports court booking"],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   openGraph: {
     type: "website",

@@ -87,7 +87,7 @@ create table if not exists oyun.areas (
 );
 
 create table if not exists oyun.sports (
-  code                  text primary key,          -- 'football', 'box_cricket', 'badminton', 'pickleball', 'padel'
+  code                  text primary key,          -- 'football', 'box_cricket', 'badminton', 'pickleball'
   name                  text not null,
   default_slot_minutes  int  not null default 60
 );

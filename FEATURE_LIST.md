@@ -96,7 +96,7 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 
 ### 12. Platform & Growth
 *Status: Partly done*
-- [x] Multi-sport: football, box cricket, badminton, pickleball and padel; site wording is sport-neutral.
+- [x] Multi-sport: football, box cricket, badminton and pickleball; site wording is sport-neutral.
 - [x] Installable web app manifest and icons.
 - [x] SEO: sitemap, robots, structured data, Open Graph images, area landing pages.
 - [x] Cookie consent, privacy policy and terms.

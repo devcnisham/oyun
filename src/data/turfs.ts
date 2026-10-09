@@ -203,28 +203,6 @@ export const turfSeeds: TurfSeed[] = [
     ownerName: "Smash Court",
     phone: "",
   },
-  {
-    id: "padel-club-mangalore",
-    name: "The Padel Club",
-    location: "Kavoor, Mangalore",
-    area: "Kavoor",
-    rating: 0,
-    reviewCount: 0,
-    pricePerHour: 1500,
-    sports: ["Padel"],
-    amenities: ["Glass Courts", "Equipment Rental", "Café", "Parking"],
-    size: "Standard Padel",
-    formats: ["Doubles"],
-    surface: "Artificial Turf / Glass",
-    openTime: "06:00",
-    closeTime: "23:00",
-    images: ["/turfs/turf_1.jpg"],
-    isVerified: false,
-    isFeatured: true,
-    description: "Mangalore's first dedicated Padel tennis club. State-of-the-art glass courts imported from Spain.",
-    ownerName: "Padel Club",
-    phone: "",
-  }
 ];
 
 // Venues added after launch. A new database starts with them; an existing one gets any it is missing the next time it

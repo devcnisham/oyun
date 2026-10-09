@@ -61,7 +61,7 @@ export default function AuthShell({ mode, title, subtitle, children, footer }: {
               ))}
             </ul>
           </div>
-          <p className={styles.brandFoot}>Football · Box Cricket · Badminton · Pickleball · Padel</p>
+          <p className={styles.brandFoot}>Football · Box Cricket · Badminton · Pickleball</p>
         </div>
       </aside>
 
