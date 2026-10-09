@@ -1,7 +1,9 @@
 'use server';
 
 import { createHash } from 'node:crypto';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { createLoginThrottle } from './login-throttle';
 import { verifyPassword } from './password';
 import { ROLES, createSession, deleteSession, safeEqual, type Role } from './session';
 import { sessionSecret } from './env';
@@ -47,28 +49,11 @@ async function partnerSubject(email: string, password: string) {
   return null;
 }
 
-// Slow down password guessing: lock an account for a while after repeated failures.
-// In-memory, so per server instance; move to a shared store along with the database.
-const MAX_FAILURES = 5;
-const LOCKOUT_MS = 15 * 60 * 1000;
-const failures = new Map<string, { count: number; until: number }>();
+// Slow down password guessing: see login-throttle.ts for the rules
+const throttle = createLoginThrottle();
 
-function lockedOut(key: string) {
-  const entry = failures.get(key);
-  if (!entry) return false;
-  if (entry.until && entry.until < Date.now()) {
-    failures.delete(key);
-    return false;
-  }
-  return entry.count >= MAX_FAILURES;
-}
-
-function recordFailure(key: string) {
-  const entry = failures.get(key) ?? { count: 0, until: 0 };
-  entry.count += 1;
-  entry.until = Date.now() + LOCKOUT_MS;
-  failures.set(key, entry);
-  if (failures.size > 10_000) failures.delete(failures.keys().next().value!);
+async function clientIp() {
+  return (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
 }
 
 export async function login(role: Role, _prev: LoginState, formData: FormData): Promise<LoginState> {
@@ -79,15 +64,15 @@ export async function login(role: Role, _prev: LoginState, formData: FormData): 
   const password = String(formData.get('password') ?? '').slice(0, 200);
   if (!email || !password) return { error: 'Enter your email and password.' };
 
-  const key = `${role}:${email}`;
-  if (lockedOut(key)) return { error: 'Too many failed attempts. Try again in 15 minutes.' };
+  const ip = await clientIp();
+  if (throttle.isLocked(role, email, ip)) return { error: 'Too many failed attempts. Try again in 15 minutes.' };
 
   const subject = role === 'admin' ? adminSubject(email, password) : await partnerSubject(email, password);
   if (!subject) {
-    recordFailure(key);
+    throttle.recordFailure(role, email, ip);
     return { error: 'Invalid email or password.' };
   }
-  failures.delete(key);
+  throttle.recordSuccess(role, email, ip);
 
   await createSession(role, subject);
   redirect(`/${role}`);
