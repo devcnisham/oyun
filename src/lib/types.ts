@@ -238,7 +238,12 @@ export interface PromoCode {
   maxDiscount: number | null;
   weekendOnly: boolean;
   active: boolean;
-  uses: number;
+  uses: number; // checkouts that used the code (one per checkout, however many hours it covered)
+  // Optional limits; a missing value means no limit
+  expiresOn?: string | null; // last day the code can be used, YYYY-MM-DD in India time
+  maxUses?: number | null; // checkouts across all players
+  perPlayerLimit?: number | null; // checkouts per player, counted by phone number
+  redeemedBy?: Record<string, number>; // phone -> checkouts; not given back on cancel, so cancel and rebook cannot reuse a code
 }
 
 export interface PlatformSettings {
