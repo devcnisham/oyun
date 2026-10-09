@@ -5,14 +5,16 @@ Everything the site needs before launch day. Do the steps in order; each takes a
 ## 1. Database (Supabase project `nimfjwxzolkwiyqmnaat`)
 
 1. Open supabase.com → your project → **SQL Editor** → **New query**.
-2. Run the six files in `supabase/setup/` **in order**, one at a time
+2. Run the seven files in `supabase/setup/` **in order**, one at a time
    (`1-tables.sql`, `2-load-state.sql`, `3-apply-changes.sql`, `4-reset-and-permissions.sql`, `5-delta-sync.sql`,
-   `6-half-pitch.sql`):
+   `6-half-pitch.sql`, `7-check-constraints.sql`):
    open a new query, paste the **whole** file, make sure **no text is highlighted** (the editor runs only the
    highlighted part), and click **Run**. Each step should say "Success. No rows returned".
    A project set up before 7 October 2026 only needs `5-delta-sync.sql` and `6-half-pitch.sql`. Until 5 runs the
    site still works, but every request downloads every table. Until 6 runs, do not tick "Can be booked as two
    halves" on any turf: the old guard allows only one booking per hour, so the second half would fail to book.
+   Step 7 makes the database refuse a negative wallet balance, a negative booking amount, a turf priced at 0 or a
+   negative promo value. It checks new writes only, so old rows cannot make it fail; it is optional but recommended.
    They are safe to run again. (They are the same SQL as `supabase/migrations/…oyun_store.sql`, split into
    small pieces; you can also run that one file instead.)
 3. **Only if** you tested the site against this database before (demo bookings, iPhone giveaway…):
