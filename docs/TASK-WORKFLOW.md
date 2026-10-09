@@ -73,7 +73,8 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### H. Quality and launch (Phases 6 to 7)
 - [ ] Concurrency test in CI, accessibility (axe), Lighthouse 90, bad-path tests.
 - [ ] Privacy (DPDP): export and delete my data, retention purge, notice matches reality.
-- [ ] `docs/SECURITY.md`, backup restore runbook.
+- [x] `docs/SECURITY.md` written (PR docs).
+- [ ] Backup restore runbook (needs the Supabase plan and a tested restore).
 - [ ] SEO landing pages per city, area, sport; structured data.
 - [ ] Monitoring dashboard (double bookings must be 0), runbooks. GATE: uptime service choice.
 
