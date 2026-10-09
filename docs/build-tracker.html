@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #77 (main at 665208c) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #102 (main at 0eb4d33) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1628,13 +1628,13 @@ D2.lists = [
   ["DEV-02","TypeScript strict mode on","P1",1],
   ["DEV-03","Database changes as idempotent SQL files in supabase/setup","P1",1],
   ["DEV-04","Main branch protected: no direct pushes, PR needs a passing check","P1",0],
-  ["DEV-05","CI on every PR: lint, type check, build, tests","P0",0],
+  ["DEV-05","CI on every PR: lint, type check, build, tests","P0",1,"CI runs lint, type-check, tests, build, SQL and E2E on every PR (PR #70, #72)."],
   ["DEV-06",".env.example lists every variable with no real values","P1",0],
   ["DEV-07","No secrets in git history; rotate any key that was ever committed","P0",0],
-  ["DEV-08","Lint and type check pass locally before opening a PR","P1",0],
+  ["DEV-08","Lint and type check pass locally before opening a PR","P1",1,"Pre-commit hook runs type-check and lint (PR #89)."],
   ["DEV-09","Error and loading states on every page and server action","P1",0],
-  ["DEV-10","Dependency updates checked monthly (Dependabot or Renovate)","P2",0],
-  ["DEV-11","PR template with a review checklist","P2",0]
+  ["DEV-10","Dependency updates checked monthly (Dependabot or Renovate)","P2",1,"Dependabot weekly for npm and GitHub Actions (PR #80, #87)."],
+  ["DEV-11","PR template with a review checklist","P2",1,"PR template added (PR #100)."]
  ]},
  {id:"BOOK",st:"build",name:"Booking engine correctness",goal:"The core promise: a booked slot is never sold twice and the times are right.",items:[
   ["BOOK-01","Database refuses two bookings for the same turf, pitch and hour","P0",1,"Double-booking guard, phase P2."],
@@ -1652,9 +1652,9 @@ D2.lists = [
   ["BOOK-13","Recurring weekly bookings for teams","P3",0]
  ]},
  {id:"QA",st:"build",name:"Testing and QA",goal:"Know a change works before players find out it does not.",items:[
-  ["QA-01","Pick test tools: Vitest for rules, Playwright for full flows","P1",0],
-  ["QA-02","Unit tests for price, slot, hold and cutoff rules","P0",0],
-  ["QA-03","End-to-end test: home page to booking confirmed","P0",0],
+  ["QA-01","Pick test tools: Vitest for rules, Playwright for full flows","P1",1,"Vitest and Playwright (PR #71, #72)."],
+  ["QA-02","Unit tests for price, slot, hold and cutoff rules","P0",1,"Unit tests for pricing, cancel policy, wallet, promo limits, login throttle."],
+  ["QA-03","End-to-end test: home page to booking confirmed","P0",1,"Playwright: browse, hold, book, cancel (PR #72)."],
   ["QA-04","Sign-in, sign-out and expired session at checkout tested","P1",0],
   ["QA-05","Tested on real phones: cheap Android on 4G and iPhone Safari","P1",0],
   ["QA-06","Network drops mid-booking: the hold clears and the slot frees","P2",0],
@@ -1664,18 +1664,18 @@ D2.lists = [
  ]},
  {id:"SEC",st:"build",name:"Security",goal:"No one can see, change or cancel what is not theirs.",items:[
   ["SEC-01","Spam guards on public forms","P2",1,"Phase P3."],
-  ["SEC-02","Every admin and partner action checks the role on the server","P0",0,"Confirm each admin action calls requireAdmin."],
+  ["SEC-02","Every admin and partner action checks the role on the server","P0",1,"Confirm each admin action calls requireAdmin. src/lib/authorization.test.ts fails if an action lacks its guard (PR #93)."],
   ["SEC-03","Players can only see and cancel their own bookings","P0",0],
-  ["SEC-04","Supabase service key only on the server, never sent to the browser","P0",0],
+  ["SEC-04","Supabase service key only on the server, never sent to the browser","P0",1,"server-only on the secret-key modules (PR #77)."],
   ["SEC-05","Row Level Security on every Supabase table, or no public table access","P0",0],
   ["SEC-06","Seed fallback partner password removed; PARTNER_PASSWORD set in production","P1",0,"Task P9-20."],
   ["SEC-07","2FA on GitHub, Vercel, Supabase, Clerk and the domain registrar","P0",0],
   ["SEC-08","Rate limits on sign-in, booking and review actions","P1",0],
   ["SEC-09","Every server action input checked against a schema","P1",0],
   ["SEC-10","Security headers: CSP, HSTS, frame and referrer policy","P1",0],
-  ["SEC-11","npm audit has no High or Critical","P1",0],
+  ["SEC-11","npm audit has no High or Critical","P1",1,"npm audit --omit=dev --audit-level=high runs in CI (PR #80)."],
   ["SEC-12","Security tab risks reviewed before each release","P1",0],
-  ["SEC-13","SECURITY.md says how to report a bug","P3",0]
+  ["SEC-13","SECURITY.md says how to report a bug","P3",1,"docs/SECURITY.md says how to report a problem (PR #100)."]
  ]},
  {id:"PAY",st:"build",name:"Online payments (Razorpay)",goal:"Take money online without losing a rupee or a booking.",items:[
   ["PAY-01","Razorpay account with KYC done and settlement bank verified","P0",0],
@@ -1824,7 +1824,7 @@ D2.lists = [
  ]},
  {id:"TEAM",st:"grow",name:"Team and process",goal:"New people are useful in a week and nothing depends on one person.",items:[
   ["TEAM-01","Onboarding guide for a new developer","P2",1,"Start here tab."],
-  ["TEAM-02","CONTRIBUTING.md and PR template","P2",0],
+  ["TEAM-02","CONTRIBUTING.md and PR template","P2",1,"CONTRIBUTING.md and PR template (PR #100)."],
   ["TEAM-03","Definition of done: tested, reviewed, tracker updated","P2",0],
   ["TEAM-04","Weekly planning from the Tracker tab; one owner per task","P2",0],
   ["TEAM-05","Off-boarding list: remove access when someone leaves","P2",0],
