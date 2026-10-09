@@ -133,3 +133,7 @@ Claude Code does this through the Atlassian connector, so the browser prompts ar
 3. Comment with the pull request link. Create new tasks under their epic (P9 is OYUN-10, P10 is OYUN-11, and so on).
 
 Last synced 9 Oct 2026 after PR #103: 13 issues moved (12 to Done, P9-05 to In Progress) and P9-21 created.
+
+## Development panel (branches, commits and pull requests on each issue)
+
+Needs the **GitHub for Atlassian** app (free, by Atlassian) connected to `devcnisham/oyun`. As of 9 Oct 2026 it is **not** connected: the Development field on an issue shows "Connect development tools". Once connected, issues show their branches and pull requests by Jira key; see `docs/BRANCHING.md` for how to name things. Connecting is done by the site admin in Jira (Apps → Explore more apps → GitHub for Atlassian) and approved once on GitHub for this one repository.
