@@ -141,3 +141,10 @@ Last synced 9 Oct 2026 after PR #103: 13 issues moved (12 to Done, P9-05 to In P
 To change which repositories Jira can see: Jira → Apps → GitHub for Atlassian → the connected organization → the edit icon (opens GitHub's app settings). Keep it to `oyun` only. See `docs/BRANCHING.md` for how to name branches, commits and pull requests so they link.
 
 Note: Atlassian marks this app version "Legacy" (its platform is unsupported after January 2027); expect to move to the newer GitHub for Atlassian app before then.
+
+## Docs, reports, goals and releases (set up 9 Oct 2026)
+
+- **Docs:** Confluence space "OYUN Docs" (key `OD`, https://gaphatch.atlassian.net/wiki/spaces/OD) is connected to the project's Docs tab. Pages: OYUN overview, Architecture, Environments and settings, Security, Contributing and branching, Release plan, Status report 9 Oct 2026, Goals. They summarise the files in `docs/`; the repo stays the source of truth, so update the page when the file changes.
+- **Reports:** the project Summary tab already shows status overview, priority, types of work and recent activity (232 issues, 113 Done at setup). Add gadgets from the Reports tab if you want more.
+- **Releases:** Web app launch, v0.8 to v1.3 exist in the Releases tab. Mark one Released when its issues are Done.
+- **Goals:** the Goals tab needs Atlassian Goals (Atlas), which is a separate product and not set up. The target list is on the Confluence "Goals" page instead.
