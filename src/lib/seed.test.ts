@@ -43,3 +43,18 @@ describe('login form', () => {
     expect(src).not.toMatch(/@123|type="hidden"/);
   });
 });
+
+describe('Padel venue', () => {
+  test('a new store does not contain a Padel venue', () => {
+    expect(seed().turfs.some((t) => t.id === 'padel-club-mangalore' || t.sports.includes('Padel'))).toBe(false);
+  });
+
+  test('a store seeded earlier has its Padel venue suspended, not deleted', () => {
+    const db = seed();
+    db.turfs.push({ ...db.turfs[0], id: 'padel-club-mangalore', name: 'The Padel Club', sports: ['Padel'], status: 'active' });
+    const migrated = migrate(db);
+    const padel = migrated.turfs.find((t) => t.id === 'padel-club-mangalore');
+    expect(padel?.status).toBe('suspended');
+    expect(migrated.turfs.filter((t) => t.id !== 'padel-club-mangalore').every((t) => t.status !== 'suspended')).toBe(true);
+  });
+});

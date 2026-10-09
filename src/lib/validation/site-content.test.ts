@@ -12,7 +12,7 @@ test('images come from /public or Unsplash only', () => {
 
 test('ad links allow https pages and site paths', () => {
   assert.equal(isAllowedAdLink('https://sponsor.example/offer?x=1'), true);
-  assert.equal(isAllowedAdLink('/arenas?sport=padel'), true);
+  assert.equal(isAllowedAdLink('/arenas?sport=pickleball'), true);
 });
 
 test('ad links refuse script, data, plain http, protocol-relative and credential URLs', () => {

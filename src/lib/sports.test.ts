@@ -2,8 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'vitest';
 import { SPORTS, SPORTS_PHRASE, primarySport, sportInfo } from './sports.ts';
 
-test('Padel is a listed sport', () => {
-  assert.ok(SPORTS.some((s) => s.value === 'Padel'));
+test('Padel is not a listed sport, and the site offers four sports', () => {
+  assert.ok(!SPORTS.some((s) => (s.value as string) === 'Padel'));
+  assert.deepEqual(SPORTS.map((s) => s.value), ['Football', 'Box Cricket', 'Badminton', 'Pickleball']);
 });
 
 test('every sport has an icon, an image and a place word', () => {
@@ -14,12 +15,12 @@ test('every sport has an icon, an image and a place word', () => {
 });
 
 test('sport phrase names every sport, not just football', () => {
-  assert.equal(SPORTS_PHRASE, 'football, box cricket, badminton, pickleball and padel');
+  assert.equal(SPORTS_PHRASE, 'football, box cricket, badminton and pickleball');
 });
 
 test('turf pages pick the right sport name and icon', () => {
   assert.deepEqual(primarySport({ sports: ['Badminton'] }), { label: 'Badminton', icon: '🏸', place: 'court' });
-  assert.deepEqual(primarySport({ sports: ['padel '] }), { label: 'Padel', icon: '🎾', place: 'court' });
+  assert.deepEqual(primarySport({ sports: ['pickleball '] }), { label: 'Pickleball', icon: '🏓', place: 'court' });
   assert.deepEqual(primarySport({ sports: ['Football', 'Box Cricket'] }), { label: 'Football', icon: '⚽', place: 'turf' });
 });
 
