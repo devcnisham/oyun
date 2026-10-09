@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #75 (main at 56036ff) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #77 (main at 665208c) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -646,15 +646,15 @@ tasks:[
 
  // P9
  {id:"P9-01",p:"P9",t:"Rotate the old Supabase secret key mentioned in GO-LIVE.md and confirm it is dead",s:"todo",pr:"P0",n:"The guide says an old key was shared in chat."},
- {id:"P9-02",p:"P9",t:"Add import 'server-only' to utils/supabase/admin.ts, store.ts, realtime.ts",s:"todo",pr:"P0",n:"Today a comment is the only guard."},
+ {id:"P9-02",p:"P9",t:"Add import 'server-only' to utils/supabase/admin.ts, store.ts, realtime.ts",s:"done",pr:"P0",n:"Today a comment is the only guard."},
  {id:"P9-03",p:"P9",t:"Bind wallet spend and booking identity to the Clerk account, not a typed phone",s:"todo",pr:"P0",n:"Verify phone by OTP if phone login is kept."},
- {id:"P9-04",p:"P9",t:"Refund walletDeduction when a booking is cancelled",s:"todo",pr:"P0",n:"Verify first: cancelMyBooking refunds only amountPaid, which is 0."},
+ {id:"P9-04",p:"P9",t:"Refund walletDeduction when a booking is cancelled",s:"done",pr:"P0",n:"Verify first: cancelMyBooking refunds only amountPaid, which is 0."},
  {id:"P9-05",p:"P9",t:"Ticket page: hide phone, require account or signed token for details and actions",s:"todo",pr:"P1",n:"The bk_ id is a 48-bit bearer token shared over WhatsApp."},
  {id:"P9-06",p:"P9",t:"Shared rate limiter (Redis or database) for login, holds, applications, client-error",s:"todo",pr:"P1",n:"Current limiter is per serverless instance."},
  {id:"P9-07",p:"P9",t:"Lockout keyed by email plus IP, so an attacker cannot lock the admin out",s:"todo",pr:"P1"},
  {id:"P9-08",p:"P9",t:"Promo codes: maxUses and per-player limit",s:"todo",pr:"P1"},
  {id:"P9-09",p:"P9",t:"Admin: MFA, per-user accounts, session revocation, password rotation",s:"todo",pr:"P1",n:"Single env credential today."},
- {id:"P9-10",p:"P9",t:"Strip passwordHash and phones from every object that can reach a client component",s:"todo",pr:"P1",n:"Introduce DTOs; getDb() returns the raw store."},
+ {id:"P9-10",p:"P9",t:"Strip passwordHash and phones from every object that can reach a client component",s:"done",pr:"P1",n:"Introduce DTOs; getDb() returns the raw store."},
  {id:"P9-11",p:"P9",t:"Check-in: require cash-collected confirmation before amountPaid is set",s:"todo",pr:"P2"},
  {id:"P9-12",p:"P9",t:"Validate turf image URLs: reject //host, allowlist hosts",s:"todo",pr:"P2"},
  {id:"P9-13",p:"P9",t:"CSP nonces to drop 'unsafe-inline' from script-src",s:"todo",pr:"P2"},

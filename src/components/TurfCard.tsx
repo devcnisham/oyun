@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { canOptimize } from '@/lib/images';
-import type { Turf } from '@/lib/types';
+import type { PublicTurf } from '@/lib/types';
 import FavouriteButton from './FavouriteButton';
 import styles from './TurfCard.module.css';
 
 interface TurfCardProps {
-  turf: Turf;
+  turf: PublicTurf;
 }
 
 export default function TurfCard({ turf }: TurfCardProps) {
