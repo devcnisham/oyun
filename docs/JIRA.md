@@ -132,7 +132,7 @@ Claude Code does this through the Atlassian connector, so the browser prompts ar
 2. Transition them (this project's transitions are global: To Do 11, In Progress 21, Done 31, Blocked 2).
 3. Comment with the pull request link. Create new tasks under their epic (P9 is OYUN-10, P10 is OYUN-11, and so on).
 
-Last synced 9 Oct 2026 after PR #103: 13 issues moved (12 to Done, P9-05 to In Progress) and P9-21 created.
+Last synced 9 Oct 2026 after PR #103 (goal epics OYUN-233 to 239 added after #108): 13 issues moved (12 to Done, P9-05 to In Progress) and P9-21 created.
 
 ## Development panel (branches, commits and pull requests on each issue)
 
@@ -147,4 +147,4 @@ Note: Atlassian marks this app version "Legacy" (its platform is unsupported aft
 - **Docs:** Confluence space "OYUN Docs" (key `OD`, https://gaphatch.atlassian.net/wiki/spaces/OD) is connected to the project's Docs tab. Pages: OYUN overview, Architecture, Environments and settings, Security, Contributing and branching, Release plan, Status report 9 Oct 2026, Goals. They summarise the files in `docs/`; the repo stays the source of truth, so update the page when the file changes.
 - **Reports:** the project Summary tab already shows status overview, priority, types of work and recent activity (232 issues, 113 Done at setup). Add gadgets from the Reports tab if you want more.
 - **Releases:** Web app launch, v0.8 to v1.3 exist in the Releases tab. Mark one Released when its issues are Done.
-- **Goals:** the Goals tab needs Atlassian Goals (Atlas), which is a separate product and not set up. The target list is on the Confluence "Goals" page instead.
+- **Goals:** the Goals tab needs Atlassian Goals (Atlas), a separate product that is not set up (it asks for its own login). Instead each goal is an Epic labelled `goal`: OYUN-233 Launch safely in Mangalore, OYUN-234 Zero double bookings, OYUN-235 Real payments, OYUN-236 Turf owners run their day in OYUN, OYUN-237 Players come back, OYUN-238 Reliable and fast, OYUN-239 Everything tracked. Find them with `labels = goal`. Measures and targets are on the Confluence "Goals" page. These are not in `docs/jira-import.csv`; the tasks are not linked to them yet.
