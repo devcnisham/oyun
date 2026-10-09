@@ -34,7 +34,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] P9-08 / R012 Promo codes: expiry, max uses, per-player limit.
 - [ ] P9-11 Check-in requires cash-collected confirmation.
 - [x] P9-12 Validate turf image URLs, allowlist hosts.
-- [ ] P9-14 CHECK constraints: wallet and amounts not negative.
+- [x] P9-14 CHECK constraints: wallet and amounts not negative.
 - [ ] P9-16 Remove or document the unused Supabase auth proxy step.
 - [ ] P9-13 CSP nonces, drop `'unsafe-inline'` for scripts.
 - [ ] P9-09 Admin MFA, per-user accounts, session revocation. GATE: choose TOTP vs Clerk for admin.

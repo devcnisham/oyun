@@ -658,7 +658,7 @@ tasks:[
  {id:"P9-11",p:"P9",t:"Check-in: require cash-collected confirmation before amountPaid is set",s:"todo",pr:"P2"},
  {id:"P9-12",p:"P9",t:"Validate turf image URLs: reject //host, allowlist hosts",s:"done",pr:"P2"},
  {id:"P9-13",p:"P9",t:"CSP nonces to drop 'unsafe-inline' from script-src",s:"todo",pr:"P2"},
- {id:"P9-14",p:"P9",t:"CHECK constraints: wallet balance not negative, amounts not negative",s:"todo",pr:"P2"},
+ {id:"P9-14",p:"P9",t:"CHECK constraints: wallet balance not negative, amounts not negative",s:"done",pr:"P2"},
  {id:"P9-15",p:"P9",t:"Private Realtime channels with authorization, or accept public pings in writing",s:"todo",pr:"P3"},
  {id:"P9-16",p:"P9",t:"Remove the unused Supabase auth proxy step or document why it stays",s:"todo",pr:"P3",n:"updateSession returns early; server.ts is unused."},
 
@@ -2128,6 +2128,7 @@ DATA.tasks.push(
  {id:"P7-40",p:"P7",t:"Pitch selection: book the full pitch or one half (A or B)",s:"done",pr:"P1",n:"Admin switch per turf plus half price %. Tested locally: A and B in one hour, full blocked once a half is taken. PR #58."},
  {id:"P7-41",p:"P7",t:"Booking date picker limited to one week (today + 6 days)",s:"done",pr:"P2",n:"PR #58."},
  {id:"P7-42",p:"P7",t:"Admin turf form refuses to save a turf with no contact phone",s:"done",pr:"P2",n:"Admin editor now marks the phone optional and saves without it; the partner My turf page still requires it. PR #60."},
+ {id:"P9-21",p:"P9",t:"Run supabase/setup/7-check-constraints.sql on production",s:"todo",pr:"P1",n:"Adds CHECK constraints (wallet, booking amounts, turf price, promo values) as NOT VALID, so only new writes are checked. Tested on a scratch Postgres 17. After a while, validate each constraint once (commands are in the file header)."},
  {id:"P10-16",p:"P10",t:"Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves",s:"todo",pr:"P1",n:"Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on."}
 );
 
