@@ -21,6 +21,8 @@ export async function holdFirstSlot(page: Page, dayIndex: number) {
   await page.getByRole('tab').nth(dayIndex).click();
   const open = seats(page).and(page.locator('[aria-disabled="false"][aria-pressed="false"]'));
   await expect(page.getByText(/open|Updating/).first()).toBeVisible();
+  // "Updating" shows while the slots load, so give the grid a moment before deciding the day is full
+  await open.first().waitFor({ timeout: 10_000 }).catch(() => {});
   if ((await open.count()) === 0) return false;
   await open.first().click();
   await page.getByRole('button', { name: 'Proceed' }).click();
