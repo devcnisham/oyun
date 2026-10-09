@@ -1,8 +1,6 @@
 // Runs before `npm run dev` and explains common local setup problems in plain words.
 import { existsSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 
-const require = createRequire(import.meta.url);
 const problems = [];
 const notes = [];
 

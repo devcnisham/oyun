@@ -1,7 +1,7 @@
 import { draftTurfDescriptions, lateTurfSeeds, turfSeeds } from '@/data/turfs';
 import { randomBytes } from 'node:crypto';
 import { DEFAULT_PRICING } from './pricing';
-import { generateTempPassword, hashPassword, verifyPassword } from './password';
+import { hashPassword, verifyPassword } from './password';
 import type { Database, PlatformSettings } from './types';
 import { newReferralCode } from './wallet';
 
