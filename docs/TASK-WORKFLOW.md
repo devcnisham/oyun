@@ -30,7 +30,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P9-10 DTOs: strip `passwordHash` and phones before anything reaches a client component.
 - [ ] P9-05 Ticket page: hide phone, require account or signed token.
 - [ ] P9-03 Bind wallet and booking identity to the Clerk account, not a typed phone.
-- [ ] P9-07 Lockout keyed by email plus IP.
+- [x] P9-07 Lockout keyed by email plus IP.
 - [x] P9-08 / R012 Promo codes: expiry, max uses, per-player limit.
 - [ ] P9-11 Check-in requires cash-collected confirmation.
 - [x] P9-12 Validate turf image URLs, allowlist hosts.
