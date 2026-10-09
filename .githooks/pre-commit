@@ -4,4 +4,4 @@ set -e
 echo "pre-commit: type-check"
 npm run --silent typecheck
 echo "pre-commit: lint"
-npm run --silent lint -- --max-warnings=2
+npm run --silent lint -- --max-warnings=0
