@@ -2,8 +2,8 @@
 
 Everything on the OYUN build is tracked in `docs/build-tracker.html` (tasks, phases, risks) and queued in `docs/TASK-WORKFLOW.md`. This page puts the same work into Jira so you can plan, assign and report on it there. The repo stays the source of truth for what is done; Jira is the board you manage from.
 
-**Site:** https://gaphatch.atlassian.net (projects today: DI, GAP, SCHLR, SCHOLV1, VAS; there is no OYUN project yet).
-**Import file:** `docs/jira-import.csv`, made by `node scripts/export-jira.mjs`. As of 9 Oct 2026 it holds 20 epics and 211 issues (94 already Done). Re-run the script after the tracker changes; do not re-import the whole file again (that duplicates issues). Use prompt 6 to keep Jira in step instead.
+**Site:** https://gaphatch.atlassian.net (the OYUN project, key `OYUN`, exists and was imported on 9 Oct 2026).
+**Import file:** `docs/jira-import.csv`, made by `node scripts/export-jira.mjs`. As of 9 Oct 2026 it holds 20 epics and 212 tasks (106 Done). OYUN-1 to OYUN-231 match the CSV's Issue Id; tasks added later (such as P9-21 = OYUN-232) get the next number in Jira, so find an issue by its `[P9-21]` summary prefix, not by number. Re-run the script after the tracker changes; do not re-import the whole file again (that duplicates issues). Use prompt 6 to keep Jira in step instead.
 
 ## Before you start
 
@@ -124,3 +124,12 @@ After this, put the Jira key in branch names and pull request titles (for exampl
 | RQ-DB to RQ-LAUNCH | The remaining roadmap from `docs/MASTER-PROMPT.md` |
 
 Priorities map as P0 = Highest, P1 = High, P2 = Medium, P3 = Low.
+
+## Keeping Jira in step (done after each merge)
+
+Claude Code does this through the Atlassian connector, so the browser prompts are only needed for first-time setup:
+1. Find the issues by summary prefix (JQL `project = OYUN AND summary ~ "P9-12"`).
+2. Transition them (this project's transitions are global: To Do 11, In Progress 21, Done 31, Blocked 2).
+3. Comment with the pull request link. Create new tasks under their epic (P9 is OYUN-10, P10 is OYUN-11, and so on).
+
+Last synced 9 Oct 2026 after PR #103: 13 issues moved (12 to Done, P9-05 to In Progress) and P9-21 created.
