@@ -1,3 +1,5 @@
+<!-- Start the PR title with the Jira key(s), e.g. "OYUN-67 Double-booking race test". See docs/BRANCHING.md. -->
+
 ## What changed
 
 ## Why
