@@ -1,0 +1,600 @@
+"Issue Id","Issue Type","Summary","Description","Priority","Status","Labels","Labels","Labels","Parent"
+"1","Epic","P0 Bootstrap","Scaffold the OYUN site with real turf cards and multi-slot booking.
+
+Exit: Home, arena list and booking page render with seed turfs.
+Commits: 05c29c5 … 7e9ddad","Medium","Done","oyun","epic","",""
+"2","Epic","P1 Prototype detour","Try standalone HTML prototypes for the PWA and owner dashboard.
+
+Exit: Reverted within five minutes; React site restored.
+Commits: cab5609, ef32b09, e60a7ba","Medium","Done","oyun","epic","",""
+"3","Epic","P2 Hardening and data","Fix Vercel-breaking bugs, move storage to Supabase, add holds.
+
+Exit: Persistent store, double-booking guard, 8-minute holds, PWA shell.
+Commits: 85378ad, 28f3a47, ccd190a","Medium","Done","oyun","epic","",""
+"4","Epic","P3 SEO, compliance, readiness","Be findable, legal and monitored before any traffic.
+
+Exit: Sitemap, JSON-LD, consent, privacy and terms, error alerts, spam guards. PR #1.
+Commits: 488e616 … 224c60d, PR #1","Medium","Done","oyun","epic","",""
+"5","Epic","P4 Mobile UI iteration","Make the phone experience feel like an app.
+
+Exit: Top bar, floating search, side menu, compact filters. PRs #2 to #5.
+Commits: c9c21f5 … 593116b","Medium","Done","oyun","epic","",""
+"6","Epic","P5 Player sign-in (Clerk)","Real accounts for players, required before paying.
+
+Exit: Clerk sign-in and sign-up, sign-in gate at checkout. PRs #6 to #8.
+Commits: 22a0118 … dbe0512","Medium","Done","oyun","epic","",""
+"7","Epic","P6 Launch-ready","Remove demo data and ship a real pay-at-venue product.
+
+Exit: Real data only, live slot broadcast, idempotent migration, GO-LIVE guide. PR #9.
+Commits: 0c59315, e533525","Medium","Done","oyun","epic","",""
+"8","Epic","P7 Launch polish","Operational extras and engagement features.
+
+Exit: Health check, account-linked bookings, self-cancel, reviews, saved turfs. PRs #10 to #13.
+Commits: 7e4b881 … 1f4bdd9","Medium","To Do","oyun","epic","",""
+"9","Epic","P8 Quality foundation","Make change safe: tests, CI, typed checks, accurate docs.
+
+Exit: CI blocks merges on lint, tsc, build and tests; double-booking race test passes.","Medium","To Do","oyun","epic","",""
+"10","Epic","P9 Security hardening","Close the identity, wallet and rate-limit gaps before real money.
+
+Exit: All Critical and High risks in the register closed or accepted in writing.","Medium","To Do","oyun","epic","",""
+"11","Epic","P10 Scale the store","Stop loading the whole database per request.
+
+Exit: Delta sync live in production, per-turf versioning, scoped reads for history, per-turf versioning, cached public pages, load test at target traffic.","Medium","To Do","oyun","epic","",""
+"12","Epic","P11 Online payments","Take advance or full payment through Razorpay.
+
+Exit: Signature-verified orders, idempotent webhooks, refunds and payout reconciliation.","Medium","To Do","oyun","epic","",""
+"13","Epic","P12 Notifications","Confirmations and reminders players and owners rely on.
+
+Exit: WhatsApp or SMS confirmation, 2-hour reminder, owner alert, email receipt.","Medium","To Do","oyun","epic","",""
+"14","Epic","P13 Growth","Features that bring players back.
+
+Exit: Find players, tournaments, weather alerts, real map, analytics.","Medium","To Do","oyun","epic","",""
+"15","Epic","Slot booking database v2","Roadmap epic from docs/MASTER-PROMPT.md. Tracker tasks in the same area carry their own P-codes.","Medium","To Do","oyun","epic","",""
+"16","Epic","Payments and money","Roadmap epic from docs/MASTER-PROMPT.md. Tracker tasks in the same area carry their own P-codes.","Medium","To Do","oyun","epic","",""
+"17","Epic","Security hardening pass","Roadmap epic from docs/MASTER-PROMPT.md. Tracker tasks in the same area carry their own P-codes.","Medium","To Do","oyun","epic","",""
+"18","Epic","Booking features for players and owners","Roadmap epic from docs/MASTER-PROMPT.md. Tracker tasks in the same area carry their own P-codes.","Medium","To Do","oyun","epic","",""
+"19","Epic","Quality before launch","Roadmap epic from docs/MASTER-PROMPT.md. Tracker tasks in the same area carry their own P-codes.","Medium","To Do","oyun","epic","",""
+"20","Epic","Launch and growth","Roadmap epic from docs/MASTER-PROMPT.md. Tracker tasks in the same area carry their own P-codes.","Medium","To Do","oyun","epic","",""
+"21","Task","[P0-01] Scaffold OYUN app with eight seed turfs","7d2bbaf
+
+Tracker id: P0-01. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p0","tracker","1"
+"22","Task","[P0-02] Fix turf card grid height, add logo","6299e47
+
+Tracker id: P0-02. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p0","tracker","1"
+"23","Task","[P0-03] Multi-slot booking and high-resolution logo","91b7a81
+
+Tracker id: P0-03. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p0","tracker","1"
+"24","Task","[P0-04] Popup ad and demo login buttons","7e9ddad. Demo pieces were removed again in P6.
+
+Tracker id: P0-04. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p0","tracker","1"
+"25","Task","[P1-01] HTML PWA and owner-dashboard prototypes, redirect routes to them","cab5609, ef32b09
+
+Tracker id: P1-01. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p1","tracker","2"
+"26","Task","[P1-02] Revert prototype rewrites, restore React site","e60a7ba
+
+Tracker id: P1-02. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p1","tracker","2"
+"27","Task","[P2-01] Fix Vercel read-only reseed, camera Permissions-Policy, stale prerendered login pages","85378ad
+
+Tracker id: P2-01. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p2","tracker","3"
+"28","Task","[P2-02] Login lockout (5 failures, 15 minutes) plus CSP and COOP headers","85378ad
+
+Tracker id: P2-02. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p2","tracker","3"
+"29","Task","[P2-03] Supabase store: jsonb tables, load_state and apply_changes, optimistic rev lock","28f3a47
+
+Tracker id: P2-03. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p2","tracker","3"
+"30","Task","[P2-04] Partial unique index on live bookings","28f3a47
+
+Tracker id: P2-04. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p2","tracker","3"
+"31","Task","[P2-05] 8-minute holds keyed by device-cookie hash, single-transaction multi-slot booking, quote dry-run","ccd190a
+
+Tracker id: P2-05. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p2","tracker","3"
+"32","Task","[P2-06] PWA manifest and mobile app shell","ccd190a. No service worker yet.
+
+Tracker id: P2-06. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p2","tracker","3"
+"33","Task","[P3-01] SEO: metadata, sitemap, JSON-LD, area landing pages, 404","488e616
+
+Tracker id: P3-01. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p3","tracker","4"
+"34","Task","[P3-02] Error monitoring: instrumentation hooks and Slack/Discord webhook","488e616
+
+Tracker id: P3-02. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p3","tracker","4"
+"35","Task","[P3-03] Privacy policy, terms, cookie consent gating GA4 and Vercel analytics","0660060
+
+Tracker id: P3-03. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p3","tracker","4"
+"36","Task","[P3-04] Spam protection (honeypot, timing, rate limit), validation, HTTPS redirect","5d0b740
+
+Tracker id: P3-04. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p3","tracker","4"
+"37","Task","[P3-05] Launch and SEO playbook docs","3019838
+
+Tracker id: P3-05. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p3","tracker","4"
+"38","Task","[P3-06] Local dev works with no keys (JSON file fallback)","224c60d
+
+Tracker id: P3-06. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p3","tracker","4"
+"39","Task","[P4-01] Back buttons return to previous page","c9c21f5
+
+Tracker id: P4-01. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p4","tracker","5"
+"40","Task","[P4-02] App-style top bar, floating search, remove bottom tab bar","539a910, 39e1677
+
+Tracker id: P4-02. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p4","tracker","5"
+"41","Task","[P4-03] Side menu from top-left button","e22fbb3
+
+Tracker id: P4-03. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p4","tracker","5"
+"42","Task","[P4-04] Compact filter bar, hide top bar on scroll down","17e83be, 593116b
+
+Tracker id: P4-04. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p4","tracker","5"
+"43","Task","[P5-01] Clerk sign-in and sign-up pages","22a0118
+
+Tracker id: P5-01. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p5","tracker","6"
+"44","Task","[P5-02] Richer mobile home: top rated, deals, quick actions, areas","ebac848
+
+Tracker id: P5-02. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p5","tracker","6"
+"45","Task","[P5-03] Sign in before paying, professional auth screens","ccf43b5
+
+Tracker id: P5-03. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p5","tracker","6"
+"46","Task","[P5-04] Greet signed-in players by name","dbe0512
+
+Tracker id: P5-04. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p5","tracker","6"
+"47","Task","[P6-01] Real data only: remove demo accounts and fake content","0c59315
+
+Tracker id: P6-01. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p6","tracker","7"
+"48","Task","[P6-02] Pay-at-venue booking mode","0c59315. paymentMode venue, amountPaid 0.
+
+Tracker id: P6-02. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p6","tracker","7"
+"49","Task","[P6-03] Live slot updates through Supabase Realtime broadcast","0c59315
+
+Tracker id: P6-03. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p6","tracker","7"
+"50","Task","[P6-04] Idempotent migration, reset script, GO-LIVE guide","0c59315
+
+Tracker id: P6-04. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p6","tracker","7"
+"51","Task","[P6-05] Cookie banner as full-width bottom bar","e533525
+
+Tracker id: P6-05. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p6","tracker","7"
+"52","Task","[P7-01] Floating back button","7e4b881
+
+Tracker id: P7-01. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p7","tracker","8"
+"53","Task","[P7-02] /api/health readiness endpoint","7daa981
+
+Tracker id: P7-02. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"54","Task","[P7-03] Bookings linked to Clerk account id","7daa981
+
+Tracker id: P7-03. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"55","Task","[P7-04] Hold release beacon on page leave","7daa981
+
+Tracker id: P7-04. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"56","Task","[P7-05] Self-cancel until 2 hours before the slot","7daa981
+
+Tracker id: P7-05. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"57","Task","[P7-06] Split database setup SQL into four small files","d7cb633. A single paste had failed in the SQL editor.
+
+Tracker id: P7-06. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p7","tracker","8"
+"58","Task","[P7-07] Ratings and reviews, saved turfs, calendar and WhatsApp ticket extras","1f4bdd9. Reviews live inside the booking JSON.
+
+Tracker id: P7-07. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"59","Task","[P8-00] Architecture review and this tracker","docs/build-tracker.html
+
+Tracker id: P8-00. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"60","Task","[P8-00b] Sync local main checkout to origin/main and reinstall deps","Local was at 3283c7a (PR #2), 26 commits behind 7755471 (PR #13), so localhost:3000 showed an older site than Vercel. Fast-forwarded, npm install, dev server restarted.
+
+Tracker id: P8-00b. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"61","Task","[P8-00d] Fix scripts/check-dev.mjs falsely reporting @clerk/nextjs as not installed","It used require.resolve('pkg/package.json'), which Clerk's exports map blocks, so npm run dev always refused to start. Now checks node_modules/<pkg>/package.json. Edited in the main checkout, not committed.
+
+Tracker id: P8-00d. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"62","Task","[P8-00e] Clerk keys added to local .env.local; home and /login match Vercel","Verified home and /login text equal on both. Still open: SUPABASE_SECRET_KEY (see P8-00c).
+
+Tracker id: P8-00e. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"63","Task","[P8-00c] Local and Vercel data parity: SUPABASE_SECRET_KEY still empty in .env.local","Local uses .data/db.json and device sign-in; Vercel uses Supabase and Clerk, so turfs, bookings and login differ. Production Supabase (nimfjwxzolkwiyqmnaat) sits under a different email account. Public URL and publishable key now in .env.local; still needed: SUPABASE_SECRET_KEY, Clerk keys. Note local writes then hit production data; a separate dev project is safer.
+
+Tracker id: P8-00c. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"64","Task","[P8-01] Install deps and read node_modules/next/dist/docs for Next 16 conventions","AGENTS.md requires it; the review was done without docs.
+
+Tracker id: P8-01. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"65","Task","[P8-02] Add Vitest and unit tests for pricing.ts (peak, weekend, last-minute, offers, promo, GST, commission)","One function drives quote and charge, so test it hardest.
+
+Tracker id: P8-02. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p8","tracker","9"
+"66","Task","[P8-03] Unit tests for cancel-policy.ts and IST time helpers","2-hour cutoff, midnight, DST-free IST.
+
+Tracker id: P8-03. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"67","Task","[P8-04] Integration test: N parallel createBookings for one slot yields exactly one booking","Run against local Supabase; proves rev lock plus unique index.
+
+Tracker id: P8-04. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p8","tracker","9"
+"68","Task","[P8-05] Integration test: holds expire, release and cannot block a booking forever","holds_slot_uniq has no expiry predicate.
+
+Tracker id: P8-05. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"69","Task","[P8-06] Authorization test sweep: every admin and partner action rejects without a session","Confirms requireAdmin and requirePartnerAction on every export.
+
+Tracker id: P8-06. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p8","tracker","9"
+"70","Task","[P8-07] Playwright e2e: browse, hold, book, ticket, cancel","Tracker id: P8-07. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"71","Task","[P8-08] GitHub Actions: lint, tsc --noEmit, build, tests on every PR","No .github directory exists.
+
+Tracker id: P8-08. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p8","tracker","9"
+"72","Task","[P8-09] Add typecheck script and a pre-commit hook","Tracker id: P8-09. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"73","Task","[P8-10] Refresh FEATURE_LIST.md; delete root replace_colors.py, update_fonts.py, update_texts.py","FEATURE_LIST says backend, auth and reviews are Not Started.
+
+Tracker id: P8-10. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p8","tracker","9"
+"74","Task","[P8-11] Add Dependabot and npm audit to CI","Tracker id: P8-11. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"75","Task","[P8-12] Staging environment: Vercel preview plus Supabase branch","Tracker id: P8-12. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"76","Task","[P9-01] Rotate the old Supabase secret key mentioned in GO-LIVE.md and confirm it is dead","The guide says an old key was shared in chat.
+
+Tracker id: P9-01. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p9","tracker","10"
+"77","Task","[P9-02] Add import 'server-only' to utils/supabase/admin.ts, store.ts, realtime.ts","Today a comment is the only guard.
+
+Tracker id: P9-02. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p9","tracker","10"
+"78","Task","[P9-03] Bind wallet spend and booking identity to the Clerk account, not a typed phone","Verify phone by OTP if phone login is kept.
+
+Tracker id: P9-03. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p9","tracker","10"
+"79","Task","[P9-04] Refund walletDeduction when a booking is cancelled","Verify first: cancelMyBooking refunds only amountPaid, which is 0.
+
+Tracker id: P9-04. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p9","tracker","10"
+"80","Task","[P9-05] Ticket page: hide phone, require account or signed token for details and actions","The bk_ id is a 48-bit bearer token shared over WhatsApp.
+
+Tracker id: P9-05. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+"81","Task","[P9-06] Shared rate limiter (Redis or database) for login, holds, applications, client-error","Current limiter is per serverless instance.
+
+Tracker id: P9-06. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+"82","Task","[P9-07] Lockout keyed by email plus IP, so an attacker cannot lock the admin out","Tracker id: P9-07. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+"83","Task","[P9-08] Promo codes: maxUses and per-player limit","Tracker id: P9-08. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+"84","Task","[P9-09] Admin: MFA, per-user accounts, session revocation, password rotation","Single env credential today.
+
+Tracker id: P9-09. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+"85","Task","[P9-10] Strip passwordHash and phones from every object that can reach a client component","Introduce DTOs; getDb() returns the raw store.
+
+Tracker id: P9-10. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
+"86","Task","[P9-11] Check-in: require cash-collected confirmation before amountPaid is set","Tracker id: P9-11. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p9","tracker","10"
+"87","Task","[P9-12] Validate turf image URLs: reject //host, allowlist hosts","Tracker id: P9-12. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p9","tracker","10"
+"88","Task","[P9-13] CSP nonces to drop 'unsafe-inline' from script-src","Tracker id: P9-13. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p9","tracker","10"
+"89","Task","[P9-14] CHECK constraints: wallet balance not negative, amounts not negative","Tracker id: P9-14. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p9","tracker","10"
+"90","Task","[P9-15] Private Realtime channels with authorization, or accept public pings in writing","Tracker id: P9-15. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p9","tracker","10"
+"91","Task","[P9-16] Remove the unused Supabase auth proxy step or document why it stays","updateSession returns early; server.ts is unused.
+
+Tracker id: P9-16. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p9","tracker","10"
+"92","Task","[P10-01] Delta sync: per-server cache plus load_changes(since) instead of load_state per request","store.ts, supabase/migrations/20261007000000_delta_sync.sql, supabase/setup/5-delta-sync.sql. 16 end-to-end checks passed against a local Postgres; production build passes.
+
+Tracker id: P10-01. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p10","tracker","11"
+"93","Task","[P10-02] Per-turf version instead of one global rev","Two turfs must not conflict.
+
+Tracker id: P10-02. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
+"94","Task","[P10-03] Cache public pages with ISR and tag revalidation; drop connection() from the public layout","Tracker id: P10-03. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
+"95","Task","[P10-04] Replace the 10-second slot poll with Realtime plus on-focus refetch","Cheap now: an unchanged poll costs about 22 bytes.
+
+Tracker id: P10-04. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p10","tracker","11"
+"96","Task","[P10-05] loading.tsx and Suspense for every data page","None exist today.
+
+Tracker id: P10-05. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p10","tracker","11"
+"97","Task","[P10-06] pg_cron job to purge expired holds","Tracker id: P10-06. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p10","tracker","11"
+"98","Task","[P10-07] Typed columns and foreign keys for bookings, holds, wallet transactions","Tracker id: P10-07. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p10","tracker","11"
+"99","Task","[P10-08] k6 load test of the booking path at target traffic","Tracker id: P10-08. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
+"100","Task","[P10-09] Optimise images: allowlist real hosts, move turf photos to Supabase Storage","Tracker id: P10-09. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p10","tracker","11"
+"101","Task","[P11-01] Razorpay order creation and server-side signature verification","Tracker id: P11-01. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p11","tracker","12"
+"102","Task","[P11-02] Idempotent payment webhook with replay protection","Tracker id: P11-02. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p11","tracker","12"
+"103","Task","[P11-03] Advance payment mode (advancePercent already computed)","Tracker id: P11-03. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p11","tracker","12"
+"104","Task","[P11-04] Gateway refunds tied to the cancel and refund flows","Tracker id: P11-04. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p11","tracker","12"
+"105","Task","[P11-05] Payout and commission reconciliation against gateway settlements","Tracker id: P11-05. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p11","tracker","12"
+"106","Task","[P11-06] Tests for every payment state: paid, failed, duplicate webhook, refund","Tracker id: P11-06. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p11","tracker","12"
+"107","Task","[P12-01] Booking confirmation by WhatsApp or SMS","Tracker id: P12-01. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p12","tracker","13"
+"108","Task","[P12-02] Reminder two hours before the slot (scheduled job)","Tracker id: P12-02. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p12","tracker","13"
+"109","Task","[P12-03] Owner alert on new booking and cancellation","Tracker id: P12-03. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p12","tracker","13"
+"110","Task","[P12-04] Email receipts through Resend","Tracker id: P12-04. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p12","tracker","13"
+"111","Task","[P12-05] Service worker and web push","Tracker id: P12-05. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p12","tracker","13"
+"112","Task","[P13-01] Find players and teams","Tracker id: P13-01. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p13","tracker","14"
+"113","Task","[P13-02] Tournaments","Tracker id: P13-02. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p13","tracker","14"
+"114","Task","[P13-03] Weather alerts for outdoor slots","Tracker id: P13-03. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p13","tracker","14"
+"115","Task","[P13-04] Filters: price range, date, amenities; real map","Tracker id: P13-04. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p13","tracker","14"
+"116","Task","[P13-05] Admin analytics dashboard","Tracker id: P13-05. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p13","tracker","14"
+"117","Task","[P13-06] Waitlist and recurring bookings","Tracker id: P13-06. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p13","tracker","14"
+"118","Task","[P13-07] Kannada interface","Tracker id: P13-07. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p13","tracker","14"
+"119","Task","[P8-13] Decide commercial hosting: Vercel Pro (recommended) or a free commercial host","Vercel Hobby forbids commercial use. Pro is $20 per seat a month.
+
+Tracker id: P8-13. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p8","tracker","9"
+"120","Task","[P8-14] Write ARCHITECTURE.md, ENVIRONMENTS.md, CONTRIBUTING.md, PR template, docs/adr","Seed from the Architecture, Hosting and Decisions tabs.
+
+Tracker id: P8-14. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"121","Task","[P8-15] Vendor and account register; move production Supabase under the company email","Production project sits under a different email than the one used for tooling.
+
+Tracker id: P8-15. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"122","Task","[P8-16] Partner agreement, refund and commission policy, DPDP privacy review with a lawyer or CA","Tracker id: P8-16. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"123","Task","[P8-17] Pick team tools: GitHub Projects or Linear, Notion, Slack or WhatsApp, Bitwarden","Tracker id: P8-17. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"124","Task","[P8-18] Load Inter with next/font so every device matches the design","globals.css names Inter but nothing loads it.
+
+Tracker id: P8-18. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"125","Task","[P8-19] Replace hard-coded hex values (#f5a623, #cba052) with CSS variables","Tracker id: P8-19. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p8","tracker","9"
+"126","Task","[P8-20] Accessibility audit: keyboard, focus, contrast; fix findings","Tracker id: P8-20. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"127","Task","[P8-21] Nightly database backup to a free bucket via GitHub Action; test a restore","Tracker id: P8-21. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"128","Task","[P8-22] Sentry and an uptime monitor on /api/health","Tracker id: P8-22. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"129","Task","[P10-00] Measure the store payload; update the Cost calculator","Launch data is about 11 KB; an unchanged delta is 22 bytes. Booking row size (1.2 KB) is still an estimate until real bookings exist.
+
+Tracker id: P10-00. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p10","tracker","11"
+"130","Task","[P10-13] Run supabase/setup/5-delta-sync.sql on the production Supabase project","Until then the new code falls back to the old full load per request and logs a warning.
+
+Tracker id: P10-13. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p10","tracker","11"
+"131","Task","[P10-14] Keep bookings older than 90 days out of the in-memory copy (archive table, read on demand)","Keeps cold-start loads and per-write clone and diff small as history grows.
+
+Tracker id: P10-14. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p10","tracker","11"
+"132","Task","[P10-15] Avoid cloning and diffing the whole store on every write (row-level write helpers)","Tracker id: P10-15. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p10","tracker","11"
+"133","Task","[P13-08] Photo uploads for owners (Supabase Storage)","Owners paste image URLs today.
+
+Tracker id: P13-08. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p13","tracker","14"
+"134","Task","[P8-23] Run a real booking end to end in the browser (hold, book, ticket, check-in, cancel) and log what breaks","Tracker id: P8-23. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"135","Task","[P10-10] Pin Vercel functions to Singapore next to the database; verify latency","Default function region is US East.
+
+Tracker id: P10-10. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
+"136","Task","[P10-11] Upgrade Supabase to Pro before launch; set spend cap and usage alerts","Tracker id: P10-11. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p10","tracker","11"
+"137","Task","[P10-12] 1,000-user readiness test: 3 months of seeded bookings, k6 run, p95 under 800 ms","Tracker id: P10-12. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
+"138","Task","[P7-08] Advance payment recorded on every booking","paymentMode advance, amountPaid = advance. No money is collected yet.
+
+Tracker id: P7-08. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"139","Task","[P7-09] Advance is 10% of each hour's price, never under or over ₹150 (flat ₹150 an hour by default); 3 hours asks ₹450","minAdvance and maxAdvance are per-hour Admin settings. 8 maths checks passed. PRs #16 and #17 (PR #16 first applied it once per booking; #17 made it per hour).
+
+Tracker id: P7-09. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p7","tracker","8"
+"140","Task","[P8-28] After PR #17 deploys, check Admin → Settings in production: advance 10%, minimum 150, maximum 150 (per hour)","Production keeps its saved advance percent (it may still be 30).
+
+Tracker id: P8-28. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p8","tracker","9"
+"141","Task","[P8-24] Update FAQ, Terms, the home Pay at the Turf card, BookingFlow comments, FEATURE_LIST and GO-LIVE for the advance flow","They still say pay at venue and no prepayment.
+
+Tracker id: P8-24. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"142","Task","[P8-25] Replace the fake home stats banner and brand ad strip; fill the footer social links","100+ turfs, 50k+ players and sports-brand ads are placeholders.
+
+Tracker id: P8-25. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"143","Task","[P8-26] Fix the owner dashboard quick slot blocker: only 6 to 8 PM, and it ignores errors","Lists all turf hours, shows results and errors, rejects past dates. PR #27.
+
+Tracker id: P8-26. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"144","Task","[P8-27] Apply evening and weekend rates from a turf application to the approved turf's pricing","Approval turns owner's evening and weekend prices into turf's peak and weekend markups. PR #27.
+
+Tracker id: P8-27. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"145","Task","[P9-17] Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part","Wallet-paid part returned and the uncollected advance is no longer credited (it is no longer recorded as paid). Gateway refunds remain under phase 11. PR #33.
+
+Tracker id: P9-17. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p9","tracker","10"
+"146","Task","[P11-07] When Razorpay is added, collect the per-hour advance through Razorpay","The advance is paid at the turf for now, so this is the step that makes it an online payment.
+
+Tracker id: P11-07. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p11","tracker","12"
+"147","Task","[P13-09] Let players pick add-ons at checkout","Owners can create add-ons; online checkout always sends none.
+
+Tracker id: P13-09. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p13","tracker","14"
+"148","Task","[P13-10] Turf photo gallery carousel and a real map pin per turf","Tracker id: P13-10. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p13","tracker","14"
+"149","Task","[P7-24] Add the OneLve and TheCourtyard Pickleball venues as hidden drafts (lateTurfSeeds, added to existing databases on load)","PR #34. Venues are pending, not visible to players or in sitemap; admin sets them Active. Price (₹500), hours (6 am), photo and amenities are placeholders.
+
+Tracker id: P7-24. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"150","Task","[P7-10] Phone home: What do you want to play? with Football, Box Cricket, Badminton and Padel photo cards","Responsive: two across on a phone, four on a tablet; shared sports list. PR #21.
+
+Tracker id: P7-10. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"151","Task","[P7-11] Remove phone home area chips, quick tiles, Browse by area, Why OYUN strip; side menu Turfs by area and Help & settings","PR #20. Legal links stay in the footer.
+
+Tracker id: P7-11. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p7","tracker","8"
+"152","Task","[P7-12] Fix the broken launch promo image and heal existing data","The Unsplash photo returned 404. New seed uses /turfs/turf_0.jpg; migrate swaps the dead link. PR #22.
+
+Tracker id: P7-12. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"153","Task","[P7-13] Fix the Padel card photo on the desktop home (dead link, black card)","PR #21.
+
+Tracker id: P7-13. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p7","tracker","8"
+"154","Task","[P7-14] Owner dashboard slide-out phone menu","Commit 0d21f8a.
+
+Tracker id: P7-14. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"155","Task","[P8-29] Fix checkout crash on a dev server that predates a new setting","File mode now fills missing settings from defaults on every read; rupees() tolerates a missing value. PR #19.
+
+Tracker id: P8-29. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"156","Task","[P8-30] Link the FAQ again somewhere on the phone (side menu or home) and keep a phone route to Privacy, Terms and Cookie settings","Removed from the phone menu in PR #20; the footer still has the legal links. Cookie settings must stay easy to reopen.
+
+Tracker id: P8-30. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"157","Task","[P8-31] Check every hard-coded image link (sports, promos, turfs) for 404s and move them to our own files or storage","Two Unsplash links had already died (Padel card, launch promo). Add a link check to CI.
+
+Tracker id: P8-31. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"158","Task","[P8-32] Make the local dev server re-read settings and data on code change, or warn when it is stale","A server started before a code change kept an old in-memory copy and crashed checkout.
+
+Tracker id: P8-32. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p8","tracker","9"
+"159","Task","[P7-15] Sport cards as round image icons instead of photo cards","Football, Box Cricket, Badminton, Padel icons (60–88px) with names; scrolls on narrow screens. PR #26.
+
+Tracker id: P7-15. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"160","Task","[P8-33] Build tracker updater agent and check-tracker.mjs script","Validates task IDs, counts features and risks on every update. PR #23.
+
+Tracker id: P8-33. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"161","Task","[P8-34] Local dev: skip admin and partner login without losing production login","npm run dev opens /admin and /partner; login pages redirect to dashboards. Production and next start still require login. PR #24.
+
+Tracker id: P8-34. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"162","Task","[P8-35] Rename slot-arena to oyun-arena","package.json, dev store keys, docs. Vercel project, cookies, booking codes and GitHub repo left alone. PR #25.
+
+Tracker id: P8-35. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p8","tracker","9"
+"163","Task","[P8-36] Admin and partner dashboard bug fixes: refunds, walk-ins, approvals, slot blocker","Cancel and refund return wallet-paid money; a walk-in refund credits no wallet; refunding a checked-in booking takes the cashback back; approval applies the owner's evening and weekend prices and refuses a suspended owner; approve, reject and reset password ask first and keep every result on screen; walk-ins can book the current hour; the slot blocker uses the turf's hours; first-time offer returns after a refund. PR #27.
+
+Tracker id: P8-36. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"164","Task","[P8-37] Forms clear typed values after validation error","React 19 clears uncontrolled inputs after a failed action, so the Settings and New promo code forms lose what the admin typed. Found in the PR #27 review.
+
+Tracker id: P8-37. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"165","Task","[P8-38] Check-in time window and turf hours limits","Check-in only checks the date, so it works hours before or after the slot and triggers cashback; turf hours accept half hours and a close time after midnight silently drops the late slots. Found in the PR #27 review.
+
+Tracker id: P8-38. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"166","Task","[P7-16] Mobile menu keyboard navigation and input labels","The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review.
+
+Tracker id: P7-16. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p7","tracker","8"
+"167","Task","[P8-39] Admin and partner list pagination","Admin bookings show the first 150, admin reviews 500, wallet activity the last 30, partner bookings 100, with no next page. Found in the PR #27 review.
+
+Tracker id: P8-39. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"168","Task","[P7-17] Phone home: sport icons filter Open slots in place; remove How OYUN works card","Tapping a sport now filters the rail underneath on the same page instead of opening the turfs page. Removes the How OYUN works card and its styles. PR #28.
+
+Tracker id: P7-17. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"169","Task","[P7-18] Search sheet: remove area chips; home sports icon: Pickleball replaces Padel","Removes Popular areas chips and label from phone search sheet. Fourth home sport icon is now Pickleball with photo; turfs list filter offers both Padel and Pickleball. PR #30.
+
+Tracker id: P7-18. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"170","Task","[P7-19] Phone home: animate sport icons and the Open slots rail","Sport icons rise in staggered (70 ms apart), spring on hover and press, chosen icon pops with a larger ring. Rail title fades in, cards slide in one after another, loading shimmer, slots badge pop, hover zoom and enter press. All wrapped in prefers-reduced-motion. PR #31.
+
+Tracker id: P7-19. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"171","Task","[P7-20] Phone side menu: remove items, add Help center page and Settings page","PR #37. Help center has support email/phone, quick links, FAQ accordion (shared via src/lib/faq.ts), legal links. Settings has account links, cookie preferences, notifications/language (info only), help and legal links. Help & settings section added to side menu; /help in sitemap, /settings disallowed in robots.
+
+Tracker id: P7-20. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"172","Task","[P7-21] Make the two Pickleball venues live: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)","PR #34 added hidden drafts. PR #39 filled TheCourtyard with real data (Bikarnakatte address, ₹600/hour, 05:00–23:00, synthetic, amenities); OneLve still needs price, opening time, phone and real photos. Both pending, migrate() refreshes those with placeholder description. Then set each to Active in Admin, Turfs.
+
+Tracker id: P7-21. Source of truth: docs/build-tracker.html in the repo.","Medium","In Progress","oyun","p7","tracker","8"
+"173","Task","[P7-22] Decide whether the Padel Club stays a separate sport next to Pickleball on the home icons","Padel is only in the turfs list filter now; it is no longer on the home page.
+
+Tracker id: P7-22. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p7","tracker","8"
+"174","Task","[P7-23] Checkout and ticket wording: show Advance at the turf and Balance after you play; button is Confirm booking","Checkout and ticket both show the two amounts separately. PR #33.
+
+Tracker id: P7-23. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"175","Task","[P7-25] Bottom tab bar on phones: Home, Turfs, Bookings, Profile with icons and labels","In root layout on every player page; hidden on admin/partner dashboards. Icon over label, active red. Slot selection bar and floating search sit above it via CSS var --bottom-nav-h. PR #40, #41.
+
+Tracker id: P7-25. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"176","Task","[P7-26] OneLve Pickleball: get hourly price, opening time, phone number and real photos from the owner","Still using placeholders ₹500 and 06:00. Two courts (3 open + 2 being built) at Bejai mall. After approval, move off OYUN Operations partner to their own login.
+
+Tracker id: P7-26. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p7","tracker","8"
+"177","Task","[P9-18] Remove the hard-coded admin and partner credentials from LoginForm.tsx; set strong ADMIN_*/PARTNER_* values on the deployed site","The form posts a fixed email and password for each role from hidden inputs, so anyone who views the login page source has them. Do this before real owners or players use the site, and decide with the owner when the login comes back for the demo.
+
+Tracker id: P9-18. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p9","tracker","10"
+"178","Task","[P9-19] Refunds use refundDue() to return only wallet money really paid in; the uncollected advance is no longer credited","Cancels and refunds (player, owner, admin) call refundDue() which returns only wallet-paid money, not the recorded but uncollected advance. PR #33.
+
+Tracker id: P9-19. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p9","tracker","10"
+"179","Task","[P9-20] Remove the seed fallback password for the OYUN Operations partner login and set PARTNER_EMAIL and PARTNER_PASSWORD on the deployed site","src/lib/seed.ts creates that partner with a fixed default password when PARTNER_PASSWORD is not set. If the deployed site never set it, that account can be signed into with the default.
+
+Tracker id: P9-20. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+"180","Task","[P7-27] Remove side menu; move all links to Profile page (Book and Help & settings sections with subsections)","Bookings, Saved turfs and all turfs moved under Book. Help center, Settings, support, cookies, List your turf and partner login moved under Help & settings. PR #43.
+
+Tracker id: P7-27. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"181","Task","[P7-28] Move floating search button into the middle of the bottom tab bar as a raised red round button; sheet portaled to body","Floating search no longer on every screen. PR #44.
+
+Tracker id: P7-28. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"182","Task","[P7-29] Remove Clerk UserButton pop-up from header; move account functions to Profile tab","Profile shows signed-in player's photo (Clerk photo or device initial), name, email. Manage account button opens Clerk's profile. Sign out link. PR #45.
+
+Tracker id: P7-29. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"183","Task","[P7-30] Hide phone header account link and bookings icon; remove ""Playing in Mangalore"" area picker strip and List your turf pill from phone (desktop keeps both)","Desktop header still shows account menu and bookings icon. PR #45.
+
+Tracker id: P7-30. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"184","Task","[P7-31] Add home sport filter notes: ""coming soon"" when a sport has no live venue (Pickleball), ""every slot taken today"" when all full","Appears in place of the Open slots rail when no slots exist. PR #46.
+
+Tracker id: P7-31. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"185","Task","[P7-32] Phone top bar redesign: logo inset, ""Book · Play · Repeat"" tagline, Mangalore city chip with pulsing live dot linking /arenas, faint pitch markings","All motion respects prefers-reduced-motion. PR #47.
+
+Tracker id: P7-32. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"186","Task","[P7-33] Profile tab shows signed-in player's picture (Clerk photo or initial for device sign-in), ring red when active","Visible on bottom tab bar. PR #48.
+
+Tracker id: P7-33. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"187","Task","[P7-34] Turf page: New/★ badge beside name with heart on same row; opening-hours chip (and Verified, review count) above address","PR #52. Restructures the title and info rows.
+
+Tracker id: P7-34. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"188","Task","[P7-35] Remove surface chip from turf page address section (surface stays in badge above name)","Surface still shows in the badge above the name. PR #51.
+
+Tracker id: P7-35. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"189","Task","[P7-36] Remove Why book this turf? section and leftover divider from turf page","Its facts became chips under the address (PR #49); leftover divider removed (PR #50).
+
+Tracker id: P7-36. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"190","Task","[P7-37] Turf page: hours pill beside the name, round photo buttons, one heart","Duplicate heart removed; back, save and share are round circles on the photo; hours as a clock pill at the right of the name. PR #54.
+
+Tracker id: P7-37. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"191","Task","[P7-38] Turf page: View on map under the opening hours, address under the name","PR #55.
+
+Tracker id: P7-38. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"192","Task","[P7-39] Turf page: sections ordered Location, About, Amenities, Player reviews","PR #57.
+
+Tracker id: P7-39. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p7","tracker","8"
+"193","Task","[P7-40] Pitch selection: book the full pitch or one half (A or B)","Admin switch per turf plus half price %. Tested locally: A and B in one hour, full blocked once a half is taken. PR #58.
+
+Tracker id: P7-40. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
+"194","Task","[P7-41] Booking date picker limited to one week (today + 6 days)","PR #58.
+
+Tracker id: P7-41. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"195","Task","[P7-42] Admin turf form refuses to save a turf with no contact phone","Admin editor now marks the phone optional and saves without it; the partner My turf page still requires it. PR #60.
+
+Tracker id: P7-42. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"196","Task","[P10-16] Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves","Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on.
+
+Tracker id: P10-16. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
+"197","Task","[R007] Multi-court venues in the booking flow","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R007.","High","To Do","oyun","roadmap","","15"
+"198","Task","[R009] Any slot length and after-midnight slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R009.","Medium","To Do","oyun","roadmap","","15"
+"199","Task","[R008] Retire the jsonb store for bookings, holds, blocks and pricing","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R008.","High","To Do","oyun","roadmap","","15"
+"200","Task","[R010] One order per checkout (one code, one invoice, one cancel)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R010.","Medium","To Do","oyun","roadmap","","15"
+"201","Task","[RQ-DB1] Turn supabase/proposals/slot_booking_v2.sql into real migrations and setup steps","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-DB1.","High","To Do","oyun","roadmap","","15"
+"202","Task","[RQ-DB2] Map every turf to venue, resources and bookables; partner screens for courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-DB2.","High","To Do","oyun","roadmap","","15"
+"203","Task","[RQ-DB3] Switch slot reads and writes over to the v2 functions","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-DB3.","High","To Do","oyun","roadmap","","15"
+"204","Task","[RQ-DB4] Move partners, staff, players, reviews, promos, add-ons and settings off jsonb","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-DB4.","Medium","To Do","oyun","roadmap","","15"
+"205","Task","[R014] Razorpay online advance with signed webhook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R014.","Highest","To Do","oyun","roadmap","","16"
+"206","Task","[R013] Wallet as a ledger that can never go below zero","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R013.","High","To Do","oyun","roadmap","","16"
+"207","Task","[R012] Promo codes: expiry, max uses, per-player limit","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R012.","High","To Do","oyun","roadmap","","16"
+"208","Task","[RQ-PAY1] Refunds by per-venue cancellation policy, audit-logged","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-PAY1.","High","To Do","oyun","roadmap","","16"
+"209","Task","[RQ-PAY2] Partner payouts, settlement export, gap-free GST invoice numbers","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-PAY2.","High","To Do","oyun","roadmap","","16"
+"210","Task","[RQ-PAY3] Daily reconciliation job: payments vs bookings vs payouts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-PAY3.","High","To Do","oyun","roadmap","","16"
+"211","Task","[R011] Persistent rate limits in Postgres","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: R011.","High","To Do","oyun","roadmap","","17"
+"212","Task","[RQ-SEC1] Authorization audit table: every server action and API route, who may call it, and its test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-SEC1.","Highest","To Do","oyun","roadmap","","17"
+"213","Task","[RQ-SEC2] Partner tenant isolation tests","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-SEC2.","Highest","To Do","oyun","roadmap","","17"
+"214","Task","[RQ-SEC3] Sessions: rotation, idle and absolute expiry, optional admin TOTP","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-SEC3.","High","To Do","oyun","roadmap","","17"
+"215","Task","[RQ-SEC4] Bot protection on signup, list-your-turf and hold endpoints","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-SEC4.","Medium","To Do","oyun","roadmap","","17"
+"216","Task","[RQ-SEC5] DPDP: export and delete my data, retention purge, notice matches reality","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-SEC5.","High","To Do","oyun","roadmap","","17"
+"217","Task","[RQ-SEC6] docs/SECURITY.md and backup restore runbook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-SEC6.","Medium","To Do","oyun","roadmap","","17"
+"218","Task","[RQ-F1] Booking confirmation and 2-hour reminder (WhatsApp or SMS)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-F1.","High","To Do","oyun","roadmap","","18"
+"219","Task","[RQ-F2] Search filters: price, date and time, amenities; map view","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-F2.","Medium","To Do","oyun","roadmap","","18"
+"220","Task","[RQ-F3] Partner calendar: day and week across all courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-F3.","Medium","To Do","oyun","roadmap","","18"
+"221","Task","[RQ-F4] Recurring weekly bookings with a conflict check","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-F4.","Low","To Do","oyun","roadmap","","18"
+"222","Task","[RQ-F5] Waitlist for full slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-F5.","Low","To Do","oyun","roadmap","","18"
+"223","Task","[RQ-F6] Split payment link for teammates","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-F6.","Low","To Do","oyun","roadmap","","18"
+"224","Task","[RQ-F7] Find players / open matches","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-F7.","Low","To Do","oyun","roadmap","","18"
+"225","Task","[RQ-Q1] Concurrency test in CI: two clients, one slot, exactly one wins","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-Q1.","Highest","To Do","oyun","roadmap","","19"
+"226","Task","[RQ-Q2] Accessibility: axe with zero critical issues, keyboard path through booking","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-Q2.","Medium","To Do","oyun","roadmap","","19"
+"227","Task","[RQ-Q3] Lighthouse 90+ on home, arenas, turf pages; k6 load test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-Q3.","Medium","To Do","oyun","roadmap","","19"
+"228","Task","[RQ-Q4] Bad-path tests: payment failure, late webhook, hold expiry, after midnight, half vs full pitch","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-Q4.","High","To Do","oyun","roadmap","","19"
+"229","Task","[RQ-L1] SEO landing pages per city, area and sport; Search Console","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-L1.","Medium","To Do","oyun","roadmap","","20"
+"230","Task","[RQ-L2] Uptime checks and a double-booking dashboard (must be 0)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-L2.","High","To Do","oyun","roadmap","","20"
+"231","Task","[RQ-L3] Go-live checklist, rollback steps, on-call contacts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+
+Roadmap id: RQ-L3.","High","To Do","oyun","roadmap","","20"
