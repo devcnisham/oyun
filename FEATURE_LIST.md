@@ -1,110 +1,122 @@
-# Oyun Arena - Feature Roadmap
+# OYUN Arena - Feature List
 
-This document outlines the core features required to turn the Oyun Arena frontend into a fully functional, production-ready premium turf booking platform. 
+What is built, what is partly built and what is still to do. Updated 9 Oct 2026 (main after PR #71). Detail and task ids live in `docs/build-tracker.html`; the order of work is in `docs/TASK-WORKFLOW.md`.
 
-### 1. Backend & Database Integration (High Priority)
-*Status: Not Started*
-- [ ] Connect the app to a database (Supabase or Firebase).
-- [ ] Create database schemas for `Turfs`, `Slots`, `Users`, and `Bookings`.
-- [ ] Fetch turf data dynamically from the server instead of using hardcoded mock data.
-- [ ] Implement real-time slot locking (when a slot is booked, it instantly becomes unavailable for others).
+### 1. Backend & Database
+*Status: Working, with known limits*
+- [x] Supabase Postgres behind the service-role key (14 jsonb document tables, migrations in `supabase/migrations/`). Local fallback to `.data/db.json` when no key is set.
+- [x] Real-time slot updates through Supabase Realtime broadcast.
+- [x] Double-booking guard: partial unique indexes plus optimistic revision check.
+- [x] Slot holds (8 minutes, per device), released on expiry or tab close.
+- [x] Launch checks in `/api/health` and a blocking admin banner when production storage is not Supabase.
+- [ ] Typed tables, foreign keys and per-turf locking (slot booking DB v2, see `docs/SLOT-BOOKING-DB.md`).
 
 ### 2. User Authentication & "My Bookings"
-*Status: Not Started*
-- [ ] Implement secure Sign Up / Login (Phone OTP, Google, or Email/Password).
-- [ ] Build the **User Dashboard / Profile** page.
-- [ ] Create a **My Bookings** page where users can view upcoming matches, past bookings, and download receipts.
-- [ ] Build the Cancel/Reschedule flow allowing users to modify bookings based on the turf's cancellation policy.
+*Status: Working; identity is weak without Clerk*
+- [x] Player sign-in and sign-up through Clerk, with a device name-and-phone fallback when Clerk is not configured.
+- [x] Profile, saved turfs, and a My Bookings area with ticket, QR code, invoice and calendar file.
+- [x] Self-cancel until 2 hours before the slot.
+- [ ] Reschedule a booking.
+- [ ] Bind wallet and booking identity to the signed-in account (today a typed phone number is trusted).
 
 ### 3. Real Payment Gateway
-*Status: Not Started*
-- [ ] Integrate a payment provider (Razorpay, Stripe, or PhonePe).
-- [ ] Handle the logic for "Pay 30% Advance" vs "Pay Full Amount" flows.
-- [ ] Implement webhook listeners to capture payments and automatically issue booking confirmation invoices.
+*Status: Not started (advance is recorded, not charged)*
+- [x] Flat advance per hour (10% of the hour's price, never under or over the configured min and max); the rest is paid at the venue.
+- [ ] Razorpay order creation, signature check and idempotent webhook.
+- [ ] Gateway refunds tied to cancellation and admin refunds.
+- [ ] Payout and commission reconciliation against settlements.
 
 ### 4. Partner / Turf Owner Dashboard
-*Status: Working on demo data store*
-- [x] Build the authenticated dashboard for Turf Owners.
-- [x] Allow owners to add, edit, or delete their turf details, pricing, and images.
-- [ ] Calendar view to manage daily/weekly bookings.
-- [x] Manual slot blocking (e.g., blocking out time for maintenance or offline phone bookings).
-- [x] Revenue tracking and payout management metrics.
+*Status: Mostly complete*
+- [x] Owner dashboard with turf details, images, pricing rules, offers, add-ons and staff roles.
+- [x] Manual slot blocking and walk-in bookings.
+- [x] Check-in desk with QR scan and no-show marking.
+- [x] Revenue, payouts and invoices, with a payouts CSV.
+- [ ] Day and week calendar view across all courts.
 
-### 5. Advanced Search, Map View, & Filters
-*Status: Basic UI Complete, Advanced Pending*
-- [ ] **Map View:** Add an interactive Google/Mapbox map toggle on the home page to search for turfs visually.
-- [ ] **Advanced Filters:** Filter by price range, distance, specific dates/times, and amenities (e.g., "Only show turfs with Showers & Parking").
+### 5. Search, Map View & Filters
+*Status: Basic*
+- [x] Browse turfs, filter by area and sport, area landing pages (`/turfs/[area]`).
+- [ ] Interactive map.
+- [ ] Filters for price range, date and time, and amenities.
 
 ### 6. Reviews & Rating System
-*Status: Not Started*
-- [ ] Create a system to automatically prompt users to rate a turf out of 5 stars after their match concludes.
-- [ ] Build a database schema for `Reviews`.
-- [ ] Display dynamic, aggregate star ratings and text reviews on the individual turf pages.
+*Status: Complete*
+- [x] One review per booking, allowed after check-in.
+- [x] Aggregate star ratings and text reviews on turf pages.
+- [x] Owner and admin review screens.
+- [ ] Ban abusive users.
 
 ### 7. Notification System (SMS/WhatsApp/Email)
-*Status: Not Started*
-- [ ] Integrate a messaging API (e.g., Twilio for SMS/WhatsApp, Resend for Email).
-- [ ] Automate booking confirmation messages with Google Maps directions.
-- [ ] Send automated reminders 2 hours before the booked slot time.
-- [ ] Send cancellation or reschedule alerts.
+*Status: Not started*
+- [x] Share booking to WhatsApp (a link the player sends, not an automated message).
+- [ ] Automated booking confirmation with Google Maps directions.
+- [ ] Reminder 2 hours before the slot.
+- [ ] Owner alert on new booking and cancellation.
+- [ ] Email receipts.
 
 ### 8. Digital Wallet & Promo Engine
-*Status: Not Started*
-- [x] **Oyun Arena Wallet:** Allow users to earn and store cashback credits from previous bookings to use on future matches.
-- [x] **Promo Code Engine:** Build a backend system to generate, validate, and apply discount codes (e.g., `ARENA10`) dynamically at checkout.
+*Status: Working on the document store; needs hardening*
+- [x] Wallet credits from referrals and cashback, spent at checkout (server side).
+- [x] Promo codes validated and applied on the server.
+- [x] Referral program: wallet credit for the referrer and the new user.
+- [ ] Promo limits: expiry, maximum uses, per-player limit.
+- [ ] Wallet as a ledger with a database rule that the balance never goes below zero.
 
 ### 9. Player Experience Extras
-*Status: Not Started*
-- [ ] **Split Payment:** Booker shares a UPI link so teammates can pay their share.
-- [ ] **Find Players / Open Matches:** Post games that are short of players (e.g., "need 3 players, 7 PM Kankanady") and let others join.
-- [ ] **Recurring Bookings:** Book the same slot every week at a discount.
-- [ ] **Waitlist:** Automatically notify the next person when a booked slot is cancelled.
-- [ ] **Favourites & Book Again:** One-tap rebooking of a user's usual turf.
-- [ ] **Weather Alerts:** Rain warnings for outdoor turfs and a rain cancellation policy.
-- [ ] **Teams & Tournaments:** Create teams, run mini-leagues, show fixtures and points tables.
-- [x] **Referral Program:** Wallet credit for both the referrer and the new user.
-- [ ] **Add to Calendar & Share to WhatsApp** after a booking is confirmed.
+*Status: Partly done*
+- [x] Favourites (saved turfs).
+- [x] Add to calendar and share to WhatsApp after booking.
+- [ ] Book again in one tap.
+- [ ] Split payment link for teammates.
+- [ ] Find players / open matches.
+- [ ] Recurring weekly bookings.
+- [ ] Waitlist for full slots.
+- [ ] Weather alerts and a rain cancellation policy.
+- [ ] Teams and tournaments.
 
 ### 10. Advanced Partner Tools
-*Status: Complete (demo data store — moves to the database with section 1)*
-- [x] **Dynamic Pricing:** Peak/weekend pricing and discounts on slots still empty near game time.
-- [x] **QR Check-in:** Scan at the gate to confirm attendance and track no-shows.
-- [x] **Owner Offers:** Happy hours and first-time-player discounts.
-- [x] **Staff Accounts:** Logins for managers who handle walk-in bookings.
-- [x] **Payout Reports & GST Invoices.**
-- [x] **Add-ons at Checkout:** Equipment rental (bibs, balls, shoes) and drinks.
+*Status: Complete on the document store*
+- [x] Dynamic pricing: peak, weekend and last-minute discounts.
+- [x] QR check-in and no-show tracking.
+- [x] Owner offers: happy hours and first-time-player discounts.
+- [x] Staff accounts with roles (owner, manager, front desk).
+- [x] Payout reports and GST invoices.
+- [x] Add-ons at checkout (equipment rental, drinks).
 
 ### 11. Admin Operations
-*Status: Mostly complete on demo data store*
-- [x] **Turf Verification:** Approve or reject new listings and grant the verified badge.
-- [x] **Refunds & Disputes:** Queue for handling refunds and booking disputes.
-- [x] **Commission Settings:** Per-turf commission configuration and reports.
-- [ ] **Moderation:** Moderate reviews and reports; ban abusive users.
-- [ ] **Analytics:** Bookings by area, busiest hours, conversion rate.
+*Status: Mostly complete*
+- [x] Turf verification: approve or reject listings and grant the verified badge.
+- [x] Refunds and disputes queue.
+- [x] Commission settings per turf.
+- [x] Customization: sponsor strip managed by admin (empty by default).
+- [x] Review moderation screen.
+- [ ] Analytics: bookings by area, busiest hours, conversion.
+- [ ] Per-user admin accounts, MFA and session revocation (single env credential today).
 
 ### 12. Platform & Growth
-*Status: Not Started*
-- [ ] **PWA:** Installable mobile app with push notifications.
-- [ ] **Multi-sport Support:** Box cricket, badminton, pickleball (the `sports` field already supports multiple sports).
-- [ ] **Languages:** Kannada, Tulu, and Hindi versions of the site.
-- [ ] **SEO:** Per-area landing pages (e.g., `/turfs/kankanady`), structured data, sitemap, and Open Graph preview images for each turf page.
+*Status: Partly done*
+- [x] Multi-sport: football, box cricket, badminton, pickleball and padel; site wording is sport-neutral.
+- [x] Installable web app manifest and icons.
+- [x] SEO: sitemap, robots, structured data, Open Graph images, area landing pages.
+- [x] Cookie consent, privacy policy and terms.
+- [ ] Service worker and push notifications.
+- [ ] Kannada, Tulu and Hindi versions of the site.
 
-### 13. Code Cleanup & Security
-*Status: Complete*
-- [x] Merge the duplicate `list-turf` and `list-your-turf` pages into one.
-- [x] Replace `<img>` tags with `next/image` for faster page loads.
-- [x] Replace the hardcoded home page area counts with real data (now derived from turf data; switch to the database with section 1).
-- [x] Protect `/admin` and `/partner` routes behind authentication (temporary env-var logins; replace with real accounts in section 2).
-- [x] Move promo code (`ARENA10`) and wallet balance checks to the server so they can't be bypassed in the browser (server action with demo data; move to the database in section 1).
+### 13. Quality & Security
+*Status: In progress*
+- [x] CI on every PR: lint, type-check, unit tests, build and SQL tests.
+- [x] Vitest unit tests for pricing, cancel policy, wallet and validation.
+- [x] Security headers, client-error webhook, rate limits on login, holds and applications.
+- [ ] End-to-end tests for the critical flows.
+- [ ] Shared (database) rate limiting, since the current limiter is per server instance.
+- [ ] Authorization test for every admin and partner action.
+- [ ] Backups runbook and uptime monitoring.
 
 ---
 
 ### Suggested Build Order
-1. Backend with Supabase
-2. Phone OTP login
-3. Razorpay payments
-4. Partner dashboard functionality
-5. Split payment and Find Players (key differentiators)
+See `docs/TASK-WORKFLOW.md`. In short: security fixes, slot booking DB v2, Razorpay payments, notifications, then player extras (split payment, find players).
 
 ---
 
