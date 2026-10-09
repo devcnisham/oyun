@@ -2100,14 +2100,14 @@ DATA.tasks.push(
 
 
 DATA.tasks.push(
- {id:"P9-18",p:"P9",t:"Remove the hard-coded admin and partner credentials from LoginForm.tsx; set strong ADMIN_*/PARTNER_* values on the deployed site",s:"todo",pr:"P0",n:"The form posts a fixed email and password for each role from hidden inputs, so anyone who views the login page source has them. Do this before real owners or players use the site, and decide with the owner when the login comes back for the demo."},
+ {id:"P9-18",p:"P9",t:"Remove the hard-coded admin and partner credentials from LoginForm.tsx; set strong ADMIN_*/PARTNER_* values on the deployed site",s:"done",pr:"P0",n:"The form posts a fixed email and password for each role from hidden inputs, so anyone who views the login page source has them. Do this before real owners or players use the site, and decide with the owner when the login comes back for the demo."},
  {id:"P9-19",p:"P9",t:"Refunds use refundDue() to return only wallet money really paid in; the uncollected advance is no longer credited",s:"done",pr:"P0",n:"Cancels and refunds (player, owner, admin) call refundDue() which returns only wallet-paid money, not the recorded but uncollected advance. PR #33."}
 );
 DATA.risks.push({id:"R-15",t:"Login form ships hard-coded admin and partner credentials",sev:"High",stride:"S, E, I",d:[9,10,9,8,8],ev:"components/auth/LoginForm.tsx submits a fixed email and password for admin and for partner from hidden inputs, so they are visible in the page source of /admin/login and /partner/login. They sign in anyone whenever the deployed ADMIN_*/PARTNER_* values match them. Today the deployed site is behind Vercel's own login (all addresses except custom domains), which hides it from the public; a custom domain would expose it.",fix:"Remove the hidden inputs, set long random deployed credentials, rotate them, and add real login back.",task:"P9-18"});
 
 
 DATA.tasks.push(
- {id:"P9-20",p:"P9",t:"Remove the seed fallback password for the OYUN Operations partner login and set PARTNER_EMAIL and PARTNER_PASSWORD on the deployed site",s:"todo",pr:"P1",n:"src/lib/seed.ts creates that partner with a fixed default password when PARTNER_PASSWORD is not set. If the deployed site never set it, that account can be signed into with the default."}
+ {id:"P9-20",p:"P9",t:"Remove the seed fallback password for the OYUN Operations partner login and set PARTNER_EMAIL and PARTNER_PASSWORD on the deployed site",s:"done",pr:"P1",n:"src/lib/seed.ts creates that partner with a fixed default password when PARTNER_PASSWORD is not set. If the deployed site never set it, that account can be signed into with the default."}
 );
 
 

@@ -1,6 +1,7 @@
 import { draftTurfDescriptions, lateTurfSeeds, turfSeeds } from '@/data/turfs';
+import { randomBytes } from 'node:crypto';
 import { DEFAULT_PRICING } from './pricing';
-import { generateTempPassword, hashPassword } from './password';
+import { generateTempPassword, hashPassword, verifyPassword } from './password';
 import type { Database, PlatformSettings } from './types';
 import { newReferralCode } from './wallet';
 
@@ -32,6 +33,10 @@ const OLD_HERO_TITLE = "Book Mangalore's best football turfs in seconds";
 const NEW_HERO_TITLE = 'Book turfs and courts in Mangalore in seconds';
 
 // Fill in fields added after the database was first created, so older data keeps working
+const LEGACY_PARTNER_PASSWORD = '@123partner';
+// Hashes already checked, so the (deliberately slow) password check does not repeat on every read
+const checkedHashes = new Set<string>();
+
 export function migrate(data: Database): Database {
   data.settings = { ...DEFAULT_SETTINGS, ...data.settings };
   data.walletTxns ??= [];
@@ -39,6 +44,13 @@ export function migrate(data: Database): Database {
   if (data.site) data.site.ads ??= [];
   // The old football-only default headline becomes the multi-sport one; a headline the admin wrote is kept
   if (data.site?.heroTitle === OLD_HERO_TITLE) data.site.heroTitle = NEW_HERO_TITLE;
+  // Databases seeded before the default was removed hold a hash of the old well-known partner password.
+  // Replace it with a random one so that password stops working (PARTNER_PASSWORD still signs in).
+  for (const p of data.partners) {
+    if (p.id !== 'partner_oyun' || checkedHashes.has(p.passwordHash)) continue;
+    if (verifyPassword(LEGACY_PARTNER_PASSWORD, p.passwordHash)) p.passwordHash = hashPassword(randomBytes(24).toString('hex'));
+    checkedHashes.add(p.passwordHash);
+  }
   // Venues added after launch show up in databases that were created before them
   const opsPartner = data.partners.find((p) => p.id === 'partner_oyun') ?? data.partners[0];
   if (opsPartner) {
@@ -114,7 +126,8 @@ export function seed(): Database {
     name: 'OYUN Operations',
     email: (process.env.PARTNER_EMAIL || 'partners@oyun.in').toLowerCase(),
     phone: '',
-    passwordHash: hashPassword(process.env.PARTNER_PASSWORD || '@123partner'),
+    // With no PARTNER_PASSWORD the account gets a random password nobody knows, never a shared default
+    passwordHash: hashPassword(process.env.PARTNER_PASSWORD || randomBytes(24).toString('hex')),
     status: 'active',
     business: { legalName: 'OYUN', gstin: '', address: 'Mangalore, Karnataka' },
     createdAt,

@@ -24,6 +24,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] P8-12 Staging environment. GATE: Vercel and Supabase branch setup.
 
 ### C. Security fixes (Phase 4 items that are small and urgent)
+- [x] P9-18 Remove the hard-coded admin and partner credentials from the login form. P9-20 Remove the seed default partner password and heal old stores. (Found in the online tracker, missing from this queue.)
 - [x] P9-02 `import 'server-only'` in `utils/supabase/admin.ts`, `store.ts`, `realtime.ts`.
 - [x] P9-04 Refund `walletDeduction` on cancel (verify the bug first, add a test).
 - [x] P9-10 DTOs: strip `passwordHash` and phones before anything reaches a client component.
