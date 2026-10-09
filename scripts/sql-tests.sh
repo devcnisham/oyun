@@ -36,6 +36,9 @@ done
 echo "== Money guards (CHECK constraints)"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/check_constraints_test.sql
 
+echo "== Double-booking race (parallel sessions on the live store functions)"
+bash scripts/sql-race-test.sh "$STORE_DB"
+
 echo "== Slot booking v2 proposal and tests"
 fresh_db "$V2_DB"
 "${PSQL[@]}" -d "$V2_DB" -f supabase/proposals/slot_booking_v2.sql > /dev/null
