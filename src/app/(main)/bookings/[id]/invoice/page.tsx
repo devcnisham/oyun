@@ -18,7 +18,7 @@ export default async function BookingInvoicePage({ params }: { params: Promise<{
         <BackButton fallback={`/bookings/${booking.id}`} className="btn btn--secondary btn--sm">← Back</BackButton>
         <PrintButton className="btn btn--primary btn--sm" />
       </div>
-      <Invoice booking={booking} turf={turf} partner={partner} settings={db.settings} />
+      <Invoice booking={booking} turf={turf} partner={partner} settings={db.settings} hidePhone />
     </div>
   );
 }

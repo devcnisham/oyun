@@ -1,3 +1,4 @@
+import { maskPhone } from '@/lib/phone';
 import { gstSplit, halfNote } from '@/lib/pricing';
 import { formatDate, formatDateTime, formatSlotRange } from '@/lib/time';
 import type { Booking, Partner, PlatformSettings, Turf } from '@/lib/types';
@@ -10,10 +11,11 @@ interface InvoiceProps {
   turf: Turf;
   partner: Partner | null;
   settings: PlatformSettings;
+  hidePhone?: boolean; // for the public invoice link: show only the first and last two digits
 }
 
 // Tax invoice issued by the turf (supplier) to the player. Prices include GST.
-export default function Invoice({ booking, turf, partner, settings }: InvoiceProps) {
+export default function Invoice({ booking, turf, partner, settings, hidePhone = false }: InvoiceProps) {
   const p = booking.pricing;
   const gst = gstSplit(p.total, settings.gstPercent);
   const business = partner?.business;
@@ -47,7 +49,7 @@ export default function Invoice({ booking, turf, partner, settings }: InvoicePro
         <div>
           <h2 className={styles.partyLabel}>Billed to</h2>
           <p className={styles.partyName}>{booking.customerName}</p>
-          <p>+91 {booking.customerPhone}</p>
+          <p>+91 {hidePhone ? maskPhone(booking.customerPhone) : booking.customerPhone}</p>
           <p>Booking code: {booking.code}</p>
         </div>
       </section>
