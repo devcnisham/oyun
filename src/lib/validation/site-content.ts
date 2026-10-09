@@ -17,3 +17,21 @@ export function isAllowedAdLink(link: string): boolean {
     return false;
   }
 }
+
+export const MAX_TURF_IMAGES = 10;
+const MAX_IMAGE_URL_LENGTH = 500;
+
+// Turf photos entered by an owner or admin: a file on this site (/turfs/x.jpg) or a plain https link.
+// Refused: protocol-relative //host, backslash tricks, http:, javascript: and data: links, links with a
+// username or password, and hosts without a dot (localhost, internal names). Any public https host is
+// allowed on purpose, since owners paste links from their own image host; those are shown unoptimized.
+export function isSafeTurfImage(src: string): boolean {
+  if (!src || src.length > MAX_IMAGE_URL_LENGTH || /[\\\s\u0000-\u001f]/.test(src)) return false;
+  if (src.startsWith('/')) return !src.startsWith('//');
+  try {
+    const url = new URL(src);
+    return url.protocol === 'https:' && url.hostname.includes('.') && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}

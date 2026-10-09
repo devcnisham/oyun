@@ -2,6 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { AccessError } from './partner-auth';
 import { ValidationError } from './errors';
 import type { ActionResult, Turf } from './types';
+import { MAX_TURF_IMAGES, isSafeTurfImage } from './validation/site-content';
 
 export { ValidationError };
 
@@ -69,8 +70,13 @@ export function parseTurfProfile(fd: FormData, { phoneOptional = false } = {}): 
   const closeTime = required(fd, 'closeTime', 'Closing time', 5);
   if (!TIME_RE.test(openTime) || !TIME_RE.test(closeTime)) throw new ValidationError('Times must look like 06:00');
 
-  const images = list(str(fd, 'images', 4000), /\n/).filter((u) => u.startsWith('/') || u.startsWith('https://'));
-  if (images.length === 0) throw new ValidationError('Add at least one image (a /path or https:// link)');
+  const entered = list(str(fd, 'images', 4000), /\n/);
+  if (entered.some((u) => !isSafeTurfImage(u))) {
+    throw new ValidationError('Each image must be a /path on this site or a plain https:// link (no //host, no login in the link)');
+  }
+  if (entered.length === 0) throw new ValidationError('Add at least one image (a /path or https:// link)');
+  if (entered.length > MAX_TURF_IMAGES) throw new ValidationError(`Use at most ${MAX_TURF_IMAGES} images`);
+  const images = entered;
 
   return {
     name: required(fd, 'name', 'Turf name', 80),

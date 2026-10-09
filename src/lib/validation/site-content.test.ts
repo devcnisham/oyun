@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'vitest';
-import { isAllowedAdLink, isAllowedImage } from './site-content.ts';
+import { isAllowedAdLink, isAllowedImage, isSafeTurfImage } from './site-content.ts';
 
 test('images come from /public or Unsplash only', () => {
   assert.equal(isAllowedImage('/turfs/turf_1.jpg'), true);
@@ -28,5 +28,30 @@ test('ad links refuse script, data, plain http, protocol-relative and credential
     'not a url',
   ]) {
     assert.equal(isAllowedAdLink(bad), false, bad);
+  }
+});
+
+test('turf images allow site files and plain public https links', () => {
+  for (const ok of ['/turfs/turf_1.jpg', 'https://images.unsplash.com/photo-1?w=800', 'https://cdn.myturf.in/a/b.webp?v=2']) {
+    assert.equal(isSafeTurfImage(ok), true, ok);
+  }
+});
+
+test('turf images refuse protocol-relative, backslash, script, data, http, credential and internal-host links', () => {
+  for (const bad of [
+    '//evil.example/x.jpg',
+    '/\\evil.example/x.jpg',
+    'https://evil.example\\@good.example/x.jpg',
+    'http://cdn.myturf.in/a.jpg',
+    'javascript:alert(1)',
+    'data:image/svg+xml;base64,AAAA',
+    'https://user:pass@cdn.myturf.in/a.jpg',
+    'https://localhost/a.jpg',
+    'https://intranet/a.jpg',
+    'https://cdn.myturf.in/a b.jpg',
+    'https://cdn.myturf.in/' + 'a'.repeat(600),
+    '',
+  ]) {
+    assert.equal(isSafeTurfImage(bad), false, bad);
   }
 });
