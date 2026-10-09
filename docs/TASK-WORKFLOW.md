@@ -8,19 +8,19 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ## Queue
 
 ### A. Safe and real (Phase 0)
-- [ ] R006 Check git history for leaked keys (`git log -p | grep -i -E "sk_live|sk_test|sb_secret"`). Report only. GATE: user rotates any key found.
+- [x] R006 Check git history for leaked keys (`git log -p | grep -i -E "sk_live|sk_test|sb_secret"`). Report only. GATE: user rotates any key found.
 - [ ] P8-00c Local and Vercel data parity (`SUPABASE_SECRET_KEY` empty locally). GATE: user sets the secret.
 
 ### B. Foundations (Phase 1)
-- [ ] R018 / P8-10 Refresh `FEATURE_LIST.md`; delete `replace_colors.py`, `update_fonts.py`, `update_texts.py` after checking nothing uses them.
-- [ ] P8-01 Install deps, read Next 16 docs, note conventions in `docs/`.
+- [x] R018 / P8-10 Refresh `FEATURE_LIST.md`; delete `replace_colors.py`, `update_fonts.py`, `update_texts.py` after checking nothing uses them.
+- [x] P8-01 Install deps, read Next 16 docs, note conventions in `docs/`.
 - [ ] P8-09 `typecheck` script and pre-commit hook.
 - [ ] P8-11 Dependabot and `npm audit` in CI.
 - [ ] P8-04 Integration test: N parallel `createBookings` on one slot gives one booking.
 - [ ] P8-05 Integration test: holds expire and release.
 - [ ] P8-06 Authorization sweep: every admin and partner action rejects without a session.
 - [ ] R011 / P9-06 Persistent rate limits in Postgres, same function signature.
-- [ ] P8-07 Playwright e2e: browse, hold, book, ticket, cancel; partner check-in; admin approve turf.
+- [x] P8-07 Playwright e2e: browse, hold, book, ticket, cancel; partner check-in; admin approve turf.
 - [ ] P8-12 Staging environment. GATE: Vercel and Supabase branch setup.
 
 ### C. Security fixes (Phase 4 items that are small and urgent)

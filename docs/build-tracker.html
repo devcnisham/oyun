@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #60 (main at ce541b9) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #75 (main at 56036ff) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -631,16 +631,16 @@ tasks:[
  {id:"P8-00d",p:"P8",t:"Fix scripts/check-dev.mjs falsely reporting @clerk/nextjs as not installed",s:"done",pr:"P1",n:"It used require.resolve('pkg/package.json'), which Clerk's exports map blocks, so npm run dev always refused to start. Now checks node_modules/<pkg>/package.json. Edited in the main checkout, not committed."},
  {id:"P8-00e",p:"P8",t:"Clerk keys added to local .env.local; home and /login match Vercel",s:"done",pr:"P1",n:"Verified home and /login text equal on both. Still open: SUPABASE_SECRET_KEY (see P8-00c)."},
  {id:"P8-00c",p:"P8",t:"Local and Vercel data parity: SUPABASE_SECRET_KEY still empty in .env.local",s:"todo",pr:"P1",n:"Local uses .data/db.json and device sign-in; Vercel uses Supabase and Clerk, so turfs, bookings and login differ. Production Supabase (nimfjwxzolkwiyqmnaat) sits under a different email account. Public URL and publishable key now in .env.local; still needed: SUPABASE_SECRET_KEY, Clerk keys. Note local writes then hit production data; a separate dev project is safer."},
- {id:"P8-01",p:"P8",t:"Install deps and read node_modules/next/dist/docs for Next 16 conventions",s:"todo",pr:"P1",n:"AGENTS.md requires it; the review was done without docs."},
- {id:"P8-02",p:"P8",t:"Add Vitest and unit tests for pricing.ts (peak, weekend, last-minute, offers, promo, GST, commission)",s:"todo",pr:"P0",n:"One function drives quote and charge, so test it hardest."},
- {id:"P8-03",p:"P8",t:"Unit tests for cancel-policy.ts and IST time helpers",s:"todo",pr:"P1",n:"2-hour cutoff, midnight, DST-free IST."},
+ {id:"P8-01",p:"P8",t:"Install deps and read node_modules/next/dist/docs for Next 16 conventions",s:"done",pr:"P1",n:"AGENTS.md requires it; the review was done without docs."},
+ {id:"P8-02",p:"P8",t:"Add Vitest and unit tests for pricing.ts (peak, weekend, last-minute, offers, promo, GST, commission)",s:"done",pr:"P0",n:"One function drives quote and charge, so test it hardest."},
+ {id:"P8-03",p:"P8",t:"Unit tests for cancel-policy.ts and IST time helpers",s:"done",pr:"P1",n:"2-hour cutoff, midnight, DST-free IST."},
  {id:"P8-04",p:"P8",t:"Integration test: N parallel createBookings for one slot yields exactly one booking",s:"todo",pr:"P0",n:"Run against local Supabase; proves rev lock plus unique index."},
  {id:"P8-05",p:"P8",t:"Integration test: holds expire, release and cannot block a booking forever",s:"todo",pr:"P1",n:"holds_slot_uniq has no expiry predicate."},
  {id:"P8-06",p:"P8",t:"Authorization test sweep: every admin and partner action rejects without a session",s:"todo",pr:"P0",n:"Confirms requireAdmin and requirePartnerAction on every export."},
- {id:"P8-07",p:"P8",t:"Playwright e2e: browse, hold, book, ticket, cancel",s:"todo",pr:"P1"},
- {id:"P8-08",p:"P8",t:"GitHub Actions: lint, tsc --noEmit, build, tests on every PR",s:"todo",pr:"P0",n:"No .github directory exists."},
+ {id:"P8-07",p:"P8",t:"Playwright e2e: browse, hold, book, ticket, cancel",s:"done",pr:"P1"},
+ {id:"P8-08",p:"P8",t:"GitHub Actions: lint, tsc --noEmit, build, tests on every PR",s:"done",pr:"P0",n:"No .github directory exists."},
  {id:"P8-09",p:"P8",t:"Add typecheck script and a pre-commit hook",s:"todo",pr:"P2"},
- {id:"P8-10",p:"P8",t:"Refresh FEATURE_LIST.md; delete root replace_colors.py, update_fonts.py, update_texts.py",s:"todo",pr:"P3",n:"FEATURE_LIST says backend, auth and reviews are Not Started."},
+ {id:"P8-10",p:"P8",t:"Refresh FEATURE_LIST.md; delete root replace_colors.py, update_fonts.py, update_texts.py",s:"done",pr:"P3",n:"FEATURE_LIST says backend, auth and reviews are Not Started."},
  {id:"P8-11",p:"P8",t:"Add Dependabot and npm audit to CI",s:"todo",pr:"P2"},
  {id:"P8-12",p:"P8",t:"Staging environment: Vercel preview plus Supabase branch",s:"todo",pr:"P1"},
 
