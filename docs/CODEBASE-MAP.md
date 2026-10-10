@@ -354,3 +354,86 @@ Not built yet (see `FEATURE_LIST.md` and the tracker): real payments (Razorpay),
 4. `src/lib/pricing.ts`: slot grid and prices.
 5. `src/proxy.ts`, `src/lib/session.ts`, `src/lib/partner-auth.ts`: who may do what.
 6. `e2e/` and `src/lib/*.test.ts`: the behaviour the project promises.
+
+## 14. Roadmap
+
+Source of truth for order and gates: `docs/TASK-WORKFLOW.md`. Task ids (P9-05, R011 and so on) are in `docs/build-tracker.html` and Jira (project OYUN, find by `[id]` in the summary). Status is as of 10 Oct 2026.
+
+### 14.1 The path to launch
+
+```mermaid
+flowchart LR
+  A["A. Safe and real<br/>key history checked, data parity"]
+  B["B. Foundations<br/>tests, CI, hooks, staging"]
+  C["C. Security fixes<br/>small and urgent"]
+  D["D. Database v2<br/>resources, bookables, exclusion constraints"]
+  E["E. Payments<br/>Razorpay"]
+  F["F. Performance and UX"]
+  G["G. Features<br/>notifications, map, calendar, extras"]
+  H["H. Quality and launch<br/>privacy, backups, SEO, monitoring"]
+  A --> B --> C --> D --> E --> F --> G --> H
+  classDef done fill:#d1fae5,stroke:#059669,color:#065f46;
+  classDef doing fill:#fef3c7,stroke:#d97706,color:#92400e;
+  classDef todo fill:#f1f5f9,stroke:#64748b,color:#334155;
+  class A,B doing;
+  class C doing;
+  class D,E,F,G,H todo;
+```
+
+### 14.2 Roadmap by area
+
+| Area | Done | Next | Needs the owner first |
+| --- | --- | --- | --- |
+| **A. Safe and real** | Git history checked for leaked keys | Local and Vercel data parity (P8-00c) | Set `SUPABASE_SECRET_KEY` locally; rotate any key found |
+| **B. Foundations** | Next 16 notes, typecheck and hook, Dependabot and `npm audit`, race test, authorization sweep, Playwright flows | Hold-expiry test (P8-05), persistent rate limits (R011 / P9-06) | Staging: Vercel and Supabase branch setup (P8-12) |
+| **C. Security** | Hard-coded credentials removed, `server-only`, wallet refund on cancel, DTOs, lockout per email and IP, promo limits, image URL validation, CHECK constraints (file ready) | Anonymous ticket actions (P9-05), wallet bound to Clerk account (P9-03), cash-collected check-in (P9-11), CSP nonces (P9-13), unused Supabase proxy step (P9-16) | Rotate old Supabase key and admin and partner passwords (P9-01); run `7-check-constraints.sql` on production; choose admin MFA: TOTP or Clerk (P9-09) |
+| **D. Database v2** | Design in `docs/SLOT-BOOKING-DB.md` and `supabase/proposals/` | Migration and RPC wrappers, venue to resources mapping, multi-court venues (R007), any slot length (R009), one order per checkout (R010), retire jsonb for bookings (R008), per-turf version (P10-02) | Approve production runs: pg_cron hold expiry (P10-06), deleting old tables |
+| **E. Payments** | Advance is recorded, nothing charged online | Razorpay order and signature (P11-01), idempotent webhook (P11-02), advance mode (P11-03), gateway refunds (P11-04), payment-state tests (P11-06), wallet ledger (R013), payouts and GST invoices, reconciliation (P11-05) | Razorpay account and test keys |
+| **F. Performance and UX** | `loading.tsx` and skeletons | Page caching with tags (P10-03), Realtime plus on-focus refetch instead of 10 s poll (P10-04), k6 load test (P10-08) | Supabase Storage for image optimisation (P10-09) |
+| **G. Features** | Multi-sport, favourites, calendar and WhatsApp share, owner offers, staff roles, reviews | Partner calendar day and week view, search filters (P13-04), waitlist and recurring weekly (P13-06), split payment link, find players (P13-01), tournaments (P13-02), weather alerts (P13-03), admin analytics (P13-05), Kannada (P13-07) | Choose WhatsApp or SMS provider (P12-01 to P12-05); choose Google Maps or Mapbox |
+| **H. Quality and launch** | `docs/SECURITY.md`, architecture and ADRs | CI concurrency test, accessibility (axe), Lighthouse 90, bad-path tests, DPDP export and delete, SEO landing pages, monitoring (double bookings must be 0), runbooks | Backup restore runbook needs the Supabase plan and a tested restore; uptime service choice |
+
+### 14.3 Roadmap by feature (who gets what)
+
+```mermaid
+flowchart TD
+  subgraph Players
+    P1["Now: browse, hold, book, ticket, cancel, review, wallet, promo, saved"]
+    P2["Next: wallet tied to account, book again, reschedule"]
+    P3["Later: waitlist, recurring, split payment, find players, tournaments, weather, Kannada"]
+    P1 --> P2 --> P3
+  end
+  subgraph Owners
+    O1["Now: check-in, walk-ins, blocks, pricing, offers, add-ons, staff, payouts CSV, invoices"]
+    O2["Next: day and week calendar, cash-collected check-in"]
+    O3["Later: real payouts and reconciliation, owner alerts by WhatsApp or SMS"]
+    O1 --> O2 --> O3
+  end
+  subgraph Admin
+    A1["Now: approve turfs, refunds, commission, promo, site content, moderation"]
+    A2["Next: per-user accounts, MFA, session revocation, audit log"]
+    A3["Later: analytics by area, hour and conversion"]
+    A1 --> A2 --> A3
+  end
+  subgraph Platform
+    L1["Now: CI, health checks, headers, race test, Playwright"]
+    L2["Next: persistent rate limits, staging, CSP nonces, caching, Realtime"]
+    L3["Later: database v2, Razorpay, monitoring and backups, SEO pages, DPDP tools"]
+    L1 --> L2 --> L3
+  end
+```
+
+### 14.4 Gates that stop the queue
+
+| Gate | Blocks | Owner action |
+| --- | --- | --- |
+| Production key and password rotation | P9-01, safe launch | Set new values in Vercel, redeploy |
+| Production SQL not yet run | CHECK constraints (OYUN-232 / P9-21) | Run `supabase/setup/7-check-constraints.sql` in the Supabase SQL editor |
+| Preview has no database | Ticket page on preview and git-main deployments | Add Preview Supabase and auth variables in Vercel |
+| Razorpay | All of E | Open account, give test keys |
+| Notification provider | P12-01 to P12-05 | Choose WhatsApp or SMS |
+| Map provider | P13-04 | Choose Google Maps or Mapbox |
+| Admin MFA design | P9-09 | Choose TOTP or Clerk |
+| Staging | P8-12 | Vercel and Supabase branch setup |
+
+The loop that works the queue: `/next-task` picks the first open non-gated task, branches, builds, tests, opens a PR; merges happen only when every CI check is green. See `.claude/commands/next-task.md`.
