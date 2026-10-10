@@ -124,7 +124,7 @@ export default async function AdminSettings() {
 
       <div className={dash.card}>
         <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Promo codes</h2></div>
-        <div className={dash.tableWrap}>
+        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
           <table className={dash.table}>
             <thead><tr><th>Code</th><th>Discount (edit)</th><th className={dash.num}>Uses</th><th>Status</th><th></th></tr></thead>
             <tbody>

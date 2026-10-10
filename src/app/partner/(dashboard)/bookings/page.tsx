@@ -63,7 +63,7 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
         {shown.length === 0 ? (
           <p className={dash.empty}>No bookings here.</p>
         ) : (
-          <div className={dash.tableWrap}>
+          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
             <table className={dash.table}>
               <thead>
                 <tr>

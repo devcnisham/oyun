@@ -1,5 +1,5 @@
 // Accessibility (task RQ-Q2). axe-core runs on the pages people use most; any critical violation fails the
-// run, serious ones are listed in the test output so they can be worked down. Plus: the booking path can be
+// run, and so does any serious one. Plus: the booking path can be
 // driven with the keyboard alone.
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
@@ -26,15 +26,15 @@ async function scan(page: Page, path: string) {
 }
 
 for (const { name, path } of PAGES) {
-  test(`axe: ${name} has no critical accessibility violations`, async ({ page }, info) => {
+  test(`axe: ${name} has no critical or serious accessibility violations`, async ({ page }, info) => {
     await asPlayer(page);
     const { results, summary } = await scan(page, path);
     if (summary.length > 0) {
       info.annotations.push({ type: 'axe', description: summary.join('\n') });
       console.log(`axe ${path}\n  ${summary.join('\n  ')}`);
     }
-    const critical = results.violations.filter((v) => v.impact === 'critical');
-    expect(critical.map((v) => `${v.id}: ${v.help}`), `critical violations on ${path}`).toEqual([]);
+    const blocking = results.violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
+    expect(blocking.map((v) => `${v.id}: ${v.help}`), `critical or serious violations on ${path}`).toEqual([]);
   });
 }
 

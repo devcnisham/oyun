@@ -50,7 +50,7 @@ export default async function CheckInPage() {
         {today.length === 0 ? (
           <p className={dash.empty}>No bookings today.</p>
         ) : (
-          <div className={dash.tableWrap}>
+          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
             <table className={dash.table}>
               <thead><tr><th>Slot</th><th>Player</th><th>Code</th><th>Status</th><th className={dash.num}>Due at venue</th><th></th></tr></thead>
               <tbody>

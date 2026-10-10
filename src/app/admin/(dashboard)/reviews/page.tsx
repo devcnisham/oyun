@@ -18,7 +18,7 @@ export default async function AdminReviews() {
         {reviews.length === 0 ? (
           <p className={dash.muted}>No reviews yet. Players can rate a turf from their booking after they are checked in.</p>
         ) : (
-          <div className={dash.tableWrap}>
+          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
             <table className={dash.table}>
               <thead>
                 <tr><th>Turf</th><th>Rating</th><th>Review</th><th>Player</th><th>When</th><th>Status</th><th></th></tr>

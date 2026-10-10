@@ -91,7 +91,7 @@ export default async function PartnerDashboard() {
           <h2 className={dash.cardTitle}>Latest bookings</h2>
           {ctx.can('bookings') && <Link href="/partner/bookings" className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>View all</Link>}
         </div>
-        <div className={dash.tableWrap}>
+        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
           <table className={dash.table}>
             <thead>
               <tr><th>Player</th><th>Slot</th><th>Source</th><th>Status</th><th className={dash.num}>Total</th></tr>
