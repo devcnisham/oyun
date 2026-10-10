@@ -1,6 +1,6 @@
 # OYUN codebase map
 
-A visual guide to how OYUN works: the pages, who uses them, how a booking flows through the code, where data lives and how changes ship. Diagrams are Mermaid, so GitHub renders them. Text docs that go deeper: `docs/ARCHITECTURE.md` (rules and limits), `docs/adr/` (why), `docs/SECURITY.md`, `docs/ENVIRONMENTS.md`, `docs/SLOT-BOOKING-DB.md` (target database).
+A visual guide to how OYUN works: the pages, who uses them, how a booking flows through the code, where data lives and how changes ship. Diagrams are Mermaid, so GitHub renders them. Per-rule flowcharts (hold, price, book, cancel, check-in, refund, login and more) are in `docs/FLOWCHARTS.md`. Text docs that go deeper: `docs/ARCHITECTURE.md` (rules and limits), `docs/adr/` (why), `docs/SECURITY.md`, `docs/ENVIRONMENTS.md`, `docs/SLOT-BOOKING-DB.md` (target database).
 
 OYUN is a multi-sport turf and court booking site for Mangalore (football, box cricket, badminton, pickleball). One Next.js 16 app serves the website and the backend; there is no separate API server or mobile app.
 
