@@ -21,3 +21,13 @@ test('partner checks in a booking for today by its code', async ({ page }) => {
   await page.locator('button[type=submit]', { hasText: 'Check in' }).click();
   await expect(page.getByText(/already checked in/i)).toBeVisible();
 });
+
+test('partner calendar shows the week and moves between weeks', async ({ page }) => {
+  await page.goto('/partner/calendar');
+  await expect(page.getByRole('heading', { name: 'Calendar' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Today' })).toBeVisible();
+  await page.getByRole('link', { name: /Next/ }).click();
+  await expect(page).toHaveURL(/calendar\?week=\d{4}-\d{2}-\d{2}/);
+  await page.getByRole('link', { name: 'This week' }).click();
+  await expect(page.getByRole('link', { name: 'Today' })).toBeVisible();
+});

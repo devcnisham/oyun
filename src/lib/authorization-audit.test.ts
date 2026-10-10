@@ -94,6 +94,7 @@ describe('dashboard pages', () => {
   const PARTNER_PAGES: Record<string, string | null> = {
     '': null,
     'bookings': 'bookings',
+    'calendar': 'bookings',
     'check-in': 'checkin',
     'slots': 'slots',
     'pricing': 'pricing',

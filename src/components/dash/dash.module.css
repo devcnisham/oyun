@@ -469,3 +469,20 @@
     display: none !important;
   }
 }
+
+/* Week calendar (partner/calendar) */
+.calWrap { overflow-x: auto; }
+.calTable { border-collapse: separate; border-spacing: 4px; width: 100%; min-width: 760px; table-layout: fixed; }
+.calTable th { font-size: 12px; font-weight: 600; color: var(--text-muted); text-align: center; padding: 6px 4px; }
+.calToday { color: var(--text) !important; }
+.calHour { width: 78px; font-size: 12px; color: var(--text-muted); text-align: right; padding-right: 6px; white-space: nowrap; }
+.calCell { height: 52px; border-radius: 8px; border: 1px solid var(--border); background: #fff; font-size: 11px; line-height: 1.25; padding: 4px 6px; vertical-align: top; overflow: hidden; }
+.calBooked { background: #eff8ff; border-color: #b2ddff; }
+.calChecked { background: #ecfdf3; border-color: #a6f4c5; }
+.calNoShow { background: #fff4ed; border-color: #f9dbaf; }
+.calBlocked { background: #fffaeb; border-color: #fedf89; }
+.calHeld { background: #f4f3ff; border-color: #d9d6fe; }
+.calPast { background: var(--bg-muted); color: var(--text-muted); }
+.calName { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.calLegend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+.calDot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; border: 1px solid var(--border); margin-right: 4px; vertical-align: -1px; }

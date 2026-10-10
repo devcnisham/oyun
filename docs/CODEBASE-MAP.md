@@ -67,6 +67,7 @@ flowchart TD
     PB["bookings"]
     CI["check-in"]
     SL["slots (block, walk-in)"]
+    CA["calendar (week view)"]
     PP["pricing"]
     OF["offers"]
     AO["add-ons"]
@@ -390,7 +391,7 @@ flowchart LR
 | **D. Database v2** | Design in `docs/SLOT-BOOKING-DB.md` and `supabase/proposals/` | Migration and RPC wrappers, venue to resources mapping, multi-court venues (R007), any slot length (R009), one order per checkout (R010), retire jsonb for bookings (R008), per-turf version (P10-02) | Approve production runs: pg_cron hold expiry (P10-06), deleting old tables |
 | **E. Payments** | Advance is recorded, nothing charged online | Razorpay order and signature (P11-01), idempotent webhook (P11-02), advance mode (P11-03), gateway refunds (P11-04), payment-state tests (P11-06), wallet ledger (R013), payouts and GST invoices, reconciliation (P11-05) | Razorpay account and test keys |
 | **F. Performance and UX** | `loading.tsx` and skeletons | Page caching with tags (P10-03), Realtime plus on-focus refetch instead of 10 s poll (P10-04), k6 load test (P10-08) | Supabase Storage for image optimisation (P10-09) |
-| **G. Features** | Multi-sport, favourites, calendar and WhatsApp share, owner offers, staff roles, reviews | Partner calendar day and week view, search filters (P13-04), waitlist and recurring weekly (P13-06), split payment link, find players (P13-01), tournaments (P13-02), weather alerts (P13-03), admin analytics (P13-05), Kannada (P13-07) | Choose WhatsApp or SMS provider (P12-01 to P12-05); choose Google Maps or Mapbox |
+| **G. Features** | Multi-sport, favourites, calendar and WhatsApp share, owner offers, staff roles, reviews, partner week calendar | Search filters (P13-04), waitlist and recurring weekly (P13-06), split payment link, find players (P13-01), tournaments (P13-02), weather alerts (P13-03), admin analytics (P13-05), Kannada (P13-07) | Choose WhatsApp or SMS provider (P12-01 to P12-05); choose Google Maps or Mapbox |
 | **H. Quality and launch** | `docs/SECURITY.md`, architecture and ADRs | CI concurrency test, accessibility (axe), Lighthouse 90, bad-path tests, DPDP export and delete, SEO landing pages, monitoring (double bookings must be 0), runbooks | Backup restore runbook needs the Supabase plan and a tested restore; uptime service choice |
 
 ### 14.3 Roadmap by feature (who gets what)
@@ -405,7 +406,7 @@ flowchart TD
   end
   subgraph Owners
     O1["Now: check-in, walk-ins, blocks, pricing, offers, add-ons, staff, payouts CSV, invoices"]
-    O2["Next: day and week calendar, cash-collected check-in"]
+    O2["Next: owner alerts, real payouts"]
     O3["Later: real payouts and reconciliation, owner alerts by WhatsApp or SMS"]
     O1 --> O2 --> O3
   end
