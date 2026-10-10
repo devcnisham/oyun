@@ -8,7 +8,7 @@ import { CANCEL_CUTOFF_HOURS, canSelfCancel } from './cancel-policy';
 import { REVIEW_MAX_LENGTH, publicName, recomputeTurfRating } from './reviews';
 import { clerkEnabled } from './clerk';
 import { ValidationError, refreshAll } from './action-utils';
-import { rateLimit } from './rate-limit';
+import { sharedRateLimit } from './shared-rate-limit';
 import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
 import { deviceHolder } from './device-holder';
 import { buildQuote, freePart, getSlots, normalizePhone } from './pricing';
@@ -38,7 +38,7 @@ async function clientIp() {
 // Throws a friendly error when one network or device is making requests too fast
 async function throttle(action: string, perIp: number, holder?: string | null, perDevice?: number) {
   const ip = await clientIp();
-  const ok = rateLimit(`${action}:ip:${ip}`, perIp, 10 * 60_000) && (!holder || !perDevice || rateLimit(`${action}:dev:${holder}`, perDevice, 10 * 60_000));
+  const ok = (await sharedRateLimit(`${action}:ip:${ip}`, perIp, 10 * 60_000)) && (!holder || !perDevice || (await sharedRateLimit(`${action}:dev:${holder}`, perDevice, 10 * 60_000)));
   if (!ok) throw new ValidationError('Too many attempts. Please wait a few minutes and try again.');
 }
 
@@ -474,7 +474,7 @@ export async function submitApplication(req: ApplicationRequest): Promise<{ id?:
   if (!Number.isFinite(startedAt) || Date.now() - startedAt < 4000) return fake();
 
   const ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  if (!rateLimit(`apply:${ip}`, 5, 60 * 60_000)) return { error: 'Too many applications from your network. Please try again in an hour.' };
+  if (!(await sharedRateLimit(`apply:${ip}`, 5, 60 * 60_000))) return { error: 'Too many applications from your network. Please try again in an hour.' };
 
   const s = (v: unknown, max = 200) => String(v ?? '').trim().slice(0, max);
   const fields = Object.fromEntries(
