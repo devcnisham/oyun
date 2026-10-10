@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">P9-05 updated after PR #122 (main at 747c5c5); PRs #109 to #121 not yet recorded · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #122 (main at 747c5c5) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -887,7 +887,8 @@ adr:[
  {t:"Clerk is optional, device identity is the fallback",ctx:"Launch must work with no keys, and demos should not need accounts.",dec:"With the Clerk key, sign-in is required before paying; without it, a localStorage name and phone.",tr:"Easy local dev; the fallback is not authentication and weakens wallet and ticket security.",rev:"Make Clerk mandatory in production (P9-03)."},
  {t:"Custom cookie auth for admin and partner",ctx:"Few operator accounts, env-provisioned.",dec:"HMAC session cookie, scrypt hashes in the store, role matrix for partners.",tr:"Simple and dependency-free; no MFA, no revocation, in-memory lockout.",rev:"When more than a handful of operators exist (P9-09)."},
  {t:"Supabase Realtime broadcast for slot freshness",ctx:"Players must see a slot disappear while choosing.",dec:"Server posts a ping to slots:{turf}:{date}; clients refetch. Poll every 10 seconds as safety net.",tr:"Cheap and decoupled from RLS; topics are public and carry no data.",rev:"If payloads ever carry data, switch to private channels (P9-15)."},
- {t:"Delta sync instead of loading everything per request",ctx:"Every request downloaded every table; at 1,000 users that was an estimated 100+ GB a month of database egress.",dec:"Each server keeps the store in memory and calls load_changes(since) for rows written after its revision; deletions leave tombstones. Writes still go through apply_changes with the rev check.",tr:"Tiny reads and no API change for 30+ pages; a cold start still loads everything, and memory grows with history.",rev:"When a cold-start load passes about 5 MB, or more than a few servers run at once (P10-14)."}
+ {t:"Delta sync instead of loading everything per request",ctx:"Every request downloaded every table; at 1,000 users that was an estimated 100+ GB a month of database egress.",dec:"Each server keeps the store in memory and calls load_changes(since) for rows written after its revision; deletions leave tombstones. Writes still go through apply_changes with the rev check.",tr:"Tiny reads and no API change for 30+ pages; a cold start still loads everything, and memory grows with history.",rev:"When a cold-start load passes about 5 MB, or more than a few servers run at once (P10-14)."},
+ {t:"Rate limits counted in Postgres, with a per-server fallback",ctx:"Login lockout, hold and booking limits lived in memory on each server, so a burst spread across servers was not counted together.",dec:"Counters use rl_hit, rl_get and rl_clear in supabase/setup/8-rate-limits.sql. If Supabase is off, the call fails or the SQL has not run, the old per-server limiter is used.",tr:"No new service to run. Each limit check now costs a database call, and a failed call falls back to one server, so a burst can still get through.",rev:"If hold traffic needs faster counters than the database gives (P10)."}
 ],
 
 env:[
@@ -1183,7 +1184,7 @@ featureGroups:[
   ["Max slots per booking","built","6, need not be consecutive","booking-actions.ts (MAX_SLOTS)"],
   ["Double-booking protection","built","Database unique indexes on live booking, block and hold per slot. With halves: one index per half for bookings and holds, a full booking counts against both (PR #58, needs supabase/setup/6-half-pitch.sql on production).","supabase migrations"],
   ["Live updates","built","Realtime broadcast per turf and date; also a 10-second poll and refresh on tab focus","lib/realtime.ts, use-slot-updates.ts"],
-  ["Request limits","partial","Hold 60 per IP and 15 per device per 10 minutes; in memory per server","booking-actions.ts"]
+  ["Request limits","partial","Hold 60 per IP and 15 per device per 10 minutes. Counted in Postgres once supabase/setup/8-rate-limits.sql has run (PR #114); until then in memory per server","booking-actions.ts, shared-rate-limit.ts"]
  ]},
  {g:"Pricing engine",a:"Player",subs:[
   ["Base price","built","Per turf, validated 100 to 20,000","lib/pricing.ts"],
@@ -1283,6 +1284,7 @@ featureGroups:[
  ]},
  {g:"SEO, legal and analytics",a:"Platform",subs:[
   ["Sitemap and robots","built","Dynamic sitemap with images; private areas disallowed","sitemap.ts, robots.ts"],
+  ["Welcome landing page","built","/welcome: static marketing page for players with hero, sports, three-step flow, feature cards and an owner band linking to /list-turf. Listed in the sitemap; home page unchanged. PR #121.","(main)/welcome/page.tsx, (main)/welcome/page.module.css"],
   ["Structured data and share images","built","Organization, WebSite, location, breadcrumbs, FAQ; generated Open Graph images","lib/schema.ts"],
   ["Terms, privacy, FAQ","partial","Built, but still describe pay-at-venue and say nothing to refund; stale against the advance flow","(main)/terms, privacy, faq"],
   ["Help center page","built","Support email and phone, quick links, FAQ accordion (same questions as /faq, shared via src/lib/faq.ts), legal links","(main)/help/page.tsx, lib/faq.ts"],
@@ -1303,6 +1305,7 @@ featureGroups:[
   ["Check-in by code","built","Type the code (SA- prefix optional)","partner/check-in"],
   ["Check-in by camera","built","QR scan with BarcodeDetector; Chrome, Edge and Android only","CheckInDesk.tsx"],
   ["Checks","built","Right turf and today's date; shows the balance to collect","check-in"],
+  ["Cash-collected confirmation","built","A balance due blocks check-in until the desk confirms the cash taken; the amount, time and staff name are saved on the booking. PR #113.","partner/check-in, partner-actions.ts"],
   ["Rewards at check-in","built","Triggers cashback and referral rewards","lib/wallet.ts"],
   ["No-show","built","Allowed only after the slot starts; missed list and repeat no-show list (more than one in 30 days); no automatic penalty","partner-actions.ts"]
  ]},
@@ -1312,7 +1315,7 @@ featureGroups:[
   ["Pricing rules page","built","Base price plus peak, weekend and last-minute rules","partner/pricing"],
   ["Offers","built","Create, pause, delete; happy hour or first-time; name up to 40","partner/offers"],
   ["Add-ons","built","Name up to 60, price 0 to 10,000, edit, hide, delete; sold only through walk-ins","partner/add-ons"],
-  ["Calendar view","planned","Per-day grid only","–"]
+  ["Calendar view","built","Week view, Monday to Sunday, every opening hour for seven days; cells show past, free, booked, blocked or held; split pitches show both halves. PR #117.","partner/calendar"]
  ]},
  {g:"Owner: staff, payouts and profile",a:"Owner",subs:[
   ["Staff accounts","built","Manager or front desk, temporary password shown once, reset, delete; email unique across partners and staff","partner/staff"],
@@ -1351,14 +1354,16 @@ featureGroups:[
   ["Route guarding","built","Optimistic check in proxy, re-checked in layouts and actions","proxy.ts"],
   ["Admin login","built","From environment variables, constant-time check","auth-actions.ts"],
   ["Owner and staff login","built","Database accounts with scrypt hashes plus the OYUN operations account","partner-auth.ts"],
-  ["Lockout","partial","5 failures lock for 15 minutes, in memory per server","auth-actions.ts"],
-  ["Session revocation, MFA","planned","Suspension takes effect next request; no session list","–"]
+  ["Lockout","partial","5 failures lock for 15 minutes. Counted in Postgres once supabase/setup/8-rate-limits.sql has run (PR #114); until then in memory per server","auth-actions.ts, shared-rate-limit.ts"],
+  ["Session revocation, MFA","planned","Suspension takes effect next request; no session list","–"],
+  ["Tenant and authorization tests","built","Test that one owner cannot touch another owner's records (PR #115). docs/AUTHORIZATION.md lists the guards and a test checks it against the code; referral checks are limited to 40 per 10 minutes per IP (PR #116)","src/lib/tenant-isolation.test.ts, src/lib/authorization-audit.test.ts"]
  ]},
  {g:"Operations and platform",a:"Platform",subs:[
   ["Health check","built","/api/health: storage, database, turfs, realtime, sign-in mode, logins; 503 if not ready","api/health"],
   ["Error reporting","built","Server and browser errors to JSON logs and an optional Slack or Discord webhook, deduped for 10 minutes","instrumentation.ts, lib/monitoring.ts"],
   ["Security headers","built","CSP, HSTS 2 years, frame, nosniff, referrer, COOP, permissions; CSP still allows inline scripts","next.config.ts"],
   ["Data store","built","Supabase jsonb tables with delta sync and a revision-checked write; local file in development","lib/store.ts"],
+  ["Accessibility checks","partial","axe runs on the main pages and fails on serious findings; a keyboard-only booking test; scrollable tables reachable by keyboard (PR #118, #119). Automated only, no full manual audit (P8-20)","e2e/a11y.spec.ts"],
   ["Backups and restore","planned","Depends on the Supabase plan; none in the repo","–"],
   ["Custom 404 and error pages","built","Yes","not-found.tsx, global-error.tsx"]
  ]}
@@ -1670,7 +1675,7 @@ D2.lists = [
   ["SEC-05","Row Level Security on every Supabase table, or no public table access","P0",0],
   ["SEC-06","Seed fallback partner password removed; PARTNER_PASSWORD set in production","P1",0,"Task P9-20."],
   ["SEC-07","2FA on GitHub, Vercel, Supabase, Clerk and the domain registrar","P0",0],
-  ["SEC-08","Rate limits on sign-in, booking and review actions","P1",0],
+  ["SEC-08","Rate limits on sign-in, booking and review actions","P1",0,"Shared limiter in Postgres (PR #114). Counts only once supabase/setup/8-rate-limits.sql has run (P9-22); until then it is per server."],
   ["SEC-09","Every server action input checked against a schema","P1",0],
   ["SEC-10","Security headers: CSP, HSTS, frame and referrer policy","P1",0],
   ["SEC-11","npm audit has no High or Critical","P1",1,"npm audit --omit=dev --audit-level=high runs in CI (PR #80)."],
@@ -2036,7 +2041,7 @@ DATA.tasks.push(
  {id:"P8-17",p:"P8",t:"Pick team tools: GitHub Projects or Linear, Notion, Slack or WhatsApp, Bitwarden",s:"todo",pr:"P2"},
  {id:"P8-18",p:"P8",t:"Load Inter with next/font so every device matches the design",s:"todo",pr:"P2",n:"globals.css names Inter but nothing loads it."},
  {id:"P8-19",p:"P8",t:"Replace hard-coded hex values (#f5a623, #cba052) with CSS variables",s:"todo",pr:"P3"},
- {id:"P8-20",p:"P8",t:"Accessibility audit: keyboard, focus, contrast; fix findings",s:"todo",pr:"P2"},
+ {id:"P8-20",p:"P8",t:"Accessibility audit: keyboard, focus, contrast; fix findings",s:"doing",pr:"P2",n:"Automated axe checks and a keyboard booking test exist (P8-41, P8-42). Findings are not yet all fixed; no manual audit yet."},
  {id:"P8-21",p:"P8",t:"Nightly database backup to a free bucket via GitHub Action; test a restore",s:"todo",pr:"P1"},
  {id:"P8-22",p:"P8",t:"Sentry and an uptime monitor on /api/health",s:"todo",pr:"P1"},
  {id:"P10-00",p:"P10",t:"Measure the store payload; update the Cost calculator",s:"done",pr:"P0",n:"Launch data is about 11 KB; an unchanged delta is 22 bytes. Booking row size (1.2 KB) is still an estimate until real bookings exist."},
@@ -2130,7 +2135,17 @@ DATA.tasks.push(
  {id:"P7-42",p:"P7",t:"Admin turf form refuses to save a turf with no contact phone",s:"done",pr:"P2",n:"Admin editor now marks the phone optional and saves without it; the partner My turf page still requires it. PR #60."},
  {id:"P9-21",p:"P9",t:"Run supabase/setup/7-check-constraints.sql on production",s:"todo",pr:"P1",n:"Adds CHECK constraints (wallet, booking amounts, turf price, promo values) as NOT VALID, so only new writes are checked. Tested on a scratch Postgres 17. After a while, validate each constraint once (commands are in the file header)."},
  {id:"P9-22",p:"P9",t:"Run supabase/setup/8-rate-limits.sql on production",s:"todo",pr:"P1",n:"Creates the rate_limits table and rl_hit, rl_get and rl_clear (server only). Tested on a scratch Postgres 15. Until it runs the site keeps the per-instance limiter, nothing breaks. Safe to run again."},
- {id:"P10-16",p:"P10",t:"Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves",s:"todo",pr:"P1",n:"Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on."}
+ {id:"P10-16",p:"P10",t:"Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves",s:"todo",pr:"P1",n:"Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on."},
+ {id:"P13-11",p:"P13",t:"Add /welcome marketing landing page for players",s:"done",pr:"P2",n:"Static copy: hero, sports, three-step flow, feature cards and an owner band linking to /list-turf. Listed in the sitemap and in the axe page list. Home page untouched. PR #121."},
+ {id:"P8-40",p:"P8",t:"Bad-path tests through the booking actions: half versus full pitch, promos, bans, bad dates, wallet, cancel",s:"done",pr:"P2",n:"src/lib/bad-paths.test.ts. PR #120 (RQ-Q4)."},
+ {id:"P8-41",p:"P8",t:"Accessibility checks: axe on the main pages and a keyboard-only booking test",s:"done",pr:"P2",n:"e2e/a11y.spec.ts. Automated checks only, not a full audit (P8-20). PR #118 (RQ-Q2)."},
+ {id:"P8-42",p:"P8",t:"Scrollable tables reachable by keyboard; axe check fails on serious findings too",s:"done",pr:"P2",n:"Table pages under admin and partner changed, plus e2e/a11y.spec.ts. PR #119 (RQ-Q2)."},
+ {id:"P8-43",p:"P8",t:"Visual codebase map: pages, roles, booking flow, data model, CI",s:"done",pr:"P2",n:"docs/CODEBASE-MAP.md. PR #110."},
+ {id:"P8-44",p:"P8",t:"Flowcharts for the slot, hold, price, book, cancel, check-in, refund and login rules",s:"done",pr:"P2",n:"docs/FLOWCHARTS.md. PR #112."},
+ {id:"P8-45",p:"P8",t:"Jira goals are epics OYUN-233 to OYUN-239",s:"done",pr:"P2",n:"docs/JIRA.md. PR #109."},
+ {id:"P9-23",p:"P9",t:"Partner tenant isolation test: owner A cannot touch owner B's records",s:"done",pr:"P1",n:"src/lib/tenant-isolation.test.ts. PR #115 (RQ-SEC2)."},
+ {id:"P9-24",p:"P9",t:"Authorization audit table in docs/AUTHORIZATION.md, kept honest by a test",s:"done",pr:"P1",n:"src/lib/authorization-audit.test.ts. Referral check limited to 40 attempts per 10 minutes per IP. PR #116 (RQ-SEC1)."},
+ {id:"P7-43",p:"P7",t:"Partner week calendar: every opening hour for seven days, split pitch halves shown",s:"done",pr:"P2",n:"Week view, Monday to Sunday, with previous and next week links. PR #117 (RQ-F3)."}
 );
 
 /* ===================== BOOT ===================== */

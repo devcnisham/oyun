@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { TURF, acceptDialogs, asPlayer, confirmBooking, holdFirstSlot, seats } from './helpers';
+import { TURF, acceptDialogs, asPlayer, confirmBooking, holdFirstSlot, holdSlot, seatAt, selectDay } from './helpers';
 
 test('browse → hold → book → cancel', async ({ page }) => {
   await asPlayer(page);
@@ -23,15 +23,16 @@ test('browse → hold → book → cancel', async ({ page }) => {
 test('a slot booked by one player shows as booked to another', async ({ browser }) => {
   const a = await browser.newPage();
   await asPlayer(a, 'Player A', '9876500002');
-  expect(await holdFirstSlot(a, 2)).toBe(true);
+  const label = await holdSlot(a, 2);
+  expect(label).not.toBeNull();
   await confirmBooking(a);
 
   const b = await browser.newPage();
   await asPlayer(b, 'Player B', '9876500003');
   await b.goto(`/arenas/${TURF}`);
-  await b.getByRole('tab').nth(2).click();
-  // Player A took the earliest slot of that day, so player B sees it as booked
-  const first = seats(b).first();
-  await expect(first).toHaveAttribute('aria-disabled', 'true');
-  await expect(first).toContainText('Booked');
+  await selectDay(b, 2);
+  // Player B sees the exact slot player A took as booked
+  const taken = seatAt(b, label!);
+  await expect(taken).toHaveAttribute('aria-disabled', 'true');
+  await expect(taken).toContainText('Booked');
 });
