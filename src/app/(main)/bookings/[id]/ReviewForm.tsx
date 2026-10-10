@@ -8,7 +8,7 @@ import styles from './ReviewForm.module.css';
 const LABELS = ['', 'Poor', 'Okay', 'Good', 'Great', 'Excellent'];
 
 // Shown on the ticket after the player has played: rate the turf, optionally say why
-export default function ReviewForm({ bookingId, turfName, existing }: { bookingId: string; turfName: string; existing: { rating: number; comment: string } | null }) {
+export default function ReviewForm({ bookingId, turfName, existing, needsPhone }: { bookingId: string; turfName: string; needsPhone: boolean; existing: { rating: number; comment: string } | null }) {
   const router = useRouter();
   const [rating, setRating] = useState(existing?.rating ?? 0);
   const [hover, setHover] = useState(0);
@@ -16,6 +16,7 @@ export default function ReviewForm({ bookingId, turfName, existing }: { bookingI
   const [editing, setEditing] = useState(!existing);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [phone, setPhone] = useState('');
   const [pending, start] = useTransition();
 
   if (!editing) {
@@ -59,6 +60,19 @@ export default function ReviewForm({ bookingId, turfName, existing }: { bookingI
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
+      {needsPhone && (
+        <input
+          className={styles.input}
+          type="tel"
+          inputMode="numeric"
+          autoComplete="tel-national"
+          maxLength={10}
+          placeholder="Mobile number used for this booking"
+          aria-label="Mobile number used for this booking"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+        />
+      )}
       {error && <p className={styles.error} role="alert">{error}</p>}
       <button
         type="button"
@@ -67,7 +81,7 @@ export default function ReviewForm({ bookingId, turfName, existing }: { bookingI
         onClick={() => {
           setError('');
           start(async () => {
-            const result = await submitReview(bookingId, rating, comment);
+            const result = await submitReview(bookingId, rating, comment, phone);
             if ('error' in result) return setError(result.error);
             setDone(true);
             setEditing(false);

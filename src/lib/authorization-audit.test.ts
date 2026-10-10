@@ -32,8 +32,8 @@ const PUBLIC_ACTIONS: Record<string, { why: string; needs: string[] }> = {
   checkReferralCode: { why: 'rate limited because the answer reveals whether a phone is an existing player', needs: ["throttle('referral'"] },
   quoteSelection: { why: 'rate limited, prices a throwaway copy and writes nothing', needs: ['throttle(', 'structuredClone(db)'] },
   createBookings: { why: 'rate limited, signed-in only when Clerk is on, refused when bookings would not be saved', needs: ['throttle(', 'assertBookingsAreSaved()', 'clerkEnabled'] },
-  cancelMyBooking: { why: 'unguessable booking id, rate limited, owner account checked, 2 hour cutoff', needs: ['bk_[a-f0-9]{12}', 'throttle(', 'booking.accountId !== accountId', 'canSelfCancel('] },
-  submitReview: { why: 'unguessable booking id, rate limited, owner account checked, only after check-in', needs: ['bk_[a-f0-9]{12}', 'throttle(', 'accountId'] },
+  cancelMyBooking: { why: 'unguessable booking id, rate limited, owner account or booking phone checked, 2 hour cutoff', needs: ['bk_[a-f0-9]{12}', 'throttle(', 'proveBookingOwner(', 'canSelfCancel('] },
+  submitReview: { why: 'unguessable booking id, rate limited, owner account or booking phone checked, only after check-in', needs: ['bk_[a-f0-9]{12}', 'throttle(', 'proveBookingOwner('] },
   getBookingSummaries: { why: 'returns only the ids it is given (unguessable) or the signed-in account\'s own bookings', needs: ['bk_[a-f0-9]{12}', 'currentAccountId()'] },
   submitApplication: { why: 'honeypot, minimum fill time, rate limited, server validation', needs: ['req.website', 'sharedRateLimit(', 'validateApplication('] },
 };

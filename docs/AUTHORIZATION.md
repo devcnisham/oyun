@@ -80,4 +80,4 @@ Every exported action calls `requireAdmin()` before touching data: approve and r
 
 ## Known gaps
 
-Anonymous ticket actions rest on the unguessable id alone (P9-05); wallet and booking identity still trust a typed phone number without Clerk (P9-03); admin is one credential with no MFA (P9-09). See `docs/SECURITY.md`.
+Cancelling or reviewing an anonymous ticket needs the booking phone number as well as the unguessable id (P9-05); wallet and booking identity still trust a typed phone number without Clerk (P9-03); admin is one credential with no MFA (P9-09). See `docs/SECURITY.md`.

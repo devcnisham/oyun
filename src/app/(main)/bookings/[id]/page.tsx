@@ -113,11 +113,12 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
             <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
           </div>
         )}
-        {canSelfCancel(booking) && <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} />}
+        {canSelfCancel(booking) && <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} needsPhone={!booking.accountId} />}
         {booking.status === 'checked_in' && (
           <ReviewForm
             bookingId={booking.id}
             turfName={turf.name}
+            needsPhone={!booking.accountId}
             existing={booking.review ? { rating: booking.review.rating, comment: booking.review.comment } : null}
           />
         )}
