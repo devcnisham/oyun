@@ -47,7 +47,7 @@ export default async function AddOnsPage() {
         {addOns.length === 0 ? (
           <p className={dash.empty}>No add-ons yet.</p>
         ) : (
-          <div className={dash.tableWrap}>
+          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
             <table className={dash.table}>
               <thead><tr><th>Item & price</th><th>Status</th><th className={dash.num}>Sold</th><th className={dash.num}>Revenue</th><th></th></tr></thead>
               <tbody>

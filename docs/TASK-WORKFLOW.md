@@ -17,9 +17,9 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P8-09 `typecheck` script and pre-commit hook.
 - [x] P8-11 Dependabot and `npm audit` in CI.
 - [x] P8-04 Integration test: N parallel `createBookings` on one slot gives one booking.
-- [ ] P8-05 Integration test: holds expire and release.
+- [x] P8-05 Integration test: holds expire and release.
 - [x] P8-06 Authorization sweep: every admin and partner action rejects without a session.
-- [ ] R011 / P9-06 Persistent rate limits in Postgres, same function signature.
+- [x] R011 / P9-06 Persistent rate limits in Postgres, same function signature. GATE left: owner runs `supabase/setup/8-rate-limits.sql` on production (P9-22).
 - [x] P8-07 Playwright e2e: browse, hold, book, ticket, cancel; partner check-in; admin approve turf.
 - [ ] P8-12 Staging environment. GATE: Vercel and Supabase branch setup.
 
@@ -32,7 +32,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] P9-03 Bind wallet and booking identity to the Clerk account, not a typed phone.
 - [x] P9-07 Lockout keyed by email plus IP.
 - [x] P9-08 / R012 Promo codes: expiry, max uses, per-player limit.
-- [ ] P9-11 Check-in requires cash-collected confirmation.
+- [x] P9-11 Check-in requires cash-collected confirmation.
 - [x] P9-12 Validate turf image URLs, allowlist hosts.
 - [x] P9-14 CHECK constraints: wallet and amounts not negative.
 - [ ] P9-16 Remove or document the unused Supabase auth proxy step.

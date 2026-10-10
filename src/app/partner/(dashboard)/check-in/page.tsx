@@ -50,7 +50,7 @@ export default async function CheckInPage() {
         {today.length === 0 ? (
           <p className={dash.empty}>No bookings today.</p>
         ) : (
-          <div className={dash.tableWrap}>
+          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
             <table className={dash.table}>
               <thead><tr><th>Slot</th><th>Player</th><th>Code</th><th>Status</th><th className={dash.num}>Due at venue</th><th></th></tr></thead>
               <tbody>
@@ -71,6 +71,11 @@ export default async function CheckInPage() {
                           <div className={dash.inline}>
                             <ActionForm action={checkInBooking} inline>
                               <input type="hidden" name="bookingId" value={b.id} />
+                              {b.pricing.total - b.amountPaid > 0 && (
+                                <label className={dash.muted}>
+                                  <input type="checkbox" name="cashCollected" value="true" required /> Collected {inr(b.pricing.total - b.amountPaid)}
+                                </label>
+                              )}
                               <button className={`${dash.btn} ${dash.btnSm}`}>Check in</button>
                             </ActionForm>
                             {started && (

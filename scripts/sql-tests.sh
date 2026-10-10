@@ -36,6 +36,9 @@ done
 echo "== Money guards (CHECK constraints)"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/check_constraints_test.sql
 
+echo "== Shared rate limits"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
+
 echo "== Double-booking race (parallel sessions on the live store functions)"
 bash scripts/sql-race-test.sh "$STORE_DB"
 

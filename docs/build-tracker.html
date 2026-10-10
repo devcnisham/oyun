@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #102 (main at 0eb4d33) · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #108 (main at d1a66e1) · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -635,7 +635,7 @@ tasks:[
  {id:"P8-02",p:"P8",t:"Add Vitest and unit tests for pricing.ts (peak, weekend, last-minute, offers, promo, GST, commission)",s:"done",pr:"P0",n:"One function drives quote and charge, so test it hardest."},
  {id:"P8-03",p:"P8",t:"Unit tests for cancel-policy.ts and IST time helpers",s:"done",pr:"P1",n:"2-hour cutoff, midnight, DST-free IST."},
  {id:"P8-04",p:"P8",t:"Integration test: N parallel createBookings for one slot yields exactly one booking",s:"done",pr:"P0",n:"Run against local Supabase; proves rev lock plus unique index."},
- {id:"P8-05",p:"P8",t:"Integration test: holds expire, release and cannot block a booking forever",s:"todo",pr:"P1",n:"holds_slot_uniq has no expiry predicate."},
+ {id:"P8-05",p:"P8",t:"Integration test: holds expire, release and cannot block a booking forever",s:"done",pr:"P1",n:"src/lib/holds.test.ts runs the real hold and booking actions. The holds unique index has no expiry predicate, so expired rows are purged on every write (purgeExpiredHolds); pg_cron expiry is P10-06."},
  {id:"P8-06",p:"P8",t:"Authorization test sweep: every admin and partner action rejects without a session",s:"done",pr:"P0",n:"Confirms requireAdmin and requirePartnerAction on every export."},
  {id:"P8-07",p:"P8",t:"Playwright e2e: browse, hold, book, ticket, cancel",s:"done",pr:"P1"},
  {id:"P8-08",p:"P8",t:"GitHub Actions: lint, tsc --noEmit, build, tests on every PR",s:"done",pr:"P0",n:"No .github directory exists."},
@@ -650,12 +650,12 @@ tasks:[
  {id:"P9-03",p:"P9",t:"Bind wallet spend and booking identity to the Clerk account, not a typed phone",s:"todo",pr:"P0",n:"Verify phone by OTP if phone login is kept."},
  {id:"P9-04",p:"P9",t:"Refund walletDeduction when a booking is cancelled",s:"done",pr:"P0",n:"Verify first: cancelMyBooking refunds only amountPaid, which is 0."},
  {id:"P9-05",p:"P9",t:"Ticket page: hide phone, require account or signed token for details and actions",s:"doing",pr:"P1",n:"The bk_ id is a 48-bit bearer token shared over WhatsApp. Phone is masked on the ticket and invoice (PR #98). Still open: anonymous bookings can be cancelled by anyone holding the bk_ link; needs verified identity (P9-03) or a secret in the link."},
- {id:"P9-06",p:"P9",t:"Shared rate limiter (Redis or database) for login, holds, applications, client-error",s:"todo",pr:"P1",n:"Current limiter is per serverless instance."},
+ {id:"P9-06",p:"P9",t:"Shared rate limiter (Redis or database) for login, holds, applications, client-error",s:"done",pr:"P1",n:"Counters live in Postgres (rate_limits, rl_hit, rl_get, rl_clear in supabase/setup/8-rate-limits.sql). Login lockout, holds, bookings, cancels, reviews, applications and client-error use them via src/lib/shared-rate-limit.ts. Falls back to the per-instance limiter when Supabase is off, the call fails or step 8 has not been run. P9-22 runs the SQL on production."},
  {id:"P9-07",p:"P9",t:"Lockout keyed by email plus IP, so an attacker cannot lock the admin out",s:"done",pr:"P1"},
  {id:"P9-08",p:"P9",t:"Promo codes: maxUses and per-player limit",s:"done",pr:"P1"},
  {id:"P9-09",p:"P9",t:"Admin: MFA, per-user accounts, session revocation, password rotation",s:"todo",pr:"P1",n:"Single env credential today."},
  {id:"P9-10",p:"P9",t:"Strip passwordHash and phones from every object that can reach a client component",s:"done",pr:"P1",n:"Introduce DTOs; getDb() returns the raw store."},
- {id:"P9-11",p:"P9",t:"Check-in: require cash-collected confirmation before amountPaid is set",s:"todo",pr:"P2"},
+ {id:"P9-11",p:"P9",t:"Check-in: require cash-collected confirmation before amountPaid is set",s:"done",pr:"P2",n:"A balance due blocks check-in until the desk confirms the cash; the amount, time and staff name are stored on the booking (cashCollected). src/lib/checkin.test.ts."},
  {id:"P9-12",p:"P9",t:"Validate turf image URLs: reject //host, allowlist hosts",s:"done",pr:"P2"},
  {id:"P9-13",p:"P9",t:"CSP nonces to drop 'unsafe-inline' from script-src",s:"todo",pr:"P2"},
  {id:"P9-14",p:"P9",t:"CHECK constraints: wallet balance not negative, amounts not negative",s:"done",pr:"P2"},
@@ -2129,6 +2129,7 @@ DATA.tasks.push(
  {id:"P7-41",p:"P7",t:"Booking date picker limited to one week (today + 6 days)",s:"done",pr:"P2",n:"PR #58."},
  {id:"P7-42",p:"P7",t:"Admin turf form refuses to save a turf with no contact phone",s:"done",pr:"P2",n:"Admin editor now marks the phone optional and saves without it; the partner My turf page still requires it. PR #60."},
  {id:"P9-21",p:"P9",t:"Run supabase/setup/7-check-constraints.sql on production",s:"todo",pr:"P1",n:"Adds CHECK constraints (wallet, booking amounts, turf price, promo values) as NOT VALID, so only new writes are checked. Tested on a scratch Postgres 17. After a while, validate each constraint once (commands are in the file header)."},
+ {id:"P9-22",p:"P9",t:"Run supabase/setup/8-rate-limits.sql on production",s:"todo",pr:"P1",n:"Creates the rate_limits table and rl_hit, rl_get and rl_clear (server only). Tested on a scratch Postgres 15. Until it runs the site keeps the per-instance limiter, nothing breaks. Safe to run again."},
  {id:"P10-16",p:"P10",t:"Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves",s:"todo",pr:"P1",n:"Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on."}
 );
 

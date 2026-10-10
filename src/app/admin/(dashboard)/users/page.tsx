@@ -37,7 +37,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
           </form>
           <span className={dash.muted}>{players.length} players</span>
         </div>
-        <div className={dash.tableWrap}>
+        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
           <table className={dash.table}>
             <thead>
               <tr>
@@ -91,7 +91,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
             </p>
           </div>
         </div>
-        <div className={dash.tableWrap}>
+        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
           <table className={dash.table}>
             <thead><tr><th>When</th><th>Player</th><th>Type</th><th>Note</th><th className={dash.num}>Amount</th></tr></thead>
             <tbody>
