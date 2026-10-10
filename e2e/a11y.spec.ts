@@ -20,6 +20,15 @@ const PAGES = [
 async function scan(page: Page, path: string) {
   await page.goto(path);
   await page.waitForLoadState('networkidle');
+  // Entrance animations leave text half transparent for a moment, which axe reads as a contrast failure; scan the settled page
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => {}))
+    )
+  );
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   const summary = results.violations.map((v) => `${v.impact ?? 'minor'} ${v.id} (${v.nodes.length}): ${v.help}`);
   return { results, summary };
