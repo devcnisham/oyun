@@ -227,9 +227,9 @@ Tracker id: P9-04. Source of truth: docs/build-tracker.html in the repo.","Highe
 "80","Task","[P9-05] Ticket page: hide phone, require account or signed token for details and actions","The bk_ id is a 48-bit bearer token shared over WhatsApp. Phone is masked on the ticket and invoice (PR #98). Still open: anonymous bookings can be cancelled by anyone holding the bk_ link; needs verified identity (P9-03) or a secret in the link.
 
 Tracker id: P9-05. Source of truth: docs/build-tracker.html in the repo.","High","In Progress","oyun","p9","tracker","10"
-"81","Task","[P9-06] Shared rate limiter (Redis or database) for login, holds, applications, client-error","Current limiter is per serverless instance.
+"81","Task","[P9-06] Shared rate limiter (Redis or database) for login, holds, applications, client-error","Counters live in Postgres (rate_limits, rl_hit, rl_get, rl_clear in supabase/setup/8-rate-limits.sql). Login lockout, holds, bookings, cancels, reviews, applications and client-error use them via src/lib/shared-rate-limit.ts. Falls back to the per-instance limiter when Supabase is off, the call fails or step 8 has not been run. P9-22 runs the SQL on production.
 
-Tracker id: P9-06. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+Tracker id: P9-06. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
 "82","Task","[P9-07] Lockout keyed by email plus IP, so an attacker cannot lock the admin out","Tracker id: P9-07. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
 "83","Task","[P9-08] Promo codes: maxUses and per-player limit","Tracker id: P9-08. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
 "84","Task","[P9-09] Admin: MFA, per-user accounts, session revocation, password rotation","Single env credential today.
@@ -495,111 +495,114 @@ Tracker id: P7-42. Source of truth: docs/build-tracker.html in the repo.","Mediu
 "196","Task","[P9-21] Run supabase/setup/7-check-constraints.sql on production","Adds CHECK constraints (wallet, booking amounts, turf price, promo values) as NOT VALID, so only new writes are checked. Tested on a scratch Postgres 17. After a while, validate each constraint once (commands are in the file header).
 
 Tracker id: P9-21. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
-"197","Task","[P10-16] Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves","Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on.
+"197","Task","[P9-22] Run supabase/setup/8-rate-limits.sql on production","Creates the rate_limits table and rl_hit, rl_get and rl_clear (server only). Tested on a scratch Postgres 15. Until it runs the site keeps the per-instance limiter, nothing breaks. Safe to run again.
+
+Tracker id: P9-22. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p9","tracker","10"
+"198","Task","[P10-16] Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves","Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on.
 
 Tracker id: P10-16. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
-"198","Task","[R007] Multi-court venues in the booking flow","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"199","Task","[R007] Multi-court venues in the booking flow","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R007.","High","To Do","oyun","roadmap","","15"
-"199","Task","[R009] Any slot length and after-midnight slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"200","Task","[R009] Any slot length and after-midnight slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R009.","Medium","To Do","oyun","roadmap","","15"
-"200","Task","[R008] Retire the jsonb store for bookings, holds, blocks and pricing","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"201","Task","[R008] Retire the jsonb store for bookings, holds, blocks and pricing","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R008.","High","To Do","oyun","roadmap","","15"
-"201","Task","[R010] One order per checkout (one code, one invoice, one cancel)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"202","Task","[R010] One order per checkout (one code, one invoice, one cancel)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R010.","Medium","To Do","oyun","roadmap","","15"
-"202","Task","[RQ-DB1] Turn supabase/proposals/slot_booking_v2.sql into real migrations and setup steps","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"203","Task","[RQ-DB1] Turn supabase/proposals/slot_booking_v2.sql into real migrations and setup steps","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB1.","High","To Do","oyun","roadmap","","15"
-"203","Task","[RQ-DB2] Map every turf to venue, resources and bookables; partner screens for courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"204","Task","[RQ-DB2] Map every turf to venue, resources and bookables; partner screens for courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB2.","High","To Do","oyun","roadmap","","15"
-"204","Task","[RQ-DB3] Switch slot reads and writes over to the v2 functions","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"205","Task","[RQ-DB3] Switch slot reads and writes over to the v2 functions","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB3.","High","To Do","oyun","roadmap","","15"
-"205","Task","[RQ-DB4] Move partners, staff, players, reviews, promos, add-ons and settings off jsonb","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"206","Task","[RQ-DB4] Move partners, staff, players, reviews, promos, add-ons and settings off jsonb","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB4.","Medium","To Do","oyun","roadmap","","15"
-"206","Task","[R014] Razorpay online advance with signed webhook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"207","Task","[R014] Razorpay online advance with signed webhook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R014.","Highest","To Do","oyun","roadmap","","16"
-"207","Task","[R013] Wallet as a ledger that can never go below zero","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"208","Task","[R013] Wallet as a ledger that can never go below zero","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R013.","High","To Do","oyun","roadmap","","16"
-"208","Task","[R012] Promo codes: expiry, max uses, per-player limit","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"209","Task","[R012] Promo codes: expiry, max uses, per-player limit","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R012.","High","To Do","oyun","roadmap","","16"
-"209","Task","[RQ-PAY1] Refunds by per-venue cancellation policy, audit-logged","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"210","Task","[RQ-PAY1] Refunds by per-venue cancellation policy, audit-logged","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-PAY1.","High","To Do","oyun","roadmap","","16"
-"210","Task","[RQ-PAY2] Partner payouts, settlement export, gap-free GST invoice numbers","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"211","Task","[RQ-PAY2] Partner payouts, settlement export, gap-free GST invoice numbers","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-PAY2.","High","To Do","oyun","roadmap","","16"
-"211","Task","[RQ-PAY3] Daily reconciliation job: payments vs bookings vs payouts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"212","Task","[RQ-PAY3] Daily reconciliation job: payments vs bookings vs payouts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-PAY3.","High","To Do","oyun","roadmap","","16"
-"212","Task","[R011] Persistent rate limits in Postgres","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"213","Task","[R011] Persistent rate limits in Postgres","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R011.","High","To Do","oyun","roadmap","","17"
-"213","Task","[RQ-SEC1] Authorization audit table: every server action and API route, who may call it, and its test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"214","Task","[RQ-SEC1] Authorization audit table: every server action and API route, who may call it, and its test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC1.","Highest","To Do","oyun","roadmap","","17"
-"214","Task","[RQ-SEC2] Partner tenant isolation tests","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"215","Task","[RQ-SEC2] Partner tenant isolation tests","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC2.","Highest","To Do","oyun","roadmap","","17"
-"215","Task","[RQ-SEC3] Sessions: rotation, idle and absolute expiry, optional admin TOTP","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"216","Task","[RQ-SEC3] Sessions: rotation, idle and absolute expiry, optional admin TOTP","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC3.","High","To Do","oyun","roadmap","","17"
-"216","Task","[RQ-SEC4] Bot protection on signup, list-your-turf and hold endpoints","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"217","Task","[RQ-SEC4] Bot protection on signup, list-your-turf and hold endpoints","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC4.","Medium","To Do","oyun","roadmap","","17"
-"217","Task","[RQ-SEC5] DPDP: export and delete my data, retention purge, notice matches reality","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"218","Task","[RQ-SEC5] DPDP: export and delete my data, retention purge, notice matches reality","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC5.","High","To Do","oyun","roadmap","","17"
-"218","Task","[RQ-SEC6] docs/SECURITY.md and backup restore runbook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"219","Task","[RQ-SEC6] docs/SECURITY.md and backup restore runbook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC6.","Medium","To Do","oyun","roadmap","","17"
-"219","Task","[RQ-F1] Booking confirmation and 2-hour reminder (WhatsApp or SMS)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"220","Task","[RQ-F1] Booking confirmation and 2-hour reminder (WhatsApp or SMS)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F1.","High","To Do","oyun","roadmap","","18"
-"220","Task","[RQ-F2] Search filters: price, date and time, amenities; map view","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"221","Task","[RQ-F2] Search filters: price, date and time, amenities; map view","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F2.","Medium","To Do","oyun","roadmap","","18"
-"221","Task","[RQ-F3] Partner calendar: day and week across all courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"222","Task","[RQ-F3] Partner calendar: day and week across all courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F3.","Medium","To Do","oyun","roadmap","","18"
-"222","Task","[RQ-F4] Recurring weekly bookings with a conflict check","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"223","Task","[RQ-F4] Recurring weekly bookings with a conflict check","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F4.","Low","To Do","oyun","roadmap","","18"
-"223","Task","[RQ-F5] Waitlist for full slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"224","Task","[RQ-F5] Waitlist for full slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F5.","Low","To Do","oyun","roadmap","","18"
-"224","Task","[RQ-F6] Split payment link for teammates","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"225","Task","[RQ-F6] Split payment link for teammates","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F6.","Low","To Do","oyun","roadmap","","18"
-"225","Task","[RQ-F7] Find players / open matches","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"226","Task","[RQ-F7] Find players / open matches","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F7.","Low","To Do","oyun","roadmap","","18"
-"226","Task","[RQ-Q1] Concurrency test in CI: two clients, one slot, exactly one wins","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"227","Task","[RQ-Q1] Concurrency test in CI: two clients, one slot, exactly one wins","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q1.","Highest","To Do","oyun","roadmap","","19"
-"227","Task","[RQ-Q2] Accessibility: axe with zero critical issues, keyboard path through booking","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"228","Task","[RQ-Q2] Accessibility: axe with zero critical issues, keyboard path through booking","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q2.","Medium","To Do","oyun","roadmap","","19"
-"228","Task","[RQ-Q3] Lighthouse 90+ on home, arenas, turf pages; k6 load test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"229","Task","[RQ-Q3] Lighthouse 90+ on home, arenas, turf pages; k6 load test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q3.","Medium","To Do","oyun","roadmap","","19"
-"229","Task","[RQ-Q4] Bad-path tests: payment failure, late webhook, hold expiry, after midnight, half vs full pitch","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"230","Task","[RQ-Q4] Bad-path tests: payment failure, late webhook, hold expiry, after midnight, half vs full pitch","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q4.","High","To Do","oyun","roadmap","","19"
-"230","Task","[RQ-L1] SEO landing pages per city, area and sport; Search Console","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"231","Task","[RQ-L1] SEO landing pages per city, area and sport; Search Console","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-L1.","Medium","To Do","oyun","roadmap","","20"
-"231","Task","[RQ-L2] Uptime checks and a double-booking dashboard (must be 0)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"232","Task","[RQ-L2] Uptime checks and a double-booking dashboard (must be 0)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-L2.","High","To Do","oyun","roadmap","","20"
-"232","Task","[RQ-L3] Go-live checklist, rollback steps, on-call contacts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"233","Task","[RQ-L3] Go-live checklist, rollback steps, on-call contacts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-L3.","High","To Do","oyun","roadmap","","20"

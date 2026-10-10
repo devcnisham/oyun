@@ -3,7 +3,7 @@
 import { createHash } from 'node:crypto';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { createLoginThrottle } from './login-throttle';
+import { sharedLoginThrottle } from './shared-rate-limit';
 import { verifyPassword } from './password';
 import { ROLES, createSession, deleteSession, safeEqual, type Role } from './session';
 import { sessionSecret } from './env';
@@ -50,7 +50,7 @@ async function partnerSubject(email: string, password: string) {
 }
 
 // Slow down password guessing: see login-throttle.ts for the rules
-const throttle = createLoginThrottle();
+const throttle = sharedLoginThrottle;
 
 async function clientIp() {
   return (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
@@ -65,14 +65,14 @@ export async function login(role: Role, _prev: LoginState, formData: FormData): 
   if (!email || !password) return { error: 'Enter your email and password.' };
 
   const ip = await clientIp();
-  if (throttle.isLocked(role, email, ip)) return { error: 'Too many failed attempts. Try again in 15 minutes.' };
+  if (await throttle.isLocked(role, email, ip)) return { error: 'Too many failed attempts. Try again in 15 minutes.' };
 
   const subject = role === 'admin' ? adminSubject(email, password) : await partnerSubject(email, password);
   if (!subject) {
-    throttle.recordFailure(role, email, ip);
+    await throttle.recordFailure(role, email, ip);
     return { error: 'Invalid email or password.' };
   }
-  throttle.recordSuccess(role, email, ip);
+  await throttle.recordSuccess(role, email, ip);
 
   await createSession(role, subject);
   redirect(`/${role}`);
