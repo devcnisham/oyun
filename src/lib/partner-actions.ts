@@ -17,6 +17,7 @@ import { buildQuote, getSlots, turfHours } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
 import { formatHour, isValidDate, istNow } from './time';
 import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from './types';
+import { checkInWindow } from './checkin-window';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
@@ -114,7 +115,7 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
     const raw = str(fd, 'code').toUpperCase().replace(/\s/g, '');
     const code = raw.startsWith('SA-') ? raw : `SA-${raw}`;
     const bookingId = str(fd, 'bookingId');
-    const today = istNow().date;
+    const { date: today, hour, minute } = istNow();
 
     return await mutate((db) => {
       const booking = bookingId
@@ -128,6 +129,9 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
       if (booking.status === 'checked_in') throw new ValidationError(`${booking.customerName} is already checked in`);
       if (booking.status !== 'confirmed') throw new ValidationError(`This booking is ${booking.status.replace('_', ' ')}`);
       if (booking.date !== today) throw new ValidationError(`This booking is for ${booking.date}, not today`);
+      const win = checkInWindow(booking.hour, { hour, minute });
+      if (win === 'early') throw new ValidationError(`Check-in for ${booking.timeLabel} opens an hour before the slot`);
+      if (win === 'late') throw new ValidationError(`The ${booking.timeLabel} slot has ended`);
 
       // Money owed at the venue is only counted once the desk says it took it
       const due = Math.max(0, booking.pricing.total - booking.amountPaid);
