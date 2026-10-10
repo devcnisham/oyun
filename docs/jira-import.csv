@@ -238,7 +238,9 @@ Tracker id: P9-09. Source of truth: docs/build-tracker.html in the repo.","High"
 "85","Task","[P9-10] Strip passwordHash and phones from every object that can reach a client component","Introduce DTOs; getDb() returns the raw store.
 
 Tracker id: P9-10. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
-"86","Task","[P9-11] Check-in: require cash-collected confirmation before amountPaid is set","Tracker id: P9-11. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p9","tracker","10"
+"86","Task","[P9-11] Check-in: require cash-collected confirmation before amountPaid is set","A balance due blocks check-in until the desk confirms the cash; the amount, time and staff name are stored on the booking (cashCollected). src/lib/checkin.test.ts.
+
+Tracker id: P9-11. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p9","tracker","10"
 "87","Task","[P9-12] Validate turf image URLs: reject //host, allowlist hosts","Tracker id: P9-12. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p9","tracker","10"
 "88","Task","[P9-13] CSP nonces to drop 'unsafe-inline' from script-src","Tracker id: P9-13. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p9","tracker","10"
 "89","Task","[P9-14] CHECK constraints: wallet balance not negative, amounts not negative","Tracker id: P9-14. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p9","tracker","10"

@@ -655,7 +655,7 @@ tasks:[
  {id:"P9-08",p:"P9",t:"Promo codes: maxUses and per-player limit",s:"done",pr:"P1"},
  {id:"P9-09",p:"P9",t:"Admin: MFA, per-user accounts, session revocation, password rotation",s:"todo",pr:"P1",n:"Single env credential today."},
  {id:"P9-10",p:"P9",t:"Strip passwordHash and phones from every object that can reach a client component",s:"done",pr:"P1",n:"Introduce DTOs; getDb() returns the raw store."},
- {id:"P9-11",p:"P9",t:"Check-in: require cash-collected confirmation before amountPaid is set",s:"todo",pr:"P2"},
+ {id:"P9-11",p:"P9",t:"Check-in: require cash-collected confirmation before amountPaid is set",s:"done",pr:"P2",n:"A balance due blocks check-in until the desk confirms the cash; the amount, time and staff name are stored on the booking (cashCollected). src/lib/checkin.test.ts."},
  {id:"P9-12",p:"P9",t:"Validate turf image URLs: reject //host, allowlist hosts",s:"done",pr:"P2"},
  {id:"P9-13",p:"P9",t:"CSP nonces to drop 'unsafe-inline' from script-src",s:"todo",pr:"P2"},
  {id:"P9-14",p:"P9",t:"CHECK constraints: wallet balance not negative, amounts not negative",s:"done",pr:"P2"},
