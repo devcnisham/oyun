@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SITE_CITY } from '@/lib/site';
+import { getSettings } from '@/lib/queries';
+import { buildFaqs } from '@/lib/faq';
 import { SPORTS, SPORTS_PHRASE, sportHref } from '@/lib/sports';
 import styles from './page.module.css';
 
@@ -20,10 +22,21 @@ const steps = [
 const features = [
   { icon: '🟢', title: 'Live availability', desc: 'Slots update as people book. What you see open is open.' },
   { icon: '🔒', title: 'No double bookings', desc: 'One slot, one booking. The system enforces it, not a phone call.' },
-  { icon: '💸', title: 'Small advance, rest at the venue', desc: 'A flat advance per hour secures the slot. You pay the balance when you arrive.' },
-  { icon: '↩️', title: 'Cancel on your own', desc: 'Plans change. Cancel yourself up to 2 hours before the slot.' },
+  { icon: '💸', title: 'Pay at the venue', desc: 'Nothing is charged online. You pay the turf in cash or UPI when you play.' },
+  { icon: '📲', title: 'Works like an app', desc: 'Install OYUN to your home screen and find your bookings in one tap.' },
   { icon: '✅', title: 'Verified venues', desc: 'Listings carry a verified badge after our team has checked the turf.' },
   { icon: '⭐', title: 'Reviews from real players', desc: 'Only people who checked in can review, one review per booking.' },
+];
+
+const bookingDetails = [
+  { icon: '🗓️', title: 'Pick one or more slots', desc: 'Choose a date, tap as many free hours as you need, then press Proceed.' },
+  { icon: '⏱️', title: 'Held for 8 minutes', desc: 'Your slots are held while you sign in and reserve. If time runs out they open up again.' },
+  { icon: '📱', title: 'Free account, mobile number', desc: 'Sign in or sign up with your mobile number. Every booking lives under My bookings.' },
+  { icon: '🎟️', title: 'QR ticket, straight away', desc: 'You get a booking with a QR code at once, plus an invoice and a calendar file.' },
+  { icon: '💬', title: 'Share with your team', desc: 'Send the booking to the group on WhatsApp or add it to your calendar.' },
+  { icon: '🎁', title: 'Offers and cashback', desc: 'Promo codes, first-time and happy-hour offers and wallet cashback show at checkout when available.' },
+  { icon: '🧤', title: 'Add-ons', desc: 'Add equipment rental or drinks at checkout where the venue offers them.' },
+  { icon: '↩️', title: 'Cancel up to 2 hours before', desc: 'Open the booking and tap Cancel booking. Closer to the time, call the turf or OYUN support.' },
 ];
 
 const ownerPoints = [
@@ -33,7 +46,8 @@ const ownerPoints = [
   'Zero commission while we are in beta',
 ];
 
-export default function WelcomePage() {
+export default async function WelcomePage() {
+  const faqs = buildFaqs(await getSettings()).slice(0, 5); // booking questions, same answers as /faq
   return (
     <div className={styles.page}>
       {/* Hero */}
@@ -95,6 +109,21 @@ export default function WelcomePage() {
         </div>
       </section>
 
+      {/* Booking in detail */}
+      <section className={`container ${styles.section}`} aria-labelledby="booking-h">
+        <h2 id="booking-h" className={styles.h2}>Everything about your booking</h2>
+        <p className={styles.sub}>What happens from the first tap to the final whistle.</p>
+        <ul className={styles.featureGrid}>
+          {bookingDetails.map((f) => (
+            <li key={f.title} className={styles.feature}>
+              <span className={styles.featureIcon} aria-hidden="true">{f.icon}</span>
+              <h3 className={styles.h3}>{f.title}</h3>
+              <p className={styles.body}>{f.desc}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* Features */}
       <section className={`container ${styles.section}`} aria-labelledby="why-h">
         <h2 id="why-h" className={styles.h2}>Built so game day just works</h2>
@@ -107,6 +136,20 @@ export default function WelcomePage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* Booking questions */}
+      <section className={`container ${styles.section}`} aria-labelledby="faq-h">
+        <h2 id="faq-h" className={styles.h2}>Booking questions</h2>
+        <div className={styles.faqList}>
+          {faqs.map((f) => (
+            <details key={f.q} className={styles.faq}>
+              <summary className={styles.faqQ}>{f.q}</summary>
+              <p className={styles.faqA}>{f.a}</p>
+            </details>
+          ))}
+        </div>
+        <p className={styles.faqMore}><Link href="/faq">More answers in the FAQ</Link></p>
       </section>
 
       {/* Owners */}
