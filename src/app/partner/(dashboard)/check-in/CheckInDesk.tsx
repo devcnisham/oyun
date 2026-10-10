@@ -113,6 +113,14 @@ export default function CheckInDesk() {
         <video ref={videoRef} muted playsInline style={{ width: '100%', maxWidth: 420, borderRadius: 12, background: '#000' }} />
       )}
       {scanError && <p className={`${dash.message} ${dash.error}`}>{scanError}</p>}
+      {state?.data?.due && (
+        // The player owes a balance: the desk confirms it took the cash before the check-in goes through
+        <form action={formAction} className={dash.inline}>
+          <input type="hidden" name="code" value={state.data.code} />
+          <input type="hidden" name="cashCollected" value="true" />
+          <button type="submit" className={dash.btn} disabled={pending}>Cash collected: ₹{state.data.due} — check in</button>
+        </form>
+      )}
       {state?.error && <p role="alert" className={`${dash.message} ${dash.error}`}>{state.error}</p>}
       {state?.ok && <p role="status" className={`${dash.message} ${dash.success}`} style={{ fontSize: 16, fontWeight: 600 }}>{state.ok}</p>}
     </div>
