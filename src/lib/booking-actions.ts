@@ -123,6 +123,13 @@ export type ReferralCheck = { status: 'valid'; referrerName: string; reward: num
 
 // Referral codes only count for a phone number's first booking
 export async function checkReferralCode(code: string, phone: string): Promise<ReferralCheck> {
+  // The answer tells apart "valid" from "not new" (that phone already has a player), so it must not be guessable in bulk
+  try {
+    await throttle('referral', 40);
+  } catch (err) {
+    if (err instanceof ValidationError) return { status: 'invalid' };
+    throw err;
+  }
   const db = await getDb();
   if (!db.settings.referralEnabled) return { status: 'disabled' };
   const referrer = findByReferralCode(db, code);
