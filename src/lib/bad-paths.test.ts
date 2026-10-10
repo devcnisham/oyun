@@ -31,7 +31,7 @@ vi.mock('./store', () => {
   };
 });
 
-import { cancelMyBooking, createBookings, holdSlots } from './booking-actions';
+import { cancelMyBooking, createBookings, holdSlots, submitReview } from './booking-actions';
 
 const NOW = new Date('2026-10-12T04:00:00Z'); // 09:30 in India, Monday 12 Oct
 const DATE = '2026-10-13';
@@ -137,6 +137,7 @@ describe('refused checkouts change nothing', () => {
 });
 
 describe('cancelling', () => {
+  const PHONE = '9876543210'; // the fixture booking's customerPhone
   const online = (over = {}) => {
     const b = makeBooking({ id: 'bk_abcdef012345', date: DATE, hour: HOUR, source: 'online', paymentMode: 'venue', amountPaid: 0, ...over });
     getTestDb().bookings.push(b);
@@ -147,9 +148,9 @@ describe('cancelling', () => {
     const player = makePlayer({ walletBalance: 0 });
     getTestDb().players.push(player);
     const b = online({ playerId: player.id, pricing: { ...makeBooking().pricing, walletDeduction: 200 } });
-    expect(await cancelMyBooking(b.id)).toEqual({ ok: true });
+    expect(await cancelMyBooking(b.id, PHONE)).toEqual({ ok: true });
     expect(getTestDb().players[0].walletBalance).toBe(200);
-    expect(await cancelMyBooking(b.id)).toMatchObject({ error: expect.stringMatching(/no longer be cancelled/) });
+    expect(await cancelMyBooking(b.id, PHONE)).toMatchObject({ error: expect.stringMatching(/no longer be cancelled/) });
     expect(getTestDb().players[0].walletBalance).toBe(200);
     expect(getTestDb().walletTxns).toHaveLength(1);
   });
@@ -157,9 +158,25 @@ describe('cancelling', () => {
   test('inside the 2 hour cutoff the player must call the turf, and nothing changes', async () => {
     vi.setSystemTime(new Date('2026-10-13T11:30:00Z')); // 17:00 India, one hour before the 18:00 slot
     const b = online();
-    const res = await cancelMyBooking(b.id);
+    const res = await cancelMyBooking(b.id, PHONE);
     expect(res).toMatchObject({ error: expect.stringMatching(/2 hours/) });
     expect(getTestDb().bookings[0].status).toBe('confirmed');
+  });
+
+  test('an anonymous booking needs the booking phone number: the id alone is refused and nothing changes', async () => {
+    const b = online();
+    for (const wrong of [undefined, '', '9876500000', '12345']) {
+      expect(await cancelMyBooking(b.id, wrong)).toMatchObject({ error: expect.stringMatching(/mobile number used for this booking/) });
+    }
+    expect(getTestDb().bookings[0].status).toBe('confirmed');
+    expect(await cancelMyBooking(b.id, '+91 98765 43210')).toEqual({ ok: true });
+  });
+
+  test('an anonymous booking review needs the booking phone number too', async () => {
+    const b = online({ status: 'checked_in' });
+    expect(await submitReview(b.id, 5, 'Great')).toMatchObject({ error: expect.stringMatching(/mobile number used for this booking/) });
+    expect(getTestDb().bookings[0].review).toBeUndefined();
+    expect(await submitReview(b.id, 5, 'Great', PHONE)).toEqual({ ok: true });
   });
 
   test('an id that is not a booking id, or an unknown one, is refused', async () => {

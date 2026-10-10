@@ -335,9 +335,22 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
 
 /* ---------- player self-cancel ---------- */
 
-// A player cancels their own upcoming booking. The booking id (unguessable, on their ticket) proves they made it;
-// bookings made while signed in can only be cancelled from that same account. The slot opens up live for others.
-export async function cancelMyBooking(bookingId: string): Promise<{ ok: true } | { error: string }> {
+// Who may act on a ticket: bookings made while signed in only from that same account; anonymous bookings need the
+// mobile number typed at booking time on top of the unguessable id, so a leaked ticket link alone is not enough
+function proveBookingOwner(booking: Booking, accountId: string | null, phone: string | undefined, verb: string): void {
+  if (booking.accountId) {
+    if (booking.accountId !== accountId) throw new ValidationError(`Sign in with the account that made this booking to ${verb} it`);
+    return;
+  }
+  const typed = normalizePhone(String(phone ?? ''));
+  if (typed.length !== 10 || typed !== normalizePhone(booking.customerPhone)) {
+    throw new ValidationError(`Enter the mobile number used for this booking to ${verb} it`);
+  }
+}
+
+// A player cancels their own upcoming booking. The booking id (unguessable, on their ticket) proves they have the
+// ticket; the account (or, for anonymous bookings, the booking phone number) proves they made it. The slot opens up live for others.
+export async function cancelMyBooking(bookingId: string, phone?: string): Promise<{ ok: true } | { error: string }> {
   try {
     const id = String(bookingId);
     if (!/^bk_[a-f0-9]{12}$/.test(id)) throw new ValidationError('Booking not found');
@@ -346,7 +359,7 @@ export async function cancelMyBooking(bookingId: string): Promise<{ ok: true } |
     await mutate((db) => {
       const booking = db.bookings.find((b) => b.id === id);
       if (!booking) throw new ValidationError('Booking not found');
-      if (booking.accountId && booking.accountId !== accountId) throw new ValidationError('Sign in with the account that made this booking to cancel it');
+      proveBookingOwner(booking, accountId, phone, 'cancel');
       if (booking.status !== 'confirmed') throw new ValidationError('This booking can no longer be cancelled');
       if (!canSelfCancel(booking)) {
         throw new ValidationError(`Bookings can be cancelled up to ${CANCEL_CUTOFF_HOURS} hours before the slot. Please call the turf.`);
@@ -373,7 +386,7 @@ export async function cancelMyBooking(bookingId: string): Promise<{ ok: true } |
 /* ---------- ratings & reviews ---------- */
 
 // After playing (checked in), the player rates the turf. One review per booking; sending again updates it.
-export async function submitReview(bookingId: string, rating: number, comment: string): Promise<{ ok: true } | { error: string }> {
+export async function submitReview(bookingId: string, rating: number, comment: string, phone?: string): Promise<{ ok: true } | { error: string }> {
   try {
     const id = String(bookingId);
     if (!/^bk_[a-f0-9]{12}$/.test(id)) throw new ValidationError('Booking not found');
@@ -385,7 +398,7 @@ export async function submitReview(bookingId: string, rating: number, comment: s
     await mutate((db) => {
       const booking = db.bookings.find((b) => b.id === id);
       if (!booking) throw new ValidationError('Booking not found');
-      if (booking.accountId && booking.accountId !== accountId) throw new ValidationError('Sign in with the account that made this booking to review it');
+      proveBookingOwner(booking, accountId, phone, 'review');
       if (booking.status !== 'checked_in') throw new ValidationError('You can rate the turf after you have played');
       booking.review = {
         rating: stars,

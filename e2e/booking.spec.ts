@@ -13,6 +13,8 @@ test('browse → hold → book → cancel', async ({ page }) => {
   const code = await confirmBooking(page);
   expect(code).toMatch(/^SA-/);
 
+  // Anonymous ticket: the booking phone number is the second factor
+  await page.getByLabel('Mobile number used for this booking').fill('9876500001');
   await page.getByRole('button', { name: 'Cancel booking' }).click();
   await expect(page.getByRole('button', { name: 'Cancel booking' })).toBeHidden();
   await expect(page.getByText(/cancelled/i).first()).toBeVisible();
