@@ -37,7 +37,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Filter</button>
           </form>
         </div>
-        <div className={dash.tableWrap}>
+        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
           <table className={dash.table}>
             <thead>
               <tr>

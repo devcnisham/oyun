@@ -92,7 +92,7 @@ export default async function PricingPage() {
               <p className={dash.cardDesc}>What players pay per slot (before offers). Last-minute deals come on top on the day.</p>
             </div>
           </div>
-          <div className={dash.tableWrap}>
+          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
             <table className={dash.table}>
               <thead><tr><th>Slot</th><th className={dash.num}>Weekday</th><th className={dash.num}>Weekend</th></tr></thead>
               <tbody>

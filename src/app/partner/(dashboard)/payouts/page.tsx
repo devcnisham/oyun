@@ -47,7 +47,7 @@ export default async function PayoutsPage() {
 
       <div className={dash.card}>
         <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Weekly settlements</h2></div>
-        <div className={dash.tableWrap}>
+        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
           <table className={dash.table}>
             <thead>
               <tr>
@@ -78,7 +78,7 @@ export default async function PayoutsPage() {
       <div className={dash.grid2}>
         <div className={dash.card}>
           <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Invoices</h2></div>
-          <div className={dash.tableWrap}>
+          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
             <table className={dash.table}>
               <thead><tr><th>Invoice</th><th>Player</th><th className={dash.num}>Amount</th><th></th></tr></thead>
               <tbody>
