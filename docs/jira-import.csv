@@ -196,9 +196,9 @@ Tracker id: P8-03. Source of truth: docs/build-tracker.html in the repo.","High"
 "67","Task","[P8-04] Integration test: N parallel createBookings for one slot yields exactly one booking","Run against local Supabase; proves rev lock plus unique index.
 
 Tracker id: P8-04. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p8","tracker","9"
-"68","Task","[P8-05] Integration test: holds expire, release and cannot block a booking forever","holds_slot_uniq has no expiry predicate.
+"68","Task","[P8-05] Integration test: holds expire, release and cannot block a booking forever","src/lib/holds.test.ts runs the real hold and booking actions. The holds unique index has no expiry predicate, so expired rows are purged on every write (purgeExpiredHolds); pg_cron expiry is P10-06.
 
-Tracker id: P8-05. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+Tracker id: P8-05. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
 "69","Task","[P8-06] Authorization test sweep: every admin and partner action rejects without a session","Confirms requireAdmin and requirePartnerAction on every export.
 
 Tracker id: P8-06. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p8","tracker","9"
