@@ -13,6 +13,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
   const nav: NavItem[] = [
     { href: '/partner', label: 'Dashboard', icon: '📊' },
     ...(ctx.can('bookings') ? [{ href: '/partner/bookings', label: 'Bookings', icon: '📅' }] : []),
+    ...(ctx.can('bookings') ? [{ href: '/partner/calendar', label: 'Calendar', icon: '🗓️' }] : []),
     ...(ctx.can('checkin') ? [{ href: '/partner/check-in', label: 'Check-in', icon: '📷' }] : []),
     ...(ctx.can('slots') ? [{ href: '/partner/slots', label: 'Manage Slots', icon: '⏰' }] : []),
     ...(ctx.can('pricing') ? [{ href: '/partner/pricing', label: 'Pricing', icon: '💹' }] : []),

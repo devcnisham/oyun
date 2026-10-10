@@ -75,7 +75,7 @@ Every exported action calls `requireAdmin()` before touching data: approve and r
 | Area | Guard |
 | --- | --- |
 | `/admin/*` | `proxy.ts` cookie check, then `admin/(dashboard)/layout.tsx` verifies the admin session; only `/admin/login` is outside |
-| `/partner/*` | `proxy.ts` cookie check, then `requirePartner()` in the layout; each page asks for its permission (table in the audit test) |
+| `/partner/*` | `proxy.ts` cookie check, then `requirePartner()` in the layout; each page asks for its permission (table in the audit test); the calendar needs `bookings` |
 | Player pages | `/bookings`, `/profile`, `/saved`, `/settings` read the signed-in account or device data; ticket and invoice pages are capability links by booking id with the phone masked |
 
 ## Known gaps
