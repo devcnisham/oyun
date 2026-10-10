@@ -1,0 +1,37 @@
+name: Bug report
+description: Something is broken or behaves wrongly
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open /...
+        2. Click ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Public booking site, Partner dashboard, Admin console, Database / store, Deploy / CI, Other]
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Where
+      description: Local, preview or production, plus browser/device.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Screenshots or logs
+      description: Do not paste secrets, tokens or customer phone numbers.
