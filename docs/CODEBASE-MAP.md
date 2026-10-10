@@ -217,7 +217,7 @@ flowchart TD
   ROOT --> SCR[scripts/ SQL tests, tracker, Jira export]
   ROOT --> DOC[docs/]
   ROOT --> GH[.github/ CI, Dependabot, PR template]
-  SRC --> APP[app/ routes: (main), (auth), admin, partner, api]
+  SRC --> APP["app/ routes: (main), (auth), admin, partner, api"]
   SRC --> COMP[components/ Navbar, TurfCard, Invoice, dash, auth, consent]
   SRC --> LIB[lib/ business logic]
   SRC --> UT[utils/supabase/ server, admin, client, middleware]
@@ -258,7 +258,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  W[Any write that changes slots] --> B[after(): broadcast on slots:turf:date]
+  W[Any write that changes slots] --> B["after(): broadcast on slots:turf:date"]
   B --> C[Supabase Realtime]
   C --> V1[Browser A use-slot-updates]
   C --> V2[Browser B use-slot-updates]
