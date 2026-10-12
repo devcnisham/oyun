@@ -20,6 +20,8 @@ Never point local or preview at the production database with the secret key unle
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | The admin login; use a long random password | **secret** |
 | `PARTNER_EMAIL` / `PARTNER_PASSWORD` | The OYUN Operations partner login (optional); with no password nobody can sign in to it | **secret** |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URLs, sitemap, share images; set before building | public |
+| `NEXT_PUBLIC_INSTAGRAM_URL` | Footer Instagram link; hidden when unset (full https URL) | public |
+| `NEXT_PUBLIC_WHATSAPP_URL` | Footer WhatsApp link; hidden when unset (full https URL, e.g. wa.me) | public |
 | `GOOGLE_SITE_VERIFICATION`, `NEXT_PUBLIC_GA_ID` | Search Console tag; GA4 id (loads only after cookie consent) | public |
 | `ERROR_WEBHOOK_URL` | Slack or Discord error alerts (optional) | **secret** |
 | `DATA_DIR`, `ALLOW_HTTP` | Local overrides | internal |

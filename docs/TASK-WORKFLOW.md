@@ -35,7 +35,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P9-11 Check-in requires cash-collected confirmation.
 - [x] P9-12 Validate turf image URLs, allowlist hosts.
 - [x] P9-14 CHECK constraints: wallet and amounts not negative.
-- [ ] P9-16 Remove or document the unused Supabase auth proxy step.
+- [x] P9-16 Remove or document the unused Supabase auth proxy step.
 - [ ] P9-13 CSP nonces, drop `'unsafe-inline'` for scripts.
 - [ ] P9-09 Admin MFA, per-user accounts, session revocation. GATE: choose TOTP vs Clerk for admin.
 - [ ] P9-01 Rotate the old Supabase secret key. GATE: user only.

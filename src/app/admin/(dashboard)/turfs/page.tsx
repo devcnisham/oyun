@@ -26,7 +26,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <form className={dash.inline}>
-            <input name="q" defaultValue={q} placeholder="Search name or area" className={dash.input} style={{ width: 220 }} />
+            <input name="q" aria-label="Search turfs by name or area" defaultValue={q} placeholder="Search name or area" className={dash.input} style={{ width: 220 }} />
             <select name="status" defaultValue={status} className={dash.select} style={{ width: 160 }}>
               <option value="">All statuses</option>
               <option value="active">Active</option>

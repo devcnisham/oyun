@@ -37,6 +37,7 @@ export default async function HelpPage() {
       <section className={styles.card} aria-labelledby="quick">
         <h2 id="quick">Quick help</h2>
         <ul className={styles.rows}>
+          <li><Link href="/faq"><span aria-hidden>❓</span><b>FAQ</b><i>Booking, payment, cancellation and check-in answers</i></Link></li>
           <li><Link href="/bookings"><span aria-hidden>🎟️</span><b>Find or cancel a booking</b><i>Open it and tap Cancel booking, up to 2 hours before</i></Link></li>
           <li><Link href="/arenas"><span aria-hidden>🏟️</span><b>Book a turf</b><i>Browse turfs and pick your slots</i></Link></li>
           <li><Link href="/list-turf"><span aria-hidden>💼</span><b>List your turf</b><i>For turf owners</i></Link></li>
