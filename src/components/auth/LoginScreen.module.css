@@ -8,7 +8,8 @@
 
 .leftPane {
   flex: 1;
-  background: url('https://images.unsplash.com/photo-1518605368461-1e247444c3ed?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+  /* Own file: the old Unsplash photo now returns 404 */
+  background: url('/turfs/turf_1.jpg') center/cover no-repeat, linear-gradient(135deg, #180000, #d31027);
   position: relative;
   display: flex;
   align-items: center;
