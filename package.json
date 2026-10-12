@@ -18,13 +18,13 @@
     "prepare": "node scripts/install-hooks.mjs"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.9.11",
+    "@clerk/nextjs": "^7.9.13",
     "@supabase/ssr": "^0.12.7",
-    "@supabase/supabase-js": "^2.117.2",
+    "@supabase/supabase-js": "^2.117.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "framer-motion": "^14.0.0",
-    "next": "16.3.8",
+    "next": "16.4.0",
     "qrcode": "^1.5.4",
     "react": "19.3.0",
     "react-dom": "19.3.0"
@@ -37,7 +37,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.8",
+    "eslint-config-next": "16.4.0",
     "typescript": "^5",
     "vitest": "^5.0.3"
   },
