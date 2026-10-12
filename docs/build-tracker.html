@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #174 (main at 4f48d14, 12 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #179 (main at 2594c0f, 12 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1181,7 +1181,7 @@ featureGroups:[
   ["Hold while checking out","built","8 minutes, per device cookie (only a hash is stored); a new hold replaces the old one","booking-actions.ts, device-holder.ts"],
   ["Hold release","built","On leaving checkout, on page hide by beacon, or on timeout","api/holds/release"],
   ["Countdown timer","built","Shown in checkout; slots are released at zero","BookingFlow.tsx"],
-  ["Max slots per booking","built","6, need not be consecutive","booking-actions.ts (MAX_SLOTS)"],
+  ["Max slots per booking","built","6, need not be consecutive","booking-types.ts (MAX_SLOTS)"],
   ["Double-booking protection","built","Database unique indexes on live booking, block and hold per slot. With halves: one index per half for bookings and holds, a full booking counts against both (PR #58, needs supabase/setup/6-half-pitch.sql on production).","supabase migrations"],
   ["Live updates","built","Realtime broadcast per turf and date; also a 10-second poll and refresh on tab focus","lib/realtime.ts, use-slot-updates.ts"],
   ["Request limits","partial","Hold 60 per IP and 15 per device per 10 minutes. Counted in Postgres once supabase/setup/8-rate-limits.sql has run (PR #114); until then in memory per server","booking-actions.ts, shared-rate-limit.ts"]
@@ -2148,7 +2148,11 @@ DATA.tasks.push(
  {id:"P8-48",p:"P8",t:"Dependency bump: minor-and-patch group",s:"done",pr:"P3",n:"next and eslint-config-next 16.3.8 to 16.4.0, @clerk/nextjs 7.9.13, @supabase/supabase-js 2.117.3. docs/NEXT16-NOTES.md still says 16.3.8. PR #170 (Dependabot)."},
  {id:"P9-23",p:"P9",t:"Partner tenant isolation test: owner A cannot touch owner B's records",s:"done",pr:"P1",n:"src/lib/tenant-isolation.test.ts. PR #115 (RQ-SEC2)."},
  {id:"P9-24",p:"P9",t:"Authorization audit table in docs/AUTHORIZATION.md, kept honest by a test",s:"done",pr:"P1",n:"src/lib/authorization-audit.test.ts. Referral check limited to 40 attempts per 10 minutes per IP. PR #116 (RQ-SEC1)."},
- {id:"P7-43",p:"P7",t:"Partner week calendar: every opening hour for seven days, split pitch halves shown",s:"done",pr:"P2",n:"Week view, Monday to Sunday, with previous and next week links. PR #117 (RQ-F3)."}
+ {id:"P7-43",p:"P7",t:"Partner week calendar: every opening hour for seven days, split pitch halves shown",s:"done",pr:"P2",n:"Week view, Monday to Sunday, with previous and next week links. PR #117 (RQ-F3)."},
+ {id:"P8-49",p:"P8",t:"Remove the duplicate CSS block, the twitter-image copy and dead exports",s:"done",pr:"P2",n:"Duplicate CSS removed from arenas/page.module.css, twitter-image.tsx trimmed, unused exports removed (client device helper, site.ts entry, action-utils and pricing tidy). PR #179."},
+ {id:"P8-50",p:"P8",t:"Split BookingFlow into PitchPicker, SlotMap, CheckoutSheet and booking-format",s:"done",pr:"P2",n:"Turf booking screen split into four files under arenas/[id]; BookingFlow.tsx now keeps the main flow and imports the parts. PR #179."},
+ {id:"P8-51",p:"P8",t:"Move the booking planner and limits out of booking-actions.ts into booking-plan.ts and booking-types.ts",s:"done",pr:"P2",n:"booking-plan.ts holds the planner (about 130 lines) and booking-types.ts holds MAX_SLOTS and the client-safe booking types. booking-actions.ts is smaller. PR #179."},
+ {id:"P8-52",p:"P8",t:"Split list-turf options, form defaults and the success screen into their own files",s:"done",pr:"P2",n:"listing-options.ts and ListingSubmitted.tsx hold the list-turf choices and the submitted screen; page.tsx is smaller. PR #179."}
 );
 
 /* ===================== BOOT ===================== */
