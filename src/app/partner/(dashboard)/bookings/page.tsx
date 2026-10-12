@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Tabs, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, Tabs, dash, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
 import { cancelBooking } from '@/lib/partner-actions';
 import { getDb } from '@/lib/store';
 import { addDays, formatDate, istNow } from '@/lib/time';
 import WalkInForm from './WalkInForm';
 import { halfNote } from '@/lib/pricing';
+import { paginate } from '@/lib/paginate';
+import Pager from '@/components/dash/Pager';
 
 const VIEWS = [
   { key: 'today', label: 'Today' },
@@ -15,9 +17,9 @@ const VIEWS = [
   { key: 'cancelled', label: 'Cancelled' },
 ];
 
-export default async function PartnerBookings({ searchParams }: { searchParams: Promise<{ view?: string; q?: string }> }) {
+export default async function PartnerBookings({ searchParams }: { searchParams: Promise<{ view?: string; q?: string; page?: string }> }) {
   const ctx = await requirePartner('bookings');
-  const { view: rawView, q = '' } = await searchParams;
+  const { view: rawView, q = '', page: pageParam } = await searchParams;
   const view = VIEWS.some((v) => v.key === rawView) ? rawView! : 'today';
   const db = await getDb();
   const now = istNow();
@@ -30,7 +32,8 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
   if (view === 'cancelled') list = list.filter((b) => ['cancelled', 'refunded'].includes(b.status));
   if (search) list = list.filter((b) => b.customerName.toLowerCase().includes(search) || b.customerPhone.includes(search) || b.code.toLowerCase().includes(search));
   list.sort((a, b) => (view === 'past' || view === 'cancelled' ? b.date.localeCompare(a.date) || b.hour - a.hour : a.date.localeCompare(b.date) || a.hour - b.hour));
-  const shown = list.slice(0, 100);
+  const paged = paginate(list, pageParam, 50);
+  const shown = paged.items;
 
   return (
     <div className={dash.page}>
@@ -56,14 +59,14 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
           <Tabs items={VIEWS.map((v) => ({ ...v, href: `/partner/bookings?view=${v.key}` }))} active={view} />
           <form className={dash.inline}>
             <input type="hidden" name="view" value={view} />
-            <input name="q" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 220 }} />
+            <input name="q" aria-label="Search bookings by name, phone or code" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 220 }} />
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Search</button>
           </form>
         </div>
         {shown.length === 0 ? (
           <p className={dash.empty}>No bookings here.</p>
         ) : (
-          <div className={dash.tableWrap}>
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead>
                 <tr>
@@ -98,7 +101,7 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
             </table>
           </div>
         )}
-        {list.length > shown.length && <p className={dash.muted}>Showing the first {shown.length} of {list.length}. Use search to narrow down.</p>}
+        <Pager info={paged} basePath="/partner/bookings" params={{ view, q }} />
       </div>
     </div>
   );

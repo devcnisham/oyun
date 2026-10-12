@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
 import { quickUpdateTurf } from '@/lib/admin-actions';
 import { canOptimize } from '@/lib/images';
 import { commissionFor } from '@/lib/pricing';
@@ -26,7 +26,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <form className={dash.inline}>
-            <input name="q" defaultValue={q} placeholder="Search name or area" className={dash.input} style={{ width: 220 }} />
+            <input name="q" aria-label="Search turfs by name or area" defaultValue={q} placeholder="Search name or area" className={dash.input} style={{ width: 220 }} />
             <select name="status" defaultValue={status} className={dash.select} style={{ width: 160 }}>
               <option value="">All statuses</option>
               <option value="active">Active</option>
@@ -37,7 +37,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Filter</button>
           </form>
         </div>
-        <div className={dash.tableWrap}>
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr>

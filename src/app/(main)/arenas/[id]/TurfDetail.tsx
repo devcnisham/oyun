@@ -5,6 +5,7 @@ import type { PublicReview } from '@/lib/reviews';
 import Stars from '@/components/Stars';
 import FavouriteButton from '@/components/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
+import { shortHour } from '@/lib/format';
 import ShareButton from './ShareButton';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
@@ -22,7 +23,6 @@ interface TurfDetailProps {
   reviews: PublicReview[];
 }
 
-const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
 
 export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, bookable, rewards, initialReferral, reviews }: TurfDetailProps) {
   const imageSrc = turf.images[0];
@@ -87,7 +87,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             {offers.map((o) => (
               <div key={o.id} className={styles.offerChip}>
                 🏷️ <strong>{o.title}</strong> · {o.percentOff}% off{' '}
-                {o.type === 'first_time' ? 'your first booking' : `${hourLabel(o.startHour)}–${hourLabel(o.endHour)}`}
+                {o.type === 'first_time' ? 'your first booking' : `${shortHour(o.startHour)}–${shortHour(o.endHour)}`}
               </div>
             ))}
           </div>

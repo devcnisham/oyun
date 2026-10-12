@@ -334,6 +334,7 @@
 .bill { display: flex; flex-direction: column; gap: 8px; font-size: 14px; padding: 14px; border-radius: 14px; background: var(--bg-muted); }
 .bill > div { display: flex; justify-content: space-between; }
 .discount { color: var(--open); }
+.billBalance { font-size: 0.9rem; color: var(--text-muted); }
 .billTotal { font-weight: 800; font-size: 16px; padding-top: 8px; border-top: 1px dashed var(--border); }
 
 .sheetFoot {

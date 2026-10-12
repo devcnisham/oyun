@@ -3,24 +3,21 @@
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import {
-  checkReferralCode,
-  createBookings,
-  getSlotsForDate,
-  holdSlots,
-  quoteSelection,
-  releaseHolds,
-  type ReferralCheck,
-  type SelectionQuote,
-} from '@/lib/booking-actions';
+import { createBookings, getSlotsForDate, holdSlots, releaseHolds } from '@/lib/booking-actions';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
 import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
-import { hourlyRate } from '@/lib/pricing';
 import { primarySport } from '@/lib/sports';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
+import { MAX_SLOTS } from '@/lib/booking-types';
+import { rupees } from '@/lib/format';
+import { describeHours } from './booking-format';
+import { useCheckoutForm } from './useCheckoutForm';
+import CheckoutSheet from './CheckoutSheet';
+import PitchPicker from './PitchPicker';
+import SlotMap from './SlotMap';
 import styles from './BookingFlow.module.css';
 
 export interface BookingFlowProps {
@@ -30,32 +27,6 @@ export interface BookingFlowProps {
   initialSlots: Slot[];
   rewards: { cashbackEnabled: boolean; cashbackPercent: number; cashbackMax: number; referralEnabled: boolean; refereeReward: number };
   initialReferral: string;
-}
-
-const MAX_SLOTS = 6;
-
-const SESSIONS = [
-  { name: 'Morning', icon: '🌅', from: 0, to: 12 },
-  { name: 'Afternoon', icon: '☀️', from: 12, to: 17 },
-  { name: 'Evening', icon: '🌆', from: 17, to: 21 },
-  { name: 'Night', icon: '🌙', from: 21, to: 24 },
-];
-
-const rupees = (n: number) => `₹${(n ?? 0).toLocaleString('en-IN')}`;
-const shortHour = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
-
-// "7 PM – 9 PM" for consecutive hours, "7 PM, 9 PM" otherwise
-function describeHours(hours: number[]) {
-  if (hours.length === 0) return '';
-  const sorted = [...hours].sort((a, b) => a - b);
-  const consecutive = sorted.every((h, i) => i === 0 || h === sorted[i - 1] + 1);
-  if (consecutive) return `${shortHour(sorted[0])} – ${shortHour(sorted[sorted.length - 1] + 1)}`;
-  return sorted.map(shortHour).join(', ');
-}
-
-function slotTitle(slot: Slot) {
-  if (slot.available) return `${slot.label} · ${rupees(slot.price)}`;
-  return `${slot.label} · ${slot.reason === 'held' ? 'Someone is booking this slot' : slot.reason === 'past' ? 'Over' : 'Not available'}`;
 }
 
 export default function BookingFlow({ turf, dates, initialDate, initialSlots, rewards, initialReferral }: BookingFlowProps) {
@@ -71,23 +42,24 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [holdUntil, setHoldUntil] = useState<number | null>(null);
   const [holding, setHolding] = useState(false);
   const [now, setNow] = useState(() => Date.now());
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [code, setCode] = useState(initialReferral);
-  const [promo, setPromo] = useState<string | null>(null);
-  const [referral, setReferral] = useState<ReferralCheck | null>(null);
-  const [codeError, setCodeError] = useState('');
-  const [useWallet, setUseWallet] = useState(false);
-  const [quote, setQuote] = useState<SelectionQuote | null>(null);
-  const [error, setError] = useState('');
   const [paying, startPaying] = useTransition();
   const [showGate, setShowGate] = useState(false);
   const account = useAccount();
   const openClerkSignIn = useOpenClerkSignIn();
+  const form = useCheckoutForm({
+    turfId: turf.id,
+    date,
+    hours: selected,
+    size,
+    active: holdUntil !== null,
+    referralEnabled: rewards.referralEnabled,
+    initialCode: initialReferral,
+    account,
+  });
 
+  const { reset: resetForm } = form;
   const inCheckout = holdUntil !== null;
   const secondsLeft = holdUntil ? Math.max(0, Math.ceil((holdUntil - now) / 1000)) : 0;
-  const phoneDigits = phone.replace(/\D/g, '').slice(-10);
   const selectedSlots = slots.filter((s) => selected.includes(s.hour));
   const estimate = selectedSlots.reduce((sum, s) => sum + s.price, 0);
   const dateInfo = dates.find((d) => d.date === date);
@@ -96,16 +68,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     setToast(message);
     window.setTimeout(() => setToast((t) => (t === message ? '' : t)), 3200);
   }, []);
-
-  // Fill in the signed-in player's name and number
-  useEffect(() => {
-    if (!account.ready) return;
-    const p = getProfile();
-    queueMicrotask(() => {
-      setName((n) => n || account.name || p.name);
-      setPhone((n) => n || account.phone || p.phone);
-    });
-  }, [account.ready, account.name, account.phone]);
 
   // Keep the slot map live, like a cinema seat map
   const refreshSlots = useCallback(
@@ -149,13 +111,12 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const closeCheckout = useCallback(
     (message?: string) => {
       setHoldUntil(null);
-      setQuote(null);
-      setError('');
+      resetForm();
       releaseHolds().catch(() => {});
       startSlotLoad(() => refreshSlots(date));
       if (message) flash(message);
     },
-    [date, refreshSlots, flash]
+    [date, refreshSlots, flash, resetForm]
   );
 
   useEffect(() => {
@@ -164,48 +125,25 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     }
   }, [inCheckout, secondsLeft, paying, closeCheckout]);
 
-  // Server prices the exact booking whenever checkout inputs change
-  useEffect(() => {
-    if (!inCheckout) return;
-    let cancelled = false;
-    const t = window.setTimeout(async () => {
-      const result = await quoteSelection({
-        turfId: turf.id,
-        date,
-        hours: selected,
-        promoCode: promo,
-        addOns: [],
-        useWallet,
-        phone: phoneDigits,
-        size,
-      });
-      if (cancelled) return;
-      if ('error' in result) setError(result.error);
-      else setQuote(result);
-    }, 150);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(t);
-    };
-  }, [inCheckout, turf.id, date, selected, promo, useWallet, phoneDigits, size]);
+  // New date or size: a different price and availability, so start the pick again
+  const reloadSlots = (nextDate: string, nextSize: PitchSize) => {
+    setSelected([]);
+    startSlotLoad(async () => {
+      setSlots(await getSlotsForDate(turf.id, nextDate, nextSize));
+    });
+  };
 
   const changeDate = (next: string) => {
     if (next === date) return;
     setDate(next);
-    setSelected([]);
-    startSlotLoad(async () => {
-      setSlots(await getSlotsForDate(turf.id, next, size));
-    });
+    reloadSlots(next, size);
   };
 
-  // Full pitch or half: a different price and availability, so start the pick again
+  // Full pitch or half
   const changeSize = (next: PitchSize) => {
     if (next === size) return;
     setSize(next);
-    setSelected([]);
-    startSlotLoad(async () => {
-      setSlots(await getSlotsForDate(turf.id, date, next));
-    });
+    reloadSlots(date, next);
   };
 
   const toggleSlot = (slot: Slot) => {
@@ -234,76 +172,41 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         flash(result.error);
         return;
       }
-      setError('');
-      setNow(Date.now());
-      setHoldUntil(Date.now() + result.expiresInMs);
+      form.setError('');
+      const t = Date.now();
+      setNow(t);
+      setHoldUntil(t + result.expiresInMs);
     } finally {
       setHolding(false);
     }
   };
 
-  const applyCode = async () => {
-    if (promo || referral?.status === 'valid') {
-      setPromo(null);
-      setReferral(null);
-      setCode('');
-      setCodeError('');
-      return;
-    }
-    const entered = code.trim().toUpperCase();
-    if (!entered) return;
-    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: [], useWallet, phone: phoneDigits, size });
-    if (!('error' in tryPromo) && tryPromo.promoCode && !tryPromo.promoError) {
-      setPromo(tryPromo.promoCode);
-      setCodeError('');
-      return;
-    }
-    if (rewards.referralEnabled) {
-      const check = await checkReferralCode(entered, phoneDigits);
-      if (check.status === 'valid') {
-        setReferral(check);
-        setCodeError('');
-        return;
-      }
-      if (check.status === 'not_new') {
-        setCodeError("Referral codes are for a player's first booking only.");
-        return;
-      }
-    }
-    setCodeError(('error' in tryPromo ? null : tryPromo.promoError) ?? 'Invalid promo or referral code');
-  };
-
   const pay = () => {
-    setError('');
+    form.setError('');
     // Booking needs an account: sign in or sign up first, without losing the held slots
     if (!account.signedIn) {
       if (clerkEnabled) openClerkSignIn();
       else setShowGate(true);
       return;
     }
-    reserve(name, phoneDigits);
+    reserve(form.name, form.phoneDigits);
   };
 
   // Confirms the held slots; nothing is charged online, the player pays the turf at the venue
   const reserve = (playerName: string, playerPhone: string) => {
-    if (!playerName.trim()) return setError('Enter your name');
-    if (playerPhone.length !== 10) return setError('Enter a 10-digit mobile number');
-    if (!quote) return;
+    if (!playerName.trim()) return form.setError('Enter your name');
+    if (playerPhone.length !== 10) return form.setError('Enter a 10-digit mobile number');
+    if (!form.quote) return;
     startPaying(async () => {
       const result = await createBookings({
-        turfId: turf.id,
-        date,
-        hours: selected,
-        promoCode: promo,
-        addOns: [],
-        useWallet,
+        ...form.base,
+        promoCode: form.promo,
         phone: playerPhone,
         name: playerName,
-        size,
-        referralCode: rewards.referralEnabled && referral?.status === 'valid' ? code : null,
+        referralCode: rewards.referralEnabled && form.referral?.status === 'valid' ? form.code : null,
       });
       if (!result.ids) {
-        setError(result.error ?? 'Could not complete the booking');
+        form.setError(result.error ?? 'Could not complete the booking');
         return;
       }
       saveProfile({ name: playerName.trim(), phone: playerPhone });
@@ -312,7 +215,8 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     });
   };
 
-  const cashback = rewards.cashbackEnabled && quote ? Math.min(rewards.cashbackMax, Math.floor((quote.total * rewards.cashbackPercent) / 100)) : 0;
+  const cashback =
+    rewards.cashbackEnabled && form.quote ? Math.min(rewards.cashbackMax, Math.floor((form.quote.total * rewards.cashbackPercent) / 100)) : 0;
   const availableCount = slots.filter((s) => s.available).length;
 
   return (
@@ -337,37 +241,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       </div>
 
       {/* 2 · Full or half pitch (only on turfs that split down the middle) */}
-      {turf.halfPitch && (
-        <>
-          <div className={styles.stepHead}>
-            <h3>Choose pitch</h3>
-          </div>
-          <div className={styles.pitchPick} role="radiogroup" aria-label="Pitch">
-            {(['full', 'half'] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                role="radio"
-                aria-checked={size === s}
-                className={`${styles.pitchOption} ${size === s ? styles.pitchOptionOn : ''}`}
-                onClick={() => changeSize(s)}
-              >
-                <svg viewBox="0 0 60 38" width="60" height="38" aria-hidden className={styles.pitchArt}>
-                  <rect x="1" y="1" width="58" height="36" rx="3" className={styles.pitchGrass} />
-                  {s === 'half' && <rect x="30" y="1" width="29" height="36" rx="0" className={styles.pitchOff} />}
-                  <rect x="1" y="1" width="58" height="36" rx="3" className={styles.pitchLines} />
-                  <line x1="30" y1="1" x2="30" y2="37" className={styles.pitchLines} />
-                  <circle cx="30" cy="19" r="6" className={styles.pitchLines} />
-                  <rect x="1" y="11" width="7" height="16" className={styles.pitchLines} />
-                  <rect x="52" y="11" width="7" height="16" className={styles.pitchLines} />
-                </svg>
-                <b>{s === 'full' ? 'Full pitch' : 'Half pitch'}</b>
-                <small>{s === 'full' ? turf.size : 'Smaller games'} · from {rupees(hourlyRate(turf, s))}/hr</small>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      {turf.halfPitch && <PitchPicker turf={turf} size={size} onChange={changeSize} />}
 
       {/* 3 · Slot map */}
       <div className={styles.stepHead}>
@@ -381,51 +255,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         </span>
       </div>
 
-      <div className={`${styles.map} ${loadingSlots ? styles.mapLoading : ''}`}>
-        {slots.length === 0 && <p className={styles.muted}>No slots on this day.</p>}
-        {SESSIONS.map((session) => {
-          const inSession = slots.filter((s) => s.hour >= session.from && s.hour < session.to);
-          if (inSession.length === 0) return null;
-          return (
-            <div key={session.name} className={styles.session}>
-              <div className={styles.sessionName}>
-                <span>{session.icon}</span> {session.name}
-              </div>
-              <div className={styles.grid}>
-                {inSession.map((slot) => {
-                  const isOn = selected.includes(slot.hour);
-                  const state = isOn ? styles.on : slot.available ? styles.open : slot.reason === 'held' ? styles.held : slot.reason === 'past' ? styles.past : styles.taken;
-                  const deal = slot.tags.find((t) => t.includes('-'));
-                  return (
-                    <button
-                      key={slot.hour}
-                      className={`${styles.seat} ${state}`}
-                      onClick={() => toggleSlot(slot)}
-                      aria-pressed={isOn}
-                      aria-disabled={!slot.available}
-                      title={slotTitle(slot)}
-                    >
-                      {deal && slot.available && <span className={styles.deal}>{deal.match(/-\d+%/)?.[0] ?? 'Deal'}</span>}
-                      {slot.tags.includes('Peak') && slot.available && <span className={styles.peak} title="Peak hours" />}
-                      <span className={styles.seatTime}>{shortHour(slot.hour)}</span>
-                      <span className={styles.seatSub}>
-                        {slot.available ? rupees(slot.price) : slot.reason === 'held' ? 'On hold' : slot.reason === 'past' ? 'Over' : 'Booked'}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className={styles.legend}>
-        <span><i className={styles.open} /> Available</span>
-        <span><i className={styles.on} /> Selected</span>
-        <span><i className={styles.held} /> On hold</span>
-        <span><i className={styles.taken} /> Booked</span>
-      </div>
+      <SlotMap slots={slots} selected={selected} loading={loadingSlots} onToggle={toggleSlot} />
 
       {/* Sticky selection bar */}
       <div className={`${styles.bar} ${selected.length > 0 && !inCheckout ? styles.barShow : ''}`}>
@@ -441,103 +271,22 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
       {toast && createPortal(<div className={`${styles.flow} ${styles.toast}`} role="status">{toast}</div>, document.body)}
 
-      {/* 3 · Checkout sheet */}
-      {inCheckout && createPortal(
-        <div className={`${styles.flow} ${styles.overlay}`} onClick={(e) => e.target === e.currentTarget && !paying && closeCheckout()}>
-          <div className={styles.sheet} role="dialog" aria-modal="true" aria-label="Checkout">
-            <div className={styles.sheetHead}>
-              <button className={styles.back} onClick={() => closeCheckout()} disabled={paying} aria-label="Back to slots">←</button>
-              <h2>Checkout</h2>
-              <span className={`${styles.timer} ${secondsLeft < 60 ? styles.timerLow : ''}`} aria-live="polite">
-                ⏱ {String(Math.floor(secondsLeft / 60)).padStart(2, '0')}:{String(secondsLeft % 60).padStart(2, '0')}
-              </span>
-            </div>
-
-            <div className={styles.sheetBody}>
-              <div className={styles.ticket}>
-                <div>
-                  <b>{turf.name}</b>
-                  <span className={styles.muted}>{turf.area} · {size === 'half' ? 'Half pitch' : turf.size}</span>
-                </div>
-                <div className={styles.ticketRow}>
-                  <span>{dateInfo?.label}</span>
-                  <b>{describeHours(selected)}</b>
-                </div>
-                <div className={styles.chips}>
-                  {(quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }))).map((s) => (
-                    <span key={s.hour} className={styles.chip}>{shortHour(s.hour)} · {rupees(s.price)}</span>
-                  ))}
-                </div>
-                <p className={styles.holdNote}>🔒 These slots are reserved for you until the timer runs out.</p>
-              </div>
-
-              <section>
-                <h3>Your details</h3>
-                <div className={styles.fields}>
-                  <input className={styles.input} placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
-                  <input className={styles.input} placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" />
-                </div>
-              </section>
-
-              <section>
-                <h3>Offers</h3>
-                <div className={styles.codeRow}>
-                  <input
-                    className={styles.input}
-                    placeholder="Promo or referral code"
-                    value={code}
-                    onChange={(e) => { setCode(e.target.value.toUpperCase()); setCodeError(''); }}
-                    disabled={promo !== null || referral?.status === 'valid'}
-                  />
-                  <button className={styles.secondary} onClick={applyCode}>{promo || referral?.status === 'valid' ? 'Remove' : 'Apply'}</button>
-                </div>
-                {codeError && <p className={styles.error}>{codeError}</p>}
-                {promo && <p className={styles.success}>Code {promo} applied</p>}
-                {referral?.status === 'valid' && (
-                  <p className={styles.success}>Code from {referral.referrerName} applied: you get {rupees(referral.reward)} in your wallet after your first game.</p>
-                )}
-                {(quote?.walletBalance ?? 0) > 0 && (
-                  <label className={styles.toggle}>
-                    <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} />
-                    <span>Use wallet balance ({rupees(quote!.walletBalance)})</span>
-                  </label>
-                )}
-              </section>
-
-              <section className={styles.venueNote}>
-                <h3>Payment</h3>
-                <p>💵 Nothing is charged online. You pay at the turf by cash or UPI: {quote ? (quote.minAdvance === quote.maxAdvance ? `an advance of ${rupees(quote.minAdvance)} per hour` : `an advance of ${rupees(quote.minAdvance)} to ${rupees(quote.maxAdvance)} per hour`) : 'an advance of ₹150 per hour'} when you arrive, and the balance after you play.</p>
-              </section>
-
-              {quote && (
-                <section className={styles.bill}>
-                  <div><span>Slots ({quote.slots.length})</span><span>{rupees(quote.slotTotal)}</span></div>
-                  {quote.adjustments.map((a) => (
-                    <div key={a.label} className={styles.discount}><span>{a.label}</span><span>−{rupees(-a.amount)}</span></div>
-                  ))}
-                  {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
-                  <div><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
-                  <div className={styles.billTotal}><span>Advance at the turf ({quote.minAdvance === quote.maxAdvance && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span><span>{rupees(quote.payNow)}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--text-muted)' }}><span>Balance after you play</span><span>{rupees(quote.payAtVenue)}</span></div>
-                  {cashback > 0 && <p className={styles.success}>💰 Earn {rupees(cashback)} cashback when you check in</p>}
-                </section>
-              )}
-
-              {error && <p className={styles.error} role="alert">{error}</p>}
-            </div>
-
-            <div className={styles.sheetFoot}>
-              <div className={styles.barInfo}>
-                <b>{quote ? rupees(quote.payNow) : '…'}</b>
-                <span>Advance due at the turf</span>
-              </div>
-              <button className={styles.primary} onClick={pay} disabled={!quote || paying}>
-                {paying ? 'Reserving…' : account.signedIn ? 'Confirm booking' : 'Sign in to confirm'}
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
+      {/* 4 · Checkout sheet */}
+      {inCheckout && (
+        <CheckoutSheet
+          turf={turf}
+          size={size}
+          dateLabel={dateInfo?.label}
+          selected={selected}
+          selectedSlots={selectedSlots}
+          secondsLeft={secondsLeft}
+          paying={paying}
+          signedIn={account.signedIn}
+          cashback={cashback}
+          form={form}
+          onClose={() => closeCheckout()}
+          onPay={pay}
+        />
       )}
 
       {showGate &&
@@ -547,15 +296,14 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
             onDone={() => {
               const p = getProfile();
               setShowGate(false);
-              setName(p.name);
-              setPhone(p.phone);
-              setError('');
+              form.setName(p.name);
+              form.setPhone(p.phone);
+              form.setError('');
               reserve(p.name, p.phone);
             }}
           />,
           document.body
         )}
-
     </div>
   );
 }

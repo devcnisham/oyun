@@ -29,8 +29,11 @@ jobs:
       - run: npm ci
       # Fails on a known High or Critical advisory in a package that ships to production
       - run: npm audit --omit=dev --audit-level=high
-      - run: npm run lint
-      - run: npx tsc --noEmit
+      - run: npm run lint -- --max-warnings=0
+      - run: npm run typecheck
+      # Copy-paste clones and unused files, exports and dependencies (see .jscpd.json, knip.json)
+      - run: npm run dup
+      - run: npm run unused
       - run: npm test
       - run: npm run build
         env:

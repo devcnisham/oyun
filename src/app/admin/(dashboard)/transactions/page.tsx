@@ -1,17 +1,19 @@
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
 import { refundBooking } from '@/lib/admin-actions';
 import { bookingRevenue } from '@/lib/reports';
 import { getDb } from '@/lib/store';
 import { formatDate } from '@/lib/time';
 import type { BookingStatus } from '@/lib/types';
 import { halfNote } from '@/lib/pricing';
+import { paginate } from '@/lib/paginate';
+import Pager from '@/components/dash/Pager';
 
 const STATUSES: BookingStatus[] = ['confirmed', 'checked_in', 'no_show', 'cancelled', 'refunded'];
 
-export default async function AdminBookings({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; turf?: string }> }) {
-  const { q = '', status = '', turf = '' } = await searchParams;
+export default async function AdminBookings({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; turf?: string; page?: string }> }) {
+  const { q = '', status = '', turf = '', page: pageParam } = await searchParams;
   const db = await getDb();
   const search = q.trim().toLowerCase();
   const all = db.bookings
@@ -19,7 +21,8 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
     .filter((b) => !turf || b.turfId === turf)
     .filter((b) => !search || b.customerName.toLowerCase().includes(search) || b.customerPhone.includes(search) || b.code.toLowerCase().includes(search))
     .sort((a, b) => b.date.localeCompare(a.date) || b.hour - a.hour);
-  const shown = all.slice(0, 150);
+  const paged = paginate(all, pageParam, 50);
+  const shown = paged.items;
   const turfName = (id: string) => db.turfs.find((t) => t.id === id)?.name ?? id;
 
   return (
@@ -35,7 +38,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <form className={dash.inline}>
-            <input name="q" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 200 }} />
+            <input name="q" aria-label="Search bookings by name, phone or code" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 200 }} />
             <select name="turf" defaultValue={turf} className={dash.select} style={{ width: 180 }}>
               <option value="">All turfs</option>
               {db.turfs.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -47,7 +50,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Filter</button>
           </form>
         </div>
-        <div className={dash.tableWrap}>
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr>
@@ -82,7 +85,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
             </tbody>
           </table>
         </div>
-        {all.length > shown.length && <p className={dash.muted}>Showing {shown.length} of {all.length}. Use the filters to narrow down.</p>}
+        <Pager info={paged} basePath="/admin/transactions" params={{ q, status, turf }} />
       </div>
     </div>
   );

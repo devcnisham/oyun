@@ -2,8 +2,8 @@
 
 Everything on the OYUN build is tracked in `docs/build-tracker.html` (tasks, phases, risks) and queued in `docs/TASK-WORKFLOW.md`. This page puts the same work into Jira so you can plan, assign and report on it there. The repo stays the source of truth for what is done; Jira is the board you manage from.
 
-**Site:** https://gaphatch.atlassian.net (projects today: DI, GAP, SCHLR, SCHOLV1, VAS; there is no OYUN project yet).
-**Import file:** `docs/jira-import.csv`, made by `node scripts/export-jira.mjs`. As of 9 Oct 2026 it holds 20 epics and 211 issues (94 already Done). Re-run the script after the tracker changes; do not re-import the whole file again (that duplicates issues). Use prompt 6 to keep Jira in step instead.
+**Site:** https://gaphatch.atlassian.net (the OYUN project, key `OYUN`, exists and was imported on 9 Oct 2026).
+**Import file:** `docs/jira-import.csv`, made by `node scripts/export-jira.mjs`. As of 9 Oct 2026 it holds 20 epics and 212 tasks (106 Done). OYUN-1 to OYUN-231 match the CSV's Issue Id; tasks added later (such as P9-21 = OYUN-232) get the next number in Jira, so find an issue by its `[P9-21]` summary prefix, not by number. Re-run the script after the tracker changes; do not re-import the whole file again (that duplicates issues). Use prompt 6 to keep Jira in step instead.
 
 ## Before you start
 
@@ -124,3 +124,27 @@ After this, put the Jira key in branch names and pull request titles (for exampl
 | RQ-DB to RQ-LAUNCH | The remaining roadmap from `docs/MASTER-PROMPT.md` |
 
 Priorities map as P0 = Highest, P1 = High, P2 = Medium, P3 = Low.
+
+## Keeping Jira in step (done after each merge)
+
+Claude Code does this through the Atlassian connector, so the browser prompts are only needed for first-time setup:
+1. Find the issues by summary prefix (JQL `project = OYUN AND summary ~ "P9-12"`).
+2. Transition them (this project's transitions are global: To Do 11, In Progress 21, Done 31, Blocked 2).
+3. Comment with the pull request link. Create new tasks under their epic (P9 is OYUN-10, P10 is OYUN-11, and so on).
+
+Last synced 12 Oct 2026 after PR #182: OYUN-141, 156, 157, 166, 250, 262, 265 moved to Done, OYUN-142 (P8-25, partly done) to In Progress, and P8-49 to P8-56 created as OYUN-269 to OYUN-276 under OYUN-9 (all Done). Earlier sync, 9 Oct 2026 after PR #103 (goal epics OYUN-233 to 239 added after #108): 13 issues moved (12 to Done, P9-05 to In Progress) and P9-21 created.
+
+## Development panel (branches, commits and pull requests on each issue)
+
+**Connected on 9 Oct 2026.** The "GitHub for Atlassian" app (free, by Atlassian, version 3.3.0) is installed on gaphatch, and the GitHub account `devcnisham` is connected with **only selected repositories** shared. An issue's Development field now lists the branches, pull requests and CI builds that mention its key; for example OYUN-67 shows 1 branch, 1 merged pull request and 1 passing build. Pull request titles from #70 to #102 were given their keys so older work shows up too.
+
+To change which repositories Jira can see: Jira → Apps → GitHub for Atlassian → the connected organization → the edit icon (opens GitHub's app settings). Keep it to `oyun` only. See `docs/BRANCHING.md` for how to name branches, commits and pull requests so they link.
+
+Note: Atlassian marks this app version "Legacy" (its platform is unsupported after January 2027); expect to move to the newer GitHub for Atlassian app before then.
+
+## Docs, reports, goals and releases (set up 9 Oct 2026)
+
+- **Docs:** Confluence space "OYUN Docs" (key `OD`, https://gaphatch.atlassian.net/wiki/spaces/OD) is connected to the project's Docs tab. Pages: OYUN overview, Architecture, Environments and settings, Security, Contributing and branching, Release plan, Status report 9 Oct 2026, Goals. They summarise the files in `docs/`; the repo stays the source of truth, so update the page when the file changes.
+- **Reports:** the project Summary tab already shows status overview, priority, types of work and recent activity (232 issues, 113 Done at setup). Add gadgets from the Reports tab if you want more.
+- **Releases:** Web app launch, v0.8 to v1.3 exist in the Releases tab. Mark one Released when its issues are Done.
+- **Goals:** the Goals tab needs Atlassian Goals (Atlas), a separate product that is not set up (it asks for its own login). Instead each goal is an Epic labelled `goal`: OYUN-233 Launch safely in Mangalore, OYUN-234 Zero double bookings, OYUN-235 Real payments, OYUN-236 Turf owners run their day in OYUN, OYUN-237 Players come back, OYUN-238 Reliable and fast, OYUN-239 Everything tracked. Find them with `labels = goal`. Measures and targets are on the Confluence "Goals" page. These are not in `docs/jira-import.csv`; the tasks are not linked to them yet.

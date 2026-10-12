@@ -37,7 +37,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
             ))}
           </div>
           <form className={dash.inline}>
-            <input type="date" name="date" defaultValue={date} className={dash.input} />
+            <input type="date" name="date" aria-label="Date" defaultValue={date} className={dash.input} />
             <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Go</button>
           </form>
         </div>
@@ -77,7 +77,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                   <ActionForm action={blockSlot}>
                     <input type="hidden" name="date" value={date} />
                     <input type="hidden" name="hour" value={s.hour} />
-                    <input name="reason" required placeholder="Reason" className={dash.input} style={{ padding: '6px 8px', fontSize: 12 }} />
+                    <input name="reason" aria-label="Reason for blocking" required placeholder="Reason" className={dash.input} style={{ padding: '6px 8px', fontSize: 12 }} />
                     <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Block</button>
                   </ActionForm>
                 )}

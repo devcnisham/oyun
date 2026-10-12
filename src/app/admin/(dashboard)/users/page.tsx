@@ -1,12 +1,14 @@
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
 import { adjustWallet, togglePlayerBan } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 import { formatDate, formatDateTime } from '@/lib/time';
 import { WALLET_TXN_LABELS } from '@/lib/wallet';
+import { paginate } from '@/lib/paginate';
+import Pager from '@/components/dash/Pager';
 
-export default async function AdminPlayers({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q = '' } = await searchParams;
+export default async function AdminPlayers({ searchParams }: { searchParams: Promise<{ q?: string; page?: string }> }) {
+  const { q = '', page: pageParam } = await searchParams;
   const db = await getDb();
   const search = q.trim().toLowerCase();
   const players = db.players
@@ -24,6 +26,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
       };
     })
     .sort((a, b) => b.bookings - a.bookings);
+  const paged = paginate(players, pageParam, 50);
 
   return (
     <div className={dash.page}>
@@ -32,12 +35,12 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <form className={dash.inline}>
-            <input name="q" defaultValue={q} placeholder="Name or phone" className={dash.input} style={{ width: 220 }} />
+            <input name="q" aria-label="Search players by name or phone" defaultValue={q} placeholder="Name or phone" className={dash.input} style={{ width: 220 }} />
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Search</button>
           </form>
           <span className={dash.muted}>{players.length} players</span>
         </div>
-        <div className={dash.tableWrap}>
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr>
@@ -46,7 +49,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
               </tr>
             </thead>
             <tbody>
-              {players.map((p) => (
+              {paged.items.map((p) => (
                 <tr key={p.id}>
                   <td><div className={dash.strong}>{p.name}</div><div className={dash.muted}>{p.phone}</div></td>
                   <td className={dash.num}>{p.bookings}</td>
@@ -62,8 +65,8 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
                   <td>
                     <ActionForm action={adjustWallet} inline>
                       <input type="hidden" name="playerId" value={p.id} />
-                      <input name="amount" type="number" placeholder="+200 / -200" className={dash.input} style={{ width: 110, padding: '6px 8px' }} required />
-                      <input name="note" placeholder="Reason" maxLength={120} className={dash.input} style={{ width: 130, padding: '6px 8px' }} />
+                      <input name="amount" type="number" aria-label={`Wallet adjustment for ${p.name}`} placeholder="+200 / -200" className={dash.input} style={{ width: 110, padding: '6px 8px' }} required />
+                      <input name="note" aria-label={`Reason for adjusting ${p.name}'s wallet`} placeholder="Reason" maxLength={120} className={dash.input} style={{ width: 130, padding: '6px 8px' }} />
                       <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Apply</button>
                     </ActionForm>
                   </td>
@@ -79,6 +82,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
             </tbody>
           </table>
         </div>
+        <Pager info={paged} basePath="/admin/users" params={{ q }} />
       </div>
 
       <div className={dash.card}>
@@ -91,7 +95,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
             </p>
           </div>
         </div>
-        <div className={dash.tableWrap}>
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead><tr><th>When</th><th>Player</th><th>Type</th><th>Note</th><th className={dash.num}>Amount</th></tr></thead>
             <tbody>

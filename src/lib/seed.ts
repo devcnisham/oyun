@@ -1,7 +1,7 @@
 import { draftTurfDescriptions, lateTurfSeeds, turfSeeds } from '@/data/turfs';
 import { randomBytes } from 'node:crypto';
 import { DEFAULT_PRICING } from './pricing';
-import { generateTempPassword, hashPassword, verifyPassword } from './password';
+import { hashPassword, verifyPassword } from './password';
 import type { Database, PlatformSettings } from './types';
 import { newReferralCode } from './wallet';
 
@@ -34,6 +34,7 @@ const NEW_HERO_TITLE = 'Book turfs and courts in Mangalore in seconds';
 
 // Fill in fields added after the database was first created, so older data keeps working
 const LEGACY_PARTNER_PASSWORD = '@123partner';
+const REMOVED_PADEL_VENUE = 'padel-club-mangalore';
 // Hashes already checked, so the (deliberately slow) password check does not repeat on every read
 const checkedHashes = new Set<string>();
 
@@ -50,6 +51,10 @@ export function migrate(data: Database): Database {
     if (p.id !== 'partner_oyun' || checkedHashes.has(p.passwordHash)) continue;
     if (verifyPassword(LEGACY_PARTNER_PASSWORD, p.passwordHash)) p.passwordHash = hashPassword(randomBytes(24).toString('hex'));
     checkedHashes.add(p.passwordHash);
+  }
+  // Padel is no longer offered. A venue seeded for it earlier is suspended, not deleted, so its bookings stay on record.
+  for (const t of data.turfs) {
+    if (t.id === REMOVED_PADEL_VENUE && t.status !== 'suspended') t.status = 'suspended';
   }
   // Venues added after launch show up in databases that were created before them
   const opsPartner = data.partners.find((p) => p.id === 'partner_oyun') ?? data.partners[0];

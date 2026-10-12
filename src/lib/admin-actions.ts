@@ -57,7 +57,7 @@ export async function approveApplication(_prev: ActionResult, fd: FormData): Pro
       db.turfs.push({
         id,
         name: app.turfName,
-        location: `${app.address}`,
+        location: app.address,
         area: app.area,
         city: 'Mangalore',
         rating: 0,
@@ -331,16 +331,24 @@ export async function savePromoCode(_prev: ActionResult, fd: FormData): Promise<
     const value = int(fd, 'value', { min: 1, max: kind === 'percent' ? 100 : 10000, label: 'Discount' });
     const maxRaw = str(fd, 'maxDiscount');
     const maxDiscount = maxRaw === '' ? null : int(fd, 'maxDiscount', { min: 1, max: 10000, label: 'Max discount' });
+    const expiresOn = str(fd, 'expiresOn', 10);
+    if (expiresOn !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(expiresOn)) throw new ValidationError('Last day must be a date');
+    const optionalInt = (name: string, max: number, label: string) => (str(fd, name) === '' ? null : int(fd, name, { min: 1, max, label }));
+    const limits = {
+      expiresOn: expiresOn === '' ? null : expiresOn,
+      maxUses: optionalInt('maxUses', 1_000_000, 'Total uses'),
+      perPlayerLimit: optionalInt('perPlayerLimit', 100, 'Uses per player'),
+    };
     const isEdit = str(fd, 'mode') === 'edit';
     return await mutate((db) => {
       const existing = db.promoCodes.find((p) => p.code === code);
       if (existing && !isEdit) throw new ValidationError(`${code} already exists`);
       if (!existing && isEdit) throw new ValidationError(`${code} no longer exists. Refresh the page.`);
       if (existing) {
-        Object.assign(existing, { kind, value, maxDiscount, weekendOnly: bool(fd, 'weekendOnly') });
+        Object.assign(existing, { kind, value, maxDiscount, weekendOnly: bool(fd, 'weekendOnly'), ...limits });
         return { ok: `${code} updated` };
       }
-      db.promoCodes.push({ code, kind, value, maxDiscount, weekendOnly: bool(fd, 'weekendOnly'), active: true, uses: 0 });
+      db.promoCodes.push({ code, kind, value, maxDiscount, weekendOnly: bool(fd, 'weekendOnly'), active: true, uses: 0, ...limits });
       return { ok: `${code} created` };
     });
   });

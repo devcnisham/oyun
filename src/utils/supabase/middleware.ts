@@ -7,6 +7,12 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 /*
  * Refreshes the Supabase Auth session cookie (if any) and returns the response
  * to continue with. Called from src/proxy.ts on every page request.
+ *
+ * Why this stays: players sign in with Clerk and staff use their own signed cookie, so no
+ * Supabase Auth cookie is normally present and this returns on the cookie check below.
+ * It is kept only so a Supabase Auth session (for example an owner testing RLS with a
+ * Supabase user) keeps refreshing. If Supabase Auth is never adopted, delete this file
+ * and the call in src/proxy.ts.
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

@@ -1,3 +1,4 @@
+import { maskPhone } from '@/lib/phone';
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
@@ -68,7 +69,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
 
         <dl className={styles.summary}>
           <div><dt>Name</dt><dd>{booking.customerName}</dd></div>
-          <div><dt>Phone</dt><dd>+91 {booking.customerPhone}</dd></div>
+          <div><dt>Phone</dt><dd>+91 {maskPhone(booking.customerPhone)}</dd></div>
           {booking.addOns.length > 0 && (
             <div><dt>Add-ons</dt><dd>{booking.addOns.map((a) => `${a.name} × ${a.qty}`).join(', ')}</dd></div>
           )}
@@ -112,11 +113,12 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
             <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
           </div>
         )}
-        {canSelfCancel(booking) && <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} />}
+        {canSelfCancel(booking) && <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} needsPhone={!booking.accountId} />}
         {booking.status === 'checked_in' && (
           <ReviewForm
             bookingId={booking.id}
             turfName={turf.name}
+            needsPhone={!booking.accountId}
             existing={booking.review ? { rating: booking.review.rating, comment: booking.review.comment } : null}
           />
         )}

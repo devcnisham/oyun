@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
 import { updateBusiness } from '@/lib/partner-actions';
 import { commissionFor, gstSplit } from '@/lib/pricing';
@@ -47,7 +47,7 @@ export default async function PayoutsPage() {
 
       <div className={dash.card}>
         <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Weekly settlements</h2></div>
-        <div className={dash.tableWrap}>
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr>
@@ -78,7 +78,7 @@ export default async function PayoutsPage() {
       <div className={dash.grid2}>
         <div className={dash.card}>
           <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Invoices</h2></div>
-          <div className={dash.tableWrap}>
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead><tr><th>Invoice</th><th>Player</th><th className={dash.num}>Amount</th><th></th></tr></thead>
               <tbody>

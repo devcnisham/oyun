@@ -11,6 +11,7 @@ import {
   hourlyRate,
   normalizePhone,
   promoDiscount,
+  promoRestriction,
   slotPrice,
   turfHours,
 } from './pricing';
@@ -211,5 +212,50 @@ describe('buildQuote', () => {
     const { db, turf } = makeDb();
     db.bookings.push(makeBooking({ hour: 10 }));
     expect(buildQuote(db, { turfId: turf.id, date: MONDAY, hour: 10 }, EARLY)!.slotError).toBe('This slot is not available');
+  });
+});
+
+describe('promo code limits', () => {
+  const PHONE = '9876543210';
+
+  test('no limits set means no restriction, including on old codes without the new fields', () => {
+    expect(promoRestriction(promo({}), '2026-10-12', '')).toBeNull();
+  });
+
+  test('a code works through its last day and not after', () => {
+    const p = promo({ expiresOn: '2026-10-12' });
+    expect(promoRestriction(p, '2026-10-12', PHONE)).toBeNull();
+    expect(promoRestriction(p, '2026-10-13', PHONE)).toMatch(/expired/);
+  });
+
+  test('a code stops when its total uses are reached', () => {
+    expect(promoRestriction(promo({ maxUses: 5, uses: 4 }), '2026-10-12', PHONE)).toBeNull();
+    expect(promoRestriction(promo({ maxUses: 5, uses: 5 }), '2026-10-12', PHONE)).toMatch(/fully used/);
+  });
+
+  test('a per-player limit counts by phone number and needs a phone number', () => {
+    const p = promo({ perPlayerLimit: 1, redeemedBy: { [PHONE]: 1 } });
+    expect(promoRestriction(p, '2026-10-12', PHONE)).toMatch(/already used/);
+    expect(promoRestriction(p, '2026-10-12', '9000000000')).toBeNull();
+    expect(promoRestriction(p, '2026-10-12', '')).toMatch(/phone number/);
+  });
+
+  test('a limited code gives no discount once restricted, and the quote says why', () => {
+    const { db, turf } = makeDb();
+    db.promoCodes.push(promo({ code: 'ONCE', value: 10, perPlayerLimit: 1, redeemedBy: { [PHONE]: 1 } }));
+    const q = buildQuote(db, { turfId: turf.id, date: MONDAY, hour: 10, promoCode: 'ONCE', phone: PHONE }, EARLY)!;
+    expect(q.promoCode).toBeNull();
+    expect(q.promoError).toMatch(/already used/);
+    expect(q.breakdown.total).toBe(1000);
+    const fresh = buildQuote(db, { turfId: turf.id, date: MONDAY, hour: 10, promoCode: 'ONCE', phone: '9000000000' }, EARLY)!;
+    expect(fresh).toMatchObject({ promoCode: 'ONCE', promoError: null });
+    expect(fresh.breakdown.total).toBe(900);
+  });
+
+  test('an expired code is refused in the quote using today in India time', () => {
+    const { db, turf } = makeDb();
+    db.promoCodes.push(promo({ code: 'OLD', expiresOn: '2026-09-30' }));
+    const q = buildQuote(db, { turfId: turf.id, date: MONDAY, hour: 10, promoCode: 'OLD' }, EARLY)!;
+    expect(q.promoError).toMatch(/expired/);
   });
 });

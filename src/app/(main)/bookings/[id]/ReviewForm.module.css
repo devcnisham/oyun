@@ -19,7 +19,7 @@
   transition: transform 0.1s, color 0.1s;
 }
 .picker button:active { transform: scale(0.9); }
-.picker button.on { color: #f5a623; }
+.picker button.on { color: var(--accent-gold); }
 .label { min-width: 70px; font-size: 13px; font-weight: 700; color: var(--text-secondary); text-align: left; }
 .input {
   width: 100%;
@@ -44,7 +44,7 @@
   cursor: pointer;
 }
 .submit:disabled { opacity: 0.5; cursor: not-allowed; }
-.stars { font-size: 26px; color: #f5a623; letter-spacing: 2px; }
+.stars { font-size: 26px; color: var(--accent-gold); letter-spacing: 2px; }
 .stars span { color: #d6d6d6; }
 .comment { margin-top: 6px; font-size: 15px; color: var(--text-secondary); font-style: italic; }
 .thanks { margin-top: 8px; font-size: 14px; font-weight: 700; color: #0e7a3d; }

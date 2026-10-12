@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache';
+import { hoursError } from './hours';
 import { AccessError } from './partner-auth';
 import { ValidationError } from './errors';
 import type { ActionResult, Turf } from './types';
@@ -28,7 +29,7 @@ export function bool(fd: FormData, key: string) {
   return fd.get(key) === 'on' || fd.get(key) === 'true';
 }
 
-export function list(value: string, sep: RegExp = /[,\n]/) {
+function list(value: string, sep: RegExp = /[,\n]/) {
   return value.split(sep).map((s) => s.trim()).filter(Boolean);
 }
 
@@ -69,14 +70,15 @@ export function parseTurfProfile(fd: FormData, { phoneOptional = false } = {}): 
   const openTime = required(fd, 'openTime', 'Opening time', 5);
   const closeTime = required(fd, 'closeTime', 'Closing time', 5);
   if (!TIME_RE.test(openTime) || !TIME_RE.test(closeTime)) throw new ValidationError('Times must look like 06:00');
+  const hoursProblem = hoursError(openTime, closeTime);
+  if (hoursProblem) throw new ValidationError(hoursProblem);
 
-  const entered = list(str(fd, 'images', 4000), /\n/);
-  if (entered.some((u) => !isSafeTurfImage(u))) {
+  const images = list(str(fd, 'images', 4000), /\n/);
+  if (images.some((u) => !isSafeTurfImage(u))) {
     throw new ValidationError('Each image must be a /path on this site or a plain https:// link (no //host, no login in the link)');
   }
-  if (entered.length === 0) throw new ValidationError('Add at least one image (a /path or https:// link)');
-  if (entered.length > MAX_TURF_IMAGES) throw new ValidationError(`Use at most ${MAX_TURF_IMAGES} images`);
-  const images = entered;
+  if (images.length === 0) throw new ValidationError('Add at least one image (a /path or https:// link)');
+  if (images.length > MAX_TURF_IMAGES) throw new ValidationError(`Use at most ${MAX_TURF_IMAGES} images`);
 
   return {
     name: required(fd, 'name', 'Turf name', 80),

@@ -32,7 +32,7 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] Manual slot blocking and walk-in bookings.
 - [x] Check-in desk with QR scan and no-show marking.
 - [x] Revenue, payouts and invoices, with a payouts CSV.
-- [ ] Day and week calendar view across all courts.
+- [x] Week calendar across the day's hours, with each half of a split pitch (`/partner/calendar`); day detail and blocking stay on Manage Slots.
 
 ### 5. Search, Map View & Filters
 *Status: Basic*
@@ -96,7 +96,7 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 
 ### 12. Platform & Growth
 *Status: Partly done*
-- [x] Multi-sport: football, box cricket, badminton, pickleball and padel; site wording is sport-neutral.
+- [x] Multi-sport: football, box cricket, badminton and pickleball; site wording is sport-neutral.
 - [x] Installable web app manifest and icons.
 - [x] SEO: sitemap, robots, structured data, Open Graph images, area landing pages.
 - [x] Cookie consent, privacy policy and terms.

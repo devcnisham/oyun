@@ -14,12 +14,12 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### B. Foundations (Phase 1)
 - [x] R018 / P8-10 Refresh `FEATURE_LIST.md`; delete `replace_colors.py`, `update_fonts.py`, `update_texts.py` after checking nothing uses them.
 - [x] P8-01 Install deps, read Next 16 docs, note conventions in `docs/`.
-- [ ] P8-09 `typecheck` script and pre-commit hook.
+- [x] P8-09 `typecheck` script and pre-commit hook.
 - [x] P8-11 Dependabot and `npm audit` in CI.
-- [ ] P8-04 Integration test: N parallel `createBookings` on one slot gives one booking.
-- [ ] P8-05 Integration test: holds expire and release.
-- [ ] P8-06 Authorization sweep: every admin and partner action rejects without a session.
-- [ ] R011 / P9-06 Persistent rate limits in Postgres, same function signature.
+- [x] P8-04 Integration test: N parallel `createBookings` on one slot gives one booking.
+- [x] P8-05 Integration test: holds expire and release.
+- [x] P8-06 Authorization sweep: every admin and partner action rejects without a session.
+- [x] R011 / P9-06 Persistent rate limits in Postgres, same function signature. GATE left: owner runs `supabase/setup/8-rate-limits.sql` on production (P9-22).
 - [x] P8-07 Playwright e2e: browse, hold, book, ticket, cancel; partner check-in; admin approve turf.
 - [ ] P8-12 Staging environment. GATE: Vercel and Supabase branch setup.
 
@@ -28,14 +28,14 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P9-02 `import 'server-only'` in `utils/supabase/admin.ts`, `store.ts`, `realtime.ts`.
 - [x] P9-04 Refund `walletDeduction` on cancel (verify the bug first, add a test).
 - [x] P9-10 DTOs: strip `passwordHash` and phones before anything reaches a client component.
-- [ ] P9-05 Ticket page: hide phone, require account or signed token.
+- [x] P9-05 Ticket page: phone masked (PR #98); cancel and review on anonymous tickets need the booking phone (PR #122). Not a signed token; real identity is P9-03.
 - [ ] P9-03 Bind wallet and booking identity to the Clerk account, not a typed phone.
-- [ ] P9-07 Lockout keyed by email plus IP.
-- [ ] P9-08 / R012 Promo codes: expiry, max uses, per-player limit.
-- [ ] P9-11 Check-in requires cash-collected confirmation.
+- [x] P9-07 Lockout keyed by email plus IP.
+- [x] P9-08 / R012 Promo codes: expiry, max uses, per-player limit.
+- [x] P9-11 Check-in requires cash-collected confirmation.
 - [x] P9-12 Validate turf image URLs, allowlist hosts.
-- [ ] P9-14 CHECK constraints: wallet and amounts not negative.
-- [ ] P9-16 Remove or document the unused Supabase auth proxy step.
+- [x] P9-14 CHECK constraints: wallet and amounts not negative.
+- [x] P9-16 Remove or document the unused Supabase auth proxy step.
 - [ ] P9-13 CSP nonces, drop `'unsafe-inline'` for scripts.
 - [ ] P9-09 Admin MFA, per-user accounts, session revocation. GATE: choose TOTP vs Clerk for admin.
 - [ ] P9-01 Rotate the old Supabase secret key. GATE: user only.
@@ -57,7 +57,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 
 ### F. Performance and UX
 - [ ] P10-03 ISR and tag revalidation for public pages.
-- [ ] P10-05 `loading.tsx` and Suspense on data pages.
+- [x] P10-05 `loading.tsx` and Suspense on data pages.
 - [ ] P10-04 Replace 10 s slot poll with Realtime plus on-focus refetch.
 - [ ] P10-09 Optimise images. GATE: Supabase Storage setup.
 - [ ] P10-08 k6 load test of the booking path.
@@ -73,7 +73,8 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### H. Quality and launch (Phases 6 to 7)
 - [ ] Concurrency test in CI, accessibility (axe), Lighthouse 90, bad-path tests.
 - [ ] Privacy (DPDP): export and delete my data, retention purge, notice matches reality.
-- [ ] `docs/SECURITY.md`, backup restore runbook.
+- [x] `docs/SECURITY.md` written (PR docs).
+- [ ] Backup restore runbook (needs the Supabase plan and a tested restore).
 - [ ] SEO landing pages per city, area, sport; structured data.
 - [ ] Monitoring dashboard (double bookings must be 0), runbooks. GATE: uptime service choice.
 

@@ -4,7 +4,7 @@ import { logout } from '@/lib/auth-actions';
 import { ROLE_LABELS, requirePartner } from '@/lib/partner-auth';
 import { switchTurf } from '@/lib/partner-actions';
 import NavLinks, { type NavItem } from './NavLinks';
-import MobileDrawerClose from './MobileDrawerClose';
+import MobileDrawerClose, { DrawerButton } from './MobileDrawerClose';
 import styles from './layout.module.css';
 
 export default async function PartnerLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +13,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
   const nav: NavItem[] = [
     { href: '/partner', label: 'Dashboard', icon: '📊' },
     ...(ctx.can('bookings') ? [{ href: '/partner/bookings', label: 'Bookings', icon: '📅' }] : []),
+    ...(ctx.can('bookings') ? [{ href: '/partner/calendar', label: 'Calendar', icon: '🗓️' }] : []),
     ...(ctx.can('checkin') ? [{ href: '/partner/check-in', label: 'Check-in', icon: '📷' }] : []),
     ...(ctx.can('slots') ? [{ href: '/partner/slots', label: 'Manage Slots', icon: '⏰' }] : []),
     ...(ctx.can('pricing') ? [{ href: '/partner/pricing', label: 'Pricing', icon: '💹' }] : []),
@@ -27,7 +28,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
   return (
     <div className={styles.layout}>
       <MobileDrawerClose />
-      <input type="checkbox" id="mobile-menu" className={styles.mobileMenuToggle} aria-hidden="true" />
+      <input type="checkbox" id="mobile-menu" className={styles.mobileMenuToggle} aria-hidden="true" tabIndex={-1} />
       <label htmlFor="mobile-menu" className={styles.mobileMenuOverlay} aria-label="Close menu"></label>
       
       <header className={`${styles.mobileHeader} noPrint`}>
@@ -38,7 +39,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
             <span className={styles.logoTag}>Partner</span>
           </div>
         </Link>
-        <label htmlFor="mobile-menu" className={styles.menuBtn} aria-label="Open menu">☰</label>
+        <DrawerButton open label="Open menu" className={styles.menuBtn}>☰</DrawerButton>
       </header>
 
       <aside className={`${styles.sidebar} noPrint`}>
@@ -50,7 +51,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
               <span className={styles.logoTag}>Partner</span>
             </div>
           </Link>
-          <label htmlFor="mobile-menu" className={styles.closeBtn} aria-label="Close menu">✕</label>
+          <DrawerButton open={false} label="Close menu" className={styles.closeBtn}>✕</DrawerButton>
         </div>
 
         <nav className={styles.nav}>
