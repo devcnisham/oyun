@@ -5,23 +5,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { submitApplication } from '@/lib/booking-actions';
 import { STEP_FIELDS, validateApplication, type FieldErrors } from '@/lib/validation/application';
-import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
-
-const amenitiesOptions = [
-  'Changing Rooms', 'Parking', 'Floodlights', 'Drinking Water',
-  'Restrooms', 'Café', 'AC Lobby', 'First Aid', 'WiFi',
-];
-const sizes = ['3-a-side', '5-a-side', '6-a-side', '7-a-side', '11-a-side'];
-const surfaces = ['Artificial Grass', 'FIFA Certified Grass', 'FIFA Pro Artificial Grass', 'Synthetic Turf', 'Natural Grass'];
-const mangaloreAreas = ['Kodialbail', 'Kankanady', 'Bejai', 'Hampankatta', 'Kadri', 'Falnir', 'Mangaladevi', 'Attavar', 'Bunder', 'Urwa', 'Other'];
-
-const perks = [
-  { icon: '🚀', title: 'Instant Reach', desc: 'Get discovered by players in Mangalore looking to book now.' },
-  { icon: '📱', title: 'Easy Management', desc: 'Manage bookings, view availability and track revenue — all from your dashboard.' },
-  { icon: '💰', title: 'Zero Commission', desc: 'During beta, listing is 100% free and we charge zero commission. List now before it changes.' },
-  { icon: '✅', title: 'Verified Badge', desc: 'Get a verified badge after our team visits your turf — builds trust instantly with bookers.' },
-];
+import ListingSubmitted from './ListingSubmitted';
+import { amenitiesOptions, EMPTY_FORM, mangaloreAreas, perks, sizes, surfaces, type ListingForm } from './listing-options';
+import styles from './page.module.css';
 
 export default function ListTurfPage() {
   const [step, setStep] = useState(1);
@@ -33,28 +20,7 @@ export default function ListTurfPage() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [startedAt] = useState(() => Date.now());
   const [website, setWebsite] = useState('');
-  const [formData, setFormData] = useState({
-    // Step 1 - Owner
-    ownerName: '',
-    ownerPhone: '',
-    ownerEmail: '',
-    // Step 2 - Turf
-    turfName: '',
-    area: '',
-    address: '',
-    sport: 'Football',
-    size: '',
-    surface: '',
-    openTime: '06:00',
-    closeTime: '22:00',
-    // Step 3 - Pricing
-    weekdayPrice: '',
-    weekendPrice: '',
-    eveningPrice: '',
-    // Step 4 - Extra
-    description: '',
-    whatsapp: '',
-  });
+  const [formData, setFormData] = useState<ListingForm>(EMPTY_FORM);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -110,27 +76,18 @@ export default function ListTurfPage() {
 
   if (submitted) {
     return (
-      <div className={styles.page}>
-        <div className={styles.successPage}>
-          <div className={styles.successIcon}>🎉</div>
-          <h1 className={styles.successTitle}>Application Submitted!</h1>
-          <p className={styles.successDesc}>
-            Thank you, <strong>{formData.ownerName}</strong>! We&apos;ve received your listing for <strong>{formData.turfName}</strong>.
-            Our team will review it and get back to you at <strong>{formData.ownerPhone}</strong> within 24–48 hours.
-          </p>
-          <div className={styles.successRef}>
-            Reference: SA-{refId}
-          </div>
-          <div className={styles.successPerks}>
-            <div className={styles.successPerk}>✓ Listing review in 24 hrs</div>
-            <div className={styles.successPerk}>✓ Free listing during beta</div>
-            <div className={styles.successPerk}>✓ Verified badge on approval</div>
-          </div>
-          <button className="btn btn--primary btn--lg" onClick={() => { setSubmitted(false); setStep(1); setFormData({ ownerName:'', ownerPhone:'', ownerEmail:'', turfName:'', area:'', address:'', sport:'Football', size:'', surface:'', openTime:'06:00', closeTime:'22:00', weekdayPrice:'', weekendPrice:'', eveningPrice:'', description:'', whatsapp:'' }); setSelectedAmenities([]); }}>
-            Submit Another Turf
-          </button>
-        </div>
-      </div>
+      <ListingSubmitted
+        ownerName={formData.ownerName}
+        turfName={formData.turfName}
+        ownerPhone={formData.ownerPhone}
+        refId={refId}
+        onAnother={() => {
+          setSubmitted(false);
+          setStep(1);
+          setFormData(EMPTY_FORM);
+          setSelectedAmenities([]);
+        }}
+      />
     );
   }
 
