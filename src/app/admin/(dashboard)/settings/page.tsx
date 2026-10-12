@@ -1,5 +1,5 @@
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash } from '@/components/dash/ui';
+import { Badge, PageHeader, dash, tableScroll } from '@/components/dash/ui';
 import { deletePromoCode, savePromoCode, saveSettings, togglePromoCode } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 
@@ -124,7 +124,7 @@ export default async function AdminSettings() {
 
       <div className={dash.card}>
         <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Promo codes</h2></div>
-        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead><tr><th>Code</th><th>Discount (edit)</th><th className={dash.num}>Uses</th><th>Status</th><th></th></tr></thead>
             <tbody>

@@ -36,8 +36,8 @@ export function realtimeConfigured(env: Env = process.env): boolean {
   return Boolean(env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY && env.SUPABASE_SECRET_KEY);
 }
 
-export const MIN_SESSION_SECRET_LENGTH = 32;
-export const MIN_LOGIN_PASSWORD_LENGTH = 12;
+const MIN_SESSION_SECRET_LENGTH = 32;
+const MIN_LOGIN_PASSWORD_LENGTH = 12;
 
 // Admin login: ADMIN_EMAIL + ADMIN_PASSWORD. OYUN operations partner login (optional): PARTNER_EMAIL + PARTNER_PASSWORD.
 // Both sign their cookies with SESSION_SECRET. Turf owners and staff log in with accounts stored in the database.

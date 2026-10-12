@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { rupees } from '@/lib/format';
 import { canOptimize } from '@/lib/images';
 import { SPORTS, sportHref } from '@/lib/sports';
 import styles from './MobileHome.module.css';
@@ -68,7 +69,7 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
                     <span className={styles.badge}>{t.availableToday} slots left</span>
                   </div>
                   <b>{t.name}</b>
-                  <span>{t.area} · ₹{t.pricePerHour.toLocaleString('en-IN')}/hr</span>
+                  <span>{t.area} · {rupees(t.pricePerHour)}/hr</span>
                 </Link>
               ))}
             </div>

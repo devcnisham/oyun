@@ -1,7 +1,7 @@
 import type { IstNow } from './time';
 
 // Desk check-in opens an hour before the slot starts and closes when the slot ends.
-export const CHECKIN_EARLY_MINUTES = 60;
+const CHECKIN_EARLY_MINUTES = 60;
 
 export type CheckInWindow = 'early' | 'open' | 'late';
 

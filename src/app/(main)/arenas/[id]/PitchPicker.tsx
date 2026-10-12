@@ -1,6 +1,6 @@
 import { hourlyRate } from '@/lib/pricing';
 import type { PitchSize, PublicTurf } from '@/lib/types';
-import { rupees } from './booking-format';
+import { rupees } from '@/lib/format';
 import styles from './BookingFlow.module.css';
 
 interface PitchPickerProps {

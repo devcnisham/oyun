@@ -31,6 +31,9 @@ jobs:
       - run: npm audit --omit=dev --audit-level=high
       - run: npm run lint -- --max-warnings=0
       - run: npm run typecheck
+      # Copy-paste clones and unused files, exports and dependencies (see .jscpd.json, knip.json)
+      - run: npm run dup
+      - run: npm run unused
       - run: npm test
       - run: npm run build
         env:

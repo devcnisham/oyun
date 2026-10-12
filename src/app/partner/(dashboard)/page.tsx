@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
 import { bookingRevenue } from '@/lib/reports';
 import { getDb } from '@/lib/store';
@@ -91,7 +91,7 @@ export default async function PartnerDashboard() {
           <h2 className={dash.cardTitle}>Latest bookings</h2>
           {ctx.can('bookings') && <Link href="/partner/bookings" className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>View all</Link>}
         </div>
-        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr><th>Player</th><th>Slot</th><th>Source</th><th>Status</th><th className={dash.num}>Total</th></tr>

@@ -1,9 +1,10 @@
 import { createPortal } from 'react-dom';
-import type { ReferralCheck } from '@/lib/booking-actions';
 import type { SelectionQuote } from '@/lib/booking-types';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
-import { describeHours, rupees, shortHour } from './booking-format';
+import { rupees, shortHour } from '@/lib/format';
+import { describeHours } from './booking-format';
 import styles from './BookingFlow.module.css';
+import type { CheckoutForm } from './useCheckoutForm';
 
 interface CheckoutSheetProps {
   turf: PublicTurf;
@@ -11,25 +12,11 @@ interface CheckoutSheetProps {
   dateLabel: string | undefined;
   selected: number[];
   selectedSlots: Slot[];
-  quote: SelectionQuote | null;
   secondsLeft: number;
   paying: boolean;
   signedIn: boolean;
-  error: string;
   cashback: number;
-  name: string;
-  phone: string;
-  code: string;
-  codeError: string;
-  promo: string | null;
-  codeApplied: boolean;
-  referral: ReferralCheck | null;
-  useWallet: boolean;
-  onNameChange: (value: string) => void;
-  onPhoneChange: (value: string) => void;
-  onCodeChange: (value: string) => void;
-  onApplyCode: () => void;
-  onUseWalletChange: (value: boolean) => void;
+  form: CheckoutForm;
   onClose: () => void;
   onPay: () => void;
 }
@@ -45,16 +32,15 @@ function advanceSummary(quote: SelectionQuote | null) {
 }
 
 /** Bottom sheet shown while the player's slots are held: details, offers, bill and confirm. */
-export default function CheckoutSheet(props: CheckoutSheetProps) {
-  const { turf, size, dateLabel, selected, selectedSlots, quote, secondsLeft, paying, signedIn, error, cashback } = props;
-  const { name, phone, code, codeError, promo, referral, useWallet, codeApplied } = props;
+export default function CheckoutSheet({ turf, size, dateLabel, selected, selectedSlots, secondsLeft, paying, signedIn, cashback, form, onClose, onPay }: CheckoutSheetProps) {
+  const { quote, error, name, phone, code, codeError, codeApplied, promo, referral, useWallet } = form;
   const chips = quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }));
 
   return createPortal(
-    <div className={`${styles.flow} ${styles.overlay}`} onClick={(e) => e.target === e.currentTarget && !paying && props.onClose()}>
+    <div className={`${styles.flow} ${styles.overlay}`} onClick={(e) => e.target === e.currentTarget && !paying && onClose()}>
       <div className={styles.sheet} role="dialog" aria-modal="true" aria-label="Checkout">
         <div className={styles.sheetHead}>
-          <button className={styles.back} onClick={props.onClose} disabled={paying} aria-label="Back to slots">←</button>
+          <button className={styles.back} onClick={onClose} disabled={paying} aria-label="Back to slots">←</button>
           <h2>Checkout</h2>
           <span className={`${styles.timer} ${secondsLeft < 60 ? styles.timerLow : ''}`} aria-live="polite">
             ⏱ {clock(secondsLeft)}
@@ -82,8 +68,8 @@ export default function CheckoutSheet(props: CheckoutSheetProps) {
           <section>
             <h3>Your details</h3>
             <div className={styles.fields}>
-              <input className={styles.input} placeholder="Full name" value={name} onChange={(e) => props.onNameChange(e.target.value)} autoComplete="name" />
-              <input className={styles.input} placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => props.onPhoneChange(e.target.value)} autoComplete="tel" />
+              <input className={styles.input} placeholder="Full name" value={name} onChange={(e) => form.setName(e.target.value)} autoComplete="name" />
+              <input className={styles.input} placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => form.setPhone(e.target.value)} autoComplete="tel" />
             </div>
           </section>
 
@@ -94,10 +80,10 @@ export default function CheckoutSheet(props: CheckoutSheetProps) {
                 className={styles.input}
                 placeholder="Promo or referral code"
                 value={code}
-                onChange={(e) => props.onCodeChange(e.target.value.toUpperCase())}
+                onChange={(e) => form.setCode(e.target.value.toUpperCase())}
                 disabled={codeApplied}
               />
-              <button className={styles.secondary} onClick={props.onApplyCode}>{codeApplied ? 'Remove' : 'Apply'}</button>
+              <button className={styles.secondary} onClick={form.applyCode}>{codeApplied ? 'Remove' : 'Apply'}</button>
             </div>
             {codeError && <p className={styles.error}>{codeError}</p>}
             {promo && <p className={styles.success}>Code {promo} applied</p>}
@@ -106,7 +92,7 @@ export default function CheckoutSheet(props: CheckoutSheetProps) {
             )}
             {quote && quote.walletBalance > 0 && (
               <label className={styles.toggle}>
-                <input type="checkbox" checked={useWallet} onChange={(e) => props.onUseWalletChange(e.target.checked)} />
+                <input type="checkbox" checked={useWallet} onChange={(e) => form.setUseWallet(e.target.checked)} />
                 <span>Use wallet balance ({rupees(quote.walletBalance)})</span>
               </label>
             )}
@@ -142,7 +128,7 @@ export default function CheckoutSheet(props: CheckoutSheetProps) {
             <b>{quote ? rupees(quote.payNow) : '…'}</b>
             <span>Advance due at the turf</span>
           </div>
-          <button className={styles.primary} onClick={props.onPay} disabled={!quote || paying}>
+          <button className={styles.primary} onClick={onPay} disabled={!quote || paying}>
             {paying ? 'Reserving…' : signedIn ? 'Confirm booking' : 'Sign in to confirm'}
           </button>
         </div>
