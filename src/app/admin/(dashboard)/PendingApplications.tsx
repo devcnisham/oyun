@@ -50,7 +50,7 @@ export default function PendingApplications({ applications }: { applications: Ap
                 </form>
                 <form action={(fd) => run(rejectApplication, fd, `Reject ${a.turfName}? This cannot be undone.`)} className={dash.inline}>
                   <input type="hidden" name="applicationId" value={a.id} />
-                  <input name="note" placeholder="Reason (optional)" className={dash.input} style={{ flex: 1 }} />
+                  <input name="note" aria-label="Reason (optional)" placeholder="Reason (optional)" className={dash.input} style={{ flex: 1 }} />
                   <button className={`${dash.btn} ${dash.btnDanger}`} disabled={pending}>Reject</button>
                 </form>
               </div>

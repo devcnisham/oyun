@@ -56,7 +56,7 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
           <Tabs items={VIEWS.map((v) => ({ ...v, href: `/partner/bookings?view=${v.key}` }))} active={view} />
           <form className={dash.inline}>
             <input type="hidden" name="view" value={view} />
-            <input name="q" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 220 }} />
+            <input name="q" aria-label="Search bookings by name, phone or code" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 220 }} />
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Search</button>
           </form>
         </div>

@@ -35,7 +35,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <form className={dash.inline}>
-            <input name="q" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 200 }} />
+            <input name="q" aria-label="Search bookings by name, phone or code" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 200 }} />
             <select name="turf" defaultValue={turf} className={dash.select} style={{ width: 180 }}>
               <option value="">All turfs</option>
               {db.turfs.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}

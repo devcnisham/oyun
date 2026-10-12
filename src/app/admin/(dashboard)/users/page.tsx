@@ -32,7 +32,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <form className={dash.inline}>
-            <input name="q" defaultValue={q} placeholder="Name or phone" className={dash.input} style={{ width: 220 }} />
+            <input name="q" aria-label="Search players by name or phone" defaultValue={q} placeholder="Name or phone" className={dash.input} style={{ width: 220 }} />
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Search</button>
           </form>
           <span className={dash.muted}>{players.length} players</span>
@@ -62,8 +62,8 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
                   <td>
                     <ActionForm action={adjustWallet} inline>
                       <input type="hidden" name="playerId" value={p.id} />
-                      <input name="amount" type="number" placeholder="+200 / -200" className={dash.input} style={{ width: 110, padding: '6px 8px' }} required />
-                      <input name="note" placeholder="Reason" maxLength={120} className={dash.input} style={{ width: 130, padding: '6px 8px' }} />
+                      <input name="amount" type="number" aria-label={`Wallet adjustment for ${p.name}`} placeholder="+200 / -200" className={dash.input} style={{ width: 110, padding: '6px 8px' }} required />
+                      <input name="note" aria-label={`Reason for adjusting ${p.name}'s wallet`} placeholder="Reason" maxLength={120} className={dash.input} style={{ width: 130, padding: '6px 8px' }} />
                       <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Apply</button>
                     </ActionForm>
                   </td>
