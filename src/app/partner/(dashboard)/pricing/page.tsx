@@ -1,5 +1,5 @@
 import ActionForm from '@/components/dash/ActionForm';
-import { PageHeader, dash, inr } from '@/components/dash/ui';
+import { PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
 import { savePricing } from '@/lib/partner-actions';
 import { rulesFor, slotPrice, turfHours } from '@/lib/pricing';
@@ -92,7 +92,7 @@ export default async function PricingPage() {
               <p className={dash.cardDesc}>What players pay per slot (before offers). Last-minute deals come on top on the day.</p>
             </div>
           </div>
-          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead><tr><th>Slot</th><th className={dash.num}>Weekday</th><th className={dash.num}>Weekend</th></tr></thead>
               <tbody>

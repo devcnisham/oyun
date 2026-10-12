@@ -1,5 +1,5 @@
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash } from '@/components/dash/ui';
+import { Badge, PageHeader, dash, tableScroll } from '@/components/dash/ui';
 import Stars from '@/components/Stars';
 import { toggleReviewHidden } from '@/lib/admin-actions';
 import { turfReviews } from '@/lib/reviews';
@@ -18,7 +18,7 @@ export default async function AdminReviews() {
         {reviews.length === 0 ? (
           <p className={dash.muted}>No reviews yet. Players can rate a turf from their booking after they are checked in.</p>
         ) : (
-          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead>
                 <tr><th>Turf</th><th>Rating</th><th>Review</th><th>Player</th><th>When</th><th>Status</th><th></th></tr>

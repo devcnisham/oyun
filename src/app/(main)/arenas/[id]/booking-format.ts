@@ -19,7 +19,7 @@ export function describeHours(hours: number[]) {
 }
 
 /** Why a slot cannot be picked: the tooltip, the seat sub-label and the seat colour, per reason. */
-export const UNAVAILABLE = {
+const UNAVAILABLE = {
   held: { title: 'Someone is booking this slot', sub: 'On hold', kind: 'held' },
   past: { title: 'Over', sub: 'Over', kind: 'past' },
   other: { title: 'Not available', sub: 'Booked', kind: 'taken' },

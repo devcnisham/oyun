@@ -28,7 +28,7 @@ export function bool(fd: FormData, key: string) {
   return fd.get(key) === 'on' || fd.get(key) === 'true';
 }
 
-export function list(value: string, sep: RegExp = /[,\n]/) {
+function list(value: string, sep: RegExp = /[,\n]/) {
   return value.split(sep).map((s) => s.trim()).filter(Boolean);
 }
 

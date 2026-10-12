@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Tabs, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, Tabs, dash, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
 import { cancelBooking } from '@/lib/partner-actions';
 import { getDb } from '@/lib/store';
@@ -66,7 +66,7 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
         {shown.length === 0 ? (
           <p className={dash.empty}>No bookings here.</p>
         ) : (
-          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead>
                 <tr>
