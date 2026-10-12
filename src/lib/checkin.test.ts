@@ -39,7 +39,7 @@ const form = (fields: Record<string, string>) => {
   return fd;
 };
 const addBooking = (over: Partial<Booking> = {}) => {
-  const b = makeBooking({ date: istNow().date, paymentMode: 'venue', amountPaid: 0, ...over });
+  const b = makeBooking({ date: istNow().date, hour: istNow().hour, paymentMode: 'venue', amountPaid: 0, ...over });
   getTestDb().bookings.push(b);
   return b;
 };
