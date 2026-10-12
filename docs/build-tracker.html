@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #179 (main at 2594c0f, 12 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #182 (main at d7e2498, 12 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -930,6 +930,8 @@ tests:[
  ["Authorization","Every admin and partner action without a session","Vitest","Enumerate exports of admin-actions.ts and partner-actions.ts"],
  ["End to end","Browse, hold, book, ticket, cancel; owner check-in","Playwright","Run against a preview deployment"],
  ["Load","Booking path at target concurrency","k6","Watch conflict rate and p95 latency"],
+ ["Duplicate code","Copy-pasted blocks across src","jscpd (npm run dup, .jscpd.json)","0 clones allowed; runs in CI (PR #182)"],
+ ["Unused code","Unused files, exports and dependencies","knip (npm run unused, knip.json)","Nothing unused; runs in CI (PR #182)"],
  ["CI gate","lint, tsc --noEmit, build, tests, npm audit","GitHub Actions","Required status check on main"]
 ]
 };
@@ -2152,7 +2154,11 @@ DATA.tasks.push(
  {id:"P8-49",p:"P8",t:"Remove the duplicate CSS block, the twitter-image copy and dead exports",s:"done",pr:"P2",n:"Duplicate CSS removed from arenas/page.module.css, twitter-image.tsx trimmed, unused exports removed (client device helper, site.ts entry, action-utils and pricing tidy). PR #179."},
  {id:"P8-50",p:"P8",t:"Split BookingFlow into PitchPicker, SlotMap, CheckoutSheet and booking-format",s:"done",pr:"P2",n:"Turf booking screen split into four files under arenas/[id]; BookingFlow.tsx now keeps the main flow and imports the parts. PR #179."},
  {id:"P8-51",p:"P8",t:"Move the booking planner and limits out of booking-actions.ts into booking-plan.ts and booking-types.ts",s:"done",pr:"P2",n:"booking-plan.ts holds the planner (about 130 lines) and booking-types.ts holds MAX_SLOTS and the client-safe booking types. booking-actions.ts is smaller. PR #179."},
- {id:"P8-52",p:"P8",t:"Split list-turf options, form defaults and the success screen into their own files",s:"done",pr:"P2",n:"listing-options.ts and ListingSubmitted.tsx hold the list-turf choices and the submitted screen; page.tsx is smaller. PR #179."}
+ {id:"P8-52",p:"P8",t:"Split list-turf options, form defaults and the success screen into their own files",s:"done",pr:"P2",n:"listing-options.ts and ListingSubmitted.tsx hold the list-turf choices and the submitted screen; page.tsx is smaller. PR #179."},
+ {id:"P8-53",p:"P8",t:"One shared rupee and short-hour formatter in src/lib/format.ts instead of seven copies",s:"done",pr:"P2",n:"src/lib/format.ts holds the rupees and shortHour helpers that were copied in seven files. PR #182."},
+ {id:"P8-54",p:"P8",t:"Move checkout form state into a useCheckoutForm hook; CheckoutSheet takes 12 props instead of about 25",s:"done",pr:"P2",n:"The checkout form logic moved into a hook, and CheckoutSheet now receives about 12 props. PR #182."},
+ {id:"P8-55",p:"P8",t:"Replace 14 copy-pasted scroll regions with one tableScroll props pattern; small cleanups in the welcome page and turf loading state",s:"done",pr:"P2",n:"tableScroll props replace 14 copies of the same scroll markup. Welcome page uses a shared FeatureGrid. An unused Field component was removed. arenas/[id]/loading.tsx was added. PR #182."},
+ {id:"P8-56",p:"P8",t:"CI runs duplicate-code and unused-code checks (npm run dup and npm run unused)",s:"done",pr:"P2",n:"npm run dup uses jscpd with .jscpd.json and npm run unused uses knip with knip.json. At merge both report 0 clones and nothing unused. PR #182."}
 );
 
 /* ===================== BOOT ===================== */
