@@ -20,3 +20,10 @@ export const absoluteUrl = (path = '/') => new URL(path, `${SITE_URL}/`).toStrin
 
 // URL-safe slug for an area name, e.g. "Bejai Main Road" -> "bejai-main-road"
 export const areaSlug = (area: string) => area.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+// Footer social links. Set these in the environment; a link with no URL is not shown, so the footer never has dead "#" links.
+const clean = (v: string | undefined) => (v && /^https?:\/\//.test(v) ? v : null);
+export const SOCIAL_LINKS = {
+  instagram: clean(process.env.NEXT_PUBLIC_INSTAGRAM_URL),
+  whatsapp: clean(process.env.NEXT_PUBLIC_WHATSAPP_URL),
+};
