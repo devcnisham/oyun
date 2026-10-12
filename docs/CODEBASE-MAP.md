@@ -350,7 +350,7 @@ Not built yet (see `FEATURE_LIST.md` and the tracker): real payments (Razorpay),
 ## 13. Where to start reading
 
 1. `src/app/(main)/arenas/[id]/page.tsx` and its client components: the turf page and checkout.
-2. `src/lib/booking-actions.ts`: hold, quote, create, cancel.
+2. `src/lib/booking-actions.ts`: hold, quote, create, cancel (pricing and booking planner live in `booking-plan.ts`).
 3. `src/lib/store.ts` and `supabase/setup/3-apply-changes.sql`: how writes stay safe.
 4. `src/lib/pricing.ts`: slot grid and prices.
 5. `src/proxy.ts`, `src/lib/session.ts`, `src/lib/partner-auth.ts`: who may do what.

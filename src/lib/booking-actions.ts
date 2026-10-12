@@ -11,24 +11,27 @@ import { ValidationError, refreshAll } from './action-utils';
 import { sharedRateLimit } from './shared-rate-limit';
 import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
 import { deviceHolder } from './device-holder';
-import { buildQuote, freePart, getSlots, normalizePhone } from './pricing';
-import { getDb, mutate, newBookingCode, newId, storageInfo } from './store';
+import { freePart, getSlots, normalizePhone } from './pricing';
+import {
+  bookableTurf,
+  cleanHours,
+  cleanSize,
+  planBooking,
+  type BookingRequest,
+  type SelectionQuote,
+  type SelectionRequest,
+} from './booking-plan';
+import { getDb, mutate, newId, storageInfo } from './store';
 import { BOOKING_DAYS, addDays, formatHour, isValidDate, istNow } from './time';
-import type { Booking, BookingAddOn, Database, PitchSize, PriceLine, Slot } from './types';
-import { createPlayer, findByReferralCode, refundDue, walletTxn } from './wallet';
+import type { Booking, Database, PitchSize, Slot } from './types';
+import { findByReferralCode, refundDue, walletTxn } from './wallet';
 
 const MAX_DAYS_AHEAD = BOOKING_DAYS - 1;
-const MAX_SLOTS = 6;
 const HOLD_MINUTES = 8;
 
 function checkDate(date: string) {
   const today = istNow().date;
   return isValidDate(date) && date >= today && date <= addDays(today, MAX_DAYS_AHEAD);
-}
-
-function bookableTurf(db: Database, turfId: string) {
-  const turf = db.turfs.find((t) => t.id === turfId);
-  return turf && turf.status === 'active' ? turf : null;
 }
 
 async function clientIp() {
@@ -54,17 +57,7 @@ function purgeExpiredHolds(db: Database) {
   db.holds = db.holds.filter((h) => h.expiresAt > nowIso);
 }
 
-function cleanHours(hours: unknown): number[] {
-  if (!Array.isArray(hours)) throw new ValidationError('Pick at least one slot');
-  const clean = [...new Set(hours.map(Number))].filter((h) => Number.isInteger(h) && h >= 0 && h <= 23).sort((a, b) => a - b);
-  if (clean.length === 0) throw new ValidationError('Pick at least one slot');
-  if (clean.length > MAX_SLOTS) throw new ValidationError(`You can book up to ${MAX_SLOTS} slots at a time`);
-  return clean;
-}
-
 /* ---------- slots ---------- */
-
-const cleanSize = (size: unknown): PitchSize => (size === 'half' ? 'half' : 'full');
 
 export async function getSlotsForDate(turfId: string, date: string, size: PitchSize = 'full'): Promise<Slot[]> {
   const db = await getDb();
@@ -140,155 +133,6 @@ export async function checkReferralCode(code: string, phone: string): Promise<Re
 }
 
 /* ---------- quote and booking ---------- */
-
-export interface SelectionRequest {
-  turfId: string;
-  date: string;
-  hours: number[];
-  promoCode: string | null;
-  addOns: { id: string; qty: number }[];
-  useWallet: boolean;
-  phone: string;
-  size?: PitchSize; // full pitch (default) or one half
-}
-
-export interface BookingRequest extends SelectionRequest {
-  name: string;
-  referralCode?: string | null;
-}
-
-export interface SelectionQuote {
-  slots: { hour: number; label: string; price: number }[];
-  slotTotal: number; // slot prices after peak/weekend/last-minute pricing
-  adjustments: PriceLine[]; // owner offers and promo, summed across slots
-  addOns: BookingAddOn[];
-  addOnTotal: number;
-  walletBalance: number;
-  walletDeduction: number;
-  total: number;
-  advancePercent: number;
-  minAdvance: number;
-  maxAdvance: number;
-  payNow: number;
-  payAtVenue: number;
-  promoCode: string | null;
-  promoError: string | null;
-  slotError: string | null;
-}
-
-/*
- * Books every chosen hour against `db` and returns the bookings plus the price summary.
- * The quote runs this on a throwaway copy, so the price shown is exactly what booking charges.
- * Add-ons are attached to the first hour only.
- */
-function planBooking(db: Database, req: BookingRequest, holder: string | null, strict: boolean) {
-  const turf = bookableTurf(db, req.turfId);
-  if (!turf) throw new ValidationError('This turf is not taking bookings right now');
-  const hours = cleanHours(req.hours);
-  const size = turf.halfPitch ? cleanSize(req.size) : 'full';
-  const phone = normalizePhone(req.phone);
-  const name = req.name.trim().slice(0, 80) || 'Player';
-  const now = istNow();
-
-  let player = phone.length === 10 ? db.players.find((p) => p.phone === phone) : undefined;
-  if (player?.status === 'banned') throw new ValidationError('This number cannot make bookings. Contact support.');
-  const walletBalance = player && player.status === 'active' ? player.walletBalance : 0;
-  if (!player) {
-    const referrer = db.settings.referralEnabled ? findByReferralCode(db, req.referralCode) : undefined;
-    if (strict && req.referralCode?.trim() && !referrer) throw new ValidationError('That referral code is not valid');
-    player = createPlayer(db, name, phone || '0000000000', referrer && referrer.status === 'active' ? referrer.id : null);
-  }
-
-  const bookings: Booking[] = [];
-  const adjustments = new Map<string, number>();
-  const addAdjustment = (line: PriceLine | null) => line && adjustments.set(line.label, (adjustments.get(line.label) ?? 0) + line.amount);
-  let promoError: string | null = null;
-  let promoCode: string | null = null;
-  let slotError: string | null = null;
-  let addOns: BookingAddOn[] = [];
-
-  hours.forEach((hour, i) => {
-    const quote = buildQuote(
-      db,
-      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, source: 'online', holder, size },
-      now
-    );
-    if (!quote) throw new ValidationError('Turf not found');
-    slotError ??= quote.slotError;
-    promoError ??= quote.promoError;
-    promoCode ??= quote.promoCode;
-    if (i === 0) addOns = quote.addOns;
-    addAdjustment(quote.breakdown.offer);
-    addAdjustment(quote.breakdown.promo);
-
-    // Land on the half this device is holding, else the first free one (the quote skips this check)
-    const held = db.holds.find((h) => h.holder === holder && h.turfId === turf.id && h.date === req.date && h.hour === hour);
-    const heldPart = held && ((held.pitch ?? 'full') === 'full') === (size === 'full') ? (held.pitch ?? 'full') : null;
-    const pitch = heldPart ?? freePart(db, turf, req.date, hour, size, holder) ?? (size === 'half' ? 'A' : 'full');
-
-    const booking: Booking = {
-      id: newId('bk'),
-      code: newBookingCode(db),
-      turfId: turf.id,
-      date: req.date,
-      hour,
-      timeLabel: formatHour(hour),
-      ...(pitch !== 'full' ? { pitch } : {}),
-      customerName: name,
-      customerPhone: phone,
-      playerId: player.id,
-      source: 'online',
-      createdBy: null,
-      addOns: quote.addOns,
-      pricing: quote.breakdown,
-      // Nothing is charged online. The advance (pricing.advance) and the balance are both paid at the turf,
-      // so nothing counts as paid until check-in.
-      paymentMode: 'venue',
-      amountPaid: 0,
-      status: 'confirmed',
-      checkedInAt: null,
-      createdAt: new Date().toISOString(),
-    };
-    db.bookings.push(booking);
-    // Deducting as we go means the next hour's quote sees the remaining balance
-    walletTxn(db, player, -quote.breakdown.walletDeduction, 'booking_payment', `Booking ${booking.code}`, booking.id);
-    bookings.push(booking);
-  });
-
-  // A code is used up once per checkout, however many hours it covered. Every hour above was checked
-  // against the counts as they were before this checkout, so a 3-hour booking is not refused halfway.
-  if (promoCode) {
-    const used = db.promoCodes.find((p) => p.code === promoCode);
-    if (used) {
-      used.uses += 1;
-      if (phone.length === 10) used.redeemedBy = { ...used.redeemedBy, [phone]: (used.redeemedBy?.[phone] ?? 0) + 1 };
-    }
-  }
-
-  // Each hour carries its own advance (so 3 hours at ₹150 an hour is ₹450)
-  const sum = (f: (b: Booking) => number) => bookings.reduce((s, b) => s + f(b), 0);
-  const total = sum((b) => b.pricing.total);
-  const payNow = sum((b) => b.pricing.advance); // advance due at the turf
-  const quote: SelectionQuote = {
-    slots: bookings.map((b) => ({ hour: b.hour, label: b.timeLabel, price: b.pricing.slotPrice })),
-    slotTotal: sum((b) => b.pricing.slotPrice),
-    adjustments: [...adjustments].map(([label, amount]) => ({ label, amount })),
-    addOns,
-    addOnTotal: sum((b) => b.pricing.addOnTotal),
-    walletBalance,
-    walletDeduction: sum((b) => b.pricing.walletDeduction),
-    total,
-    advancePercent: total > 0 ? Math.round((payNow / total) * 1000) / 10 : 0, // what is actually asked, after the limits
-    minAdvance: db.settings.minAdvance,
-    maxAdvance: db.settings.maxAdvance,
-    payNow,
-    payAtVenue: total - payNow,
-    promoCode,
-    promoError: req.promoCode ? promoError : null,
-    slotError,
-  };
-  return { bookings, quote };
-}
 
 export async function quoteSelection(req: SelectionRequest): Promise<SelectionQuote | { error: string }> {
   try {

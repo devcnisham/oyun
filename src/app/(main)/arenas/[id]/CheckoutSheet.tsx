@@ -1,5 +1,6 @@
 import { createPortal } from 'react-dom';
-import type { ReferralCheck, SelectionQuote } from '@/lib/booking-actions';
+import type { ReferralCheck } from '@/lib/booking-actions';
+import type { SelectionQuote } from '@/lib/booking-plan';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { describeHours, rupees, shortHour } from './booking-format';
 import styles from './BookingFlow.module.css';

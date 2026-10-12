@@ -11,8 +11,8 @@ import {
   quoteSelection,
   releaseHolds,
   type ReferralCheck,
-  type SelectionQuote,
 } from '@/lib/booking-actions';
+import type { SelectionQuote } from '@/lib/booking-plan';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
 import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
@@ -20,7 +20,8 @@ import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
 import { primarySport } from '@/lib/sports';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
-import { describeHours, MAX_SLOTS, rupees } from './booking-format';
+import { MAX_SLOTS } from '@/lib/booking-limits';
+import { describeHours, rupees } from './booking-format';
 import CheckoutSheet from './CheckoutSheet';
 import PitchPicker from './PitchPicker';
 import SlotMap from './SlotMap';

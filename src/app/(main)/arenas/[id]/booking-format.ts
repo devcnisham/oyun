@@ -1,8 +1,5 @@
 import type { Slot } from '@/lib/types';
 
-/** Most slots a player can hold in one booking. */
-export const MAX_SLOTS = 6;
-
 /** Day parts the slot map is grouped into; `to` is exclusive. */
 export const SESSIONS = [
   { name: 'Morning', icon: '🌅', from: 0, to: 12 },
