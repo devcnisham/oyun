@@ -132,7 +132,7 @@ Claude Code does this through the Atlassian connector, so the browser prompts ar
 2. Transition them (this project's transitions are global: To Do 11, In Progress 21, Done 31, Blocked 2).
 3. Comment with the pull request link. Create new tasks under their epic (P9 is OYUN-10, P10 is OYUN-11, and so on).
 
-Last synced 9 Oct 2026 after PR #103 (goal epics OYUN-233 to 239 added after #108): 13 issues moved (12 to Done, P9-05 to In Progress) and P9-21 created.
+Last synced 12 Oct 2026 after PR #182: OYUN-141, 156, 157, 166, 250, 262, 265 moved to Done, OYUN-142 (P8-25, partly done) to In Progress, and P8-49 to P8-56 created as OYUN-269 to OYUN-276 under OYUN-9 (all Done). Earlier sync, 9 Oct 2026 after PR #103 (goal epics OYUN-233 to 239 added after #108): 13 issues moved (12 to Done, P9-05 to In Progress) and P9-21 created.
 
 ## Development panel (branches, commits and pull requests on each issue)
 
