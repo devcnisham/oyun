@@ -4,9 +4,11 @@ import { adjustWallet, togglePlayerBan } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 import { formatDate, formatDateTime } from '@/lib/time';
 import { WALLET_TXN_LABELS } from '@/lib/wallet';
+import { paginate } from '@/lib/paginate';
+import Pager from '@/components/dash/Pager';
 
-export default async function AdminPlayers({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q = '' } = await searchParams;
+export default async function AdminPlayers({ searchParams }: { searchParams: Promise<{ q?: string; page?: string }> }) {
+  const { q = '', page: pageParam } = await searchParams;
   const db = await getDb();
   const search = q.trim().toLowerCase();
   const players = db.players
@@ -24,6 +26,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
       };
     })
     .sort((a, b) => b.bookings - a.bookings);
+  const paged = paginate(players, pageParam, 50);
 
   return (
     <div className={dash.page}>
@@ -46,7 +49,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
               </tr>
             </thead>
             <tbody>
-              {players.map((p) => (
+              {paged.items.map((p) => (
                 <tr key={p.id}>
                   <td><div className={dash.strong}>{p.name}</div><div className={dash.muted}>{p.phone}</div></td>
                   <td className={dash.num}>{p.bookings}</td>
@@ -79,6 +82,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
             </tbody>
           </table>
         </div>
+        <Pager info={paged} basePath="/admin/users" params={{ q }} />
       </div>
 
       <div className={dash.card}>
