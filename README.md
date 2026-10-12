@@ -15,7 +15,7 @@ That's all: with no `.env.local` the app stores data in `.data/db.json` (startin
 
 - **Test the mobile app view on your phone:** `npm run dev:lan`, then open `http://<your-computer-IP>:3000` on the same Wi-Fi.
 - **Use Supabase locally:** copy `.env.example` to `.env.local`, fill in `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SECRET_KEY`, and run `supabase/migrations/20261006000000_oyun_store.sql` in the Supabase SQL editor. If the tables are missing, dev falls back to the local file and prints how to fix it.
-- **Sign-in with Clerk (optional):** set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`. Without them players use a device name-and-phone fallback.
+- **Sign-in with Clerk (optional):** set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` together (the publishable key alone turns Clerk on, and server auth then fails without the secret). With no publishable key players use a device name-and-phone fallback.
 - **Start local data over:** stop the server and delete `.data/`.
 - **Something looks stale after pulling:** `npm install`, delete `.next/`, restart.
 
@@ -25,7 +25,7 @@ That's all: with no `.env.local` the app stores data in `.data/db.json` (startin
 npm run lint         # ESLint
 npm test             # unit tests (Vitest)
 npm run test:e2e     # Playwright end-to-end: booking, partner and admin flows
-npm run test:sql     # database tests against the Supabase migrations
+npm run test:sql     # database tests; needs a throwaway local Postgres (PGHOST, PGUSER, PGPASSWORD), refuses Supabase hosts
 npm run build        # production build
 ```
 
