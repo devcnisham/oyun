@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import type { ReferralCheck } from '@/lib/booking-actions';
-import type { SelectionQuote } from '@/lib/booking-plan';
+import type { SelectionQuote } from '@/lib/booking-types';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { describeHours, rupees, shortHour } from './booking-format';
 import styles from './BookingFlow.module.css';
@@ -22,6 +22,7 @@ interface CheckoutSheetProps {
   code: string;
   codeError: string;
   promo: string | null;
+  codeApplied: boolean;
   referral: ReferralCheck | null;
   useWallet: boolean;
   onNameChange: (value: string) => void;
@@ -36,17 +37,17 @@ interface CheckoutSheetProps {
 const clock = (seconds: number) =>
   `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
+const isFlatAdvance = (quote: SelectionQuote) => quote.minAdvance === quote.maxAdvance;
+
 function advanceSummary(quote: SelectionQuote | null) {
   if (!quote) return 'an advance of ₹150 per hour';
-  if (quote.minAdvance === quote.maxAdvance) return `an advance of ${rupees(quote.minAdvance)} per hour`;
-  return `an advance of ${rupees(quote.minAdvance)} to ${rupees(quote.maxAdvance)} per hour`;
+  return `an advance of ${rupees(quote.minAdvance)}${isFlatAdvance(quote) ? '' : ` to ${rupees(quote.maxAdvance)}`} per hour`;
 }
 
 /** Bottom sheet shown while the player's slots are held: details, offers, bill and confirm. */
 export default function CheckoutSheet(props: CheckoutSheetProps) {
   const { turf, size, dateLabel, selected, selectedSlots, quote, secondsLeft, paying, signedIn, error, cashback } = props;
-  const { name, phone, code, codeError, promo, referral, useWallet } = props;
-  const codeApplied = promo !== null || referral?.status === 'valid';
+  const { name, phone, code, codeError, promo, referral, useWallet, codeApplied } = props;
   const chips = quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }));
 
   return createPortal(
@@ -125,10 +126,10 @@ export default function CheckoutSheet(props: CheckoutSheetProps) {
               {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
               <div><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
               <div className={styles.billTotal}>
-                <span>Advance at the turf ({quote.minAdvance === quote.maxAdvance && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span>
+                <span>Advance at the turf ({isFlatAdvance(quote) && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span>
                 <span>{rupees(quote.payNow)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--text-muted)' }}><span>Balance after you play</span><span>{rupees(quote.payAtVenue)}</span></div>
+              <div className={styles.billBalance}><span>Balance after you play</span><span>{rupees(quote.payAtVenue)}</span></div>
               {cashback > 0 && <p className={styles.success}>💰 Earn {rupees(cashback)} cashback when you check in</p>}
             </section>
           )}

@@ -1,5 +1,5 @@
 import type { Slot } from '@/lib/types';
-import { rupees, SESSIONS, shortHour, slotTitle, unavailableLabel } from './booking-format';
+import { rupees, SESSIONS, shortHour, slotTitle, unavailableInfo } from './booking-format';
 import styles from './BookingFlow.module.css';
 
 interface SlotMapProps {
@@ -12,7 +12,7 @@ interface SlotMapProps {
 function seatState(slot: Slot, isSelected: boolean) {
   if (isSelected) return styles.on;
   if (slot.available) return styles.open;
-  return slot.reason === 'held' ? styles.held : slot.reason === 'past' ? styles.past : styles.taken;
+  return styles[unavailableInfo(slot).kind];
 }
 
 /** Cinema-style seat map: slots grouped by part of the day, plus the colour legend. */
@@ -46,7 +46,7 @@ export default function SlotMap({ slots, selected, loading, onToggle }: SlotMapP
                       {slot.tags.includes('Peak') && slot.available && <span className={styles.peak} title="Peak hours" />}
                       <span className={styles.seatTime}>{shortHour(slot.hour)}</span>
                       <span className={styles.seatSub}>
-                        {slot.available ? rupees(slot.price) : unavailableLabel(slot, 'On hold', 'Over', 'Booked')}
+                        {slot.available ? rupees(slot.price) : unavailableInfo(slot).sub}
                       </span>
                     </button>
                   );

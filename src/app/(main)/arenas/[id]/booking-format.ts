@@ -21,12 +21,18 @@ export function describeHours(hours: number[]) {
   return sorted.map(shortHour).join(', ');
 }
 
-/** Why a slot cannot be picked, in the words shown to the player. */
-export function unavailableLabel(slot: Slot, held: string, over: string, other: string) {
-  return slot.reason === 'held' ? held : slot.reason === 'past' ? over : other;
+/** Why a slot cannot be picked: the tooltip, the seat sub-label and the seat colour, per reason. */
+export const UNAVAILABLE = {
+  held: { title: 'Someone is booking this slot', sub: 'On hold', kind: 'held' },
+  past: { title: 'Over', sub: 'Over', kind: 'past' },
+  other: { title: 'Not available', sub: 'Booked', kind: 'taken' },
+} as const;
+
+export function unavailableInfo(slot: Slot) {
+  return slot.reason === 'held' ? UNAVAILABLE.held : slot.reason === 'past' ? UNAVAILABLE.past : UNAVAILABLE.other;
 }
 
 export function slotTitle(slot: Slot) {
   if (slot.available) return `${slot.label} · ${rupees(slot.price)}`;
-  return `${slot.label} · ${unavailableLabel(slot, 'Someone is booking this slot', 'Over', 'Not available')}`;
+  return `${slot.label} · ${unavailableInfo(slot).title}`;
 }

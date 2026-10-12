@@ -77,9 +77,7 @@ export default function ListTurfPage() {
   if (submitted) {
     return (
       <ListingSubmitted
-        ownerName={formData.ownerName}
-        turfName={formData.turfName}
-        ownerPhone={formData.ownerPhone}
+        form={formData}
         refId={refId}
         onAnother={() => {
           setSubmitted(false);

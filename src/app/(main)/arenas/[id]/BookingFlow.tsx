@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import {
@@ -12,7 +12,7 @@ import {
   releaseHolds,
   type ReferralCheck,
 } from '@/lib/booking-actions';
-import type { SelectionQuote } from '@/lib/booking-plan';
+import type { SelectionQuote } from '@/lib/booking-types';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
 import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
@@ -20,7 +20,7 @@ import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
 import { primarySport } from '@/lib/sports';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
-import { MAX_SLOTS } from '@/lib/booking-limits';
+import { MAX_SLOTS } from '@/lib/booking-types';
 import { describeHours, rupees } from './booking-format';
 import CheckoutSheet from './CheckoutSheet';
 import PitchPicker from './PitchPicker';
@@ -69,6 +69,14 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const selectedSlots = slots.filter((s) => selected.includes(s.hour));
   const estimate = selectedSlots.reduce((sum, s) => sum + s.price, 0);
   const dateInfo = dates.find((d) => d.date === date);
+
+  // What the server needs to price or book the current selection
+  const bookingBase = useMemo(
+    () => ({ turfId: turf.id, date, hours: selected, addOns: [], useWallet, size }),
+    [turf.id, date, selected, useWallet, size]
+  );
+
+  const codeApplied = promo !== null || referral?.status === 'valid';
 
   const flash = useCallback((message: string) => {
     setToast(message);
@@ -147,16 +155,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     if (!inCheckout) return;
     let cancelled = false;
     const t = window.setTimeout(async () => {
-      const result = await quoteSelection({
-        turfId: turf.id,
-        date,
-        hours: selected,
-        promoCode: promo,
-        addOns: [],
-        useWallet,
-        phone: phoneDigits,
-        size,
-      });
+      const result = await quoteSelection({ ...bookingBase, promoCode: promo, phone: phoneDigits });
       if (cancelled) return;
       if ('error' in result) setError(result.error);
       else setQuote(result);
@@ -165,25 +164,27 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       cancelled = true;
       window.clearTimeout(t);
     };
-  }, [inCheckout, turf.id, date, selected, promo, useWallet, phoneDigits, size]);
+  }, [inCheckout, bookingBase, promo, phoneDigits]);
+
+  // New date or size: a different price and availability, so start the pick again
+  const reloadSlots = (nextDate: string, nextSize: PitchSize) => {
+    setSelected([]);
+    startSlotLoad(async () => {
+      setSlots(await getSlotsForDate(turf.id, nextDate, nextSize));
+    });
+  };
 
   const changeDate = (next: string) => {
     if (next === date) return;
     setDate(next);
-    setSelected([]);
-    startSlotLoad(async () => {
-      setSlots(await getSlotsForDate(turf.id, next, size));
-    });
+    reloadSlots(next, size);
   };
 
-  // Full pitch or half: a different price and availability, so start the pick again
+  // Full pitch or half
   const changeSize = (next: PitchSize) => {
     if (next === size) return;
     setSize(next);
-    setSelected([]);
-    startSlotLoad(async () => {
-      setSlots(await getSlotsForDate(turf.id, date, next));
-    });
+    reloadSlots(date, next);
   };
 
   const toggleSlot = (slot: Slot) => {
@@ -213,15 +214,16 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         return;
       }
       setError('');
-      setNow(Date.now());
-      setHoldUntil(Date.now() + result.expiresInMs);
+      const t = Date.now();
+      setNow(t);
+      setHoldUntil(t + result.expiresInMs);
     } finally {
       setHolding(false);
     }
   };
 
   const applyCode = async () => {
-    if (promo || referral?.status === 'valid') {
+    if (codeApplied) {
       setPromo(null);
       setReferral(null);
       setCode('');
@@ -230,7 +232,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     }
     const entered = code.trim().toUpperCase();
     if (!entered) return;
-    const tryPromo = await quoteSelection({ turfId: turf.id, date, hours: selected, promoCode: entered, addOns: [], useWallet, phone: phoneDigits, size });
+    const tryPromo = await quoteSelection({ ...bookingBase, promoCode: entered, phone: phoneDigits });
     if (!('error' in tryPromo) && tryPromo.promoCode && !tryPromo.promoError) {
       setPromo(tryPromo.promoCode);
       setCodeError('');
@@ -269,15 +271,10 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     if (!quote) return;
     startPaying(async () => {
       const result = await createBookings({
-        turfId: turf.id,
-        date,
-        hours: selected,
+        ...bookingBase,
         promoCode: promo,
-        addOns: [],
-        useWallet,
         phone: playerPhone,
         name: playerName,
-        size,
         referralCode: rewards.referralEnabled && referral?.status === 'valid' ? code : null,
       });
       if (!result.ids) {
@@ -364,6 +361,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           code={code}
           codeError={codeError}
           promo={promo}
+          codeApplied={codeApplied}
           referral={referral}
           useWallet={useWallet}
           onNameChange={setName}

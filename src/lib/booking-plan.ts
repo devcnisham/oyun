@@ -1,62 +1,17 @@
-// Pure booking logic shared by the booking server actions: request cleaning, turf lookup and the
-// planner that prices and books every chosen hour against a database copy. No 'use server' here, so
-// the types and helpers can be imported by client components and tests too.
-import { ValidationError } from './action-utils';
-import { MAX_SLOTS } from './booking-limits';
+// Server-side booking planner: finds a bookable turf and prices and books every chosen hour against a
+// database copy. It imports the store and wallet, so only server code (booking-actions, tests) may use it.
+// Client-safe request types, limits and cleaners live in booking-types.ts.
+import { ValidationError } from './errors';
+import { cleanHours, cleanSize, type BookingRequest, type SelectionQuote } from './booking-types';
 import { buildQuote, freePart, normalizePhone } from './pricing';
 import { newBookingCode, newId } from './store';
 import { formatHour, istNow } from './time';
-import type { Booking, BookingAddOn, Database, PitchSize, PriceLine } from './types';
+import type { Booking, BookingAddOn, Database, PriceLine } from './types';
 import { createPlayer, findByReferralCode, walletTxn } from './wallet';
 
 export function bookableTurf(db: Database, turfId: string) {
   const turf = db.turfs.find((t) => t.id === turfId);
   return turf && turf.status === 'active' ? turf : null;
-}
-
-export function cleanHours(hours: unknown): number[] {
-  if (!Array.isArray(hours)) throw new ValidationError('Pick at least one slot');
-  const clean = [...new Set(hours.map(Number))].filter((h) => Number.isInteger(h) && h >= 0 && h <= 23).sort((a, b) => a - b);
-  if (clean.length === 0) throw new ValidationError('Pick at least one slot');
-  if (clean.length > MAX_SLOTS) throw new ValidationError(`You can book up to ${MAX_SLOTS} slots at a time`);
-  return clean;
-}
-
-export const cleanSize = (size: unknown): PitchSize => (size === 'half' ? 'half' : 'full');
-
-export interface SelectionRequest {
-  turfId: string;
-  date: string;
-  hours: number[];
-  promoCode: string | null;
-  addOns: { id: string; qty: number }[];
-  useWallet: boolean;
-  phone: string;
-  size?: PitchSize; // full pitch (default) or one half
-}
-
-export interface BookingRequest extends SelectionRequest {
-  name: string;
-  referralCode?: string | null;
-}
-
-export interface SelectionQuote {
-  slots: { hour: number; label: string; price: number }[];
-  slotTotal: number; // slot prices after peak/weekend/last-minute pricing
-  adjustments: PriceLine[]; // owner offers and promo, summed across slots
-  addOns: BookingAddOn[];
-  addOnTotal: number;
-  walletBalance: number;
-  walletDeduction: number;
-  total: number;
-  advancePercent: number;
-  minAdvance: number;
-  maxAdvance: number;
-  payNow: number;
-  payAtVenue: number;
-  promoCode: string | null;
-  promoError: string | null;
-  slotError: string | null;
 }
 
 /*

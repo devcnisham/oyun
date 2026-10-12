@@ -1,23 +1,22 @@
+import type { ListingForm } from './listing-options';
 import styles from './page.module.css';
 
 interface ListingSubmittedProps {
-  ownerName: string;
-  turfName: string;
-  ownerPhone: string;
+  form: ListingForm;
   refId: string;
   onAnother: () => void;
 }
 
 /** Confirmation shown after a turf application is sent. */
-export default function ListingSubmitted({ ownerName, turfName, ownerPhone, refId, onAnother }: ListingSubmittedProps) {
+export default function ListingSubmitted({ form, refId, onAnother }: ListingSubmittedProps) {
   return (
     <div className={styles.page}>
       <div className={styles.successPage}>
         <div className={styles.successIcon}>🎉</div>
         <h1 className={styles.successTitle}>Application Submitted!</h1>
         <p className={styles.successDesc}>
-          Thank you, <strong>{ownerName}</strong>! We&apos;ve received your listing for <strong>{turfName}</strong>.
-          Our team will review it and get back to you at <strong>{ownerPhone}</strong> within 24–48 hours.
+          Thank you, <strong>{form.ownerName}</strong>! We&apos;ve received your listing for <strong>{form.turfName}</strong>.
+          Our team will review it and get back to you at <strong>{form.ownerPhone}</strong> within 24–48 hours.
         </p>
         <div className={styles.successRef}>Reference: SA-{refId}</div>
         <div className={styles.successPerks}>
