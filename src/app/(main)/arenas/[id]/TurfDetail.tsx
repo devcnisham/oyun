@@ -5,7 +5,7 @@ import type { PublicReview } from '@/lib/reviews';
 import Stars from '@/components/Stars';
 import FavouriteButton from '@/components/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
-import { shortHour } from './booking-format';
+import { shortHour } from '@/lib/format';
 import ShareButton from './ShareButton';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';

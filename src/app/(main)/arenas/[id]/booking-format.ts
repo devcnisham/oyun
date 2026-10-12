@@ -1,3 +1,4 @@
+import { rupees, shortHour } from '@/lib/format';
 import type { Slot } from '@/lib/types';
 
 /** Day parts the slot map is grouped into; `to` is exclusive. */
@@ -7,10 +8,6 @@ export const SESSIONS = [
   { name: 'Evening', icon: '🌆', from: 17, to: 21 },
   { name: 'Night', icon: '🌙', from: 21, to: 24 },
 ] as const;
-
-export const rupees = (n: number) => `₹${(n ?? 0).toLocaleString('en-IN')}`;
-
-export const shortHour = (h: number) => `${h % 12 === 0 ? 12 : h % 12} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
 
 /** "7 PM – 9 PM" for consecutive hours, "7 PM, 9 PM" otherwise. */
 export function describeHours(hours: number[]) {

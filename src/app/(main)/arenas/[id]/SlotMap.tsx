@@ -1,5 +1,6 @@
 import type { Slot } from '@/lib/types';
-import { rupees, SESSIONS, shortHour, slotTitle, unavailableInfo } from './booking-format';
+import { rupees, shortHour } from '@/lib/format';
+import { SESSIONS, slotTitle, unavailableInfo } from './booking-format';
 import styles from './BookingFlow.module.css';
 
 interface SlotMapProps {

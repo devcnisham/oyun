@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { rupees } from '@/lib/format';
 import styles from './dash.module.css';
 
 export function PageHeader({ title, desc, children }: { title: string; desc?: string; children?: React.ReactNode }) {
@@ -67,6 +68,6 @@ export function Field({ label, children }: { label: string; children: React.Reac
   );
 }
 
-export const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+export const inr = (n: number) => rupees(Math.round(n));
 
 export { styles as dash };
