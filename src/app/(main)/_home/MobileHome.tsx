@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { rupees } from '@/lib/format';
 import { canOptimize } from '@/lib/images';
 import type { PromoCard, TurfSummary } from '@/lib/types';
 import CouponCard from './CouponCard';
@@ -84,7 +85,7 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
                 <span>{t.area} · {t.size}</span>
                 <span className={styles.rowMeta}>
                   {t.reviewCount > 0 ? <em>★ {t.rating}</em> : <em>New</em>}
-                  <strong>₹{t.pricePerHour.toLocaleString('en-IN')}<small>/hr</small></strong>
+                  <strong>{rupees(t.pricePerHour)}<small>/hr</small></strong>
                 </span>
               </div>
             </Link>

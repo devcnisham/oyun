@@ -1,5 +1,5 @@
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
 import { adjustWallet, togglePlayerBan } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 import { formatDate, formatDateTime } from '@/lib/time';
@@ -40,7 +40,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
           </form>
           <span className={dash.muted}>{players.length} players</span>
         </div>
-        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr>
@@ -95,7 +95,7 @@ export default async function AdminPlayers({ searchParams }: { searchParams: Pro
             </p>
           </div>
         </div>
-        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead><tr><th>When</th><th>Player</th><th>Type</th><th>Note</th><th className={dash.num}>Amount</th></tr></thead>
             <tbody>

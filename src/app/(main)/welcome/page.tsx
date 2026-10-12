@@ -46,6 +46,20 @@ const ownerPoints = [
   'Zero commission while we are in beta',
 ];
 
+function FeatureGrid({ items }: { items: { icon: string; title: string; desc: string }[] }) {
+  return (
+    <ul className={styles.featureGrid}>
+      {items.map((f) => (
+        <li key={f.title} className={styles.feature}>
+          <span className={styles.featureIcon} aria-hidden="true">{f.icon}</span>
+          <h3 className={styles.h3}>{f.title}</h3>
+          <p className={styles.body}>{f.desc}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default async function WelcomePage() {
   const faqs = buildFaqs(await getSettings()).slice(0, 5); // booking questions, same answers as /faq
   return (
@@ -113,29 +127,13 @@ export default async function WelcomePage() {
       <section className={`container ${styles.section}`} aria-labelledby="booking-h">
         <h2 id="booking-h" className={styles.h2}>Everything about your booking</h2>
         <p className={styles.sub}>What happens from the first tap to the final whistle.</p>
-        <ul className={styles.featureGrid}>
-          {bookingDetails.map((f) => (
-            <li key={f.title} className={styles.feature}>
-              <span className={styles.featureIcon} aria-hidden="true">{f.icon}</span>
-              <h3 className={styles.h3}>{f.title}</h3>
-              <p className={styles.body}>{f.desc}</p>
-            </li>
-          ))}
-        </ul>
+        <FeatureGrid items={bookingDetails} />
       </section>
 
       {/* Features */}
       <section className={`container ${styles.section}`} aria-labelledby="why-h">
         <h2 id="why-h" className={styles.h2}>Built so game day just works</h2>
-        <ul className={styles.featureGrid}>
-          {features.map((f) => (
-            <li key={f.title} className={styles.feature}>
-              <span className={styles.featureIcon} aria-hidden="true">{f.icon}</span>
-              <h3 className={styles.h3}>{f.title}</h3>
-              <p className={styles.body}>{f.desc}</p>
-            </li>
-          ))}
-        </ul>
+        <FeatureGrid items={features} />
       </section>
 
       {/* Booking questions */}

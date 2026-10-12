@@ -279,69 +279,6 @@
 .mapPinMock:nth-child(5) { top: 75%; left: 55%; }
 .mapPinMock:nth-child(6) { top: 20%; left: 50%; }
 
-/* ===== MAP VIEW ===== */
-.mapContainer {
-  width: 100%;
-  height: calc(100vh - 160px);
-  position: sticky;
-  top: 88px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-}
-
-.mapPlaceholder {
-  width: 100%;
-  height: 100%;
-  background: var(--bg-secondary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.mapPlaceholderIcon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  opacity: 0.8;
-}
-
-.mapPlaceholder h3 {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
-.mapPlaceholder p {
-  color: var(--text-secondary);
-}
-
-.mapPinsMock {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.mapPinMock {
-  position: absolute;
-  background: var(--text-primary);
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: var(--shadow-md);
-}
-
-.mapPinMock:nth-child(1) { top: 30%; left: 40%; }
-.mapPinMock:nth-child(2) { top: 50%; left: 60%; }
-.mapPinMock:nth-child(3) { top: 60%; left: 30%; }
-.mapPinMock:nth-child(4) { top: 40%; left: 75%; }
-.mapPinMock:nth-child(5) { top: 75%; left: 55%; }
-.mapPinMock:nth-child(6) { top: 20%; left: 50%; }
-
 /* Responsive */
 @media (max-width: 1024px) {
   .grid { grid-template-columns: 1fr; }
