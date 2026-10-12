@@ -54,12 +54,12 @@ export function hourlyRate(turf: PublicTurf, size: PitchSize) {
 
 // Which halves a booking, hold or block covers
 const HALVES: Record<PitchPart, ('A' | 'B')[]> = { full: ['A', 'B'], A: ['A'], B: ['B'] };
-export const halvesOf = (part: PitchPart | undefined) => HALVES[part ?? 'full'];
+const halvesOf = (part: PitchPart | undefined) => HALVES[part ?? 'full'];
 
 // " · Half pitch (A)" for half-pitch bookings, nothing for the whole pitch
 export const halfNote = (part: PitchPart | undefined) => (part === 'A' || part === 'B' ? ` · ${pitchLabel(part)}` : '');
 
-export function pitchLabel(part: PitchPart | undefined) {
+function pitchLabel(part: PitchPart | undefined) {
   return part === 'A' ? 'Half pitch (A)' : part === 'B' ? 'Half pitch (B)' : 'Full pitch';
 }
 
