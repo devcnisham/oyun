@@ -1,18 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import {
-  checkReferralCode,
-  createBookings,
-  getSlotsForDate,
-  holdSlots,
-  quoteSelection,
-  releaseHolds,
-  type ReferralCheck,
-} from '@/lib/booking-actions';
-import type { SelectionQuote } from '@/lib/booking-types';
+import { createBookings, getSlotsForDate, holdSlots, releaseHolds } from '@/lib/booking-actions';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
 import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
@@ -23,6 +14,7 @@ import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
 import { describeHours } from './booking-format';
+import { useCheckoutForm } from './useCheckoutForm';
 import CheckoutSheet from './CheckoutSheet';
 import PitchPicker from './PitchPicker';
 import SlotMap from './SlotMap';
@@ -50,49 +42,32 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [holdUntil, setHoldUntil] = useState<number | null>(null);
   const [holding, setHolding] = useState(false);
   const [now, setNow] = useState(() => Date.now());
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [code, setCode] = useState(initialReferral);
-  const [promo, setPromo] = useState<string | null>(null);
-  const [referral, setReferral] = useState<ReferralCheck | null>(null);
-  const [codeError, setCodeError] = useState('');
-  const [useWallet, setUseWallet] = useState(false);
-  const [quote, setQuote] = useState<SelectionQuote | null>(null);
-  const [error, setError] = useState('');
   const [paying, startPaying] = useTransition();
   const [showGate, setShowGate] = useState(false);
   const account = useAccount();
   const openClerkSignIn = useOpenClerkSignIn();
+  const form = useCheckoutForm({
+    turfId: turf.id,
+    date,
+    hours: selected,
+    size,
+    active: holdUntil !== null,
+    referralEnabled: rewards.referralEnabled,
+    initialCode: initialReferral,
+    account,
+  });
 
+  const { reset: resetForm } = form;
   const inCheckout = holdUntil !== null;
   const secondsLeft = holdUntil ? Math.max(0, Math.ceil((holdUntil - now) / 1000)) : 0;
-  const phoneDigits = phone.replace(/\D/g, '').slice(-10);
   const selectedSlots = slots.filter((s) => selected.includes(s.hour));
   const estimate = selectedSlots.reduce((sum, s) => sum + s.price, 0);
   const dateInfo = dates.find((d) => d.date === date);
-
-  // What the server needs to price or book the current selection
-  const bookingBase = useMemo(
-    () => ({ turfId: turf.id, date, hours: selected, addOns: [], useWallet, size }),
-    [turf.id, date, selected, useWallet, size]
-  );
-
-  const codeApplied = promo !== null || referral?.status === 'valid';
 
   const flash = useCallback((message: string) => {
     setToast(message);
     window.setTimeout(() => setToast((t) => (t === message ? '' : t)), 3200);
   }, []);
-
-  // Fill in the signed-in player's name and number
-  useEffect(() => {
-    if (!account.ready) return;
-    const p = getProfile();
-    queueMicrotask(() => {
-      setName((n) => n || account.name || p.name);
-      setPhone((n) => n || account.phone || p.phone);
-    });
-  }, [account.ready, account.name, account.phone]);
 
   // Keep the slot map live, like a cinema seat map
   const refreshSlots = useCallback(
@@ -136,13 +111,12 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const closeCheckout = useCallback(
     (message?: string) => {
       setHoldUntil(null);
-      setQuote(null);
-      setError('');
+      resetForm();
       releaseHolds().catch(() => {});
       startSlotLoad(() => refreshSlots(date));
       if (message) flash(message);
     },
-    [date, refreshSlots, flash]
+    [date, refreshSlots, flash, resetForm]
   );
 
   useEffect(() => {
@@ -150,22 +124,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       queueMicrotask(() => closeCheckout('Your hold expired and the slots were released'));
     }
   }, [inCheckout, secondsLeft, paying, closeCheckout]);
-
-  // Server prices the exact booking whenever checkout inputs change
-  useEffect(() => {
-    if (!inCheckout) return;
-    let cancelled = false;
-    const t = window.setTimeout(async () => {
-      const result = await quoteSelection({ ...bookingBase, promoCode: promo, phone: phoneDigits });
-      if (cancelled) return;
-      if ('error' in result) setError(result.error);
-      else setQuote(result);
-    }, 150);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(t);
-    };
-  }, [inCheckout, bookingBase, promo, phoneDigits]);
 
   // New date or size: a different price and availability, so start the pick again
   const reloadSlots = (nextDate: string, nextSize: PitchSize) => {
@@ -214,7 +172,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         flash(result.error);
         return;
       }
-      setError('');
+      form.setError('');
       const t = Date.now();
       setNow(t);
       setHoldUntil(t + result.expiresInMs);
@@ -223,63 +181,32 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     }
   };
 
-  const applyCode = async () => {
-    if (codeApplied) {
-      setPromo(null);
-      setReferral(null);
-      setCode('');
-      setCodeError('');
-      return;
-    }
-    const entered = code.trim().toUpperCase();
-    if (!entered) return;
-    const tryPromo = await quoteSelection({ ...bookingBase, promoCode: entered, phone: phoneDigits });
-    if (!('error' in tryPromo) && tryPromo.promoCode && !tryPromo.promoError) {
-      setPromo(tryPromo.promoCode);
-      setCodeError('');
-      return;
-    }
-    if (rewards.referralEnabled) {
-      const check = await checkReferralCode(entered, phoneDigits);
-      if (check.status === 'valid') {
-        setReferral(check);
-        setCodeError('');
-        return;
-      }
-      if (check.status === 'not_new') {
-        setCodeError("Referral codes are for a player's first booking only.");
-        return;
-      }
-    }
-    setCodeError(('error' in tryPromo ? null : tryPromo.promoError) ?? 'Invalid promo or referral code');
-  };
-
   const pay = () => {
-    setError('');
+    form.setError('');
     // Booking needs an account: sign in or sign up first, without losing the held slots
     if (!account.signedIn) {
       if (clerkEnabled) openClerkSignIn();
       else setShowGate(true);
       return;
     }
-    reserve(name, phoneDigits);
+    reserve(form.name, form.phoneDigits);
   };
 
   // Confirms the held slots; nothing is charged online, the player pays the turf at the venue
   const reserve = (playerName: string, playerPhone: string) => {
-    if (!playerName.trim()) return setError('Enter your name');
-    if (playerPhone.length !== 10) return setError('Enter a 10-digit mobile number');
-    if (!quote) return;
+    if (!playerName.trim()) return form.setError('Enter your name');
+    if (playerPhone.length !== 10) return form.setError('Enter a 10-digit mobile number');
+    if (!form.quote) return;
     startPaying(async () => {
       const result = await createBookings({
-        ...bookingBase,
-        promoCode: promo,
+        ...form.base,
+        promoCode: form.promo,
         phone: playerPhone,
         name: playerName,
-        referralCode: rewards.referralEnabled && referral?.status === 'valid' ? code : null,
+        referralCode: rewards.referralEnabled && form.referral?.status === 'valid' ? form.code : null,
       });
       if (!result.ids) {
-        setError(result.error ?? 'Could not complete the booking');
+        form.setError(result.error ?? 'Could not complete the booking');
         return;
       }
       saveProfile({ name: playerName.trim(), phone: playerPhone });
@@ -288,7 +215,8 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     });
   };
 
-  const cashback = rewards.cashbackEnabled && quote ? Math.min(rewards.cashbackMax, Math.floor((quote.total * rewards.cashbackPercent) / 100)) : 0;
+  const cashback =
+    rewards.cashbackEnabled && form.quote ? Math.min(rewards.cashbackMax, Math.floor((form.quote.total * rewards.cashbackPercent) / 100)) : 0;
   const availableCount = slots.filter((s) => s.available).length;
 
   return (
@@ -351,28 +279,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           dateLabel={dateInfo?.label}
           selected={selected}
           selectedSlots={selectedSlots}
-          quote={quote}
           secondsLeft={secondsLeft}
           paying={paying}
           signedIn={account.signedIn}
-          error={error}
           cashback={cashback}
-          name={name}
-          phone={phone}
-          code={code}
-          codeError={codeError}
-          promo={promo}
-          codeApplied={codeApplied}
-          referral={referral}
-          useWallet={useWallet}
-          onNameChange={setName}
-          onPhoneChange={setPhone}
-          onCodeChange={(value) => {
-            setCode(value);
-            setCodeError('');
-          }}
-          onApplyCode={applyCode}
-          onUseWalletChange={setUseWallet}
+          form={form}
           onClose={() => closeCheckout()}
           onPay={pay}
         />
@@ -385,9 +296,9 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
             onDone={() => {
               const p = getProfile();
               setShowGate(false);
-              setName(p.name);
-              setPhone(p.phone);
-              setError('');
+              form.setName(p.name);
+              form.setPhone(p.phone);
+              form.setError('');
               reserve(p.name, p.phone);
             }}
           />,
