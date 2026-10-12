@@ -57,7 +57,7 @@ export async function approveApplication(_prev: ActionResult, fd: FormData): Pro
       db.turfs.push({
         id,
         name: app.turfName,
-        location: `${app.address}`,
+        location: app.address,
         area: app.area,
         city: 'Mangalore',
         rating: 0,
