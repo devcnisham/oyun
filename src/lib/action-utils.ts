@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache';
+import { hoursError } from './hours';
 import { AccessError } from './partner-auth';
 import { ValidationError } from './errors';
 import type { ActionResult, Turf } from './types';
@@ -69,6 +70,8 @@ export function parseTurfProfile(fd: FormData, { phoneOptional = false } = {}): 
   const openTime = required(fd, 'openTime', 'Opening time', 5);
   const closeTime = required(fd, 'closeTime', 'Closing time', 5);
   if (!TIME_RE.test(openTime) || !TIME_RE.test(closeTime)) throw new ValidationError('Times must look like 06:00');
+  const hoursProblem = hoursError(openTime, closeTime);
+  if (hoursProblem) throw new ValidationError(hoursProblem);
 
   const images = list(str(fd, 'images', 4000), /\n/);
   if (images.some((u) => !isSafeTurfImage(u))) {
