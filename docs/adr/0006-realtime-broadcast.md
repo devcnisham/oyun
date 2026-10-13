@@ -11,5 +11,11 @@ After a write the server posts a ping to `slots:{turf}:{date}`; clients refetch 
 ## Trade-off
 Cheap and independent of row-level security. Topics are public and carry no data.
 
+## Security Review (P9-15)
+Public ping-only channels accepted in writing:
+1. Payloads carry zero business data (empty ping `{}` triggering revalidation).
+2. All actual slot data is retrieved via authenticated server actions / API endpoints with server validation.
+3. No denial of service or eavesdropping risk since topic names only encode turf slug and date (`slots:{turf}:{date}`).
+
 ## Reopen when
-If a ping ever carries data, switch to private channels (task P9-15).
+If a broadcast payload ever carries user or booking data, switch to private channels with authorization tokens.

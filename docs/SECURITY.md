@@ -38,8 +38,7 @@ Say what you found, where, and how to reproduce it, without exploiting it on rea
 | Anonymous tickets: the `bk_` link alone no longer cancels or reviews; the booking phone number is also needed, but it is still a typed, unverified phone (see P9-03). The link still shows the name and a masked phone | P9-05 |
 | Rate limits and lockouts are shared through Postgres once `supabase/setup/8-rate-limits.sql` is run on production; until then each server instance counts its own | P9-22 |
 | Admin is one credential: no MFA, no session revocation | P9-09 |
-| CSP still allows `'unsafe-inline'` scripts (nonces need per-request rendering, see `docs/NEXT16-NOTES.md`) | P9-13 |
-| Realtime topics are public (ping-only payload) | P9-15 |
+| Realtime topics are public (ping-only empty payload accepted in writing in ADR-0006; data retrieved via server actions) | P9-15 (resolved) |
 | No audit log of admin and partner actions | Phase 4 |
 | Production secret key rotation and admin and partner password rotation need doing by the owner | P9-01 |
 
