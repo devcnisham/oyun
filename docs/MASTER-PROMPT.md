@@ -78,7 +78,7 @@ Follow `docs/SLOT-BOOKING-DB.md` → "Moving the app over".
   - Move it into `supabase/migrations/<timestamp>_slot_booking_v2.sql` plus matching `supabase/setup/` steps.
   - Add `public` wrapper functions for the RPCs, or expose the `oyun` schema.
   - Keep the test script passing in CI.
-- [ ] **Data mapping.**
+- [x] **Data mapping.**
   - Seed and migration code turns each existing turf into a venue with resources and bookables.
   - A plain turf gets one resource. A `halfPitch` turf gets Half A, Half B and three bookables.
   - Each badminton or pickleball court is its own resource.

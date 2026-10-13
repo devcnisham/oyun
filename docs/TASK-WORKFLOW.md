@@ -42,7 +42,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 
 ### D. Database v2 (Phase 2, follow `docs/SLOT-BOOKING-DB.md`)
 - [x] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers; keep `test:sql` green in CI.
-- [ ] Data mapping: turf to venue, resources, bookables; partner screens for courts.
+- [x] Data mapping: turf to venue, resources, bookables; partner screens for courts.
 - [ ] R007 Multi-court venues in the booking flow.
 - [ ] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
 - [ ] Switch slots over to the v2 functions, keep the realtime broadcast.

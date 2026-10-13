@@ -410,3 +410,20 @@ export async function updateBusiness(_prev: ActionResult, fd: FormData): Promise
   });
 }
 
+export async function updateCourtSetup(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('turf');
+    const halfPitch = bool(fd, 'halfPitch');
+    const halfPricePercent = halfPitch ? int(fd, 'halfPricePercent', { min: 30, max: 80, label: 'Half pitch price' }) : undefined;
+    await mutate((db) => {
+      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
+      if (turf) {
+        turf.halfPitch = halfPitch;
+        turf.halfPricePercent = halfPricePercent;
+      }
+    });
+    return { ok: 'Court and pitch layout saved' };
+  });
+}
+
+

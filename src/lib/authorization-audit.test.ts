@@ -105,6 +105,7 @@ describe('dashboard pages', () => {
     'invoices/[id]': 'bookings',
     'staff': 'staff',
     'turf': 'turf',
+    'courts': 'turf',
   };
   const base = 'src/app/partner/(dashboard)';
 

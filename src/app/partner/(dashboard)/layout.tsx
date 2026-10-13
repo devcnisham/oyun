@@ -22,7 +22,8 @@ export default async function PartnerLayout({ children }: { children: React.Reac
     ...(ctx.can('addons') ? [{ href: '/partner/add-ons', label: 'Add-ons', icon: '🧃' }] : []),
     ...(ctx.can('payouts') ? [{ href: '/partner/payouts', label: 'Payouts & GST', icon: '💰' }] : []),
     ...(ctx.can('staff') ? [{ href: '/partner/staff', label: 'Staff', icon: '👥' }] : []),
-    ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Turf', icon: '🏟️' }] : []),
+    ...(ctx.can('turf') ? [{ href: '/partner/courts', label: 'Courts & Pitches', icon: '🏟️' }] : []),
+    ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Turf', icon: '⚙️' }] : []),
   ];
 
   return (

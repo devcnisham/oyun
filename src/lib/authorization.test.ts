@@ -60,6 +60,7 @@ const EXPECTED: Record<string, string | null> = {
   resetStaffPassword: 'staff',
   deleteStaff: 'staff',
   updateTurfProfile: 'turf',
+  updateCourtSetup: 'turf',
   updateBusiness: 'payouts',
 };
 
