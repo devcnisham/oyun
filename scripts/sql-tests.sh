@@ -42,6 +42,9 @@ echo "== Shared rate limits"
 echo "== Double-booking race (parallel sessions on the live store functions)"
 bash scripts/sql-race-test.sh "$STORE_DB"
 
+echo "== Slot booking v2 public wrappers"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/slot_booking_v2_wrappers_test.sql
+
 echo "== Slot booking v2 proposal and tests"
 fresh_db "$V2_DB"
 "${PSQL[@]}" -d "$V2_DB" -f supabase/proposals/slot_booking_v2.sql > /dev/null
