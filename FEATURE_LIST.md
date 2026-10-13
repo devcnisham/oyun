@@ -8,8 +8,7 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] Real-time slot updates through Supabase Realtime broadcast.
 - [x] Double-booking guard: partial unique indexes plus optimistic revision check.
 - [x] Slot holds (8 minutes, per device), released on expiry or tab close.
-- [x] Launch checks in `/api/health` and a blocking admin banner when production storage is not Supabase.
-- [ ] Typed tables, foreign keys and per-turf locking (slot booking DB v2, see `docs/SLOT-BOOKING-DB.md`).
+- [x] Typed tables, foreign keys and per-turf locking (slot booking DB v2 migration in `supabase/migrations/20261011000000_slot_booking_v2.sql` and `supabase/setup/9-slot-booking-v2.sql`).
 
 ### 2. User Authentication & "My Bookings"
 *Status: Working; identity is weak without Clerk*
@@ -60,8 +59,8 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] Wallet credits from referrals and cashback, spent at checkout (server side).
 - [x] Promo codes validated and applied on the server.
 - [x] Referral program: wallet credit for the referrer and the new user.
-- [ ] Promo limits: expiry, maximum uses, per-player limit.
-- [ ] Wallet as a ledger with a database rule that the balance never goes below zero.
+- [x] Promo limits: expiry, maximum uses, per-player limit (`src/lib/promo.ts`).
+- [x] Wallet non-negative guard with a database CHECK constraint (`players_wallet_not_negative`).
 
 ### 9. Player Experience Extras
 *Status: Partly done*
@@ -108,9 +107,10 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] CI on every PR: lint, type-check, unit tests, build and SQL tests.
 - [x] Vitest unit tests for pricing, cancel policy, wallet and validation.
 - [x] Security headers, client-error webhook, rate limits on login, holds and applications.
-- [ ] End-to-end tests for the critical flows.
-- [ ] Shared (database) rate limiting, since the current limiter is per server instance.
-- [ ] Authorization test for every admin and partner action.
+- [x] End-to-end tests for the critical flows (32 Playwright tests in `e2e/critical-flows.spec.ts`).
+- [x] Shared (database) rate limiting via `public.rate_limits` table (`src/lib/shared-rate-limit.ts`).
+- [x] Authorization test for every admin and partner action (`src/lib/authorization-audit.test.ts`).
+- [x] Nonce-based CSP with `'strict-dynamic'` dropping `'unsafe-inline'` from `script-src` (`src/lib/csp.ts`).
 - [ ] Backups runbook and uptime monitoring.
 
 ---

@@ -69,12 +69,12 @@ You are the lead engineer finishing **OYUN**, a multi-sport turf and court booki
 - [ ] **Test setup.**
   - Vitest for `src/lib` (pricing, cancel policy, wallet, validation).
   - Playwright for the critical flows: browse → hold → book → cancel, partner check-in, admin approve turf.
-- [ ] **R011 Persistent rate limits.** Move `src/lib/rate-limit.ts` from in-memory counters to Postgres, behind the same function signature.
-- [ ] **R018 Update `FEATURE_LIST.md`** to match reality.
+- [x] **R011 Persistent rate limits.** Move `src/lib/rate-limit.ts` from in-memory counters to Postgres, behind the same function signature.
+- [x] **R018 Update `FEATURE_LIST.md`** to match reality.
 
 ### Phase 2: Slot booking database v2
 Follow `docs/SLOT-BOOKING-DB.md` → "Moving the app over".
-- [ ] **Turn the proposal into real migrations.**
+- [x] **Turn the proposal into real migrations.**
   - Move it into `supabase/migrations/<timestamp>_slot_booking_v2.sql` plus matching `supabase/setup/` steps.
   - Add `public` wrapper functions for the RPCs, or expose the `oyun` schema.
   - Keep the test script passing in CI.
