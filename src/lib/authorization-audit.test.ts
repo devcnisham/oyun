@@ -18,7 +18,7 @@ function files(dir: string, name: string, acc: string[] = []) {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) files(full, name, acc);
-    else if (entry === name) acc.push(full);
+    else if (entry === name) acc.push(full.replace(/\\/g, '/'));
   }
   return acc;
 }
