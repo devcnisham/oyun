@@ -1,9 +1,10 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag, updateTag } from 'next/cache';
 import { hoursError } from './hours';
 import { AccessError } from './partner-auth';
 import { ValidationError } from './errors';
 import type { ActionResult, Turf } from './types';
 import { MAX_TURF_IMAGES, isSafeTurfImage } from './validation/site-content';
+import { TAG_PUBLIC_TURFS, TAG_SETTINGS, TAG_SITE_CONTENT } from './queries';
 
 export { ValidationError };
 
@@ -42,7 +43,23 @@ export function phone10(fd: FormData, key: string, label = 'Phone number') {
 
 // Every mutation can change public pages and dashboards, so refresh everything
 export function refreshAll() {
-  revalidatePath('/', 'layout');
+  const tags = [TAG_PUBLIC_TURFS, TAG_SITE_CONTENT, TAG_SETTINGS];
+  for (const tag of tags) {
+    try {
+      if (typeof updateTag === 'function') {
+        updateTag(tag);
+      }
+    } catch {
+      try {
+        if (typeof revalidateTag === 'function') {
+          revalidateTag(tag, 'max');
+        }
+      } catch {}
+    }
+  }
+  try {
+    revalidatePath('/', 'layout');
+  } catch {}
 }
 
 // Turns thrown access/validation errors into a form message

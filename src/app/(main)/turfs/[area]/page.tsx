@@ -20,6 +20,8 @@ interface Props {
   params: Promise<{ area: string }>;
 }
 
+export const revalidate = 60;
+
 async function load(slug: string) {
   const turfs = await listPublicTurfs();
   const areas = listAreas(turfs);

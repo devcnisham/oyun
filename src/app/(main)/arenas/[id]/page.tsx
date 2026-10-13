@@ -17,6 +17,8 @@ interface PageProps {
   searchParams: Promise<{ date?: string; ref?: string }>;
 }
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const turf = await getPublicTurf(id);

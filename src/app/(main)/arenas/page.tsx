@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
 import JsonLd from '@/components/JsonLd';
@@ -15,9 +14,10 @@ export const metadata: Metadata = {
   openGraph: { url: '/arenas' },
 };
 
+export const revalidate = 60;
+
 export default async function ArenasPage({ searchParams }: { searchParams: Promise<{ q?: string; area?: string; sport?: string }> }) {
   const { q = '', area = '', sport = '' } = await searchParams;
-  await connection(); // live availability: render per request
   const turfs = await listPublicTurfs();
   return (
     <>

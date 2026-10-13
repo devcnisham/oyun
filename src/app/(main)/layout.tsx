@@ -1,14 +1,14 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { connection } from "next/server";
 import { getSettings, getSiteContent, listAreas, listPublicTurfs } from "@/lib/queries";
+
+export const revalidate = 60;
 
 export default async function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await connection(); // announcement can change at any time
   const site = await getSiteContent();
   const settings = await getSettings();
   const areas = listAreas(await listPublicTurfs());

@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { SITE_DESCRIPTION } from '@/lib/site';
 import JsonLd from '@/components/JsonLd';
 import { organizationSchema, websiteSchema } from '@/lib/schema';
-import { connection } from 'next/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import TurfSlider from '@/components/TurfSlider';
@@ -22,8 +21,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 };
 
+export const revalidate = 60;
+
 export default async function Home() {
-  await connection(); // live data: render per request
   const site = await getSiteContent();
   const turfs = await listPublicTurfs();
   const settings = await getSettings();
