@@ -8,6 +8,7 @@ import { newBookingCode, newId } from './store';
 import { formatHour, istNow } from './time';
 import type { Booking, BookingAddOn, Database, PriceLine } from './types';
 import { createPlayer, findByReferralCode, walletTxn } from './wallet';
+import { clerkEnabled } from './clerk';
 
 export function bookableTurf(db: Database, turfId: string) {
   const turf = db.turfs.find((t) => t.id === turfId);
@@ -19,7 +20,7 @@ export function bookableTurf(db: Database, turfId: string) {
  * The quote runs this on a throwaway copy, so the price shown is exactly what booking charges.
  * Add-ons are attached to the first hour only.
  */
-export function planBooking(db: Database, req: BookingRequest, holder: string | null, strict: boolean) {
+export function planBooking(db: Database, req: BookingRequest, holder: string | null, strict: boolean, accountId: string | null = null) {
   const turf = bookableTurf(db, req.turfId);
   if (!turf) throw new ValidationError('This turf is not taking bookings right now');
   const hours = cleanHours(req.hours);
@@ -28,14 +29,50 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
   const name = req.name.trim().slice(0, 80) || 'Player';
   const now = istNow();
 
-  let player = phone.length === 10 ? db.players.find((p) => p.phone === phone) : undefined;
+  let player = accountId ? db.players.find((p) => p.accountId === accountId) : undefined;
+  if (!player && phone.length === 10) {
+    const byPhone = db.players.find((p) => p.phone === phone);
+    if (byPhone) {
+      if (accountId) {
+        if (!byPhone.accountId) {
+          byPhone.accountId = accountId;
+          player = byPhone;
+        } else if (byPhone.accountId === accountId) {
+          player = byPhone;
+        } else {
+          throw new ValidationError('This mobile number is linked to another account');
+        }
+      } else {
+        player = byPhone;
+      }
+    }
+  }
+
   if (player?.status === 'banned') throw new ValidationError('This number cannot make bookings. Contact support.');
-  const walletBalance = player && player.status === 'active' ? player.walletBalance : 0;
+
+  if (req.useWallet && player) {
+    const isOwner = Boolean(!player.accountId || player.accountId === accountId);
+    if (!isOwner || (clerkEnabled && (!accountId || player.accountId !== accountId))) {
+      throw new ValidationError('Sign in to use your wallet balance');
+    }
+  }
+
   if (!player) {
     const referrer = db.settings.referralEnabled ? findByReferralCode(db, req.referralCode) : undefined;
     if (strict && req.referralCode?.trim() && !referrer) throw new ValidationError('That referral code is not valid');
-    player = createPlayer(db, name, phone || '0000000000', referrer && referrer.status === 'active' ? referrer.id : null);
+    player = createPlayer(db, name, phone || '0000000000', referrer && referrer.status === 'active' ? referrer.id : null, accountId);
+  } else if (accountId && !player.accountId) {
+    player.accountId = accountId;
   }
+
+  const isOwner = Boolean(player && (!player.accountId || player.accountId === accountId));
+  const canAccessWallet = Boolean(
+    player &&
+    player.status === 'active' &&
+    isOwner &&
+    (!clerkEnabled || Boolean(accountId && player.accountId === accountId))
+  );
+  const walletBalance = canAccessWallet ? player.walletBalance : 0;
 
   const bookings: Booking[] = [];
   const adjustments = new Map<string, number>();
@@ -48,7 +85,7 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
   hours.forEach((hour, i) => {
     const quote = buildQuote(
       db,
-      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, source: 'online', holder, size },
+      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, accountId, source: 'online', holder, size },
       now
     );
     if (!quote) throw new ValidationError('Turf not found');
@@ -75,6 +112,7 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
       customerName: name,
       customerPhone: phone,
       playerId: player.id,
+      accountId: accountId ?? null,
       source: 'online',
       createdBy: null,
       addOns: quote.addOns,
@@ -89,7 +127,9 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
     };
     db.bookings.push(booking);
     // Deducting as we go means the next hour's quote sees the remaining balance
-    walletTxn(db, player, -quote.breakdown.walletDeduction, 'booking_payment', `Booking ${booking.code}`, booking.id);
+    if (quote.breakdown.walletDeduction > 0) {
+      walletTxn(db, player, -quote.breakdown.walletDeduction, 'booking_payment', `Booking ${booking.code}`, booking.id);
+    }
     bookings.push(booking);
   });
 

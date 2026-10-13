@@ -177,6 +177,25 @@ describe('buildQuote', () => {
     expect(q.breakdown.walletDeduction).toBe(0);
   });
 
+  test('a wallet tied to an account is not visible or spendable without that accountId', () => {
+    const { db, turf } = makeDb();
+    db.players.push(makePlayer({ phone: '9876543210', walletBalance: 5000, accountId: 'clerk_user_alice' }));
+    // Anonymous request (no accountId) with Alice's phone number
+    const qAnon = buildQuote(db, { turfId: turf.id, date: MONDAY, hour: 10, phone: '9876543210', useWallet: true }, EARLY)!;
+    expect(qAnon.walletBalance).toBe(0);
+    expect(qAnon.breakdown.walletDeduction).toBe(0);
+
+    // Request from a different account
+    const qOther = buildQuote(db, { turfId: turf.id, date: MONDAY, hour: 10, phone: '9876543210', accountId: 'clerk_user_bob', useWallet: true }, EARLY)!;
+    expect(qOther.walletBalance).toBe(0);
+    expect(qOther.breakdown.walletDeduction).toBe(0);
+
+    // Request from Alice
+    const qAlice = buildQuote(db, { turfId: turf.id, date: MONDAY, hour: 10, phone: '9876543210', accountId: 'clerk_user_alice', useWallet: true }, EARLY)!;
+    expect(qAlice.walletBalance).toBe(5000);
+    expect(qAlice.breakdown.walletDeduction).toBe(1000);
+  });
+
   test('promo codes are matched case-insensitively; unknown codes report an error and change nothing', () => {
     const { db, turf } = makeDb();
     db.promoCodes.push(promo({ code: 'PLAY10', value: 10 }));

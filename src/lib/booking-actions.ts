@@ -121,7 +121,13 @@ export async function checkReferralCode(code: string, phone: string): Promise<Re
   const referrer = findByReferralCode(db, code);
   if (!referrer || referrer.status !== 'active') return { status: 'invalid' };
   const p = normalizePhone(phone);
-  if (p.length === 10 && (db.players.some((x) => x.phone === p) || referrer.phone === p)) return { status: 'not_new' };
+  const accountId = await currentAccountId();
+  if (
+    (p.length === 10 && (db.players.some((x) => x.phone === p) || referrer.phone === p)) ||
+    (accountId && (referrer.accountId === accountId || db.players.some((x) => x.accountId === accountId)))
+  ) {
+    return { status: 'not_new' };
+  }
   return { status: 'valid', referrerName: referrer.name.split(' ')[0], reward: db.settings.refereeReward };
 }
 
@@ -133,7 +139,8 @@ export async function quoteSelection(req: SelectionRequest): Promise<SelectionQu
     await throttle('quote', 300);
     const db = await getDb();
     const holder = await deviceHolder(false);
-    return planBooking(structuredClone(db), { ...req, name: 'Player' }, holder, false).quote;
+    const accountId = await currentAccountId();
+    return planBooking(structuredClone(db), { ...req, name: 'Player' }, holder, false, accountId).quote;
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
     throw err;
@@ -154,7 +161,7 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
 
     const ids = await mutate((db) => {
       purgeExpiredHolds(db);
-      const { bookings, quote } = planBooking(db, req, holder, true);
+      const { bookings, quote } = planBooking(db, req, holder, true, accountId);
       if (quote.slotError) throw new ValidationError(quote.slotError);
       if (quote.promoError) throw new ValidationError(quote.promoError);
       db.holds = db.holds.filter((h) => h.holder !== holder);

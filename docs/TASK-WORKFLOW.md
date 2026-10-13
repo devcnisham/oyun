@@ -29,7 +29,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P9-04 Refund `walletDeduction` on cancel (verify the bug first, add a test).
 - [x] P9-10 DTOs: strip `passwordHash` and phones before anything reaches a client component.
 - [x] P9-05 Ticket page: phone masked (PR #98); cancel and review on anonymous tickets need the booking phone (PR #122). Not a signed token; real identity is P9-03.
-- [ ] P9-03 Bind wallet and booking identity to the Clerk account, not a typed phone.
+- [x] P9-03 Bind wallet and booking identity to the Clerk account, not a typed phone.
 - [x] P9-07 Lockout keyed by email plus IP.
 - [x] P9-08 / R012 Promo codes: expiry, max uses, per-player limit.
 - [x] P9-11 Check-in requires cash-collected confirmation.

@@ -15,6 +15,7 @@ import type {
   Turf,
 } from './types';
 import { formatHour, isWeekend, parseHour, type IstNow } from './time';
+import { clerkEnabled } from './clerk';
 
 export const DEFAULT_PRICING: PricingRules = {
   peakEnabled: true,
@@ -197,6 +198,7 @@ export interface QuoteInput {
   addOns?: { id: string; qty: number }[];
   useWallet?: boolean;
   phone?: string | null;
+  accountId?: string | null;
   source?: 'online' | 'walk_in';
   holder?: string | null;
   size?: PitchSize;
@@ -223,7 +225,11 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
   const { basePrice, adjustments, price: slotPriceValue } = slotPrice(turf, rulesFor(db, turf.id), input.date, input.hour, now, size);
 
   const phone = input.phone ? normalizePhone(input.phone) : '';
-  const player = phone.length === 10 ? db.players.find((p) => p.phone === phone) : undefined;
+  const player = input.accountId
+    ? (db.players.find((p) => p.accountId === input.accountId) ?? (phone.length === 10 ? db.players.find((p) => p.phone === phone) : undefined))
+    : phone.length === 10
+      ? db.players.find((p) => p.phone === phone)
+      : undefined;
   const firstTime =
     input.source !== 'walk_in' &&
     phone.length === 10 &&
@@ -263,8 +269,15 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
   const addOnTotal = addOns.reduce((s, a) => s + a.price * a.qty, 0);
 
   const subtotal = Math.max(0, running) + addOnTotal;
-  const walletBalance = player && player.status === 'active' ? player.walletBalance : 0;
-  const walletDeduction = input.useWallet ? Math.min(walletBalance, subtotal) : 0;
+  const isOwner = Boolean(player && (!player.accountId || player.accountId === input.accountId));
+  const canAccessWallet = Boolean(
+    player &&
+    player.status === 'active' &&
+    isOwner &&
+    (!clerkEnabled || Boolean(input.accountId && player.accountId === input.accountId))
+  );
+  const walletBalance = canAccessWallet ? player!.walletBalance : 0;
+  const walletDeduction = input.useWallet && canAccessWallet ? Math.min(walletBalance, subtotal) : 0;
   const total = subtotal - walletDeduction;
 
   return {

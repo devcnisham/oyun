@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { makeBooking, makeDb, makePlayer } from '@/test/fixtures';
-import { cashbackFor, createPlayer, findByReferralCode, refundDue, rewardCheckIn, walletTxn } from './wallet';
+import { cashbackFor, createPlayer, findByAccountId, findByReferralCode, refundDue, rewardCheckIn, walletTxn } from './wallet';
 
 const balanceFromLedger = (db: ReturnType<typeof makeDb>['db'], playerId: string) =>
   db.walletTxns.filter((t) => t.playerId === playerId).reduce((s, t) => s + t.amount, 0);
@@ -25,6 +25,15 @@ describe('wallet ledger', () => {
     expect(a.referralCode).not.toBe(b.referralCode);
     expect(findByReferralCode(db, ` ${a.referralCode.toLowerCase()} `)?.id).toBe(a.id);
     expect(findByReferralCode(db, '')).toBeUndefined();
+  });
+
+  test('players can be linked to and found by accountId', () => {
+    const { db } = makeDb();
+    const p = createPlayer(db, 'Alice', '9000000003', null, 'clerk_user_123');
+    expect(p.accountId).toBe('clerk_user_123');
+    expect(findByAccountId(db, 'clerk_user_123')?.id).toBe(p.id);
+    expect(findByAccountId(db, 'unknown')).toBeUndefined();
+    expect(findByAccountId(db, null)).toBeUndefined();
   });
 });
 

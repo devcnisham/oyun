@@ -134,6 +134,14 @@ describe('refused checkouts change nothing', () => {
     expect(res.ids).toHaveLength(1);
     expect(getTestDb().bookings[0].pricing.walletDeduction).toBe(0);
   });
+
+  test('a wallet belonging to an account cannot be spent without signing in to that account', async () => {
+    getTestDb().players.push(makePlayer({ phone: '9876543210', walletBalance: 1000, accountId: 'user_alice' }));
+    const res = await createBookings({ ...base, phone: '9876543210', useWallet: true });
+    expect(res.error).toMatch(/sign in/i);
+    expect(getTestDb().bookings).toHaveLength(0);
+    expect(getTestDb().players[0].walletBalance).toBe(1000);
+  });
 });
 
 describe('cancelling', () => {

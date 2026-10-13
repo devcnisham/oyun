@@ -152,6 +152,7 @@ export interface Player {
   referralCode: string;
   referredBy: string | null; // player id of whoever referred them
   referralRewarded: boolean; // referral credit paid out after their first game
+  accountId?: string | null; // signed-in player account (Clerk user id)
   createdAt: string;
 }
 
