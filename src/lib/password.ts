@@ -14,6 +14,12 @@ export function verifyPassword(password: string, stored: string) {
   return timingSafeEqual(actual, expected);
 }
 
+// Same cost as a real check, so an unknown email takes as long as a wrong password (no account enumeration by timing)
+const DUMMY_HASH = hashPassword('timing-equaliser');
+export function burnPasswordCheck(password: string) {
+  verifyPassword(password, DUMMY_HASH);
+}
+
 // Readable temporary password, e.g. for new staff or approved partners
 export function generateTempPassword() {
   const alphabet = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';

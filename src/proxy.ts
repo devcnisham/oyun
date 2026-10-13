@@ -30,7 +30,8 @@ function forceHttps(req: NextRequest) {
   if (req.headers.get('x-forwarded-proto') !== 'http') return null;
   if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test((req.headers.get('host') ?? '').replace(/:\d+$/, ''))) return null; // `next start` on your own machine
   const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host');
-  if (!host) return null;
+  // The host comes from a request header: only redirect to something that looks like a hostname
+  if (!host || !/^[a-z0-9.-]+(:\d+)?$/i.test(host)) return null;
   return NextResponse.redirect(`https://${host}${req.nextUrl.pathname}${req.nextUrl.search}`, 308);
 }
 

@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { sharedLoginThrottle } from './shared-rate-limit';
-import { verifyPassword } from './password';
+import { burnPasswordCheck, verifyPassword } from './password';
 import { ROLES, createSession, deleteSession, safeEqual, type Role } from './session';
 import { sessionSecret } from './env';
 import { getDb } from './store';
@@ -46,6 +46,7 @@ async function partnerSubject(email: string, password: string) {
     const owner = db.partners.find((p) => p.id === staff.partnerId);
     return owner?.status === 'active' && verifyPassword(password, staff.passwordHash) ? `s:${staff.id}` : null;
   }
+  burnPasswordCheck(password);
   return null;
 }
 
