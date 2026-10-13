@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { headers } from "next/headers";
 import ConsentManager from "@/components/consent/ConsentManager";
 import NavTracker from "@/components/NavTracker";
 import BottomNav from "@/components/BottomNav";
@@ -41,13 +42,16 @@ export const viewport: Viewport = {
   themeColor: "#d31027",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Opt into dynamic rendering so the per-request CSP nonce from proxy is applied to scripts
+  await headers();
   return (
     <html lang="en-IN" className={inter.variable}>
+      <head />
       <body>
         <AuthProvider>
         {children}
