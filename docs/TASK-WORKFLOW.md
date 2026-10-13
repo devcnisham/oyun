@@ -58,7 +58,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### F. Performance and UX
 - [ ] P10-03 ISR and tag revalidation for public pages.
 - [x] P10-05 `loading.tsx` and Suspense on data pages.
-- [ ] P10-04 Replace 10 s slot poll with Realtime plus on-focus refetch.
+- [x] P10-04 Replace 10 s slot poll with Realtime plus on-focus refetch.
 - [ ] P10-09 Optimise images. GATE: Supabase Storage setup.
 - [ ] P10-08 k6 load test of the booking path.
 
