@@ -16,3 +16,26 @@
 .rows a:active, .rows button:active { background: var(--bg-muted); }
 .about { text-align: center; font-size: 13px; color: var(--text-muted); }
 .rows .static { grid-template-columns: 32px 1fr; }
+.interactiveRow {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  column-gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+}
+.interactiveRow span {
+  font-size: 22px;
+}
+.rowContent {
+  display: flex;
+  flex-direction: column;
+}
+.rowContent b {
+  font-size: 15px;
+}
+.rowContent i {
+  font-style: normal;
+  font-size: 13px;
+  color: var(--text-muted);
+}

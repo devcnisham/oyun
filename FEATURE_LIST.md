@@ -100,8 +100,8 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] Installable web app manifest and icons.
 - [x] SEO: sitemap, robots, structured data, Open Graph images, area landing pages.
 - [x] Cookie consent, privacy policy and terms.
-- [ ] Service worker and push notifications.
-- [ ] Kannada, Tulu and Hindi versions of the site.
+- [x] Service worker and push notifications.
+- [x] Kannada, Tulu and Hindi versions of the site.
 
 ### 13. Quality & Security
 *Status: In progress*
