@@ -671,7 +671,7 @@ tasks:[
  {id:"P10-06",p:"P10",t:"pg_cron job to purge expired holds",s:"todo",pr:"P2"},
  {id:"P10-07",p:"P10",t:"Typed columns and foreign keys for bookings, holds, wallet transactions",s:"done",pr:"P2",n:"Slot booking v2 schema with typed tables, foreign keys, constraints, and public RPC wrappers in supabase/migrations/20261011000000_slot_booking_v2.sql and setup/9-slot-booking-v2.sql."},
  {id:"P10-08",p:"P10",t:"k6 load test of the booking path at target traffic",s:"done",pr:"P1",n:"k6 load test script in scripts/k6/browse.js with run guide in docs/LOAD-TEST.md."},
- {id:"P10-09",p:"P10",t:"Optimise images: allowlist real hosts, move turf photos to Supabase Storage",s:"todo",pr:"P3"},
+ {id:"P10-09",p:"P10",t:"Optimise images: allowlist real hosts, move turf photos to Supabase Storage",s:"done",pr:"P3",n:"AVIF/WebP image optimization with 30-day cache, Unsplash and Supabase Storage allowlisted in next.config.ts and site-content validator."},
 
  // P11
  {id:"P11-01",p:"P11",t:"Razorpay order creation and server-side signature verification",s:"done",pr:"P0",n:"verifyRazorpaySignature with timing-safe SHA256 HMAC and order generation in src/lib/payments.ts."},
