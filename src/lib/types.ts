@@ -76,7 +76,9 @@ export type PitchPart = 'full' | 'A' | 'B';
 export interface Slot {
   date: string; // YYYY-MM-DD (IST)
   hour: number; // 0-23, start hour
-  label: string; // "06:00 PM"
+  minute?: number; // 0, 15, 30, 45
+  durationMinutes?: number; // 15, 30, 45, 60, 90, 120 (defaults to 60)
+  label: string; // "06:00 PM – 07:00 PM"
   basePrice: number;
   price: number;
   tags: string[];
@@ -235,6 +237,8 @@ export interface Booking {
   date: string;
   hour: number;
   timeLabel: string;
+  durationMinutes?: number;
+  startMinute?: number;
   pitch?: PitchPart; // missing means the whole pitch
   customerName: string;
   customerPhone: string;

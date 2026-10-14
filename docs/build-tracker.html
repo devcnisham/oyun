@@ -1180,7 +1180,7 @@ featureGroups:[
  {g:"Slots, holds and live updates",a:"Player",subs:[
   ["Booking window","built","Today plus 6 days: 7 date chips; the server refuses later dates (PR #58)","lib/time.ts (BOOKING_DAYS), booking-actions.ts"],
   ["Pitch selection (full or half)","built","On turfs marked \"Can be booked as two halves\": a Choose pitch step with Full and Half cards. Half A and half B can go to different groups in the same hour; a full booking needs both halves free; blocks close both. Half price = halfPricePercent of the full rate (default 50%, rounded to ₹10) before peak, weekend and last-minute rules. Holds claim a specific half. Tickets, invoices and lists show Half pitch (A/B). PR #58.","lib/pricing.ts (freePart, getSlots), BookingFlow.tsx"],
-  ["Hourly slot grid","built","Open to close, grouped Morning, Afternoon, Evening, Night; a close time at or before open means midnight","lib/pricing.ts getSlots"],
+  ["Hourly slot grid","built","Open to close, grouped Morning, Afternoon, Evening, Night, and Late Night; supports custom durations (15m-120m) and after-midnight sessions (R009)","lib/pricing.ts getSlots, lib/time.ts"],
   ["Slot states","built","past, booked, blocked, held; a slot is past once its start hour is reached","lib/pricing.ts"],
   ["Hold while checking out","built","8 minutes, per device cookie (only a hash is stored); a new hold replaces the old one","booking-actions.ts, device-holder.ts"],
   ["Hold release","built","On leaving checkout, on page hide by beacon, or on timeout","api/holds/release"],
@@ -1673,7 +1673,7 @@ D2.lists = [
   ["BOOK-04","Full pitch or half A or B; full blocked once a half is taken","P1",1,"PR #58. Run 6-half-pitch.sql on production before turning halves on."],
   ["BOOK-05","Booking window limited to today plus 6 days","P2",1,"PR #58."],
   ["BOOK-06","Player can cancel their own booking before the cutoff","P1",1],
-  ["BOOK-07","All times stored and shown in India time; no mistakes around midnight","P0",0],
+  ["BOOK-07","All times stored and shown in India time; no mistakes around midnight","P0",1,"All times formatted in IST (+05:30), slotTimestamp and isSlotInPast handle after-midnight and custom slot lengths (R009)."],
   ["BOOK-08","Automated test: two requests for one slot at once, exactly one wins","P0",1,"scripts/sql-race-test.sh, run in CI (PR #97). Database layer only."],
   ["BOOK-09","Booking reference the player can show at the venue","P1",0],
   ["BOOK-10","Owner can block slots for maintenance or walk-ins","P1",0],

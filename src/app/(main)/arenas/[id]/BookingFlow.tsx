@@ -14,6 +14,7 @@ import type { Bookable, PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
+import { parseHour } from '@/lib/time';
 import { describeHours } from './booking-format';
 import { useCheckoutForm } from './useCheckoutForm';
 import PitchPicker from './PitchPicker';
@@ -286,7 +287,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
             {selectedBookable ? `${selectedBookable.name} · ` : ''}
             {selected.length} slot{selected.length === 1 ? '' : 's'} · {rupees(estimate)}
           </b>
-          <span>{dateInfo?.label} · {describeHours(selected)}</span>
+          <span>{dateInfo?.label} · {describeHours(selected, parseHour(turf.openTime))}</span>
         </div>
         <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
           {holding ? 'Holding…' : 'Proceed'}

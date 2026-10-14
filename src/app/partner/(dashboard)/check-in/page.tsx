@@ -3,7 +3,7 @@ import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/da
 import { requirePartner } from '@/lib/partner-auth';
 import { checkInBooking, markNoShow } from '@/lib/partner-actions';
 import { getDb } from '@/lib/store';
-import { addDays, formatDate, formatDateTime, formatSlotRange, istNow } from '@/lib/time';
+import { addDays, formatDate, formatDateTime, formatSlotRange, isSlotInPast, istNow, parseHour } from '@/lib/time';
 import CheckInDesk from './CheckInDesk';
 import { halfNote } from '@/lib/pricing';
 
@@ -12,11 +12,12 @@ export default async function CheckInPage() {
   const db = await getDb();
   const now = istNow();
   const turfBookings = db.bookings.filter((b) => b.turfId === ctx.turf.id);
+  const openHour = parseHour(ctx.turf.openTime);
 
   const today = turfBookings.filter((b) => b.date === now.date && ['confirmed', 'checked_in', 'no_show'].includes(b.status)).sort((a, b) => a.hour - b.hour);
   // Confirmed bookings whose slot already started and nobody checked in
   const pendingNoShows = turfBookings
-    .filter((b) => b.status === 'confirmed' && (b.date < now.date || (b.date === now.date && b.hour <= now.hour)))
+    .filter((b) => b.status === 'confirmed' && isSlotInPast(b.date, b.hour, now, openHour, false, b.startMinute, b.durationMinutes))
     .sort((a, b) => b.date.localeCompare(a.date) || b.hour - a.hour);
   const last30 = turfBookings.filter((b) => b.date >= addDays(now.date, -30) && b.date < now.date);
   const noShows30 = last30.filter((b) => b.status === 'no_show');
@@ -55,10 +56,10 @@ export default async function CheckInPage() {
               <thead><tr><th>Slot</th><th>Player</th><th>Code</th><th>Status</th><th className={dash.num}>Due at venue</th><th></th></tr></thead>
               <tbody>
                 {today.map((b) => {
-                  const started = b.hour <= now.hour;
+                  const started = isSlotInPast(b.date, b.hour, now, openHour, false, b.startMinute, b.durationMinutes);
                   return (
                     <tr key={b.id}>
-                      <td className={dash.strong}>{formatSlotRange(b.hour)}{halfNote(b.pitch)}</td>
+                      <td className={dash.strong}>{b.timeLabel || formatSlotRange(b.hour, b.durationMinutes, b.startMinute)}{halfNote(b.pitch)}</td>
                       <td>{b.customerName}<div className={dash.muted}>{b.customerPhone}</div></td>
                       <td className={dash.muted}>{b.code}</td>
                       <td>

@@ -5,7 +5,7 @@ import { ValidationError } from './errors';
 import { cleanHours, cleanSize, type BookingRequest, type SelectionQuote } from './booking-types';
 import { buildQuote, freePart, normalizePhone } from './pricing';
 import { newBookingCode, newId } from './store';
-import { formatHour, istNow } from './time';
+import { formatSlotRange, istNow } from './time';
 import type { Booking, BookingAddOn, Database, PriceLine } from './types';
 import { createPlayer, findByReferralCode, walletTxn } from './wallet';
 
@@ -90,7 +90,9 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
       turfId: turf.id,
       date: req.date,
       hour,
-      timeLabel: formatHour(hour),
+      timeLabel: formatSlotRange(hour, 60, 0),
+      durationMinutes: 60,
+      startMinute: 0,
       ...(pitch !== 'full' ? { pitch } : {}),
       customerName: name,
       customerPhone: phone,
