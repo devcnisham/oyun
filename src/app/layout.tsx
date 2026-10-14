@@ -6,6 +6,7 @@ import ConsentManager from "@/components/consent/ConsentManager";
 import NavTracker from "@/components/NavTracker";
 import BottomNav from "@/components/BottomNav";
 import AuthProvider from "@/components/AuthProvider";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
@@ -54,6 +55,7 @@ export default function RootLayout({
         <BottomNav />
         <ConsentManager />
         <NavTracker />
+        <ServiceWorkerRegister />
         </AuthProvider>
       </body>
     </html>
