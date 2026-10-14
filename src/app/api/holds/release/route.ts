@@ -2,6 +2,15 @@ import { deviceHolder } from '@/lib/device-holder';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
 import { mutate } from '@/lib/store';
 
+// A malformed or "null" Origin must be refused, not crash the route
+function originHost(origin: string) {
+  try {
+    return new URL(origin).host;
+  } catch {
+    return null;
+  }
+}
+
 // Called with navigator.sendBeacon when a player leaves checkout (closes the tab, goes back),
 // so their held slots open up for everyone straight away instead of after the 8-minute timeout.
 export async function POST(req: Request) {
@@ -10,7 +19,7 @@ export async function POST(req: Request) {
 
   // Reject requests with no Origin (direct script/curl calls) or from a different host.
   // navigator.sendBeacon always sends Origin, so legitimate releases are never rejected.
-  if (!origin || !host || new URL(origin).host !== host) return new Response(null, { status: 403 });
+  if (!origin || !host || originHost(origin) !== host) return new Response(null, { status: 403 });
 
   // Rate-limit to prevent this endpoint from being used to loop-release other devices' holds.
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';

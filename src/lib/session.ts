@@ -36,7 +36,9 @@ export function verifySessionToken(token: string | undefined, role: Role): strin
   if (parts.length !== 4) return null;
   const [tokenRole, subject, expiresAt, signature] = parts;
   if (tokenRole !== role || !subject || !expiresAt || !signature) return null;
-  if (Number(expiresAt) < Date.now() / 1000) return null;
+  // `NaN < now` is false, so a non-numeric expiry must be rejected explicitly
+  const expiry = Number(expiresAt);
+  if (!Number.isFinite(expiry) || expiry < Date.now() / 1000) return null;
 
   // Validate subject shape to prevent unexpected values reaching the application.
   const subjectOk = role === 'admin'
