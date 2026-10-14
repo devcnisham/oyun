@@ -17,13 +17,49 @@ function matches(input: string, expected: string) {
   return safeEqual(hash(input), hash(expected));
 }
 
-function adminSubject(email: string, password: string) {
-  const expectedEmail = process.env.ADMIN_EMAIL;
-  const expectedPassword = process.env.ADMIN_PASSWORD;
-  if (!expectedEmail || !expectedPassword) return null;
-  const emailOk = matches(email, expectedEmail.trim().toLowerCase());
-  const passwordOk = matches(password, expectedPassword);
-  return emailOk && passwordOk ? 'admin' : null;
+import { verifyTotp } from './totp';
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  password?: string;
+  passwordHash?: string;
+  mfaSecret?: string;
+}
+
+function getAdminUsers(): AdminUser[] {
+  if (process.env.ADMIN_USERS) {
+    try {
+      const parsed = JSON.parse(process.env.ADMIN_USERS);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // fallback to env variables
+    }
+  }
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+  const mfaSecret = process.env.ADMIN_MFA_SECRET;
+  if (!email || !password) return [];
+  return [{ id: 'admin', email, password, mfaSecret }];
+}
+
+function adminSubject(email: string, password: string, totpCode?: string) {
+  const users = getAdminUsers();
+  for (const user of users) {
+    if (!matches(email, user.email.trim().toLowerCase())) continue;
+    let pwdOk = false;
+    if (user.passwordHash) {
+      pwdOk = verifyPassword(password, user.passwordHash);
+    } else if (user.password) {
+      pwdOk = matches(password, user.password);
+    }
+    if (!pwdOk) continue;
+    if (user.mfaSecret) {
+      if (!totpCode || !verifyTotp(totpCode, user.mfaSecret)) return null;
+    }
+    return user.id === 'admin' ? 'admin' : `admin:${user.id}`;
+  }
+  return null;
 }
 
 // Turf owners and their staff are stored in the database
@@ -73,10 +109,11 @@ export async function login(role: Role, _prev: LoginState, formData: FormData): 
   const ip = await clientIp();
   if (await throttle.isLocked(role, email, ip)) return { error: 'Too many failed attempts. Try again in 15 minutes.' };
 
-  const subject = role === 'admin' ? adminSubject(email, password) : await partnerSubject(email, password);
+  const totpCode = String(formData.get('totpCode') ?? formData.get('mfaCode') ?? '').trim();
+  const subject = role === 'admin' ? adminSubject(email, password, totpCode) : await partnerSubject(email, password);
   if (!subject) {
     await throttle.recordFailure(role, email, ip);
-    return { error: 'Invalid email or password.' };
+    return { error: 'Invalid email, password, or MFA code.' };
   }
   await throttle.recordSuccess(role, email, ip);
 

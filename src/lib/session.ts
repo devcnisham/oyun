@@ -22,9 +22,29 @@ export function safeEqual(a: string, b: string) {
   return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
 }
 
+const revokedTokens = new Set<string>();
+let adminRevokedBeforeTimestamp = 0;
+
+export function revokeSession(token: string) {
+  if (token) revokedTokens.add(token);
+}
+
+export function revokeAllAdminSessions() {
+  adminRevokedBeforeTimestamp = Math.floor(Date.now() / 1000);
+}
+
+export function isSessionRevoked(token: string, expiresAt: number): boolean {
+  if (revokedTokens.has(token)) return true;
+  if (adminRevokedBeforeTimestamp > 0) {
+    const issuedAt = expiresAt - SESSION_MAX_AGE;
+    if (issuedAt < adminRevokedBeforeTimestamp) return true;
+  }
+  return false;
+}
+
 /*
  * Token format: <role>.<subject>.<expiresAt>.<signature>
- * subject: "admin" for admins, "p:<partnerId>" for turf owners, "s:<staffId>" for staff.
+ * subject: "admin" or "admin:<userId>" for admins, "p:<partnerId>" for turf owners, "s:<staffId>" for staff.
  * Returns the subject when the token is valid, otherwise null.
  */
 export function verifySessionToken(token: string | undefined, role: Role): string | null {
@@ -42,9 +62,11 @@ export function verifySessionToken(token: string | undefined, role: Role): strin
 
   // Validate subject shape to prevent unexpected values reaching the application.
   const subjectOk = role === 'admin'
-    ? subject === 'admin'
+    ? subject === 'admin' || /^admin:[a-z0-9_-]+$/i.test(subject)
     : /^[ps]:[a-z0-9_-]+$/i.test(subject);
   if (!subjectOk) return null;
+
+  if (isSessionRevoked(token, expiry)) return null;
 
   return safeEqual(signature, sign(`${tokenRole}.${subject}.${expiresAt}`, secret)) ? subject : null;
 }

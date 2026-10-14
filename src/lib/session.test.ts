@@ -33,4 +33,17 @@ describe('session token', () => {
     expect(verifySessionToken(`${t}x`, 'admin')).toBeNull();
     expect(verifySessionToken(t, 'partner')).toBeNull();
   });
+
+  test('accepts per-user admin subject', () => {
+    const t = token(Math.floor(Date.now() / 1000) + 60, 'admin', 'admin:ops_nisham');
+    expect(verifySessionToken(t, 'admin')).toBe('admin:ops_nisham');
+  });
+
+  test('session revocation invalidates token', async () => {
+    const { revokeSession } = await import('./session');
+    const t = token(Math.floor(Date.now() / 1000) + 60, 'admin', 'admin');
+    expect(verifySessionToken(t, 'admin')).toBe('admin');
+    revokeSession(t);
+    expect(verifySessionToken(t, 'admin')).toBeNull();
+  });
 });
