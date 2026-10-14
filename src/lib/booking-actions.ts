@@ -62,7 +62,9 @@ import {
   v2HoldSlots,
   v2ReleaseHolds,
   v2CancelBooking,
+  v2ConfirmHold,
 } from './v2-slots';
+import { createAdminClient } from '@/utils/supabase/admin';
 
 /* ---------- slots ---------- */
 
@@ -191,6 +193,38 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
     if (!checkDate(String(req.date))) throw new ValidationError('Pick a date within the next week');
     const holder = await deviceHolder(true);
     await throttle('book', 30, holder, 10);
+
+    if (isV2SlotsActive()) {
+      const client = createAdminClient();
+      const { data: heldBooking } = await client
+        .schema('oyun')
+        .from('bookings')
+        .select('id, venue_id, venues(slug)')
+        .eq('holder', holder)
+        .eq('status', 'held')
+        .gt('hold_expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (heldBooking && holder) {
+        const confirmRes = await v2ConfirmHold(
+          heldBooking.id,
+          holder,
+          String(req.name).trim(),
+          normalizePhone(String(req.phone)),
+          false,
+          (heldBooking as { venues?: { slug?: string } }).venues?.slug,
+          req.date
+        );
+        if (confirmRes && confirmRes.ok) {
+          refreshAll();
+          return { ids: [heldBooking.id] };
+        } else if (confirmRes && !confirmRes.ok) {
+          return { error: confirmRes.error };
+        }
+      }
+    }
 
     const ids = await mutate((db) => {
       purgeExpiredHolds(db);

@@ -79,10 +79,16 @@ function fromRows(rows: TableRows): Database {
   return migrate(db);
 }
 
-// Serialized rows, to work out what a mutation changed
+// Serialized rows, to work out what a mutation changed.
+// R008: When Supabase is active, bookings, holds, blocks, and pricing are handled by the v2 relational schema
+// and excluded from apply_changes and load_changes.
+const RETIRED_BOOKING_TABLES = new Set<string>(['bookings', 'holds', 'blocks', 'pricing']);
+
 function snapshot(db: Database) {
   const snap = new Map<Table, Map<string, string>>();
+  const retired = supabaseActive();
   for (const [table, rows] of Object.entries(toRows(db)) as [Table, Row[]][]) {
+    if (retired && RETIRED_BOOKING_TABLES.has(table)) continue;
     snap.set(table, new Map(rows.map((r) => [r.id, JSON.stringify(r.data)])));
   }
   return snap;
@@ -91,7 +97,9 @@ function snapshot(db: Database) {
 function diff(before: Map<Table, Map<string, string>>, db: Database) {
   const upserts: TableRows = {};
   const deletes: Partial<Record<Table, string[]>> = {};
+  const retired = supabaseActive();
   for (const [table, rows] of Object.entries(toRows(db)) as [Table, Row[]][]) {
+    if (retired && RETIRED_BOOKING_TABLES.has(table)) continue;
     const old = before.get(table) ?? new Map<string, string>();
     const changed = rows.filter((r) => old.get(r.id) !== JSON.stringify(r.data));
     const ids = new Set(rows.map((r) => r.id));
