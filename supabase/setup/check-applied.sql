@@ -27,6 +27,9 @@ select step, what, applied from (values
       and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'hold_slots')),
   (10, '10-map-turfs-to-venues: mapped venues, resources, bookables',
       exists (select 1 from information_schema.tables where table_schema = 'oyun' and table_name = 'venues')
-      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'oyun' and p.proname = 'sync_turf_to_venue'))
+      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'oyun' and p.proname = 'sync_turf_to_venue')),
+  (11, '11-pg-cron-expire-holds: pg_cron expire holds every minute',
+      to_regclass('cron.job') is not null
+      or not exists (select 1 from pg_available_extensions where name = 'pg_cron'))
 ) as t(step, what, applied)
 order by step;
