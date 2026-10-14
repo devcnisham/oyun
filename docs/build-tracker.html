@@ -2158,7 +2158,17 @@ DATA.tasks.push(
  {id:"P8-53",p:"P8",t:"One shared rupee and short-hour formatter in src/lib/format.ts instead of seven copies",s:"done",pr:"P2",n:"src/lib/format.ts holds the rupees and shortHour helpers that were copied in seven files. PR #182."},
  {id:"P8-54",p:"P8",t:"Move checkout form state into a useCheckoutForm hook; CheckoutSheet takes 12 props instead of about 25",s:"done",pr:"P2",n:"The checkout form logic moved into a hook, and CheckoutSheet now receives about 12 props. PR #182."},
  {id:"P8-55",p:"P8",t:"Replace 14 copy-pasted scroll regions with one tableScroll props pattern; small cleanups in the welcome page and turf loading state",s:"done",pr:"P2",n:"tableScroll props replace 14 copies of the same scroll markup. Welcome page uses a shared FeatureGrid. An unused Field component was removed. arenas/[id]/loading.tsx was added. PR #182."},
- {id:"P8-56",p:"P8",t:"CI runs duplicate-code and unused-code checks (npm run dup and npm run unused)",s:"done",pr:"P2",n:"npm run dup uses jscpd with .jscpd.json and npm run unused uses knip with knip.json. At merge both report 0 clones and nothing unused. PR #182."}
+ {id:"P8-56",p:"P8",t:"CI runs duplicate-code and unused-code checks (npm run dup and npm run unused)",s:"done",pr:"P2",n:"npm run dup uses jscpd with .jscpd.json and npm run unused uses knip with knip.json. At merge both report 0 clones and nothing unused. PR #182."},
+ {id:"P8-57",p:"P8",t:"Branch protection on main: required CI checks, no direct push (brief B-1.3)",s:"todo",pr:"P1"},
+ {id:"P8-58",p:"P8",t:"Secret scan (gitleaks) step in CI (brief B-1.5)",s:"todo",pr:"P1"},
+ {id:"P8-59",p:"P8",t:"Release pipeline: build once, promote artifact, staging smoke and load gate, owner approval, canary 10 percent, auto rollback, tag and changelog (brief 5.2)",s:"todo",pr:"P1",n:"Vercel rolling release needs a plan check."},
+ {id:"P8-60",p:"P8",t:"One e2e test per workflow in the brief: book, onboard, cancel and refund, payout, login; failure branches included (brief B-6.1)",s:"todo",pr:"P1",n:"Payment and payout flows wait for P11."},
+ {id:"P8-61",p:"P8",t:"Alert thresholds and phone paging; double bookings must read 0 (brief B-6.4, workflow 4.6)",s:"todo",pr:"P1",n:"Needs an on-call service choice."},
+ {id:"P8-62",p:"P8",t:"Runbooks: payout failed, refund failed, webhook down, double booking found (brief B-6.8)",s:"todo",pr:"P2"},
+ {id:"P8-63",p:"P8",t:"DPDP: consent record, export my data, delete my data, retention purge; GST invoice fields (brief B-6.7)",s:"todo",pr:"P1"},
+ {id:"P10-17",p:"P10",t:"Decide Redis vs Postgres for holds, availability cache and rate limits; write an ADR with the number that would force Redis (brief B-2.3)",s:"todo",pr:"P2",n:"Rate limits already live in Postgres."},
+ {id:"P11-08",p:"P11",t:"Bank payouts via a payouts API, T+2 settlement batch job, PDF statement by email; failed payout holds the amount and routes to support (brief 4.4)",s:"todo",pr:"P1",n:"Today payouts are a report only; no money moves."},
+ {id:"P11-09",p:"P11",t:"Automatic refund of the second payment when two payments race for one slot (brief 4.1 failure branch)",s:"todo",pr:"P0"}
 );
 
 /* ===================== BOOT ===================== */
