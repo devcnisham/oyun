@@ -675,7 +675,7 @@ tasks:[
 
  // P11
  {id:"P11-01",p:"P11",t:"Razorpay order creation and server-side signature verification",s:"todo",pr:"P0"},
- {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"done",pr:"P0"},
+ {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"doing",pr:"P0",n:"Signature check, duplicate-event handling and the race-lost refund exist (PR #222), but processed events live in memory (processedEvents in src/lib/payments.ts): replay protection resets on a restart and is not shared across serverless instances. Needs a durable store before this is done."},
  {id:"P11-03",p:"P11",t:"Advance payment mode (advancePercent already computed)",s:"todo",pr:"P1"},
  {id:"P11-04",p:"P11",t:"Gateway refunds tied to the cancel and refund flows",s:"todo",pr:"P1"},
  {id:"P11-05",p:"P11",t:"Payout and commission reconciliation against gateway settlements",s:"done",pr:"P1",n:"reconcilePayoutSettlements in src/lib/payouts.ts matching online bookings against gateway settlement transaction reports and detecting discrepancies."},
