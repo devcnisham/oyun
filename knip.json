@@ -2,12 +2,12 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
     "scripts/**/*.{mjs,js}",
+    "public/sw.js",
     "e2e/**/*.ts"
   ],
   "ignoreDependencies": [
     "server-only",
-    "k6",
-    "k6/http"
+    "k6"
   ],
   "ignoreExportsUsedInFile": true
 }
