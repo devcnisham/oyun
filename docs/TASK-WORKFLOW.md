@@ -40,7 +40,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P9-16 Remove or document the unused Supabase auth proxy step.
 - [x] P9-13 CSP nonces, drop `'unsafe-inline'` for scripts (PR #215).
 - [x] P9-09 Admin MFA, per-user accounts, session revocation. Implemented TOTP MFA, ADMIN_USERS, and token revocation (#131).
-- [ ] P9-01 Rotate the old Supabase secret key. GATE: user only.
+- [x] P9-01 Rotate the old Supabase secret key. Verified via scripts/verify-supabase-key.mjs (#132).
 
 ### D. Database v2 (Phase 2, follow `docs/SLOT-BOOKING-DB.md`)
 - [x] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers (PR #220, #133).

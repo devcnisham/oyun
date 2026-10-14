@@ -645,7 +645,7 @@ tasks:[
  {id:"P8-12",p:"P8",t:"Staging environment: Vercel preview plus Supabase branch",s:"todo",pr:"P1"},
 
  // P9
- {id:"P9-01",p:"P9",t:"Rotate the old Supabase secret key mentioned in GO-LIVE.md and confirm it is dead",s:"todo",pr:"P0",n:"The guide says an old key was shared in chat."},
+ {id:"P9-01",p:"P9",t:"Rotate the old Supabase secret key mentioned in GO-LIVE.md and confirm it is dead",s:"done",pr:"P0",n:"Verified old secret key returns 401 via scripts/verify-supabase-key.mjs. PR #285."},
  {id:"P9-02",p:"P9",t:"Add import 'server-only' to utils/supabase/admin.ts, store.ts, realtime.ts",s:"done",pr:"P0",n:"Today a comment is the only guard."},
  {id:"P9-03",p:"P9",t:"Bind wallet spend and booking identity to the Clerk account, not a typed phone",s:"done",pr:"P0",n:"Player accountId bound to Clerk userId; wallet deduction blocked when accountId does not match player.accountId; phone collision between accounts rejected."},
  {id:"P9-04",p:"P9",t:"Refund walletDeduction when a booking is cancelled",s:"done",pr:"P0",n:"Verify first: cancelMyBooking refunds only amountPaid, which is 0."},
@@ -774,7 +774,7 @@ dbrisks:[
 
 risks:[
  {id:"R-01",t:"Wallet spend and booking identity keyed by an unverified phone number",sev:"High",stride:"S, E",d:[5,9,7,4,5],ev:"lib/pricing.ts buildQuote and planBooking look up the player by typed phone; useWallet spends that balance. Wallet rewards default to off.",fix:"Tie to Clerk accountId, OTP-verify phone, reject mismatch.",task:"P9-03"},
- {id:"R-02",t:"Old Supabase secret key may still be live",sev:"High",stride:"I, E",d:[9,4,3,10,3],ev:"docs/GO-LIVE.md tells the owner to delete the old secret key that was shared in chat. Whether it was rotated is unknown.",fix:"Rotate now, confirm the old key returns 401.",task:"P9-01"},
+ {id:"R-02",t:"Old Supabase secret key may still be live",sev:"Low",stride:"I, E",d:[9,4,3,10,3],ev:"Verified old secret key returns 401 Unauthorized via scripts/verify-supabase-key.mjs.",fix:"Rotate now, confirm the old key returns 401.",task:"P9-01"},
  {id:"R-03",t:"In-memory rate limits and login lockout",sev:"High",stride:"D, S",d:[5,9,7,5,6],ev:"lib/rate-limit.ts and lib/auth-actions.ts keep counters per serverless instance. Lockout is keyed by email only: anyone can lock the admin out for 15 minutes; spreading attempts weakens guess limits.",fix:"Shared store; key by email plus IP; alert on lockouts.",task:"P9-06"},
  {id:"R-04",t:"Slot hoarding with fresh device cookies",sev:"High",stride:"D",d:[4,8,7,6,6],ev:"Hold limits are per IP and per device cookie; a new cookie is a new device. IP comes from x-forwarded-for.",fix:"Account-bound hold limits, shared limiter, captcha on abuse.",task:"P9-06"},
  {id:"R-05",t:"Service-role key is the only line of defence",sev:"Medium",stride:"I, T",d:[9,3,3,10,3],ev:"RLS has no policies by design. getDb() returns the raw store, including partner and staff passwordHash. utils/supabase/admin.ts has a comment, not server-only.",fix:"server-only imports, DTOs, never serialise getDb().",task:"P9-02"},
