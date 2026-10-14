@@ -36,6 +36,9 @@ done
 echo "== Money guards (CHECK constraints)"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/check_constraints_test.sql
 
+echo "== Data mapping from turfs to venues, resources, bookables (#134)"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/data_mapping_test.sql
+
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 

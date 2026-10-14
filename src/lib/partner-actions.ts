@@ -18,6 +18,7 @@ import { getDb, mutate, newBookingCode, newId } from './store';
 import { formatHour, isValidDate, istNow } from './time';
 import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from './types';
 import { checkInWindow } from './checkin-window';
+import { mapTurfToResourcesAndBookables } from './venue-mapping';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
@@ -409,4 +410,135 @@ export async function updateBusiness(_prev: ActionResult, fd: FormData): Promise
     return { ok: 'Business details saved — used on all invoices' };
   });
 }
+
+/* ---------- courts, pitches & bookables (v2) ---------- */
+
+export async function addCourtResource(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('turf');
+    const name = required(fd, 'name', 'Court / Resource name', 60);
+
+    await mutate((db) => {
+      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
+      if (!turf) throw new ValidationError('Turf not found');
+
+      if (!turf.resources || turf.resources.length === 0) {
+        const initial = mapTurfToResourcesAndBookables(turf);
+        turf.resources = initial.resources;
+        turf.bookables = initial.bookables;
+      }
+
+      const resourceId = `${turf.id}_res_${Date.now()}`;
+      turf.resources.push({
+        id: resourceId,
+        venueId: turf.id,
+        name,
+        sort: turf.resources.length,
+        active: true,
+      });
+    });
+
+    return { ok: `Court "${name}" added` };
+  });
+}
+
+export async function deleteCourtResource(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('turf');
+    const resourceId = required(fd, 'resourceId', 'Resource ID', 100);
+
+    await mutate((db) => {
+      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
+      if (!turf) throw new ValidationError('Turf not found');
+
+      if (!turf.resources || turf.resources.length === 0) {
+        const initial = mapTurfToResourcesAndBookables(turf);
+        turf.resources = initial.resources;
+        turf.bookables = initial.bookables;
+      }
+
+      if (turf.resources.length <= 1) {
+        throw new ValidationError('A venue must retain at least one physical court or pitch');
+      }
+
+      turf.resources = turf.resources.filter((r) => r.id !== resourceId);
+      // Clean up orphaned bookable resource references
+      if (turf.bookables) {
+        turf.bookables.forEach((b) => {
+          b.resourceIds = b.resourceIds.filter((id) => id !== resourceId);
+        });
+      }
+    });
+
+    return { ok: 'Court removed' };
+  });
+}
+
+export async function addBookableOffering(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('turf');
+    const name = required(fd, 'name', 'Bookable offering name', 80);
+    const sport = required(fd, 'sport', 'Sport', 40).toLowerCase().replace(/\s+/g, '_');
+    const slotMinutes = int(fd, 'slotMinutes', { min: 15, max: 240, label: 'Slot duration (minutes)' });
+    const basePrice = int(fd, 'basePrice', { min: 50, max: 20000, label: 'Base price (₹)' });
+    const resourceIds = fd.getAll('resourceIds').map(String).filter(Boolean);
+
+    await mutate((db) => {
+      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
+      if (!turf) throw new ValidationError('Turf not found');
+
+      if (!turf.resources || turf.resources.length === 0) {
+        const initial = mapTurfToResourcesAndBookables(turf);
+        turf.resources = initial.resources;
+        turf.bookables = initial.bookables;
+      }
+
+      const assignedResources = resourceIds.length > 0 ? resourceIds : turf.resources.map((r) => r.id);
+
+      const bookableId = `${turf.id}_bk_${Date.now()}`;
+      turf.bookables = turf.bookables ?? [];
+      turf.bookables.push({
+        id: bookableId,
+        venueId: turf.id,
+        sport,
+        name,
+        slotMinutes,
+        maxSlots: 6,
+        basePrice,
+        active: true,
+        sort: turf.bookables.length,
+        resourceIds: assignedResources,
+      });
+    });
+
+    return { ok: `Bookable offering "${name}" added` };
+  });
+}
+
+export async function deleteBookableOffering(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('turf');
+    const bookableId = required(fd, 'bookableId', 'Bookable ID', 100);
+
+    await mutate((db) => {
+      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
+      if (!turf) throw new ValidationError('Turf not found');
+
+      if (!turf.bookables || turf.bookables.length === 0) {
+        const initial = mapTurfToResourcesAndBookables(turf);
+        turf.resources = initial.resources;
+        turf.bookables = initial.bookables;
+      }
+
+      if (turf.bookables.length <= 1) {
+        throw new ValidationError('A venue must retain at least one bookable offering');
+      }
+
+      turf.bookables = turf.bookables.filter((b) => b.id !== bookableId);
+    });
+
+    return { ok: 'Bookable offering removed' };
+  });
+}
+
 
