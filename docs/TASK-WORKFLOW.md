@@ -61,7 +61,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P10-03 ISR and tag revalidation for public pages.
 - [x] P10-05 `loading.tsx` and Suspense on data pages.
 - [x] P10-04 Slot map: Supabase Realtime broadcast plus refetch on focus and tab visibility (`src/lib/client/use-slot-updates.ts`); the 10 s poll is only a safety net.
-- [ ] P10-09 Optimise images. GATE: Supabase Storage setup.
+- [x] P10-09 Optimise images: remotePatterns and Supabase Storage allowlist (#146).
 - [x] P10-08 k6 load test: `scripts/k6/browse.js` covers the public read path (`docs/LOAD-TEST.md`). The booking writes are covered by the SQL race test and e2e (server actions cannot be replayed from k6); not run yet, needs staging.
 
 ### G. Features (Phase 5)

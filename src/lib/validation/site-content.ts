@@ -2,9 +2,13 @@
 
 export const MAX_SPONSOR_ADS = 8;
 
-// next/image only loads files from /public or images.unsplash.com (next.config.ts remotePatterns)
+// next/image only loads files from /public, images.unsplash.com, or Supabase Storage (next.config.ts remotePatterns)
 export function isAllowedImage(src: string): boolean {
-  return src.startsWith('https://images.unsplash.com/') || (src.startsWith('/') && !src.startsWith('//'));
+  return (
+    src.startsWith('https://images.unsplash.com/') ||
+    /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//.test(src) ||
+    (src.startsWith('/') && !src.startsWith('//'))
+  );
 }
 
 // Ad links: an https page or a path on this site. Never javascript:, data:, http: or protocol-relative //host.
