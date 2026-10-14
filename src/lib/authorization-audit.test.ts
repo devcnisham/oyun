@@ -83,6 +83,7 @@ describe('API and file routes', () => {
     'src/app/api/privacy/consent/route.ts': ['sharedRateLimit(', "consent !== 'all' && consent !== 'essential'"],
     'src/app/api/cron/retention-purge/route.ts': ['runRetentionPurge(', 'authHeader !== `Bearer ${cronSecret}`'],
     'src/app/api/webhooks/razorpay/route.ts': ['verifyRazorpaySignature(', 'sharedRateLimit('],
+    'src/app/api/monitoring/double-bookings/route.ts': ['sharedRateLimit(', 'detectDoubleBookings('],
   };
 
   test('every route file is classified, and nothing listed has gone missing', () => {
