@@ -80,7 +80,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] Backup restore runbook (`docs/RUNBOOKS.md` section 6).
 - [x] P8-62 Runbooks: payout failed, refund failed, webhook down, double booking found (`docs/RUNBOOKS.md`).
 - [x] SEO landing pages per city (`/arenas`), area (`/turfs/[area]`), sport (`/sports/[sport]`); structured data.
-- [ ] Monitoring dashboard (double bookings must be 0), runbooks. GATE: uptime service choice.
+- [x] Monitoring dashboard (double bookings must be 0) and runbooks (#158).
 
 ## Rules the loop never breaks
 One task, one branch, one PR. No production changes, key rotation, deletes, paid services or product choices without the user. Lint, type-check, tests and build must pass before a PR. Never merge unless the user said so for that run.
