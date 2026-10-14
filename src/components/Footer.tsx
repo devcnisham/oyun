@@ -58,6 +58,8 @@ export default function Footer({ areas, supportEmail }: { areas: string[]; suppo
               <p className={styles.linkGroupTitle}>Book</p>
               <ul className={styles.linkList}>
                 <li><Link href="/arenas">All turfs in Mangalore</Link></li>
+                <li><Link href="/matches">Find players & matches</Link></li>
+                <li><Link href="/tournaments">Tournaments</Link></li>
                 <li><Link href="/bookings">My bookings</Link></li>
                 <li><Link href="/faq">How booking works</Link></li>
               </ul>
