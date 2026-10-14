@@ -2219,6 +2219,7 @@ DATA.tasks.push(
  {id:"P9-30",p:"P9",t:"Double-booking monitor no longer returns booking ids to the public",s:"done",pr:"P1",n:"Branch monitor-no-booking-ids (commit 11cef4a, merged in da374d2). /api/monitoring/double-bookings is public. It now leaves booking ids and codes out of its response; they stay on the on-call page."},
  {id:"P8-69",p:"P8",t:"CI green again: knip findings fixed, Gitleaks job can read pull requests, main e2e suite passes",s:"done",pr:"P3",n:"Commit 81cf8a1 (knip.json and recurring.ts; ci.yml gets pull-requests: read for the Gitleaks job) and commit 6619b5d (welcome ticker contrast, e2e workflow fixes), merged through 1ab94e9 and a33a3cc. No PR number in the git history."},
  {id:"P8-70",p:"P8",t:"Home page images: webp only, popup ad loaded lazily, high fetch priority on the first home promo",s:"done",pr:"P2",n:"PR #239. P8-64 stays open until the Lighthouse scores reach 90."},
+ {id:"P8-71",p:"P8",t:"Lighthouse mobile performance 90+ on home, arenas and turf page: Clerk and Supabase code kept out of pages that do not use them, rupee-only font, high fetch priority on the LCP image",s:"done",pr:"P2",n:"Commit 6ad4f50 (rebased on #263, which added inlineCss and AVIF). Local median of 3, mobile preset: home 87 to 93, arenas 82 to 91, turf 84 to 93; accessibility, best practices, SEO stay 100. Clerk loads only when the key is set (AuthProvider, use-account-clerk). Not yet confirmed on CI; P8-64 stays open until the CI Lighthouse job is made blocking and passes."},
 );
 
 /* ===================== BOOT ===================== */
