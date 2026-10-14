@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #226 (main at 6a36f88, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #226 (main at 348404b, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -2190,6 +2190,9 @@ DATA.tasks.push(
  {id:"P7-46",p:"P7",t:"Launching soon page: /welcome shows a live countdown to 17 Oct 2026 (IST), with a new /about page and a shared header",s:"done",pr:"P2",n:"Commit 6a36f88 (no PR number, pushed to main). Old /welcome marketing sections removed on purpose. The header hides on scroll down and shows on scroll up; the bottom tab bar is hidden on both pages."},
  {id:"P7-47",p:"P7",t:"Service worker: caches the start files, shows push messages and handles notification clicks",s:"done",pr:"P2",n:"Registered in production only (public/sw.js). No code yet saves push subscriptions or sends pushes, so P12-05 stays open. PR #212."},
  {id:"P8-66",p:"P8",t:"Lighthouse fixes for home, arenas and turf pages, with per-category thresholds",s:"done",pr:"P2",n:"PR #206. P8-64 stays open until the scores reach 90."},
+ {id:"P9-28",p:"P9",t:"Security hardening: session expiry check, login timing, error-webhook mentions, HTTPS redirect host, hold-release Origin",s:"done",pr:"P1",n:"PR #187. A session token with a non-numeric expiry is refused (it used to pass because NaN is never less than now). An unknown partner email burns a dummy scrypt check so timing does not reveal accounts. Error-webhook text from the unauthenticated client-error endpoint has mentions neutralised. The HTTPS redirect only follows hostname-shaped hosts. A malformed or null Origin on hold release returns 403 instead of throwing. Tests in src/lib/session.test.ts and monitoring.test.ts."},
+ {id:"P8-67",p:"P8",t:"Brief plan with workflow diagrams and tickets; 10 gap tasks added to the tracker",s:"done",pr:"P2",n:"PR #188. docs/BRIEF-PLAN.md and a refreshed docs/jira-import.csv."},
+ {id:"P8-68",p:"P8",t:"Read-only check of which database setup steps are applied (supabase/setup/check-applied.sql)",s:"done",pr:"P2",n:"PR #189. Select only: one yes or no row per setup file 1 to 8, so a production database can be checked before running the missing steps. Checked against an empty database, steps 1 to 5, and all 8."},
  {id:"P9-25",p:"P9",t:"Admin can ban the author of an abusive review and hide the review",s:"done",pr:"P1",n:"Sets the author's player status to banned and hides the review, then recalculates the turf rating. PR #210."},
  {id:"P9-26",p:"P9",t:"Partner and staff sign-in take the same time whether or not the account is active",s:"done",pr:"P2",n:"The password check always runs, so an inactive account does not answer faster. The dummy hash is made on first use, not at start-up. PR #206."},
  {id:"P9-27",p:"P9",t:"Cron routes only check CRON_SECRET when it is set; make the check fail closed",s:"todo",pr:"P0",n:"src/app/api/cron/payouts/settle and src/app/api/cron/retention-purge both skip the check when CRON_SECRET is empty. The payout route moves money. Set CRON_SECRET on production and change the check to require it."},
