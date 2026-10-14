@@ -1,0 +1,175 @@
+.page {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.glow {
+  position: absolute;
+  inset: -20% -20% auto -20%;
+  height: 80%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(211, 16, 39, 0.55), transparent 65%);
+  animation: glow 6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.center {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 3rem 1.25rem 2rem;
+  text-align: center;
+}
+
+.title {
+  color: #fff;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(3.5rem, 16vw, 10rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.line {
+  display: block;
+}
+
+.letter {
+  display: inline-block;
+  animation: letterIn 0.8s cubic-bezier(0.2, 0.9, 0.2, 1) backwards;
+  animation-delay: calc(var(--i) * 70ms + 150ms);
+  transition: transform 0.25s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.letter:hover {
+  transform: translateY(-0.08em) scale(1.06);
+}
+
+/* "soon" shimmers and glows */
+.red {
+  background: linear-gradient(100deg, #d31027 30%, #ff8a8a 50%, #d31027 70%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3.5s linear infinite, glowText 2.4s ease-in-out infinite alternate;
+}
+
+/* Soft red lights drifting up the screen */
+.orbs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  bottom: -40px;
+  left: calc(var(--n) * 14% + 4%);
+  width: calc(8px + var(--n) * 5px);
+  height: calc(8px + var(--n) * 5px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 59, 59, 0.55), transparent 70%);
+  animation: floatUp calc(9s + var(--n) * 2s) linear infinite;
+  animation-delay: calc(var(--n) * -2.3s);
+}
+
+.tickerWrap {
+  position: relative;
+  overflow: hidden;
+  border-block: 1px solid rgba(255, 255, 255, 0.12);
+  background: #d31027;
+}
+
+.tickerWrap:hover .ticker {
+  animation-play-state: paused;
+}
+
+.ticker {
+  display: flex;
+  width: max-content;
+  animation: ticker 28s linear infinite;
+}
+
+.tickItem {
+  padding: 0.85rem 0;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.slash {
+  padding: 0 1.5rem;
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.foot {
+  animation: rise 1s 1s ease backwards;
+  position: relative;
+  margin: 0;
+  padding: 1.1rem 1.25rem calc(1.1rem + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@keyframes letterIn {
+  from { opacity: 0; transform: translateY(0.5em) rotateX(70deg) scale(0.9); filter: blur(8px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -100% 0; }
+}
+
+@keyframes glowText {
+  from { filter: drop-shadow(0 0 0.04em rgba(211, 16, 39, 0.35)); }
+  to { filter: drop-shadow(0 0 0.22em rgba(255, 59, 59, 0.75)); }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes glow {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+@keyframes ticker {
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow, .letter, .red, .orb, .ticker, .foot {
+    animation: none;
+  }
+  .red {
+    color: #d31027;
+    background: none;
+  }
+}
+

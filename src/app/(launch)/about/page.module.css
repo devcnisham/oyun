@@ -1,0 +1,118 @@
+.page {
+  position: relative;
+  min-height: 100dvh;
+  background: #0a0a0a;
+  color: #fff;
+  overflow-x: clip;
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0 -20% auto -20%;
+  height: 60%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(211, 16, 39, 0.45), transparent 65%);
+  pointer-events: none;
+}
+
+.main {
+  position: relative;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 4rem;
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ff3b3b;
+  animation: rise 0.7s ease both;
+}
+
+.title {
+  color: #fff;
+  margin: 0 0 1.5rem;
+  font-size: clamp(2.25rem, 8vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  animation: rise 0.8s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.lead {
+  margin: 0 0 1rem;
+  font-size: clamp(1.15rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: #ff6b6b;
+  animation: rise 0.8s 0.2s ease both;
+}
+
+.text {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.72);
+  animation: rise 0.8s 0.3s ease both;
+}
+
+.pillars {
+  list-style: none;
+  margin: 3rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.25rem 0.9rem;
+  border-top: 2px solid #d31027;
+  animation: rise 0.8s ease both;
+}
+
+.pillar strong {
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pillar span {
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.45;
+}
+
+.back {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.back:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 560px) {
+  .pillars {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eyebrow, .title, .lead, .text, .pillar {
+    animation: none;
+  }
+}

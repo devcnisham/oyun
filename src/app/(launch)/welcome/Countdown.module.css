@@ -1,0 +1,99 @@
+.wrap {
+  width: 100%;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  animation: rise 0.9s 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.date {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ff6b6b;
+  animation: spread 1.4s 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.5rem, 2vw, 1rem);
+  width: 100%;
+  max-width: 560px;
+}
+
+.unit {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+/* Colon between the numbers instead of a box around each one */
+.unit:not(:last-child)::after {
+  content: ':';
+  position: absolute;
+  right: calc(clamp(0.5rem, 2vw, 1rem) / -2);
+  top: 0;
+  transform: translateX(50%);
+  font-size: clamp(2rem, 8vw, 3.75rem);
+  font-weight: 900;
+  line-height: 1;
+  color: #d31027;
+  animation: blink 1s steps(2, jump-none) infinite;
+}
+
+.value {
+  display: inline-block;
+  animation: tick 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards;
+  font-size: clamp(2rem, 8vw, 3.75rem);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.live {
+  margin: 0;
+  font-size: clamp(1.4rem, 5vw, 2.25rem);
+  font-weight: 900;
+  color: #ff6b6b;
+}
+
+@keyframes tick {
+  from { opacity: 0; transform: translateY(-60%) scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes spread {
+  from { opacity: 0; letter-spacing: 0.6em; }
+  to { opacity: 1; letter-spacing: 0.18em; }
+}
+
+@keyframes blink {
+  from { opacity: 1; }
+  to { opacity: 0.25; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap, .value, .date, .unit:not(:last-child)::after { animation: none; }
+}

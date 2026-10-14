@@ -29,7 +29,7 @@ const TABS = [
 // App-style tab bar on phones, on every player-facing page. The admin and partner dashboards have their own menus.
 export default function BottomNav() {
   const path = usePathname() ?? '/';
-  if (path.startsWith('/admin') || path.startsWith('/partner')) return null;
+  if (path.startsWith('/admin') || path.startsWith('/partner') || path === '/welcome' || path === '/about') return null;
 
   return (
     <>
