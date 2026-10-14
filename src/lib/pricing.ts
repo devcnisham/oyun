@@ -39,7 +39,13 @@ export function normalizePhone(phone: string) {
 export function turfHours(turf: PublicTurf) {
   const open = parseHour(turf.openTime);
   let close = parseHour(turf.closeTime);
-  if (close <= open) close = 24; // e.g. open till midnight
+  if (close <= open) {
+    if (close > 0 && close <= 6) {
+      close = 24 + close;
+    } else {
+      close = 24; // e.g. open till midnight
+    }
+  }
   const hours: number[] = [];
   for (let h = open; h < close; h++) hours.push(h);
   return hours;

@@ -53,15 +53,27 @@ export function isValidDate(date: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(toUtcNoon(date).getTime()) && toUtcNoon(date).toISOString().slice(0, 10) === date;
 }
 
-export function formatHour(hour: number) {
-  const h = ((hour % 24) + 24) % 24;
+export function formatTime(hour: number, minute: number = 0) {
+  const totalMinutes = hour * 60 + minute;
+  const normalized = ((totalMinutes % (24 * 60)) + (24 * 60)) % (24 * 60);
+  const h = Math.floor(normalized / 60);
+  const m = normalized % 60;
   const suffix = h < 12 ? 'AM' : 'PM';
   const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${String(h12).padStart(2, '0')}:00 ${suffix}`;
+  return `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${suffix}`;
 }
 
-export function formatSlotRange(hour: number) {
-  return `${formatHour(hour)} – ${formatHour(hour + 1)}`;
+export function formatHour(hour: number) {
+  return formatTime(hour, 0);
+}
+
+export function formatSlotRange(hour: number, durationMinutes: number = 60, startMinute: number = 0) {
+  const start = formatTime(hour, startMinute);
+  const totalEndMinutes = hour * 60 + startMinute + durationMinutes;
+  const endHour = Math.floor(totalEndMinutes / 60);
+  const endMin = totalEndMinutes % 60;
+  const end = formatTime(endHour, endMin);
+  return `${start} – ${end}`;
 }
 
 export function formatDate(date: string, opts: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' }) {

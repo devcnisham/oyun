@@ -205,6 +205,7 @@ export interface Booking {
   date: string;
   hour: number;
   timeLabel: string;
+  durationMinutes?: number;
   pitch?: PitchPart; // missing means the whole pitch
   customerName: string;
   customerPhone: string;

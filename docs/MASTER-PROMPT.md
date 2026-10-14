@@ -84,7 +84,7 @@ Follow `docs/SLOT-BOOKING-DB.md` → "Moving the app over".
   - Each badminton or pickleball court is its own resource.
   - Partner screens are added to manage courts and bookables.
 - [x] **R007 Multi-court venues.** The booking flow lets the player pick a court or pitch size. Slot lengths come from the bookable.
-- [ ] **R009 Any slot length and after-midnight slots** in the UI: slot grid, invoices, calendar file, check-in.
+- [x] **R009 Any slot length and after-midnight slots** in the UI: slot grid, invoices, calendar file, check-in.
 - [ ] **Switch slots over.**
   - `getSlotsForDate` → `available_slots`
   - `holdSlots` → `hold_slots`

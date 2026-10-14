@@ -7,6 +7,7 @@ export const SESSIONS = [
   { name: 'Afternoon', icon: '☀️', from: 12, to: 17 },
   { name: 'Evening', icon: '🌆', from: 17, to: 21 },
   { name: 'Night', icon: '🌙', from: 21, to: 24 },
+  { name: 'Late night', icon: '🦉', from: 24, to: 30 },
 ] as const;
 
 /** "7 PM – 9 PM" for consecutive hours, "7 PM, 9 PM" otherwise. */

@@ -32,6 +32,11 @@ describe('basic helpers', () => {
     expect(turfHours(turf)).toEqual([18, 19, 20, 21, 22, 23]);
   });
 
+  test('turfHours includes after-midnight hours up to closing', () => {
+    const { turf } = makeDb({ openTime: '20:00', closeTime: '02:00' });
+    expect(turfHours(turf)).toEqual([20, 21, 22, 23, 24, 25]);
+  });
+
   test('half pitch costs the half percentage rounded to ₹10, only on half-pitch turfs', () => {
     const { turf } = makeDb({ pricePerHour: 1250, halfPitch: true, halfPricePercent: 55 });
     expect(hourlyRate(turf, 'half')).toBe(690);
