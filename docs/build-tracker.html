@@ -664,7 +664,7 @@ tasks:[
 
  // P10
  {id:"P10-01",p:"P10",t:"Delta sync: per-server cache plus load_changes(since) instead of load_state per request",s:"done",pr:"P0",n:"store.ts, supabase/migrations/20261007000000_delta_sync.sql, supabase/setup/5-delta-sync.sql. 16 end-to-end checks passed against a local Postgres; production build passes."},
- {id:"P10-02",p:"P10",t:"Per-turf version instead of one global rev",s:"todo",pr:"P1",n:"Two turfs must not conflict."},
+ {id:"P10-02",p:"P10",t:"Per-turf version instead of one global rev",s:"done",pr:"P1",n:"Superseded by Slot Booking v2: row-level exclusion constraints (exclusion_claims) replace the single global revision lock (PR #220, #137)."},
  {id:"P10-03",p:"P10",t:"Cache public pages with ISR and tag revalidation; drop connection() from the public layout",s:"done",pr:"P1",n:"Dropped connection() from (main)/layout.tsx; added ISR revalidate=60 and generateStaticParams for sports and area pages; tag revalidation on mutations."},
  {id:"P10-04",p:"P10",t:"Replace the 10-second slot poll with Realtime plus on-focus refetch",s:"done",pr:"P3",n:"Cheap now: an unchanged poll costs about 22 bytes."},
  {id:"P10-05",p:"P10",t:"loading.tsx and Suspense for every data page",s:"done",pr:"P2",n:"None exist today."},
