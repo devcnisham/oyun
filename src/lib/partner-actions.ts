@@ -19,6 +19,13 @@ import { formatHour, isValidDate, istNow } from './time';
 import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from './types';
 import { checkInWindow } from './checkin-window';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
+import {
+  isV2RpcEnabled,
+  turfBookableUuid,
+  v2BlockSlot,
+  v2ConfirmHold,
+  v2HoldSlots,
+} from './slot-booking-v2';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
   const booking = db.bookings.find((b) => b.id === bookingId);
@@ -55,7 +62,7 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       .filter((k) => k.startsWith('addon_'))
       .map((k) => ({ id: k.slice(6), qty: Number(fd.get(k)) || 0 }));
 
-    return await mutate((db) => {
+    const res = await mutate((db) => {
       const quote = buildQuote(db, { turfId: ctx.turf.id, date, hour, addOns, phone, source: 'walk_in' }, istNow());
       if (!quote) throw new ValidationError('Turf not found');
       if (quote.slotError) throw new ValidationError(quote.slotError);
@@ -84,6 +91,17 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       db.bookings.push(booking);
       return { ok: `Walk-in booked: ${name}, ${formatHour(hour)} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booking.code}` };
     });
+
+    if (isV2RpcEnabled()) {
+      const v2Bookable = turfBookableUuid(ctx.turf.id, 'full');
+      const startIso = `${date}T${String(hour).padStart(2, '0')}:00:00+05:30`;
+      const holdId = await v2HoldSlots('walk_in', v2Bookable, [startIso]);
+      if (holdId) {
+        await v2ConfirmHold(holdId, 'walk_in', name, phone, false);
+      }
+    }
+
+    return res;
   });
 }
 
@@ -187,7 +205,7 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
     if (date < istNow().date) throw new ValidationError('That date has already passed');
     if (!turfHours(ctx.turf).includes(hour)) throw new ValidationError(`${ctx.turf.name} is not open at ${formatHour(hour)}`);
 
-    return await mutate((db) => {
+    const res = await mutate((db) => {
       const taken = db.bookings.some(
         (b) => b.turfId === ctx.turf.id && b.date === date && b.hour === hour && ['confirmed', 'checked_in'].includes(b.status)
       );
@@ -198,6 +216,15 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
       db.blocks.push({ id: newId('block'), turfId: ctx.turf.id, date, hour, reason, createdBy: ctx.userName, createdAt: new Date().toISOString() });
       return { ok: `Blocked ${formatHour(hour)} on ${date}` };
     });
+
+    if (isV2RpcEnabled()) {
+      const v2Bookable = turfBookableUuid(ctx.turf.id, 'full');
+      const startIso = `${date}T${String(hour).padStart(2, '0')}:00:00+05:30`;
+      const endIso = `${date}T${String(hour + 1).padStart(2, '0')}:00:00+05:30`;
+      await v2BlockSlot(v2Bookable, startIso, endIso, reason);
+    }
+
+    return res;
   });
 }
 

@@ -18,6 +18,16 @@ import { getDb, mutate, newId, storageInfo } from './store';
 import { BOOKING_DAYS, addDays, formatHour, isValidDate, istNow } from './time';
 import type { Booking, Database, PitchSize, Slot } from './types';
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
+import {
+  isV2RpcEnabled,
+  mapV2RowsToSlots,
+  stringToUuid,
+  turfBookableUuid,
+  v2AvailableSlots,
+  v2CancelBooking,
+  v2ConfirmHold,
+  v2HoldSlots,
+} from './slot-booking-v2';
 
 const MAX_DAYS_AHEAD = BOOKING_DAYS - 1;
 const HOLD_MINUTES = 8;
@@ -56,7 +66,18 @@ export async function getSlotsForDate(turfId: string, date: string, size: PitchS
   const db = await getDb();
   const turf = bookableTurf(db, String(turfId));
   if (!turf || !checkDate(String(date))) return [];
-  return getSlots(db, turf, date, istNow(), await deviceHolder(false), false, cleanSize(size));
+  const pitchSize = cleanSize(size);
+
+  if (isV2RpcEnabled()) {
+    const bookableUuid = turfBookableUuid(turf.id, pitchSize);
+    const v2Rows = await v2AvailableSlots(bookableUuid, date);
+    if (v2Rows && v2Rows.length > 0) {
+      const pitchPart = pitchSize === 'half' ? 'A' : undefined;
+      return mapV2RowsToSlots(v2Rows, date, pitchPart);
+    }
+  }
+
+  return getSlots(db, turf, date, istNow(), await deviceHolder(false), false, pitchSize);
 }
 
 export type HoldResult = { ok: true; expiresInMs: number; slots: Slot[] } | { ok: false; error: string; slots: Slot[] };
@@ -71,6 +92,18 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
     if (!checkDate(String(date))) throw new ValidationError('Pick a date within the next week');
     const wanted = cleanHours(hours);
     const expiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString();
+
+    if (isV2RpcEnabled()) {
+      const v2Bookable = turfBookableUuid(String(turfId), pitchSize);
+      const startsAtIsoArray = wanted.map((h) => {
+        const daysOffset = Math.floor(h / 24);
+        const slotDate = daysOffset > 0 ? addDays(date, daysOffset) : date;
+        const slotHour = ((h % 24) + 24) % 24;
+        return `${slotDate}T${String(slotHour).padStart(2, '0')}:00:00+05:30`;
+      });
+      await v2HoldSlots(holder, v2Bookable, startsAtIsoArray, HOLD_MINUTES);
+    }
+
     await mutate((db) => {
       const turf = bookableTurf(db, String(turfId));
       if (!turf) throw new ValidationError('This turf is not taking bookings right now');
@@ -169,6 +202,13 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
       return bookings.map((b) => b.id);
     });
 
+    if (isV2RpcEnabled()) {
+      for (const id of ids) {
+        const bookingUuid = stringToUuid(id);
+        await v2ConfirmHold(bookingUuid, holder ?? '', req.name, req.phone, false);
+      }
+    }
+
     refreshAll();
     return { ids };
   } catch (err) {
@@ -200,6 +240,10 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
     if (!/^bk_[a-f0-9]{12}$/.test(id)) throw new ValidationError('Booking not found');
     await throttle('cancel', 20);
     const accountId = await currentAccountId();
+    if (isV2RpcEnabled()) {
+      const bookingUuid = stringToUuid(id);
+      await v2CancelBooking(bookingUuid, 'Cancelled by player');
+    }
     await mutate((db) => {
       const booking = db.bookings.find((b) => b.id === id);
       if (!booking) throw new ValidationError('Booking not found');

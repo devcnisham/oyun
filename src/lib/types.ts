@@ -56,6 +56,8 @@ export interface Slot {
   available: boolean;
   reason: SlotUnavailableReason | null;
   heldByYou?: boolean; // held for this device's checkout
+  pitch?: PitchPart;
+  durationMinutes?: number;
 }
 
 export interface PricingRules {
