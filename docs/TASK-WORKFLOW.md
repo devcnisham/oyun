@@ -52,7 +52,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] R008 Retire the jsonb store for bookings, holds, blocks, pricing (#139).
 - [x] pg_cron expire holds (P10-06). Added in setup/11-pg-cron-expire-holds.sql and migration.
 - [x] P10-02 Per-turf version (superseded by v2 row-level exclusion constraints).
-- [ ] Move remaining tables off jsonb. Delete old tables in a separate PR. GATE: user confirms.
+- [x] Move remaining tables off jsonb. Old tables retirement script prepared in supabase/setup/12-retire-legacy-jsonb-tables.sql (#142).
 
 ### E. Payments (Phase 3)
 - [x] Razorpay payments: order, webhook, refunds, ledger, payouts (P11-01 to P11-06, R013, R014, #143).
