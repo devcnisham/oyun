@@ -67,9 +67,9 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] GATE: user chooses WhatsApp or SMS provider. Then P12-01 confirmation, P12-02 reminder, P12-03 owner alerts, P12-04 email receipts, P12-05 web push.
 - [ ] P13-04 Search filters; GATE: user chooses Google Maps or Mapbox for the map.
 - [x] Partner calendar day and week view (single turf; "across all courts" waits for R007 multi-court).
-- [ ] P13-06 Waitlist and recurring weekly bookings.
-- [ ] Split payment link (needs section E).
-- [ ] P13-01 Find players and open matches; P13-02 tournaments; P13-03 weather alerts; P13-05 admin analytics; P13-07 Kannada.
+- [x] P13-06 Waitlist and recurring weekly bookings (PR #225).
+- [x] Split payment link (PR #221).
+- [ ] P13-01 Find players and open matches; P13-02 tournaments; [x] P13-03 weather alerts (PR #217); P13-05 admin analytics; [x] P13-07 Kannada (PR #218).
 
 ### H. Quality and launch (Phases 6 to 7)
 - [x] Concurrency test in CI (`scripts/sql-race-test.sh`), accessibility (axe, `e2e/a11y.spec.ts`), bad-path tests (`src/lib/bad-paths.test.ts`).

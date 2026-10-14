@@ -224,6 +224,8 @@ export interface Booking {
   cancelledAt?: string | null;
   rescheduledAt?: string | null;
   originalSlot?: { date: string; hour: number } | null;
+  recurringGroupId?: string | null;
+  recurringWeek?: number | null;
   createdAt: string;
 }
 
@@ -335,6 +337,19 @@ export interface Database {
   applications: Application[];
   walletTxns: WalletTxn[];
   holds: SlotHold[];
+  waitlist?: WaitlistEntry[];
+}
+
+export interface WaitlistEntry {
+  id: string;
+  turfId: string;
+  date: string;
+  hour: number;
+  customerName: string;
+  customerPhone: string;
+  status: 'waiting' | 'notified' | 'claimed' | 'cancelled';
+  createdAt: string;
+  notifiedAt?: string | null;
 }
 
 export type ActionResult = { ok?: string; error?: string; data?: Record<string, string> } | null;

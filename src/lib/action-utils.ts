@@ -42,7 +42,11 @@ export function phone10(fd: FormData, key: string, label = 'Phone number') {
 
 // Every mutation can change public pages and dashboards, so refresh everything
 export function refreshAll() {
-  revalidatePath('/', 'layout');
+  try {
+    revalidatePath('/', 'layout');
+  } catch {
+    // In test environment or non-request context, revalidatePath is a no-op
+  }
 }
 
 // Turns thrown access/validation errors into a form message, catching unexpected errors to prevent crashes

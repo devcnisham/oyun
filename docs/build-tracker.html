@@ -694,7 +694,7 @@ tasks:[
  {id:"P13-03",p:"P13",t:"Weather alerts for outdoor slots",s:"done",pr:"P3",n:"Rain cancellation policy with 100% wallet refund up to match time, monsoon protection advisory on outdoor turfs, documented in terms and FAQ."},
  {id:"P13-04",p:"P13",t:"Filters: price range, date, amenities; real map",s:"todo",pr:"P2"},
  {id:"P13-05",p:"P13",t:"Admin analytics dashboard",s:"todo",pr:"P2"},
- {id:"P13-06",p:"P13",t:"Waitlist and recurring bookings",s:"todo",pr:"P3"},
+ {id:"P13-06",p:"P13",t:"Waitlist and recurring bookings",s:"done",pr:"P3",n:"Queue waitlist with FIFO notification on slot cancellation (src/lib/waitlist.ts) and atomic recurring weekly bookings (src/lib/recurring.ts) with pre-validation and shared group id."},
  {id:"P13-07",p:"P13",t:"Kannada interface",s:"done",pr:"P3",n:"Multilingual localization module (src/lib/i18n.ts) supporting Kannada, Hindi, and Tulu alongside English with reactive LanguageSelector in settings and navbar."}
 ],
 
@@ -1213,7 +1213,7 @@ featureGroups:[
   ["Create limits","built","30 per IP and 10 per device per 10 minutes","booking-actions.ts"],
   ["Add-ons at checkout","partial","Owners can create them and walk-ins can sell them, but online checkout always sends none","BookingFlow.tsx"],
   ["Reschedule","built","2h advance cutoff, operating hours check, slot availability check, policy compliance; PR #219","booking-actions.ts rescheduleBooking, RescheduleBooking.tsx"],
-  ["Split payment, recurring bookings, waitlist","partial","Split payment link with UPI and WhatsApp sharing built; recurring bookings and waitlist planned","lib/split-payment.ts, SplitPayment.tsx"]
+  ["Split payment, recurring bookings, waitlist","built","Split payment link with UPI deep links and WhatsApp share, waitlist with FIFO cancellation notification, and atomic multi-week recurring bookings","lib/split-payment.ts, lib/waitlist.ts, lib/recurring.ts"]
  ]},
  {g:"Payment",a:"Player",subs:[
   ["Advance payment percent","partial","The advance is what the turf collects at arrival, nothing is charged online; 10% of each hour's price (Admin setting, 10 to 100%)","pricing.ts advanceDue"],
