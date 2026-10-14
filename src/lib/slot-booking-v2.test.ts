@@ -4,6 +4,7 @@ import {
   mapV2RowsToSlots,
   stringToUuid,
   turfBookableUuid,
+  v2ExpireHolds,
   type V2SlotRow,
 } from './slot-booking-v2';
 
@@ -31,6 +32,11 @@ describe('slot-booking-v2', () => {
 
   it('reports disabled in test mode without explicit env flag', () => {
     expect(isV2RpcEnabled()).toBe(false);
+  });
+
+  it('safely handles v2ExpireHolds when disabled', async () => {
+    const expiredCount = await v2ExpireHolds();
+    expect(expiredCount).toBe(0);
   });
 
   it('maps v2 slot rows into standard application Slot structures with IST time', () => {

@@ -9,6 +9,7 @@ import { DB_VERSION, migrate, seed } from './seed';
 import type { Database } from './types';
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
 import { broadcastSlotChanges } from './realtime';
+import { isV2RpcEnabled } from './slot-booking-v2';
 
 export { newBookingCode, newId } from './ids';
 
@@ -80,7 +81,7 @@ function fromRows(rows: TableRows): Database {
 }
 
 // Serialized rows, to work out what a mutation changed
-function snapshot(db: Database) {
+export function snapshot(db: Database) {
   const snap = new Map<Table, Map<string, string>>();
   for (const [table, rows] of Object.entries(toRows(db)) as [Table, Row[]][]) {
     snap.set(table, new Map(rows.map((r) => [r.id, JSON.stringify(r.data)])));
@@ -88,10 +89,20 @@ function snapshot(db: Database) {
   return snap;
 }
 
-function diff(before: Map<Table, Map<string, string>>, db: Database) {
+export const RETIRED_JSONB_TABLES = new Set<Table>(['bookings', 'holds', 'blocks', 'pricing']);
+
+export function isBookingStoreRetired(): boolean {
+  if (process.env.RETIRE_JSONB_BOOKINGS === 'false') return false;
+  if (process.env.RETIRE_JSONB_BOOKINGS === 'true') return true;
+  return isV2RpcEnabled();
+}
+
+export function diff(before: Map<Table, Map<string, string>>, db: Database) {
   const upserts: TableRows = {};
   const deletes: Partial<Record<Table, string[]>> = {};
+  const retired = isBookingStoreRetired();
   for (const [table, rows] of Object.entries(toRows(db)) as [Table, Row[]][]) {
+    if (retired && RETIRED_JSONB_TABLES.has(table)) continue;
     const old = before.get(table) ?? new Map<string, string>();
     const changed = rows.filter((r) => old.get(r.id) !== JSON.stringify(r.data));
     const ids = new Set(rows.map((r) => r.id));
@@ -103,24 +114,40 @@ function diff(before: Map<Table, Map<string, string>>, db: Database) {
 }
 
 // Turf/days whose slot map a write changed (a booking, hold or block was added, edited or removed)
-const SLOT_TABLES = new Set<Table>(['bookings', 'holds', 'blocks']);
+export const SLOT_TABLES = new Set<Table>(['bookings', 'holds', 'blocks']);
 
-function changedSlotDays(before: Map<Table, Map<string, string>>, changes: ReturnType<typeof diff>) {
+export function changedSlotDays(before: Map<Table, Map<string, string>>, db: Database) {
   const days = new Map<string, { turfId: string; date: string }>();
   const add = (item: unknown) => {
     const { turfId, date } = (item ?? {}) as { turfId?: unknown; date?: unknown };
     if (typeof turfId === 'string' && typeof date === 'string') days.set(`${turfId}|${date}`, { turfId, date });
   };
+  const current = toRows(db);
   for (const table of SLOT_TABLES) {
-    const old = before.get(table);
-    for (const row of changes.upserts[table] ?? []) {
-      add(row.data);
-      const prev = old?.get(row.id);
-      if (prev) add(JSON.parse(prev));
+    const old = before.get(table) ?? new Map<string, string>();
+    const rows = current[table] ?? [];
+    const ids = new Set(rows.map((r) => r.id));
+    for (const row of rows) {
+      const prev = old.get(row.id);
+      if (prev !== JSON.stringify(row.data)) {
+        add(row.data);
+        if (prev) {
+          try {
+            add(JSON.parse(prev));
+          } catch {
+            // ignore malformed previous entry
+          }
+        }
+      }
     }
-    for (const id of changes.deletes[table] ?? []) {
-      const prev = old?.get(id);
-      if (prev) add(JSON.parse(prev));
+    for (const [id, prev] of old) {
+      if (!ids.has(id)) {
+        try {
+          add(JSON.parse(prev));
+        } catch {
+          // ignore malformed previous entry
+        }
+      }
     }
   }
   return [...days.values()];
@@ -398,8 +425,15 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
       if (!changes.empty && rev !== null && cache && cache.rev === loaded.rev) {
         applyToCache(cache, structuredClone(changes.upserts), changes.deletes, rev);
       }
+      if (isBookingStoreRetired() && cache && cache.rev === loaded.rev) {
+        for (const table of RETIRED_JSONB_TABLES) {
+          const currentRows = toRows(db)[table] ?? [];
+          cache.rows.set(table, new Map(currentRows.map((r) => [r.id, r.data])));
+        }
+        cache.db = buildDb(cache.rows);
+      }
       requestState().current = Promise.resolve({ db, rev });
-      announceSlotChanges(changedSlotDays(before, changes));
+      announceSlotChanges(changedSlotDays(before, db));
       return result;
     } catch (err) {
       if (!(err instanceof StoreConflict)) throw err;

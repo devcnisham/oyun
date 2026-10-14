@@ -5,7 +5,11 @@
     "e2e/**/*.ts"
   ],
   "ignoreDependencies": [
-    "server-only"
+    "server-only",
+    "k6"
+  ],
+  "ignoreBinaries": [
+    "k6"
   ],
   "ignoreExportsUsedInFile": true
 }
