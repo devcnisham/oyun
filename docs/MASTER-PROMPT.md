@@ -134,7 +134,7 @@ Follow `docs/SLOT-BOOKING-DB.md` → "Moving the app over".
   - Cancellation alerts.
   - Opt-out respected.
 - [ ] **Search filters:** sport, area, date and time, price range, amenities. Map view (ask me Google or Mapbox).
-- [ ] **Partner calendar:** day and week view across all courts.
+- [x] **Partner calendar:** day and week view across all courts.
 - [ ] **Recurring weekly bookings**, with a conflict check on every occurrence.
 - [ ] **Waitlist** for full slots: notify the next player when a slot frees up.
 - [ ] **Split payment:** share a UPI or Razorpay link with teammates.

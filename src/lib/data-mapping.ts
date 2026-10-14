@@ -1,4 +1,4 @@
-import type { Turf } from './types';
+import type { PublicTurf, Turf } from './types';
 
 export interface MappedVenue {
   id: string;
@@ -44,7 +44,7 @@ export interface MappedTurfData {
  * - halfPitch turf -> 2 resources (Half A, Half B), 3 bookables (Full, Half A, Half B)
  * - Badminton/Pickleball -> Court 1, Court 2 resources and corresponding bookables
  */
-export function mapTurfToVenue(turf: Turf): MappedTurfData {
+export function mapTurfToVenue(turf: Turf | PublicTurf): MappedTurfData {
   const isBadminton = turf.sports.some((s) => s.toLowerCase() === 'badminton');
   const isPickleball = turf.sports.some((s) => s.toLowerCase() === 'pickleball');
   const isCricket = turf.sports.some((s) => s.toLowerCase().includes('cricket'));

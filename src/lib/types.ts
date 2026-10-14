@@ -110,6 +110,7 @@ export interface SlotBlock {
   turfId: string;
   date: string;
   hour: number;
+  pitch?: PitchPart;
   reason: string;
   createdBy: string;
   createdAt: string;
