@@ -1212,8 +1212,8 @@ featureGroups:[
   ["Player record by phone","built","Created automatically with a referral code","lib/wallet.ts"],
   ["Create limits","built","30 per IP and 10 per device per 10 minutes","booking-actions.ts"],
   ["Add-ons at checkout","partial","Owners can create them and walk-ins can sell them, but online checkout always sends none","BookingFlow.tsx"],
-  ["Reschedule","planned","Not built","–"],
-  ["Split payment, recurring bookings, waitlist","planned","Not built","–"]
+  ["Reschedule","built","2h advance cutoff, operating hours check, slot availability check, policy compliance; PR #219","booking-actions.ts rescheduleBooking, RescheduleBooking.tsx"],
+  ["Split payment, recurring bookings, waitlist","partial","Split payment link with UPI and WhatsApp sharing built; recurring bookings and waitlist planned","lib/split-payment.ts, SplitPayment.tsx"]
  ]},
  {g:"Payment",a:"Player",subs:[
   ["Advance payment percent","partial","The advance is what the turf collects at arrival, nothing is charged online; 10% of each hour's price (Admin setting, 10 to 100%)","pricing.ts advanceDue"],
@@ -1845,7 +1845,7 @@ D2.lists = [
   ["NEXT-03","Find players to complete a team","P3",0],
   ["NEXT-04","Tournaments and leagues with fixtures","P3",0],
   ["NEXT-05","Prepaid packs and memberships (for example 10 hours)","P3",0],
-  ["NEXT-06","Split the payment among team members","P3",0],
+  ["NEXT-06","Split the payment among team members","P3",1,"Per-player calculation with ceiling rounding, customizable player count, UPI deep-links, and one-tap WhatsApp share."],
   ["NEXT-07","Coaching and academy slots","P3",0],
   ["NEXT-08","Rain alerts for open turfs in the monsoon","P3",1,"Rain policy with 100% wallet refund and monsoon protection active on outdoor turfs."]
  ]}
