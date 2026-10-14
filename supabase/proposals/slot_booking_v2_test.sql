@@ -102,6 +102,16 @@ insert into oyun.payments (booking_id, provider_order_id, amount) select id, 'or
 update oyun.bookings set hold_expires_at = now() - interval '1 second' where holder='dev14';
 select pg_temp.t('someone takes the slot after expiry', $q$ select pg_temp.hold('dev15','00000000-0000-0000-0000-00000000bd02', array[pg_temp.at('08:00')]) $q$);
 select pg_temp.t('late webhook -> refund_needed', $q$ do $d$ begin if oyun.confirm_payment('order_2','pay_2',400) <> 'refund_needed' then raise exception 'bad'; end if; end $d$ $q$);
+-- 9. Public RPC wrappers
+select pg_temp.t('public.hold_slots', $q$ select public.hold_slots('dev_pub','00000000-0000-0000-0000-00000000f001', array[pg_temp.at('12:00')]) $q$);
+select pg_temp.t('public.available_slots shows held slot', $q$ do $d$ begin
+  if not exists (select 1 from public.available_slots('00000000-0000-0000-0000-00000000f001', (now() at time zone 'Asia/Kolkata')::date + 1) where state = 'held' and starts_at = pg_temp.at('12:00')) then
+    raise exception 'slot not marked as held';
+  end if;
+end $d$ $q$);
+select pg_temp.t('public.confirm_hold', $q$ select public.confirm_hold((select id from oyun.bookings where holder='dev_pub' and status='held'), 'dev_pub', 'Public User', '9876543299') $q$);
+select pg_temp.t('public.cancel_booking', $q$ select public.cancel_booking((select id from oyun.bookings where holder='dev_pub' and status='confirmed'), 'public cancel') $q$);
+select pg_temp.t('public.expire_holds', $q$ select public.expire_holds() $q$);
 
 select n, case when ok then 'PASS' else 'FAIL' end as result, test, left(info, 60) as info from results order by n;
 

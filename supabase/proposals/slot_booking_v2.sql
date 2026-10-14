@@ -725,3 +725,60 @@ do $$ begin
   end if;
 end $$;
 revoke execute on all functions in schema oyun from public;
+
+-- ───────────────────────── public RPC wrappers ─────────────────────────
+-- PostgREST / Supabase Client public entrypoints that call into oyun schema
+
+create or replace function public.available_slots(p_bookable uuid, p_date date)
+returns table (starts_at timestamptz, ends_at timestamptz, price int, state text)
+language sql stable security definer as $$
+  select * from oyun.available_slots(p_bookable, p_date);
+$$;
+
+create or replace function public.hold_slots(
+  p_holder text, p_bookable uuid, p_starts timestamptz[],
+  p_player uuid default null, p_ttl interval default interval '8 minutes')
+returns uuid language plpgsql security definer as $$
+begin
+  return oyun.hold_slots(p_holder, p_bookable, p_starts, p_player, p_ttl);
+end $$;
+
+create or replace function public.confirm_hold(
+  p_booking uuid, p_holder text, p_name text, p_phone text,
+  p_pay_online boolean default false, p_payment_window interval default interval '15 minutes')
+returns oyun.bookings language plpgsql security definer as $$
+begin
+  return oyun.confirm_hold(p_booking, p_holder, p_name, p_phone, p_pay_online, p_payment_window);
+end $$;
+
+create or replace function public.confirm_payment(p_provider_order_id text, p_provider_payment_id text, p_amount int)
+returns text language plpgsql security definer as $$
+begin
+  return oyun.confirm_payment(p_provider_order_id, p_provider_payment_id, p_amount);
+end $$;
+
+create or replace function public.cancel_booking(p_booking uuid, p_reason text)
+returns void language plpgsql security definer as $$
+begin
+  perform oyun.cancel_booking(p_booking, p_reason);
+end $$;
+
+create or replace function public.block_slot(p_bookable uuid, p_during tstzrange, p_reason text, p_member uuid default null)
+returns uuid language plpgsql security definer as $$
+begin
+  return oyun.block_slot(p_bookable, p_during, p_reason, p_member);
+end $$;
+
+create or replace function public.expire_holds()
+returns int language plpgsql security definer as $$
+begin
+  return oyun.expire_holds();
+end $$;
+
+grant execute on function public.available_slots(uuid, date) to anon, authenticated, service_role;
+grant execute on function public.hold_slots(text, uuid, timestamptz[], uuid, interval) to anon, authenticated, service_role;
+grant execute on function public.confirm_hold(uuid, text, text, text, boolean, interval) to anon, authenticated, service_role;
+grant execute on function public.confirm_payment(text, text, int) to service_role;
+grant execute on function public.cancel_booking(uuid, text) to anon, authenticated, service_role;
+grant execute on function public.block_slot(uuid, tstzrange, text, uuid) to authenticated, service_role;
+grant execute on function public.expire_holds() to service_role;
