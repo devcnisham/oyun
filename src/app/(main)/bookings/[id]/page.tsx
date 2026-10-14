@@ -12,6 +12,7 @@ import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/lib/cancel-policy';
 import CancelBooking from './CancelBooking';
 import RescheduleBooking from './RescheduleBooking';
 import ReviewForm from './ReviewForm';
+import SplitPayment from './SplitPayment';
 import { halfNote, turfHours } from '@/lib/pricing';
 
 const STATUS_TEXT: Record<string, string> = {
@@ -101,18 +102,27 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           <Link href={`/arenas/${turf.id}`} className="btn btn--primary btn--sm">Book again</Link>
         </div>
         {active && (
-          <div className={styles.extras}>
-            <a href={`/bookings/${booking.id}/calendar`} className={styles.extra}>📅 Add to calendar</a>
-            <a
-              className={styles.extra}
-              target="_blank"
-              rel="noopener noreferrer"
-              href={`https://wa.me/?text=${encodeURIComponent(`I've booked ${turf.name} on ${formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}, ${formatSlotRange(booking.hour)}. Join the game! ${origin}/arenas/${turf.id}`)}`}
-            >
-              💬 Share on WhatsApp
-            </a>
-            <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
-          </div>
+          <>
+            <div className={styles.extras}>
+              <a href={`/bookings/${booking.id}/calendar`} className={styles.extra}>📅 Add to calendar</a>
+              <a
+                className={styles.extra}
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://wa.me/?text=${encodeURIComponent(`I've booked ${turf.name} on ${formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}, ${formatSlotRange(booking.hour)}. Join the game! ${origin}/arenas/${turf.id}`)}`}
+              >
+                💬 Share on WhatsApp
+              </a>
+              <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
+            </div>
+            <SplitPayment
+              turfName={turf.name}
+              dateStr={formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}
+              timeSlot={formatSlotRange(booking.hour)}
+              totalAmount={p.total}
+              customerName={booking.customerName}
+            />
+          </>
         )}
         {canSelfCancel(booking) && (
           <>

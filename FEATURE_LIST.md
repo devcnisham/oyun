@@ -67,12 +67,12 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 *Status: Partly done*
 - [x] Favourites (saved turfs).
 - [x] Add to calendar and share to WhatsApp after booking.
-- [ ] Book again in one tap.
-- [ ] Split payment link for teammates.
+- [x] Book again in one tap.
+- [x] Split payment link for teammates.
 - [ ] Find players / open matches.
 - [ ] Recurring weekly bookings.
 - [ ] Waitlist for full slots.
-- [ ] Weather alerts and a rain cancellation policy.
+- [x] Weather alerts and a rain cancellation policy.
 - [ ] Teams and tournaments.
 
 ### 10. Advanced Partner Tools
