@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #236 (main at c5b1d48, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #239 (main at 9a0cfba, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -2215,6 +2215,10 @@ DATA.tasks.push(
  {id:"P13-15",p:"P13",t:"Wire the rain policy into cancel and refund: no cutoff and a 100% wallet refund in heavy rain",s:"done",pr:"P1",n:"Partner marks an outdoor turf rained out (setRainOut), admin declares a city-wide rain day (setRainDay). isRainDisruption() in src/lib/rain.ts is checked on the booking page and again in cancelMyBooking and rescheduleBooking, so the 2 hour cutoff is lifted only when the server finds rain. Cancel reason is rain and everything paid goes to the wallet. No PR number: pushed to main as c5b1d48."},
  {id:"P10-19",p:"P10",t:"Map turfs to venues, resources and bookables (relational model), with a partner courts screen",s:"done",pr:"P2",n:"PR #236 (the commit title also cites #134). supabase/setup/10-map-turfs-to-venues.sql and src/lib/venue-mapping.ts; courts screen at /partner/courts."},
  {id:"P10-20",p:"P10",t:"Run supabase/setup/10-map-turfs-to-venues.sql on production",s:"todo",pr:"P1",n:"Maps turfs to venues, resources and bookables (PR #236). The repo does not show whether production has it; check the database first."},
+ {id:"P9-29",p:"P9",t:"Privacy export and erase act on the signed-in account only, not a typed phone number",s:"done",pr:"P0",n:"Branch dpdp-require-account (commit f7362b3, merged in 71496a8). GET /api/privacy/export and POST /api/privacy/delete used to take a phone number with no sign-in, so anyone could download or erase another player's data. Both now read the Clerk session (src/lib/current-account.ts), return 401 when signed out, and find records by account id. Erase also returns 403 when the Origin host differs from the request host."},
+ {id:"P9-30",p:"P9",t:"Double-booking monitor no longer returns booking ids to the public",s:"done",pr:"P1",n:"Branch monitor-no-booking-ids (commit 11cef4a, merged in da374d2). /api/monitoring/double-bookings is public. It now leaves booking ids and codes out of its response; they stay on the on-call page."},
+ {id:"P8-69",p:"P8",t:"CI green again: knip findings fixed, Gitleaks job can read pull requests, main e2e suite passes",s:"done",pr:"P3",n:"Commit 81cf8a1 (knip.json and recurring.ts; ci.yml gets pull-requests: read for the Gitleaks job) and commit 6619b5d (welcome ticker contrast, e2e workflow fixes), merged through 1ab94e9 and a33a3cc. No PR number in the git history."},
+ {id:"P8-70",p:"P8",t:"Home page images: webp only, popup ad loaded lazily, high fetch priority on the first home promo",s:"done",pr:"P2",n:"PR #239. P8-64 stays open until the Lighthouse scores reach 90."},
 );
 
 /* ===================== BOOT ===================== */
