@@ -1,6 +1,7 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { clerkEnabled } from '@/lib/clerk';
+import { buildCsp } from '@/lib/csp';
 import { devLoginSkipped, sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
 import { updateSession } from '@/utils/supabase/middleware';
 
@@ -36,7 +37,20 @@ function forceHttps(req: NextRequest) {
 }
 
 async function handle(req: NextRequest) {
-  return forceHttps(req) ?? dashboardGuard(req) ?? (await updateSession(req));
+  const redirect = forceHttps(req) ?? dashboardGuard(req);
+  if (redirect) return redirect;
+
+  // Generate a cryptographically random nonce per request (P9-13)
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+  const csp = buildCsp(nonce);
+
+  req.headers.set('x-nonce', nonce);
+  req.headers.set('Content-Security-Policy', csp);
+
+  const res = await updateSession(req);
+  res.headers.set('Content-Security-Policy', csp);
+  res.headers.set('x-nonce', nonce);
+  return res;
 }
 
 // With Clerk keys set, Clerk's middleware runs first so player sessions are available everywhere
