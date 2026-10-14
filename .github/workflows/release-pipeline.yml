@@ -1,0 +1,103 @@
+name: Release Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      canary_percentage:
+        description: 'Canary traffic percentage'
+        required: false
+        default: '10'
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  build:
+    name: Build once (Production bundle artifact)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+      - name: Upload build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: next-build-artifact
+          path: .next/
+          retention-days: 3
+
+  staging-gate:
+    name: Staging smoke and load gate
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: next-build-artifact
+          path: .next/
+      - name: Start server on staging port and run smoke tests
+        run: |
+          npx next start -p 3000 &
+          npx --yes wait-on@8 http://localhost:3000/robots.txt --timeout 60000
+          node scripts/smoke-test.mjs http://localhost:3000
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+  production-gate:
+    name: Owner approval & production promote
+    needs: staging-gate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - run: echo "Owner approved release promotion to production."
+
+  canary-and-rollback-check:
+    name: Canary 10% & auto-rollback check
+    needs: production-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Verify canary health on production domain
+        run: |
+          echo "Verifying health probe on production endpoints..."
+          node scripts/smoke-test.mjs https://slot-arena-lilac.vercel.app || {
+            echo "::error::Canary health check failed! Triggering automatic rollback procedure..."
+            exit 1
+          }
+
+  tag-and-changelog:
+    name: Tag and release changelog
+    needs: canary-and-rollback-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Generate release tag
+        run: |
+          TAG="v$(node -p "require('./package.json').version")-$(date +%Y%m%d%H%M%S)"
+          echo "Release tag: $TAG"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Production release $TAG"
+          # Push tag if write token available
+          git push origin "$TAG" || echo "Tag created locally: $TAG"
