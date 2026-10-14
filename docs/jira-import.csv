@@ -224,9 +224,9 @@ Tracker id: P9-03. Source of truth: docs/build-tracker.html in the repo.","Highe
 "79","Task","[P9-04] Refund walletDeduction when a booking is cancelled","Verify first: cancelMyBooking refunds only amountPaid, which is 0.
 
 Tracker id: P9-04. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p9","tracker","10"
-"80","Task","[P9-05] Ticket page: hide phone, require account or signed token for details and actions","The bk_ id is a 48-bit bearer token shared over WhatsApp. Phone is masked on the ticket and invoice (PR #98). Still open: anonymous bookings can be cancelled by anyone holding the bk_ link; needs verified identity (P9-03) or a secret in the link.
+"80","Task","[P9-05] Ticket page: hide phone, require account or signed token for details and actions","The bk_ id is a 48-bit bearer token shared over WhatsApp. Phone is masked on the ticket and invoice (PR #98). Anonymous cancel and review now also need the mobile number typed at booking (PR #122). Signed-in bookings need the same account. Not a signed token: the link plus the phone is still the only proof.
 
-Tracker id: P9-05. Source of truth: docs/build-tracker.html in the repo.","High","In Progress","oyun","p9","tracker","10"
+Tracker id: P9-05. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
 "81","Task","[P9-06] Shared rate limiter (Redis or database) for login, holds, applications, client-error","Counters live in Postgres (rate_limits, rl_hit, rl_get, rl_clear in supabase/setup/8-rate-limits.sql). Login lockout, holds, bookings, cancels, reviews, applications and client-error use them via src/lib/shared-rate-limit.ts. Falls back to the per-instance limiter when Supabase is off, the call fails or step 8 has not been run. P9-22 runs the SQL on production.
 
 Tracker id: P9-06. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
@@ -245,9 +245,9 @@ Tracker id: P9-11. Source of truth: docs/build-tracker.html in the repo.","Mediu
 "88","Task","[P9-13] CSP nonces to drop 'unsafe-inline' from script-src","Tracker id: P9-13. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p9","tracker","10"
 "89","Task","[P9-14] CHECK constraints: wallet balance not negative, amounts not negative","Tracker id: P9-14. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p9","tracker","10"
 "90","Task","[P9-15] Private Realtime channels with authorization, or accept public pings in writing","Tracker id: P9-15. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p9","tracker","10"
-"91","Task","[P9-16] Remove the unused Supabase auth proxy step or document why it stays","updateSession returns early; server.ts is unused.
+"91","Task","[P9-16] Remove the unused Supabase auth proxy step or document why it stays","Unused src/utils/supabase/server.ts removed and the reason updateSession returns early is documented in middleware.ts. PR #174.
 
-Tracker id: P9-16. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p9","tracker","10"
+Tracker id: P9-16. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p9","tracker","10"
 "92","Task","[P10-01] Delta sync: per-server cache plus load_changes(since) instead of load_state per request","store.ts, supabase/migrations/20261007000000_delta_sync.sql, supabase/setup/5-delta-sync.sql. 16 end-to-end checks passed against a local Postgres; production build passes.
 
 Tracker id: P10-01. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p10","tracker","11"
@@ -294,11 +294,15 @@ Tracker id: P8-14. Source of truth: docs/build-tracker.html in the repo.","Mediu
 Tracker id: P8-15. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
 "122","Task","[P8-16] Partner agreement, refund and commission policy, DPDP privacy review with a lawyer or CA","Tracker id: P8-16. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
 "123","Task","[P8-17] Pick team tools: GitHub Projects or Linear, Notion, Slack or WhatsApp, Bitwarden","Tracker id: P8-17. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
-"124","Task","[P8-18] Load Inter with next/font so every device matches the design","globals.css names Inter but nothing loads it.
+"124","Task","[P8-18] Load Inter with next/font so every device matches the design","Inter is loaded with next/font/google in src/app/layout.tsx and exposed as --font-inter; globals.css uses it first.
 
-Tracker id: P8-18. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
-"125","Task","[P8-19] Replace hard-coded hex values (#f5a623, #cba052) with CSS variables","Tracker id: P8-19. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p8","tracker","9"
-"126","Task","[P8-20] Accessibility audit: keyboard, focus, contrast; fix findings","Tracker id: P8-20. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+Tracker id: P8-18. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"125","Task","[P8-19] Replace hard-coded hex values (#f5a623, #cba052) with CSS variables","Stars, review form and turf card use CSS variables; the hex values now live only in globals.css. PR #171.
+
+Tracker id: P8-19. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p8","tracker","9"
+"126","Task","[P8-20] Accessibility audit: keyboard, focus, contrast; fix findings","Automated axe checks and a keyboard booking test exist (P8-41, P8-42). Findings are not yet all fixed; no manual audit yet.
+
+Tracker id: P8-20. Source of truth: docs/build-tracker.html in the repo.","Medium","In Progress","oyun","p8","tracker","9"
 "127","Task","[P8-21] Nightly database backup to a free bucket via GitHub Action; test a restore","Tracker id: P8-21. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
 "128","Task","[P8-22] Sentry and an uptime monitor on /api/health","Tracker id: P8-22. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
 "129","Task","[P10-00] Measure the store payload; update the Cost calculator","Launch data is about 11 KB; an unchanged delta is 22 bytes. Booking row size (1.2 KB) is still an estimate until real bookings exist.
@@ -329,12 +333,12 @@ Tracker id: P7-09. Source of truth: docs/build-tracker.html in the repo.","Highe
 "140","Task","[P8-28] After PR #17 deploys, check Admin → Settings in production: advance 10%, minimum 150, maximum 150 (per hour)","Production keeps its saved advance percent (it may still be 30).
 
 Tracker id: P8-28. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p8","tracker","9"
-"141","Task","[P8-24] Update FAQ, Terms, the home Pay at the Turf card, BookingFlow comments, FEATURE_LIST and GO-LIVE for the advance flow","They still say pay at venue and no prepayment.
+"141","Task","[P8-24] Update FAQ, Terms, the home Pay at the Turf card, BookingFlow comments, FEATURE_LIST and GO-LIVE for the advance flow","They still say pay at venue and no prepayment. Checked 12 Oct 2026: FAQ, Terms, home card, BookingFlow, FEATURE_LIST and GO-LIVE already describe the advance paid at the venue.
 
-Tracker id: P8-24. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
-"142","Task","[P8-25] Replace the fake home stats banner and brand ad strip; fill the footer social links","100+ turfs, 50k+ players and sports-brand ads are placeholders.
+Tracker id: P8-24. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
+"142","Task","[P8-25] Replace the fake home stats banner and brand ad strip; fill the footer social links","The home stats are real counts (src/lib/home-stats.ts, left out while 0), the sponsor strip is hidden while Admin has no sponsors, and the footer social links come from env and hide when unset (PR #171).
 
-Tracker id: P8-25. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+Tracker id: P8-25. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "143","Task","[P8-26] Fix the owner dashboard quick slot blocker: only 6 to 8 PM, and it ignores errors","Lists all turf hours, shows results and errors, rejects past dates. PR #27.
 
 Tracker id: P8-26. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
@@ -372,12 +376,12 @@ Tracker id: P7-14. Source of truth: docs/build-tracker.html in the repo.","Mediu
 "155","Task","[P8-29] Fix checkout crash on a dev server that predates a new setting","File mode now fills missing settings from defaults on every read; rupees() tolerates a missing value. PR #19.
 
 Tracker id: P8-29. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
-"156","Task","[P8-30] Link the FAQ again somewhere on the phone (side menu or home) and keep a phone route to Privacy, Terms and Cookie settings","Removed from the phone menu in PR #20; the footer still has the legal links. Cookie settings must stay easy to reopen.
+"156","Task","[P8-30] Link the FAQ again somewhere on the phone (side menu or home) and keep a phone route to Privacy, Terms and Cookie settings","Removed from the phone menu in PR #20; the footer still has the legal links. Cookie settings must stay easy to reopen. Done in PR #175: FAQ link added on Help.
 
-Tracker id: P8-30. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
-"157","Task","[P8-31] Check every hard-coded image link (sports, promos, turfs) for 404s and move them to our own files or storage","Two Unsplash links had already died (Padel card, launch promo). Add a link check to CI.
+Tracker id: P8-30. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"157","Task","[P8-31] Check every hard-coded image link (sports, promos, turfs) for 404s and move them to our own files or storage","Two Unsplash links had already died (Padel card, launch promo). Add a link check to CI. Done in PR #178: the login background now uses our own turf photo; the audit found no other dead links.
 
-Tracker id: P8-31. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+Tracker id: P8-31. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "158","Task","[P8-32] Make the local dev server re-read settings and data on code change, or warn when it is stale","A server started before a code change kept an old in-memory copy and crashed checkout.
 
 Tracker id: P8-32. Source of truth: docs/build-tracker.html in the repo.","Low","To Do","oyun","p8","tracker","9"
@@ -396,18 +400,18 @@ Tracker id: P8-35. Source of truth: docs/build-tracker.html in the repo.","Low",
 "163","Task","[P8-36] Admin and partner dashboard bug fixes: refunds, walk-ins, approvals, slot blocker","Cancel and refund return wallet-paid money; a walk-in refund credits no wallet; refunding a checked-in booking takes the cashback back; approval applies the owner's evening and weekend prices and refuses a suspended owner; approve, reject and reset password ask first and keep every result on screen; walk-ins can book the current hour; the slot blocker uses the turf's hours; first-time offer returns after a refund. PR #27.
 
 Tracker id: P8-36. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
-"164","Task","[P8-37] Forms clear typed values after validation error","React 19 clears uncontrolled inputs after a failed action, so the Settings and New promo code forms lose what the admin typed. Found in the PR #27 review.
+"164","Task","[P8-37] Forms clear typed values after validation error","ActionForm and LoginForm keep what was typed after a failed action. Found in the PR #27 review; fixed in PR #173.
 
-Tracker id: P8-37. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
-"165","Task","[P8-38] Check-in time window and turf hours limits","Check-in only checks the date, so it works hours before or after the slot and triggers cashback; turf hours accept half hours and a close time after midnight silently drops the late slots. Found in the PR #27 review.
+Tracker id: P8-37. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"165","Task","[P8-38] Check-in time window and turf hours limits","Check-in works only from an hour before the slot until it ends (src/lib/checkin-window.ts, PR #172). Turf hours must be whole hours and close later the same day or at 00:00; half hours and a close after midnight are refused with a message (src/lib/hours.ts). Found in the PR #27 review.
 
-Tracker id: P8-38. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
-"166","Task","[P7-16] Mobile menu keyboard navigation and input labels","The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review.
+Tracker id: P8-38. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"166","Task","[P7-16] Mobile menu keyboard navigation and input labels","The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review. Done in PR #175: the drawer opens with the keyboard and the dashboard inputs are labelled.
 
-Tracker id: P7-16. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p7","tracker","8"
-"167","Task","[P8-39] Admin and partner list pagination","Admin bookings show the first 150, admin reviews 500, wallet activity the last 30, partner bookings 100, with no next page. Found in the PR #27 review.
+Tracker id: P7-16. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"167","Task","[P8-39] Admin and partner list pagination","Admin transactions, admin users, admin reviews and partner bookings now page (src/lib/paginate.ts, PR #173 and the reviews page). Found in the PR #27 review.
 
-Tracker id: P8-39. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+Tracker id: P8-39. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "168","Task","[P7-17] Phone home: sport icons filter Open slots in place; remove How OYUN works card","Tapping a sport now filters the rail underneath on the same page instead of opening the turfs page. Removes the How OYUN works card and its styles. PR #28.
 
 Tracker id: P7-17. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p7","tracker","8"
@@ -501,108 +505,191 @@ Tracker id: P9-22. Source of truth: docs/build-tracker.html in the repo.","High"
 "198","Task","[P10-16] Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves","Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on.
 
 Tracker id: P10-16. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p10","tracker","11"
-"199","Task","[R007] Multi-court venues in the booking flow","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"199","Task","[P13-11] Add /welcome marketing landing page for players","Static copy: hero, sports, three-step flow, feature cards and an owner band linking to /list-turf. Listed in the sitemap and in the axe page list. Home page untouched. PR #121. PR #125 adds a booking section (slots, 8-minute hold, account, QR ticket, offers, add-ons, cancellation) and a booking FAQ built from the same source as /faq.
+
+Tracker id: P13-11. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p13","tracker","14"
+"200","Task","[P8-40] Bad-path tests through the booking actions: half versus full pitch, promos, bans, bad dates, wallet, cancel","src/lib/bad-paths.test.ts. PR #120 (RQ-Q4).
+
+Tracker id: P8-40. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"201","Task","[P8-41] Accessibility checks: axe on the main pages and a keyboard-only booking test","e2e/a11y.spec.ts. Automated checks only, not a full audit (P8-20). PR #118 (RQ-Q2).
+
+Tracker id: P8-41. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"202","Task","[P8-42] Scrollable tables reachable by keyboard; axe check fails on serious findings too","Table pages under admin and partner changed, plus e2e/a11y.spec.ts. PR #119 (RQ-Q2).
+
+Tracker id: P8-42. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"203","Task","[P8-43] Visual codebase map: pages, roles, booking flow, data model, CI","docs/CODEBASE-MAP.md. PR #110.
+
+Tracker id: P8-43. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"204","Task","[P8-44] Flowcharts for the slot, hold, price, book, cancel, check-in, refund and login rules","docs/FLOWCHARTS.md. PR #112.
+
+Tracker id: P8-44. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"205","Task","[P8-45] Jira goals are epics OYUN-233 to OYUN-239","docs/JIRA.md. PR #109.
+
+Tracker id: P8-45. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"206","Task","[P8-46] Fix flaky e2e: a slot booked by one player shows as booked to another","e2e/helpers.ts, booking.spec.ts and a11y.spec.ts. PR #107.
+
+Tracker id: P8-46. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"207","Task","[P8-47] GitHub issue templates and README improvements",".github/ISSUE_TEMPLATE (bug report, feature request), README.md. PR #159.
+
+Tracker id: P8-47. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p8","tracker","9"
+"208","Task","[P8-48] Dependency bump: minor-and-patch group","next and eslint-config-next 16.3.8 to 16.4.0, @clerk/nextjs 7.9.13, @supabase/supabase-js 2.117.3. docs/NEXT16-NOTES.md still says 16.3.8. PR #170 (Dependabot).
+
+Tracker id: P8-48. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p8","tracker","9"
+"209","Task","[P9-23] Partner tenant isolation test: owner A cannot touch owner B's records","src/lib/tenant-isolation.test.ts. PR #115 (RQ-SEC2).
+
+Tracker id: P9-23. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
+"210","Task","[P9-24] Authorization audit table in docs/AUTHORIZATION.md, kept honest by a test","src/lib/authorization-audit.test.ts. Referral check limited to 40 attempts per 10 minutes per IP. PR #116 (RQ-SEC1).
+
+Tracker id: P9-24. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
+"211","Task","[P7-43] Partner week calendar: every opening hour for seven days, split pitch halves shown","Week view, Monday to Sunday, with previous and next week links. PR #117 (RQ-F3).
+
+Tracker id: P7-43. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
+"212","Task","[P8-49] Remove the duplicate CSS block, the twitter-image copy and dead exports","Duplicate CSS removed from arenas/page.module.css, twitter-image.tsx trimmed, unused exports removed (client device helper, site.ts entry, action-utils and pricing tidy). PR #179.
+
+Tracker id: P8-49. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"213","Task","[P8-50] Split BookingFlow into PitchPicker, SlotMap, CheckoutSheet and booking-format","Turf booking screen split into four files under arenas/[id]; BookingFlow.tsx now keeps the main flow and imports the parts. PR #179.
+
+Tracker id: P8-50. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"214","Task","[P8-51] Move the booking planner and limits out of booking-actions.ts into booking-plan.ts and booking-types.ts","booking-plan.ts holds the planner (about 130 lines) and booking-types.ts holds MAX_SLOTS and the client-safe booking types. booking-actions.ts is smaller. PR #179.
+
+Tracker id: P8-51. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"215","Task","[P8-52] Split list-turf options, form defaults and the success screen into their own files","listing-options.ts and ListingSubmitted.tsx hold the list-turf choices and the submitted screen; page.tsx is smaller. PR #179.
+
+Tracker id: P8-52. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"216","Task","[P8-53] One shared rupee and short-hour formatter in src/lib/format.ts instead of seven copies","src/lib/format.ts holds the rupees and shortHour helpers that were copied in seven files. PR #182.
+
+Tracker id: P8-53. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"217","Task","[P8-54] Move checkout form state into a useCheckoutForm hook; CheckoutSheet takes 12 props instead of about 25","The checkout form logic moved into a hook, and CheckoutSheet now receives about 12 props. PR #182.
+
+Tracker id: P8-54. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"218","Task","[P8-55] Replace 14 copy-pasted scroll regions with one tableScroll props pattern; small cleanups in the welcome page and turf loading state","tableScroll props replace 14 copies of the same scroll markup. Welcome page uses a shared FeatureGrid. An unused Field component was removed. arenas/[id]/loading.tsx was added. PR #182.
+
+Tracker id: P8-55. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"219","Task","[P8-56] CI runs duplicate-code and unused-code checks (npm run dup and npm run unused)","npm run dup uses jscpd with .jscpd.json and npm run unused uses knip with knip.json. At merge both report 0 clones and nothing unused. PR #182.
+
+Tracker id: P8-56. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
+"220","Task","[P8-57] Branch protection on main: required CI checks, no direct push (brief B-1.3)","Tracker id: P8-57. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"221","Task","[P8-58] Secret scan (gitleaks) step in CI (brief B-1.5)","Tracker id: P8-58. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"222","Task","[P8-59] Release pipeline: build once, promote artifact, staging smoke and load gate, owner approval, canary 10 percent, auto rollback, tag and changelog (brief 5.2)","Vercel rolling release needs a plan check.
+
+Tracker id: P8-59. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"223","Task","[P8-60] One e2e test per workflow in the brief: book, onboard, cancel and refund, payout, login; failure branches included (brief B-6.1)","Payment and payout flows wait for P11.
+
+Tracker id: P8-60. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"224","Task","[P8-61] Alert thresholds and phone paging; double bookings must read 0 (brief B-6.4, workflow 4.6)","Needs an on-call service choice.
+
+Tracker id: P8-61. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"225","Task","[P8-62] Runbooks: payout failed, refund failed, webhook down, double booking found (brief B-6.8)","Tracker id: P8-62. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p8","tracker","9"
+"226","Task","[P8-63] DPDP: consent record, export my data, delete my data, retention purge; GST invoice fields (brief B-6.7)","Tracker id: P8-63. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p8","tracker","9"
+"227","Task","[P10-17] Decide Redis vs Postgres for holds, availability cache and rate limits; write an ADR with the number that would force Redis (brief B-2.3)","Rate limits already live in Postgres.
+
+Tracker id: P10-17. Source of truth: docs/build-tracker.html in the repo.","Medium","To Do","oyun","p10","tracker","11"
+"228","Task","[P11-08] Bank payouts via a payouts API, T+2 settlement batch job, PDF statement by email; failed payout holds the amount and routes to support (brief 4.4)","Today payouts are a report only; no money moves.
+
+Tracker id: P11-08. Source of truth: docs/build-tracker.html in the repo.","High","To Do","oyun","p11","tracker","12"
+"229","Task","[P11-09] Automatic refund of the second payment when two payments race for one slot (brief 4.1 failure branch)","Tracker id: P11-09. Source of truth: docs/build-tracker.html in the repo.","Highest","To Do","oyun","p11","tracker","12"
+"230","Task","[R007] Multi-court venues in the booking flow","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R007.","High","To Do","oyun","roadmap","","15"
-"200","Task","[R009] Any slot length and after-midnight slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"231","Task","[R009] Any slot length and after-midnight slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R009.","Medium","To Do","oyun","roadmap","","15"
-"201","Task","[R008] Retire the jsonb store for bookings, holds, blocks and pricing","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"232","Task","[R008] Retire the jsonb store for bookings, holds, blocks and pricing","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R008.","High","To Do","oyun","roadmap","","15"
-"202","Task","[R010] One order per checkout (one code, one invoice, one cancel)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"233","Task","[R010] One order per checkout (one code, one invoice, one cancel)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R010.","Medium","To Do","oyun","roadmap","","15"
-"203","Task","[RQ-DB1] Turn supabase/proposals/slot_booking_v2.sql into real migrations and setup steps","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"234","Task","[RQ-DB1] Turn supabase/proposals/slot_booking_v2.sql into real migrations and setup steps","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB1.","High","To Do","oyun","roadmap","","15"
-"204","Task","[RQ-DB2] Map every turf to venue, resources and bookables; partner screens for courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"235","Task","[RQ-DB2] Map every turf to venue, resources and bookables; partner screens for courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB2.","High","To Do","oyun","roadmap","","15"
-"205","Task","[RQ-DB3] Switch slot reads and writes over to the v2 functions","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"236","Task","[RQ-DB3] Switch slot reads and writes over to the v2 functions","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB3.","High","To Do","oyun","roadmap","","15"
-"206","Task","[RQ-DB4] Move partners, staff, players, reviews, promos, add-ons and settings off jsonb","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"237","Task","[RQ-DB4] Move partners, staff, players, reviews, promos, add-ons and settings off jsonb","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-DB4.","Medium","To Do","oyun","roadmap","","15"
-"207","Task","[R014] Razorpay online advance with signed webhook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"238","Task","[R014] Razorpay online advance with signed webhook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R014.","Highest","To Do","oyun","roadmap","","16"
-"208","Task","[R013] Wallet as a ledger that can never go below zero","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"239","Task","[R013] Wallet as a ledger that can never go below zero","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R013.","High","To Do","oyun","roadmap","","16"
-"209","Task","[R012] Promo codes: expiry, max uses, per-player limit","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"240","Task","[R012] Promo codes: expiry, max uses, per-player limit","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R012.","High","To Do","oyun","roadmap","","16"
-"210","Task","[RQ-PAY1] Refunds by per-venue cancellation policy, audit-logged","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"241","Task","[RQ-PAY1] Refunds by per-venue cancellation policy, audit-logged","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-PAY1.","High","To Do","oyun","roadmap","","16"
-"211","Task","[RQ-PAY2] Partner payouts, settlement export, gap-free GST invoice numbers","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"242","Task","[RQ-PAY2] Partner payouts, settlement export, gap-free GST invoice numbers","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-PAY2.","High","To Do","oyun","roadmap","","16"
-"212","Task","[RQ-PAY3] Daily reconciliation job: payments vs bookings vs payouts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"243","Task","[RQ-PAY3] Daily reconciliation job: payments vs bookings vs payouts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-PAY3.","High","To Do","oyun","roadmap","","16"
-"213","Task","[R011] Persistent rate limits in Postgres","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"244","Task","[R011] Persistent rate limits in Postgres","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: R011.","High","To Do","oyun","roadmap","","17"
-"214","Task","[RQ-SEC1] Authorization audit table: every server action and API route, who may call it, and its test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"245","Task","[RQ-SEC1] Authorization audit table: every server action and API route, who may call it, and its test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC1.","Highest","To Do","oyun","roadmap","","17"
-"215","Task","[RQ-SEC2] Partner tenant isolation tests","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"246","Task","[RQ-SEC2] Partner tenant isolation tests","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC2.","Highest","To Do","oyun","roadmap","","17"
-"216","Task","[RQ-SEC3] Sessions: rotation, idle and absolute expiry, optional admin TOTP","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"247","Task","[RQ-SEC3] Sessions: rotation, idle and absolute expiry, optional admin TOTP","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC3.","High","To Do","oyun","roadmap","","17"
-"217","Task","[RQ-SEC4] Bot protection on signup, list-your-turf and hold endpoints","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"248","Task","[RQ-SEC4] Bot protection on signup, list-your-turf and hold endpoints","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC4.","Medium","To Do","oyun","roadmap","","17"
-"218","Task","[RQ-SEC5] DPDP: export and delete my data, retention purge, notice matches reality","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"249","Task","[RQ-SEC5] DPDP: export and delete my data, retention purge, notice matches reality","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC5.","High","To Do","oyun","roadmap","","17"
-"219","Task","[RQ-SEC6] docs/SECURITY.md and backup restore runbook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"250","Task","[RQ-SEC6] docs/SECURITY.md and backup restore runbook","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-SEC6.","Medium","To Do","oyun","roadmap","","17"
-"220","Task","[RQ-F1] Booking confirmation and 2-hour reminder (WhatsApp or SMS)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"251","Task","[RQ-F1] Booking confirmation and 2-hour reminder (WhatsApp or SMS)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F1.","High","To Do","oyun","roadmap","","18"
-"221","Task","[RQ-F2] Search filters: price, date and time, amenities; map view","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"252","Task","[RQ-F2] Search filters: price, date and time, amenities; map view","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F2.","Medium","To Do","oyun","roadmap","","18"
-"222","Task","[RQ-F3] Partner calendar: day and week across all courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"253","Task","[RQ-F3] Partner calendar: day and week across all courts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F3.","Medium","To Do","oyun","roadmap","","18"
-"223","Task","[RQ-F4] Recurring weekly bookings with a conflict check","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"254","Task","[RQ-F4] Recurring weekly bookings with a conflict check","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F4.","Low","To Do","oyun","roadmap","","18"
-"224","Task","[RQ-F5] Waitlist for full slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"255","Task","[RQ-F5] Waitlist for full slots","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F5.","Low","To Do","oyun","roadmap","","18"
-"225","Task","[RQ-F6] Split payment link for teammates","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"256","Task","[RQ-F6] Split payment link for teammates","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F6.","Low","To Do","oyun","roadmap","","18"
-"226","Task","[RQ-F7] Find players / open matches","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"257","Task","[RQ-F7] Find players / open matches","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-F7.","Low","To Do","oyun","roadmap","","18"
-"227","Task","[RQ-Q1] Concurrency test in CI: two clients, one slot, exactly one wins","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"258","Task","[RQ-Q1] Concurrency test in CI: two clients, one slot, exactly one wins","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q1.","Highest","To Do","oyun","roadmap","","19"
-"228","Task","[RQ-Q2] Accessibility: axe with zero critical issues, keyboard path through booking","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"259","Task","[RQ-Q2] Accessibility: axe with zero critical issues, keyboard path through booking","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q2.","Medium","To Do","oyun","roadmap","","19"
-"229","Task","[RQ-Q3] Lighthouse 90+ on home, arenas, turf pages; k6 load test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"260","Task","[RQ-Q3] Lighthouse 90+ on home, arenas, turf pages; k6 load test","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q3.","Medium","To Do","oyun","roadmap","","19"
-"230","Task","[RQ-Q4] Bad-path tests: payment failure, late webhook, hold expiry, after midnight, half vs full pitch","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"261","Task","[RQ-Q4] Bad-path tests: payment failure, late webhook, hold expiry, after midnight, half vs full pitch","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-Q4.","High","To Do","oyun","roadmap","","19"
-"231","Task","[RQ-L1] SEO landing pages per city, area and sport; Search Console","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"262","Task","[RQ-L1] SEO landing pages per city, area and sport; Search Console","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-L1.","Medium","To Do","oyun","roadmap","","20"
-"232","Task","[RQ-L2] Uptime checks and a double-booking dashboard (must be 0)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"263","Task","[RQ-L2] Uptime checks and a double-booking dashboard (must be 0)","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-L2.","High","To Do","oyun","roadmap","","20"
-"233","Task","[RQ-L3] Go-live checklist, rollback steps, on-call contacts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
+"264","Task","[RQ-L3] Go-live checklist, rollback steps, on-call contacts","Roadmap item from docs/MASTER-PROMPT.md and docs/TASK-WORKFLOW.md.
 
 Roadmap id: RQ-L3.","High","To Do","oyun","roadmap","","20"
