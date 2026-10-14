@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 try {
   if (existsSync(new URL('../.git', import.meta.url))) {
     execFileSync('git', ['config', 'core.hooksPath', '.githooks'], { stdio: 'ignore' });
-    console.log('git hooks installed (.githooks/pre-commit: type-check and lint)');
+    console.log('git hooks installed (.githooks: pre-commit [typecheck & lint] and pre-push [no direct main push])');
   }
 } catch {
   // not a git checkout or git is missing
