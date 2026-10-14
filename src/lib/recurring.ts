@@ -3,7 +3,7 @@ import { newId, newBookingCode } from './ids';
 import { freePart, normalizePhone, rulesFor, slotPrice } from './pricing';
 import { addDays, formatHour, isValidDate, istNow } from './time';
 import type { Booking, PitchSize } from './types';
-import { getDb, mutate } from './store';
+import { mutate } from './store';
 import { sharedRateLimit } from './shared-rate-limit';
 import { bookableTurf } from './booking-plan';
 import { createPlayer } from './wallet';
@@ -156,14 +156,4 @@ export async function createRecurringBookings(req: RecurringBookingRequest): Pro
     console.error('[recurring] createRecurringBookings error:', err);
     return { ok: false, error: 'Could not create recurring bookings. Please try again.' };
   }
-}
-
-/**
- * Gets all bookings in a recurring booking group.
- */
-export async function getRecurringGroupBookings(recurringGroupId: string): Promise<Booking[]> {
-  const db = await getDb();
-  return db.bookings
-    .filter((b) => b.recurringGroupId === recurringGroupId)
-    .sort((a, b) => (a.recurringWeek ?? 0) - (b.recurringWeek ?? 0));
 }
