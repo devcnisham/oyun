@@ -1,16 +1,77 @@
 import { hourlyRate } from '@/lib/pricing';
-import type { PitchSize, PublicTurf } from '@/lib/types';
+import type { Bookable, PitchSize, PublicTurf } from '@/lib/types';
 import { rupees } from '@/lib/format';
+import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import styles from './BookingFlow.module.css';
 
 interface PitchPickerProps {
   turf: PublicTurf;
   size: PitchSize;
   onChange: (size: PitchSize) => void;
+  selectedBookableId?: string;
+  onBookableChange?: (bookable: Bookable) => void;
 }
 
-/** Full or half pitch, for turfs that split down the middle. */
-export default function PitchPicker({ turf, size, onChange }: PitchPickerProps) {
+/** Full/half pitch picker or multi-court bookable offerings picker (R007). */
+export default function PitchPicker({
+  turf,
+  size,
+  onChange,
+  selectedBookableId,
+  onBookableChange,
+}: PitchPickerProps) {
+  const { bookables } = mapTurfToResourcesAndBookables(turf);
+  const isMultiOffering = bookables && bookables.length > 2;
+
+  if (isMultiOffering) {
+    return (
+      <>
+        <div className={styles.stepHead}>
+          <h3>Choose court or offering</h3>
+        </div>
+        <div className={styles.pitchPick} role="radiogroup" aria-label="Court or Offering">
+          {bookables.map((b) => {
+            const isSelected = selectedBookableId
+              ? selectedBookableId === b.id
+              : b.name.toLowerCase().includes('half')
+                ? size === 'half'
+                : size === 'full';
+            const sportIcon =
+              b.sport === 'football'
+                ? '⚽'
+                : b.sport === 'box_cricket'
+                  ? '🏏'
+                  : b.sport === 'badminton'
+                    ? '🏸'
+                    : b.sport === 'pickleball'
+                      ? '🏓'
+                      : '🏟️';
+            return (
+              <button
+                key={b.id}
+                type="button"
+                role="radio"
+                aria-checked={isSelected}
+                className={`${styles.pitchOption} ${isSelected ? styles.pitchOptionOn : ''}`}
+                onClick={() => {
+                  const newSize: PitchSize = b.name.toLowerCase().includes('half') ? 'half' : 'full';
+                  onChange(newSize);
+                  onBookableChange?.(b);
+                }}
+              >
+                <div style={{ fontSize: '1.25rem', marginBottom: 2 }}>{sportIcon}</div>
+                <b>{b.name}</b>
+                <small>
+                  {b.slotMinutes} mins · {rupees(b.basePrice)}
+                </small>
+              </button>
+            );
+          })}
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className={styles.stepHead}>
@@ -24,7 +85,13 @@ export default function PitchPicker({ turf, size, onChange }: PitchPickerProps) 
             role="radio"
             aria-checked={size === option}
             className={`${styles.pitchOption} ${size === option ? styles.pitchOptionOn : ''}`}
-            onClick={() => onChange(option)}
+            onClick={() => {
+              onChange(option);
+              const matching = bookables.find((b) =>
+                option === 'half' ? b.name.toLowerCase().includes('half') : !b.name.toLowerCase().includes('half')
+              );
+              if (matching) onBookableChange?.(matching);
+            }}
           >
             <svg viewBox="0 0 60 38" width="60" height="38" aria-hidden className={styles.pitchArt}>
               <rect x="1" y="1" width="58" height="36" rx="3" className={styles.pitchGrass} />

@@ -9,6 +9,7 @@ import type { CheckoutForm } from './useCheckoutForm';
 interface CheckoutSheetProps {
   turf: PublicTurf;
   size: PitchSize;
+  bookableName?: string;
   dateLabel: string | undefined;
   selected: number[];
   selectedSlots: Slot[];
@@ -32,7 +33,7 @@ function advanceSummary(quote: SelectionQuote | null) {
 }
 
 /** Bottom sheet shown while the player's slots are held: details, offers, bill and confirm. */
-export default function CheckoutSheet({ turf, size, dateLabel, selected, selectedSlots, secondsLeft, paying, signedIn, cashback, form, onClose, onPay }: CheckoutSheetProps) {
+export default function CheckoutSheet({ turf, size, bookableName, dateLabel, selected, selectedSlots, secondsLeft, paying, signedIn, cashback, form, onClose, onPay }: CheckoutSheetProps) {
   const { quote, error, name, phone, code, codeError, codeApplied, promo, referral, useWallet } = form;
   const chips = quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }));
 
@@ -51,7 +52,7 @@ export default function CheckoutSheet({ turf, size, dateLabel, selected, selecte
           <div className={styles.ticket}>
             <div>
               <b>{turf.name}</b>
-              <span className={styles.muted}>{turf.area} · {size === 'half' ? 'Half pitch' : turf.size}</span>
+              <span className={styles.muted}>{turf.area} · {bookableName ?? (size === 'half' ? 'Half pitch' : turf.size)}</span>
             </div>
             <div className={styles.ticketRow}>
               <span>{dateLabel}</span>

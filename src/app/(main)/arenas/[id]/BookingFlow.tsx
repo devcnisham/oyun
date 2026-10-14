@@ -10,7 +10,8 @@ import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import dynamic from 'next/dynamic';
 import { primarySport } from '@/lib/sports';
-import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
+import type { Bookable, PitchSize, PublicTurf, Slot } from '@/lib/types';
+import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
 import { describeHours } from './booking-format';
@@ -34,6 +35,8 @@ export interface BookingFlowProps {
 
 export default function BookingFlow({ turf, dates, initialDate, initialSlots, rewards, initialReferral }: BookingFlowProps) {
   const router = useRouter();
+  const { bookables } = mapTurfToResourcesAndBookables(turf);
+  const [selectedBookable, setSelectedBookable] = useState<Bookable | undefined>(() => bookables?.[0]);
   const [date, setDate] = useState(initialDate);
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [selected, setSelected] = useState<number[]>([]);
@@ -243,8 +246,16 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         ))}
       </div>
 
-      {/* 2 · Full or half pitch (only on turfs that split down the middle) */}
-      {turf.halfPitch && <PitchPicker turf={turf} size={size} onChange={changeSize} />}
+      {/* 2 · Full or half pitch, or multi-court bookables (R007) */}
+      {(turf.halfPitch || (bookables && bookables.length > 1)) && (
+        <PitchPicker
+          turf={turf}
+          size={size}
+          onChange={changeSize}
+          selectedBookableId={selectedBookable?.id}
+          onBookableChange={(b) => setSelectedBookable(b)}
+        />
+      )}
 
       {/* 3 · Slot map */}
       <div className={styles.stepHead}>
@@ -254,7 +265,15 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
       <div className={styles.pitch} aria-hidden>
         <span>
-          {primarySport(turf).icon} {size === 'half' ? 'Half pitch' : primarySport(turf).place === 'court' ? turf.size : `${turf.size} pitch`} · {dateInfo?.label}
+          {primarySport(turf).icon}{' '}
+          {selectedBookable
+            ? selectedBookable.name
+            : size === 'half'
+              ? 'Half pitch'
+              : primarySport(turf).place === 'court'
+                ? turf.size
+                : `${turf.size} pitch`}{' '}
+          · {dateInfo?.label}
         </span>
       </div>
 
@@ -263,7 +282,10 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       {/* Sticky selection bar */}
       <div className={`${styles.bar} ${selected.length > 0 && !inCheckout ? styles.barShow : ''}`}>
         <div className={styles.barInfo}>
-          <b>{selected.length} slot{selected.length === 1 ? '' : 's'} · {rupees(estimate)}</b>
+          <b>
+            {selectedBookable ? `${selectedBookable.name} · ` : ''}
+            {selected.length} slot{selected.length === 1 ? '' : 's'} · {rupees(estimate)}
+          </b>
           <span>{dateInfo?.label} · {describeHours(selected)}</span>
         </div>
         <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
@@ -279,6 +301,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         <CheckoutSheet
           turf={turf}
           size={size}
+          bookableName={selectedBookable?.name}
           dateLabel={dateInfo?.label}
           selected={selected}
           selectedSlots={selectedSlots}

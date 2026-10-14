@@ -1,4 +1,4 @@
-import type { Bookable, Turf, VenueResource } from './types';
+import type { Bookable, PublicTurf, Turf, VenueResource } from './types';
 
 export interface RelationalVenueMapping {
   venue: {
@@ -32,7 +32,7 @@ export interface RelationalVenueMapping {
  * 3. Otherwise (plain turf or single court), creates 1 physical resource and corresponding
  *    bookables for its sports/formats.
  */
-export function mapTurfToResourcesAndBookables(turf: Turf): {
+export function mapTurfToResourcesAndBookables(turf: PublicTurf): {
   resources: VenueResource[];
   bookables: Bookable[];
 } {

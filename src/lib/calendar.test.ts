@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { MONDAY, makeBooking, makeDb } from '@/test/fixtures';
-import { buildWeek, weekStart } from './calendar';
+import { buildDayAcrossCourts, buildWeek, weekStart } from './calendar';
 
 const NOW = { date: '2026-10-14', hour: 10 }; // a Wednesday
 
@@ -58,5 +58,30 @@ describe('buildWeek', () => {
     expect(cell('2026-10-16', 8).state).toBe('held');
     expect(cell('2026-10-16', 9).state).toBe('free');
     expect(days.find((d) => d.date === '2026-10-15')!.booked).toBe(3);
+  });
+});
+
+describe('buildDayAcrossCourts (P7-45, R007)', () => {
+  test('multi-court / split-pitch day view maps bookings to individual courts', () => {
+    const { db, turf } = makeDb({ halfPitch: true });
+    db.bookings.push(
+      makeBooking({ turfId: turf.id, date: '2026-10-15', hour: 18, customerName: 'Asha', pitch: 'A' }),
+      makeBooking({ turfId: turf.id, date: '2026-10-15', hour: 18, customerName: 'Ravi', pitch: 'B' }),
+      makeBooking({ turfId: turf.id, date: '2026-10-15', hour: 19, customerName: 'Full Team', pitch: 'full' })
+    );
+
+    const { resources, rows } = buildDayAcrossCourts(db, turf, '2026-10-15', NOW);
+    expect(resources).toHaveLength(2);
+    expect(resources[0].name).toBe('Pitch Half A');
+    expect(resources[1].name).toBe('Pitch Half B');
+
+    const row18 = rows.find((r) => r.hour === 18)!;
+    expect(row18.cells[0].bookings.map((b) => b.name)).toEqual(['Asha']);
+    expect(row18.cells[1].bookings.map((b) => b.name)).toEqual(['Ravi']);
+
+    const row19 = rows.find((r) => r.hour === 19)!;
+    // Full pitch booking occupies both halves
+    expect(row19.cells[0].bookings.map((b) => b.name)).toEqual(['Full Team']);
+    expect(row19.cells[1].bookings.map((b) => b.name)).toEqual(['Full Team']);
   });
 });

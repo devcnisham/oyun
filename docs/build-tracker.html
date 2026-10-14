@@ -1328,7 +1328,7 @@ featureGroups:[
   ["Offers","built","Create, pause, delete; happy hour or first-time; name up to 40","partner/offers"],
   ["Add-ons","built","Name up to 60, price 0 to 10,000, edit, hide, delete; sold only through walk-ins","partner/add-ons"],
   ["Calendar view","built","Week view, Monday to Sunday, every opening hour for seven days; cells show past, free, booked, blocked or held; split pitches show both halves. PR #117.","partner/calendar"],
-  ["Calendar day view","partial","Day view for one turf with booking details (PR #192). Across all courts is not built yet; waits for R007 (multi-court venues).","partner/calendar"],
+  ["Calendar day view","built","Day view across all physical courts and pitch halves with booking details, multi-court grid columns (PR #240, P7-45, R007).","partner/calendar"],
   ["Courts and pitches","built","Lists the physical courts (resources) and bookable offerings (full pitch, each half) derived from the turf. Add or delete a court or an offering; saved on the turf. Bookings still run on the turf, not on these courts (PR #236)","partner/courts/page.tsx, lib/venue-mapping.ts, lib/partner-actions.ts"],
   ["Rain marking for outdoor turfs","built","Owner marks an outdoor turf as rained out for a date, or clears it. Past dates are refused and indoor turfs are refused (setRainOut, needs the slots permission). Players can then cancel for a full wallet refund (P13-15)","partner/turf/page.tsx, lib/partner-actions.ts"]
  ]},
@@ -2196,7 +2196,7 @@ DATA.tasks.push(
  {id:"P8-65",p:"P8",t:"Home page speed: phones get only the app feed, above-the-fold images load eagerly, popup ad waits for page load plus 4 s",s:"done",pr:"P2",n:"PR #193. The Lighthouse log now prints script time and the heaviest script chunk. Home performance is still below 90 (see P8-64)."},
  {id:"P3-07",p:"P3",t:"Sport landing pages at /sports/[sport] for each city, area and sport, with structured data and sitemap entries",s:"done",pr:"P2",n:"PR #191. Sitemap entries are in src/app/sitemap.ts."},
  {id:"P7-44",p:"P7",t:"Partner calendar day view for one turf, with booking details",s:"done",pr:"P2",n:"PR #192. Test added in e2e/partner.spec.ts."},
- {id:"P7-45",p:"P7",t:"Partner calendar day view across all courts",s:"todo",pr:"P2",n:"Waits for R007 (multi-court venues)."},
+ {id:"P7-45",p:"P7",t:"Partner calendar day view across all courts",s:"done",pr:"P2",n:"Implemented across all physical courts and pitch halves (R007). PR #237."},
  {id:"P7-46",p:"P7",t:"Launching soon page: /welcome shows a live countdown to 17 Oct 2026 (IST), with a new /about page and a shared header",s:"done",pr:"P2",n:"Commit 6a36f88 (no PR number, pushed to main). Old /welcome marketing sections removed on purpose. The header hides on scroll down and shows on scroll up; the bottom tab bar is hidden on both pages."},
  {id:"P7-47",p:"P7",t:"Service worker: caches the start files, shows push messages and handles notification clicks",s:"done",pr:"P2",n:"Registered in production only (public/sw.js). No code yet saves push subscriptions or sends pushes, so P12-05 stays open. PR #212."},
  {id:"P8-66",p:"P8",t:"Lighthouse fixes for home, arenas and turf pages, with per-category thresholds",s:"done",pr:"P2",n:"PR #206. P8-64 stays open until the scores reach 90."},

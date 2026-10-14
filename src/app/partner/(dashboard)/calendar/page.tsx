@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PageHeader, dash } from '@/components/dash/ui';
-import { buildWeek, weekStart, type CalendarCell } from '@/lib/calendar';
+import { buildDayAcrossCourts, buildWeek, weekStart, type CalendarCell } from '@/lib/calendar';
 import { requirePartner } from '@/lib/partner-auth';
 import { getDb } from '@/lib/store';
 import { addDays, formatDate, formatSlotRange, isValidDate, istNow } from '@/lib/time';
@@ -34,9 +34,15 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
 
   const day = dayDate ? days.find((d) => d.date === dayDate) : null;
   if (day && dayDate) {
+    const { resources, rows } = buildDayAcrossCourts(db, ctx.turf, dayDate, now);
+    const isMultiCourt = resources.length > 1;
+
     return (
       <div className={dash.page}>
-        <PageHeader title="Calendar" desc={`${ctx.turf.name}: ${day.booked} booking${day.booked === 1 ? '' : 's'} on ${formatDate(day.date, { weekday: 'long', day: 'numeric', month: 'short' })}.`} />
+        <PageHeader
+          title="Calendar"
+          desc={`${ctx.turf.name}: ${day.booked} booking${day.booked === 1 ? '' : 's'} on ${formatDate(day.date, { weekday: 'long', day: 'numeric', month: 'short' })}${isMultiCourt ? ` across all ${resources.length} courts / pitches` : ''}.`}
+        />
         <div className={dash.card}>
           <div className={dash.cardHeader}>
             <div className={dash.inline}>
@@ -49,13 +55,24 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
           </div>
           <div className={dash.calWrap}>
             <table className={dash.calTable} style={{ minWidth: 0 }}>
+              {isMultiCourt && (
+                <thead>
+                  <tr>
+                    <th className={dash.calHour} style={{ textAlign: 'left', padding: '8px 12px' }}>Time</th>
+                    {resources.map((res) => (
+                      <th key={res.id} style={{ textAlign: 'left', padding: '8px 12px', fontSize: '0.9rem', color: 'var(--color-text, #f8fafc)' }}>
+                        {res.name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
               <tbody>
-                {hours.map((hour) => {
-                  const c = day.cells.find((x) => x.hour === hour)!;
-                  return (
-                    <tr key={hour}>
-                      <td className={dash.calHour}>{formatSlotRange(hour)}</td>
-                      <td className={`${dash.calCell} ${cellClass(c)}`} style={{ height: 'auto', minHeight: 52 }}>
+                {rows.map(({ hour, cells }) => (
+                  <tr key={hour}>
+                    <td className={dash.calHour}>{formatSlotRange(hour)}</td>
+                    {cells.map((c) => (
+                      <td key={c.resourceId} className={`${dash.calCell} ${cellClass(c as unknown as CalendarCell)}`} style={{ height: 'auto', minHeight: 52 }}>
                         {c.bookings.map((b) => (
                           <div key={b.id} className={dash.calName}>
                             {b.name}{b.part !== 'full' ? ` · ${b.part}` : ''}{b.source === 'walk_in' ? ' · walk-in' : ''} · {b.phone} · {b.code} · {b.status.replace('_', ' ')}
@@ -66,9 +83,9 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                         {c.state === 'free' && <span className={dash.muted}>Open</span>}
                         {c.state === 'past' && c.bookings.length === 0 && <span className={dash.muted}>Past</span>}
                       </td>
-                    </tr>
-                  );
-                })}
+                    ))}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
