@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
 import { absoluteUrl, areaSlug } from '@/lib/site';
+import { SPORTS, sportSlug } from '@/lib/sports';
 
 // Built per request from the live database, so new turfs appear without a deploy
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  const sportPages = SPORTS.filter((s) => turfs.some((t) => t.sports.some((x) => sportSlug(x) === sportSlug(s.value)))).map((s) => ({
+    url: absoluteUrl(`/sports/${sportSlug(s.value)}`),
+    lastModified: now,
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }));
+
   const turfPages = turfs.map((t) => ({
     url: absoluteUrl(`/arenas/${t.id}`),
     lastModified: new Date(t.createdAt),
@@ -35,5 +43,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     images: t.images.slice(0, 3).map((src) => absoluteUrl(src)),
   }));
 
-  return [...pages, ...areas, ...turfPages];
+  return [...pages, ...areas, ...sportPages, ...turfPages];
 }
