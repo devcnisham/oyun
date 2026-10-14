@@ -1,6 +1,6 @@
 # ADR-0002: Global revision lock plus unique indexes
 
-Status: Accepted
+Status: Superseded for slot bookings by Slot Booking v2 (ADR-0010 / migration 20261011000000_slot_booking_v2.sql)
 
 ## Context
 Double booking is the one failure that breaks trust.
@@ -11,5 +11,5 @@ Double booking is the one failure that breaks trust.
 ## Trade-off
 Cross-table checks are safe in app code; all writes are serialised, so two turfs can conflict.
 
-## Reopen when
-When `store_conflict` retries show up in logs, or two owners edit at the same time (task P10-02).
+## Reopened / Superseded
+Resolved in Slot Booking v2: task P10-02 (per-turf version) was superseded by PostgreSQL row-level exclusion constraints (`oyun.exclusion_claims`) and granular row locks, completely eliminating the global revision lock for bookings so separate turfs and courts never conflict.
