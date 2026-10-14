@@ -90,17 +90,22 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
     });
     return { ok: true, expiresInMs: HOLD_MINUTES * 60_000, slots: await getSlotsForDate(turfId, date, pitchSize) };
   } catch (err) {
-    if (!(err instanceof ValidationError)) throw err;
-    return { ok: false, error: err.message, slots: await getSlotsForDate(turfId, date, pitchSize) };
+    if (err instanceof ValidationError) return { ok: false, error: err.message, slots: await getSlotsForDate(turfId, date, pitchSize) };
+    console.error('[booking] holdSlots error:', err);
+    return { ok: false, error: 'Could not hold slots. Please try again in a moment.', slots: [] };
   }
 }
 
 export async function releaseHolds(): Promise<void> {
   const holder = await deviceHolder(false);
   if (!holder) return;
-  await mutate((db) => {
-    db.holds = db.holds.filter((h) => h.holder !== holder);
-  });
+  try {
+    await mutate((db) => {
+      db.holds = db.holds.filter((h) => h.holder !== holder);
+    });
+  } catch (err) {
+    console.warn('[booking] releaseHolds failed:', err);
+  }
 }
 
 /* ---------- referral ---------- */
@@ -136,7 +141,8 @@ export async function quoteSelection(req: SelectionRequest): Promise<SelectionQu
     return planBooking(structuredClone(db), { ...req, name: 'Player' }, holder, false).quote;
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
-    throw err;
+    console.error('[booking] quoteSelection error:', err);
+    return { error: 'Could not calculate quote. Please try again in a moment.' };
   }
 }
 
@@ -166,7 +172,8 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
     return { ids };
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
-    throw err;
+    console.error('[booking] createBookings error:', err);
+    return { error: 'Could not complete the booking. Please try again in a moment.' };
   }
 }
 
@@ -216,7 +223,8 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
     return { ok: true };
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
-    throw err;
+    console.error('[booking] cancelMyBooking error:', err);
+    return { error: 'Could not cancel booking. Please try again in a moment.' };
   }
 }
 
@@ -250,7 +258,8 @@ export async function submitReview(bookingId: string, rating: number, comment: s
     return { ok: true };
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
-    throw err;
+    console.error('[booking] submitReview error:', err);
+    return { error: 'Could not submit review. Please try again in a moment.' };
   }
 }
 
@@ -384,6 +393,7 @@ export async function submitApplication(req: ApplicationRequest): Promise<{ id?:
     return { id: id.slice(4, 12).toUpperCase() };
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
-    throw err;
+    console.error('[booking] submitApplication error:', err);
+    return { error: 'Could not submit application. Please try again in a moment.' };
   }
 }

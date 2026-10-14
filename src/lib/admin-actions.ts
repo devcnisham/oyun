@@ -300,14 +300,21 @@ export async function refundBooking(_prev: ActionResult, fd: FormData): Promise<
 export async function saveSettings(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     await requireAdmin();
+    const supportEmail = required(fd, 'supportEmail', 'Support email', 120).toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(supportEmail)) throw new ValidationError('Enter a valid support email address');
+    const supportPhone = required(fd, 'supportPhone', 'Support phone', 20);
+    if (supportPhone.replace(/\D/g, '').length < 7) throw new ValidationError('Support phone number needs at least 7 digits');
+    const minAdvance = int(fd, 'minAdvance', { min: 0, max: 5000, label: 'Minimum advance' });
+    const maxAdvance = int(fd, 'maxAdvance', { min: 0, max: 5000, label: 'Maximum advance' });
+    if (maxAdvance < minAdvance) throw new ValidationError('Maximum advance must be at least the minimum advance');
     const settings = {
       commissionPercent: int(fd, 'commissionPercent', { min: 0, max: 50, label: 'Commission' }),
       advancePercent: int(fd, 'advancePercent', { min: 10, max: 100, label: 'Advance' }),
-      minAdvance: int(fd, 'minAdvance', { min: 0, max: 5000, label: 'Minimum advance' }),
-      maxAdvance: int(fd, 'maxAdvance', { min: 0, max: 5000, label: 'Maximum advance' }),
+      minAdvance,
+      maxAdvance,
       gstPercent: int(fd, 'gstPercent', { min: 0, max: 28, label: 'GST' }),
-      supportEmail: required(fd, 'supportEmail', 'Support email', 120),
-      supportPhone: required(fd, 'supportPhone', 'Support phone', 20),
+      supportEmail,
+      supportPhone,
       cashbackEnabled: bool(fd, 'cashbackEnabled'),
       cashbackPercent: int(fd, 'cashbackPercent', { min: 0, max: 50, label: 'Cashback %' }),
       cashbackMax: int(fd, 'cashbackMax', { min: 0, max: 5000, label: 'Max cashback' }),

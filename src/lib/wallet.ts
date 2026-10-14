@@ -37,10 +37,16 @@ export function createPlayer(db: Database, name: string, phone: string, referred
   return player;
 }
 
-// Every wallet change goes through here so the history always matches the balance
+// Every wallet change goes through here so the history always matches the balance.
+// Deductions are clamped to the current balance so the wallet never goes below ₹0.
+// Admin adjustments and refunds (positive amounts) are always applied as-is.
 export function walletTxn(db: Database, player: Player, amount: number, type: WalletTxnType, note: string, bookingId: string | null = null) {
   if (amount === 0) return;
-  player.walletBalance += amount;
+  // Prevent deductions from pushing the balance below zero
+  const safeAmount = amount < 0 ? Math.max(amount, -player.walletBalance) : amount;
+  if (safeAmount === 0) return;
+  player.walletBalance += safeAmount;
+  amount = safeAmount;
   db.walletTxns.push({
     id: `wtx_${randomBytes(6).toString('hex')}`,
     playerId: player.id,

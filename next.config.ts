@@ -84,7 +84,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(self), microphone=(), geolocation=(), payment=(), usb=()',
+            value: 'camera=(self), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
           },
           {
             key: 'X-Content-Type-Options',
@@ -97,6 +97,14 @@ const nextConfig: NextConfig = {
           {
             key: 'Cross-Origin-Opener-Policy',
             value: 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
           },
         ],
       },
