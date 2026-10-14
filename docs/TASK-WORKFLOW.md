@@ -16,6 +16,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P8-01 Install deps, read Next 16 docs, note conventions in `docs/`.
 - [x] P8-09 `typecheck` script and pre-commit hook.
 - [x] P8-11 Dependabot and `npm audit` in CI.
+- [x] P8-58 Secret scan (gitleaks) step in CI.
 - [x] P8-04 Integration test: N parallel `createBookings` on one slot gives one booking.
 - [x] P8-05 Integration test: holds expire and release.
 - [x] P8-06 Authorization sweep: every admin and partner action rejects without a session.
