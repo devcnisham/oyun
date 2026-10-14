@@ -18,7 +18,21 @@ const dir = mkdtempSync(join(tmpdir(), 'lh-'));
 let failed = false;
 try {
   // Warm every page first so the first Lighthouse run does not measure a cold server
-  for (const path of PAGES) await fetch(`${base}${path}`).then((r) => r.arrayBuffer()).catch(() => {});
+  // Also warm the /_next/image variants a phone requests: in production they come from a warm CDN cache,
+  // but a cold `next start` fetches and encodes (AVIF is slow) each one while Lighthouse is measuring.
+  const MOBILE_UA = 'Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0 Mobile Safari/537.36';
+  const images = new Set();
+  for (const path of PAGES) {
+    const html = await fetch(`${base}${path}`, { headers: { 'user-agent': MOBILE_UA } }).then((r) => r.text()).catch(() => '');
+    for (const m of html.matchAll(/\/_next\/image\?[^"'\s,]+/g)) images.add(m[0].replace(/&amp;/g, '&'));
+  }
+  const queue = [...images];
+  await Promise.all(
+    Array.from({ length: 4 }, async () => {
+      for (let u; (u = queue.pop()); )
+        await fetch(`${base}${u}`, { headers: { accept: 'image/avif,image/webp,*/*', 'user-agent': MOBILE_UA } }).then((r) => r.arrayBuffer()).catch(() => {});
+    })
+  );
   for (const path of PAGES) {
     const out = join(dir, `${path.replace(/\W+/g, '_') || 'home'}.json`);
     execFileSync(

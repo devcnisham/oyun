@@ -61,7 +61,7 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
           </div>
           {open.length > 0 ? (
             // Remount on a new choice so the rail starts from its first card
-            <div className={`${styles.rail} ${styles.railAnimated}`} key={sport ?? 'all'}>
+            <div className={`${styles.rail} ${sport ? styles.railAnimated : ''}`} key={sport ?? 'all'}>
               {open.map((t, i) => (
                 <Link key={t.id} href={`/arenas/${t.id}`} className={styles.railCard}>
                   <div className={styles.railImg}>
