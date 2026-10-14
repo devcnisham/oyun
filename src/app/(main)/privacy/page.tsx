@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getSettings } from '@/lib/queries';
 import styles from '../faq/page.module.css';
 import BackButton from '@/components/BackButton';
+import PrivacyDataControls from '@/components/PrivacyDataControls';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -70,17 +71,21 @@ export default async function PrivacyPage() {
             Server logs are kept for up to 90 days. Analytics data is aggregated and does not identify you.
           </p>
 
-          <h2>6. Your rights</h2>
-          <p>You can ask us to:</p>
+          <h2>6. Your rights (DPDP Act 2023)</h2>
+          <p>Under India&apos;s Digital Personal Data Protection Act, you can ask us to:</p>
           <ul>
-            <li>access a summary of the personal data we hold about you;</li>
-            <li>correct or update it;</li>
-            <li>erase it, unless we must keep it by law;</li>
-            <li>withdraw consent for analytics at any time.</li>
+            <li><strong>Access and Export:</strong> download a copy of all personal data, bookings and transactions we hold about you;</li>
+            <li><strong>Correct or update</strong> inaccurate details;</li>
+            <li><strong>Erase personal data:</strong> delete your account and scrub personal identifiers from past booking history, while retaining statutory accounting totals required by law;</li>
+            <li><strong>Withdraw consent</strong> for analytics cookies at any time.</li>
           </ul>
-          <p>
-            Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a> from the contact details linked to your booking. We reply within 30 days.
-            If you are not satisfied, you may complain to the Data Protection Board of India.
+
+          <h3>Self-service data rights</h3>
+          <PrivacyDataControls />
+
+          <p style={{ marginTop: 16 }}>
+            You may also email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a> from the contact details linked to your booking. We reply within 30 days.
+            If you are not satisfied with our grievance redressal, you may complain to the Data Protection Board of India.
           </p>
 
           <h2>7. Security</h2>

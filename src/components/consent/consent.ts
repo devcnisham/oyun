@@ -14,6 +14,15 @@ export function writeConsent(value: Consent) {
   const secure = location.protocol === 'https:' ? '; Secure' : '';
   document.cookie = `${COOKIE}=${value}; Max-Age=${60 * 60 * 24 * 365}; Path=/; SameSite=Lax${secure}`;
   window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: value }));
+
+  // Record consent audit under DPDP Act 2023
+  try {
+    fetch('/api/privacy/consent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ consent: value }),
+    }).catch(() => {});
+  } catch {}
 }
 
 export function openConsentSettings() {

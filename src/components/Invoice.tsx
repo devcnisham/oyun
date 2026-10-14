@@ -44,12 +44,14 @@ export default function Invoice({ booking, turf, partner, settings, hidePhone = 
           <p>{turf.name}</p>
           <p>{business?.address || turf.location}</p>
           {business?.gstin && <p>GSTIN: {business.gstin}</p>}
+          <p>State: Karnataka (State Code 29)</p>
         </div>
         <div>
           <h2 className={styles.partyLabel}>Billed to</h2>
           <p className={styles.partyName}>{booking.customerName}</p>
           <p>+91 {hidePhone ? maskPhone(booking.customerPhone) : booking.customerPhone}</p>
           <p>Booking code: {booking.code}</p>
+          <p>Place of supply: Karnataka (29)</p>
         </div>
       </section>
 
