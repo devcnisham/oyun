@@ -29,6 +29,7 @@ if (has('SUPABASE_SECRET_KEY') && has('NEXT_PUBLIC_SUPABASE_URL')) {
   notes.push('Data: Supabase (if its tables are missing, dev falls back to .data/db.json and prints how to fix it).');
 } else {
   notes.push('Data: local file .data/db.json (add SUPABASE_SECRET_KEY to .env.local to use Supabase).');
+  notes.push('⚠ Data parity drift: SUPABASE_SECRET_KEY is empty locally. Local dev is using isolated .data/db.json. Writes stay local and will not match Vercel. For local parity, set SUPABASE_SECRET_KEY (or use a separate dev Supabase project).');
 }
 if (!has('SESSION_SECRET')) notes.push('Logins: using a built-in dev secret (set SESSION_SECRET for production).');
 if (!has('ADMIN_EMAIL') || !has('ADMIN_PASSWORD')) notes.push('Admin login: set ADMIN_EMAIL and ADMIN_PASSWORD in .env.local to open /admin.');
