@@ -5,7 +5,9 @@
     "e2e/**/*.ts"
   ],
   "ignoreDependencies": [
-    "server-only"
+    "server-only",
+    "k6",
+    "k6/http"
   ],
   "ignoreExportsUsedInFile": true
 }
