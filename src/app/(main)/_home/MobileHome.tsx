@@ -37,7 +37,7 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
           {promos.map((p, i) => (
             <div key={p.id} className={styles.promo}>
               {/* The first card is the biggest thing above the fold: fetch it early and keep it out of lazy loading */}
-              <Image src={p.image} alt={p.title} fill sizes="85vw" preload={i === 0} unoptimized={!canOptimize(p.image)} />
+              <Image src={p.image} alt={p.title} fill sizes="85vw" preload={i === 0} loading={i === 0 ? 'eager' : undefined} fetchPriority={i === 0 ? 'high' : undefined} unoptimized={!canOptimize(p.image)} />
               <div>
                 <b>{p.title}</b>
                 <span>{p.subtitle}</span>
