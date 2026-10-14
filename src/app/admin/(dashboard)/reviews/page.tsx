@@ -1,14 +1,18 @@
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash } from '@/components/dash/ui';
+import { Badge, PageHeader, dash, tableScroll } from '@/components/dash/ui';
+import Pager from '@/components/dash/Pager';
 import Stars from '@/components/Stars';
 import { toggleReviewHidden } from '@/lib/admin-actions';
+import { paginate } from '@/lib/paginate';
 import { turfReviews } from '@/lib/reviews';
 import { getDb } from '@/lib/store';
 import { formatDateTime } from '@/lib/time';
 
-export default async function AdminReviews() {
+export default async function AdminReviews({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page: pageParam } = await searchParams;
   const db = await getDb();
-  const reviews = turfReviews(db, null, { includeHidden: true, limit: 500 });
+  const paged = paginate(turfReviews(db, null, { includeHidden: true, limit: Number.MAX_SAFE_INTEGER }), pageParam, 50);
+  const reviews = paged.items;
   const turfName = (id: string) => db.turfs.find((t) => t.id === id)?.name ?? id;
 
   return (
@@ -18,7 +22,7 @@ export default async function AdminReviews() {
         {reviews.length === 0 ? (
           <p className={dash.muted}>No reviews yet. Players can rate a turf from their booking after they are checked in.</p>
         ) : (
-          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead>
                 <tr><th>Turf</th><th>Rating</th><th>Review</th><th>Player</th><th>When</th><th>Status</th><th></th></tr>
@@ -44,6 +48,7 @@ export default async function AdminReviews() {
             </table>
           </div>
         )}
+        <Pager info={paged} basePath="/admin/reviews" />
       </div>
     </div>
   );

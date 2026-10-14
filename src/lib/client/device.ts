@@ -6,7 +6,6 @@ const PROFILE_KEY = 'oyun_profile';
 // Fired on window when the saved profile or booking list changes, so the top bar can update
 export const DEVICE_EVENT = 'oyun:device';
 const BOOKINGS_KEY = 'oyun_bookings';
-const AREA_KEY = 'oyun_area';
 
 export interface DeviceProfile {
   name: string;
@@ -54,22 +53,4 @@ export function signOutDevice() {
     localStorage.removeItem(PROFILE_KEY);
   } catch {}
   window.dispatchEvent(new Event(DEVICE_EVENT));
-}
-
-export function clearDevice() {
-  try {
-    localStorage.removeItem(PROFILE_KEY);
-    localStorage.removeItem(BOOKINGS_KEY);
-  } catch {}
-  window.dispatchEvent(new Event(DEVICE_EVENT));
-}
-
-// The area chosen in the top bar's "Playing in …" strip
-export function getPreferredArea(): string {
-  const a = read<unknown>(AREA_KEY, '');
-  return typeof a === 'string' ? a.slice(0, 60) : '';
-}
-
-export function setPreferredArea(area: string) {
-  write(AREA_KEY, area.slice(0, 60));
 }

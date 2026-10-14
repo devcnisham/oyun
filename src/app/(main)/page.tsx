@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import TurfSlider from '@/components/TurfSlider';
 import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
+import { shortHour } from '@/lib/format';
 import { homeStats } from '@/lib/home-stats';
 import { getDb } from '@/lib/store';
 import HeroSearchBar from './HeroSearchBar';
@@ -54,7 +55,6 @@ export default async function Home() {
     .filter((o) => o.active && turfNames.has(o.turfId))
     .map((o) => {
       const t = turfNames.get(o.turfId)!;
-      const h = (x: number) => `${x % 12 === 0 ? 12 : x % 12} ${x < 12 || x === 24 ? 'AM' : 'PM'}`;
       return {
         id: o.id,
         turfId: t.id,
@@ -62,7 +62,7 @@ export default async function Home() {
         image: t.images[0],
         title: o.title,
         percentOff: o.percentOff,
-        when: o.type === 'first_time' ? 'Your first booking' : `${h(o.startHour)} – ${h(o.endHour)}`,
+        when: o.type === 'first_time' ? 'Your first booking' : `${shortHour(o.startHour)} – ${shortHour(o.endHour)}`,
       };
     });
 

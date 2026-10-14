@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
 import { refundBooking } from '@/lib/admin-actions';
 import { bookingRevenue } from '@/lib/reports';
 import { getDb } from '@/lib/store';
@@ -50,7 +50,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Filter</button>
           </form>
         </div>
-        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr>

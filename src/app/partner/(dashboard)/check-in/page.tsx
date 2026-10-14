@@ -1,5 +1,5 @@
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
 import { checkInBooking, markNoShow } from '@/lib/partner-actions';
 import { getDb } from '@/lib/store';
@@ -50,7 +50,7 @@ export default async function CheckInPage() {
         {today.length === 0 ? (
           <p className={dash.empty}>No bookings today.</p>
         ) : (
-          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead><tr><th>Slot</th><th>Player</th><th>Code</th><th>Status</th><th className={dash.num}>Due at venue</th><th></th></tr></thead>
               <tbody>

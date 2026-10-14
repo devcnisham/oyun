@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/JsonLd';
 import TurfCard from '@/components/TurfCard';
+import { rupees } from '@/lib/format';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
 import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
 import { areaSlug } from '@/lib/site';
@@ -70,7 +71,7 @@ export default async function AreaPage({ params }: Props) {
 
       <h1 className={styles.title}>Turfs and courts in {area}, Mangalore</h1>
       <p className={styles.lead}>
-        {turfs.length} venue{turfs.length === 1 ? '' : 's'} for {areaSports(turfs)} in {area} from ₹{from.toLocaleString('en-IN')} per hour
+        {turfs.length} venue{turfs.length === 1 ? '' : 's'} for {areaSports(turfs)} in {area} from {rupees(from)} per hour
         {openToday > 0 ? `, with ${openToday} open slot${openToday === 1 ? '' : 's'} today` : ''}. Pick a venue to see live availability and book in under a minute.
       </p>
 

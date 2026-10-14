@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #174 (main at 4f48d14, 12 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #182 (main at d7e2498, 12 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -930,6 +930,8 @@ tests:[
  ["Authorization","Every admin and partner action without a session","Vitest","Enumerate exports of admin-actions.ts and partner-actions.ts"],
  ["End to end","Browse, hold, book, ticket, cancel; owner check-in","Playwright","Run against a preview deployment"],
  ["Load","Booking path at target concurrency","k6","Watch conflict rate and p95 latency"],
+ ["Duplicate code","Copy-pasted blocks across src","jscpd (npm run dup, .jscpd.json)","0 clones allowed; runs in CI (PR #182)"],
+ ["Unused code","Unused files, exports and dependencies","knip (npm run unused, knip.json)","Nothing unused; runs in CI (PR #182)"],
  ["CI gate","lint, tsc --noEmit, build, tests, npm audit","GitHub Actions","Required status check on main"]
 ]
 };
@@ -1181,7 +1183,7 @@ featureGroups:[
   ["Hold while checking out","built","8 minutes, per device cookie (only a hash is stored); a new hold replaces the old one","booking-actions.ts, device-holder.ts"],
   ["Hold release","built","On leaving checkout, on page hide by beacon, or on timeout","api/holds/release"],
   ["Countdown timer","built","Shown in checkout; slots are released at zero","BookingFlow.tsx"],
-  ["Max slots per booking","built","6, need not be consecutive","booking-actions.ts (MAX_SLOTS)"],
+  ["Max slots per booking","built","6, need not be consecutive","booking-types.ts (MAX_SLOTS)"],
   ["Double-booking protection","built","Database unique indexes on live booking, block and hold per slot. With halves: one index per half for bookings and holds, a full booking counts against both (PR #58, needs supabase/setup/6-half-pitch.sql on production).","supabase migrations"],
   ["Live updates","built","Realtime broadcast per turf and date; also a 10-second poll and refresh on tab focus","lib/realtime.ts, use-slot-updates.ts"],
   ["Request limits","partial","Hold 60 per IP and 15 per device per 10 minutes. Counted in Postgres once supabase/setup/8-rate-limits.sql has run (PR #114); until then in memory per server","booking-actions.ts, shared-rate-limit.ts"]
@@ -2039,7 +2041,7 @@ DATA.tasks.push(
  {id:"P8-15",p:"P8",t:"Vendor and account register; move production Supabase under the company email",s:"todo",pr:"P1",n:"Production project sits under a different email than the one used for tooling."},
  {id:"P8-16",p:"P8",t:"Partner agreement, refund and commission policy, DPDP privacy review with a lawyer or CA",s:"todo",pr:"P1"},
  {id:"P8-17",p:"P8",t:"Pick team tools: GitHub Projects or Linear, Notion, Slack or WhatsApp, Bitwarden",s:"todo",pr:"P2"},
- {id:"P8-18",p:"P8",t:"Load Inter with next/font so every device matches the design",s:"todo",pr:"P2",n:"globals.css names Inter but nothing loads it."},
+ {id:"P8-18",p:"P8",t:"Load Inter with next/font so every device matches the design",s:"done",pr:"P2",n:"Inter is loaded with next/font/google in src/app/layout.tsx and exposed as --font-inter; globals.css uses it first."},
  {id:"P8-19",p:"P8",t:"Replace hard-coded hex values (#f5a623, #cba052) with CSS variables",s:"done",pr:"P3",n:"Stars, review form and turf card use CSS variables; the hex values now live only in globals.css. PR #171."},
  {id:"P8-20",p:"P8",t:"Accessibility audit: keyboard, focus, contrast; fix findings",s:"doing",pr:"P2",n:"Automated axe checks and a keyboard booking test exist (P8-41, P8-42). Findings are not yet all fixed; no manual audit yet."},
  {id:"P8-21",p:"P8",t:"Nightly database backup to a free bucket via GitHub Action; test a restore",s:"todo",pr:"P1"},
@@ -2061,7 +2063,7 @@ DATA.tasks.push(
  {id:"P7-09",p:"P7",t:"Advance is 10% of each hour's price, never under or over ₹150 (flat ₹150 an hour by default); 3 hours asks ₹450",s:"done",pr:"P0",n:"minAdvance and maxAdvance are per-hour Admin settings. 8 maths checks passed. PRs #16 and #17 (PR #16 first applied it once per booking; #17 made it per hour)."},
  {id:"P8-28",p:"P8",t:"After PR #17 deploys, check Admin → Settings in production: advance 10%, minimum 150, maximum 150 (per hour)",s:"todo",pr:"P0",n:"Production keeps its saved advance percent (it may still be 30)."},
  {id:"P8-24",p:"P8",t:"Update FAQ, Terms, the home Pay at the Turf card, BookingFlow comments, FEATURE_LIST and GO-LIVE for the advance flow",s:"done",pr:"P1",n:"They still say pay at venue and no prepayment. Checked 12 Oct 2026: FAQ, Terms, home card, BookingFlow, FEATURE_LIST and GO-LIVE already describe the advance paid at the venue."},
- {id:"P8-25",p:"P8",t:"Replace the fake home stats banner and brand ad strip; fill the footer social links",s:"todo",pr:"P2",n:"100+ turfs, 50k+ players and sports-brand ads are placeholders."},
+ {id:"P8-25",p:"P8",t:"Replace the fake home stats banner and brand ad strip; fill the footer social links",s:"done",pr:"P2",n:"The home stats are real counts (src/lib/home-stats.ts, left out while 0), the sponsor strip is hidden while Admin has no sponsors, and the footer social links come from env and hide when unset (PR #171)."},
  {id:"P8-26",p:"P8",t:"Fix the owner dashboard quick slot blocker: only 6 to 8 PM, and it ignores errors",s:"done",pr:"P2",n:"Lists all turf hours, shows results and errors, rejects past dates. PR #27."},
  {id:"P8-27",p:"P8",t:"Apply evening and weekend rates from a turf application to the approved turf's pricing",s:"done",pr:"P2",n:"Approval turns owner's evening and weekend prices into turf's peak and weekend markups. PR #27."},
  {id:"P9-17",p:"P9",t:"Refund rules: do not credit the wallet for an advance never collected; return the wallet-paid part",s:"done",pr:"P0",n:"Wallet-paid part returned and the uncollected advance is no longer credited (it is no longer recorded as paid). Gateway refunds remain under phase 11. PR #33."},
@@ -2080,8 +2082,8 @@ DATA.tasks.push(
  {id:"P7-13",p:"P7",t:"Fix the Padel card photo on the desktop home (dead link, black card)",s:"done",pr:"P3",n:"PR #21."},
  {id:"P7-14",p:"P7",t:"Owner dashboard slide-out phone menu",s:"done",pr:"P2",n:"Commit 0d21f8a."},
  {id:"P8-29",p:"P8",t:"Fix checkout crash on a dev server that predates a new setting",s:"done",pr:"P2",n:"File mode now fills missing settings from defaults on every read; rupees() tolerates a missing value. PR #19."},
- {id:"P8-30",p:"P8",t:"Link the FAQ again somewhere on the phone (side menu or home) and keep a phone route to Privacy, Terms and Cookie settings",s:"todo",pr:"P2",n:"Removed from the phone menu in PR #20; the footer still has the legal links. Cookie settings must stay easy to reopen."},
- {id:"P8-31",p:"P8",t:"Check every hard-coded image link (sports, promos, turfs) for 404s and move them to our own files or storage",s:"todo",pr:"P2",n:"Two Unsplash links had already died (Padel card, launch promo). Add a link check to CI."},
+ {id:"P8-30",p:"P8",t:"Link the FAQ again somewhere on the phone (side menu or home) and keep a phone route to Privacy, Terms and Cookie settings",s:"done",pr:"P2",n:"Removed from the phone menu in PR #20; the footer still has the legal links. Cookie settings must stay easy to reopen. Done in PR #175: FAQ link added on Help."},
+ {id:"P8-31",p:"P8",t:"Check every hard-coded image link (sports, promos, turfs) for 404s and move them to our own files or storage",s:"done",pr:"P2",n:"Two Unsplash links had already died (Padel card, launch promo). Add a link check to CI. Done in PR #178: the login background now uses our own turf photo; the audit found no other dead links."},
  {id:"P8-32",p:"P8",t:"Make the local dev server re-read settings and data on code change, or warn when it is stale",s:"todo",pr:"P3",n:"A server started before a code change kept an old in-memory copy and crashed checkout."},
  {id:"P7-15",p:"P7",t:"Sport cards as round image icons instead of photo cards",s:"done",pr:"P2",n:"Football, Box Cricket, Badminton, Padel icons (60–88px) with names; scrolls on narrow screens. PR #26."},
  {id:"P8-33",p:"P8",t:"Build tracker updater agent and check-tracker.mjs script",s:"done",pr:"P2",n:"Validates task IDs, counts features and risks on every update. PR #23."},
@@ -2089,9 +2091,9 @@ DATA.tasks.push(
  {id:"P8-35",p:"P8",t:"Rename slot-arena to oyun-arena",s:"done",pr:"P3",n:"package.json, dev store keys, docs. Vercel project, cookies, booking codes and GitHub repo left alone. PR #25."},
  {id:"P8-36",p:"P8",t:"Admin and partner dashboard bug fixes: refunds, walk-ins, approvals, slot blocker",s:"done",pr:"P1",n:"Cancel and refund return wallet-paid money; a walk-in refund credits no wallet; refunding a checked-in booking takes the cashback back; approval applies the owner's evening and weekend prices and refuses a suspended owner; approve, reject and reset password ask first and keep every result on screen; walk-ins can book the current hour; the slot blocker uses the turf's hours; first-time offer returns after a refund. PR #27."},
  {id:"P8-37",p:"P8",t:"Forms clear typed values after validation error",s:"done",pr:"P2",n:"ActionForm and LoginForm keep what was typed after a failed action. Found in the PR #27 review; fixed in PR #173."},
- {id:"P8-38",p:"P8",t:"Check-in time window and turf hours limits",s:"doing",pr:"P2",n:"Check-in now works only from an hour before the slot until it ends (src/lib/checkin-window.ts, PR #172). Still open: turf hours accept half hours and a close time after midnight silently drops the late slots. Found in the PR #27 review."},
- {id:"P7-16",p:"P7",t:"Mobile menu keyboard navigation and input labels",s:"todo",pr:"P2",n:"The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review."},
- {id:"P8-39",p:"P8",t:"Admin and partner list pagination",s:"doing",pr:"P2",n:"Admin transactions, admin users and partner bookings now page (src/lib/paginate.ts, PR #173). Still open: admin bookings (first 150) and admin reviews (500) have no next page. Found in the PR #27 review."},
+ {id:"P8-38",p:"P8",t:"Check-in time window and turf hours limits",s:"done",pr:"P2",n:"Check-in works only from an hour before the slot until it ends (src/lib/checkin-window.ts, PR #172). Turf hours must be whole hours and close later the same day or at 00:00; half hours and a close after midnight are refused with a message (src/lib/hours.ts). Found in the PR #27 review."},
+ {id:"P7-16",p:"P7",t:"Mobile menu keyboard navigation and input labels",s:"done",pr:"P2",n:"The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review. Done in PR #175: the drawer opens with the keyboard and the dashboard inputs are labelled."},
+ {id:"P8-39",p:"P8",t:"Admin and partner list pagination",s:"done",pr:"P2",n:"Admin transactions, admin users, admin reviews and partner bookings now page (src/lib/paginate.ts, PR #173 and the reviews page). Found in the PR #27 review."},
  {id:"P7-17",p:"P7",t:"Phone home: sport icons filter Open slots in place; remove How OYUN works card",s:"done",pr:"P1",n:"Tapping a sport now filters the rail underneath on the same page instead of opening the turfs page. Removes the How OYUN works card and its styles. PR #28."},
  {id:"P7-18",p:"P7",t:"Search sheet: remove area chips; home sports icon: Pickleball replaces Padel",s:"done",pr:"P2",n:"Removes Popular areas chips and label from phone search sheet. Fourth home sport icon is now Pickleball with photo; turfs list filter offers both Padel and Pickleball. PR #30."},
  {id:"P7-19",p:"P7",t:"Phone home: animate sport icons and the Open slots rail",s:"done",pr:"P2",n:"Sport icons rise in staggered (70 ms apart), spring on hover and press, chosen icon pops with a larger ring. Rail title fades in, cards slide in one after another, loading shimmer, slots badge pop, hover zoom and enter press. All wrapped in prefers-reduced-motion. PR #31."},
@@ -2148,7 +2150,15 @@ DATA.tasks.push(
  {id:"P8-48",p:"P8",t:"Dependency bump: minor-and-patch group",s:"done",pr:"P3",n:"next and eslint-config-next 16.3.8 to 16.4.0, @clerk/nextjs 7.9.13, @supabase/supabase-js 2.117.3. docs/NEXT16-NOTES.md still says 16.3.8. PR #170 (Dependabot)."},
  {id:"P9-23",p:"P9",t:"Partner tenant isolation test: owner A cannot touch owner B's records",s:"done",pr:"P1",n:"src/lib/tenant-isolation.test.ts. PR #115 (RQ-SEC2)."},
  {id:"P9-24",p:"P9",t:"Authorization audit table in docs/AUTHORIZATION.md, kept honest by a test",s:"done",pr:"P1",n:"src/lib/authorization-audit.test.ts. Referral check limited to 40 attempts per 10 minutes per IP. PR #116 (RQ-SEC1)."},
- {id:"P7-43",p:"P7",t:"Partner week calendar: every opening hour for seven days, split pitch halves shown",s:"done",pr:"P2",n:"Week view, Monday to Sunday, with previous and next week links. PR #117 (RQ-F3)."}
+ {id:"P7-43",p:"P7",t:"Partner week calendar: every opening hour for seven days, split pitch halves shown",s:"done",pr:"P2",n:"Week view, Monday to Sunday, with previous and next week links. PR #117 (RQ-F3)."},
+ {id:"P8-49",p:"P8",t:"Remove the duplicate CSS block, the twitter-image copy and dead exports",s:"done",pr:"P2",n:"Duplicate CSS removed from arenas/page.module.css, twitter-image.tsx trimmed, unused exports removed (client device helper, site.ts entry, action-utils and pricing tidy). PR #179."},
+ {id:"P8-50",p:"P8",t:"Split BookingFlow into PitchPicker, SlotMap, CheckoutSheet and booking-format",s:"done",pr:"P2",n:"Turf booking screen split into four files under arenas/[id]; BookingFlow.tsx now keeps the main flow and imports the parts. PR #179."},
+ {id:"P8-51",p:"P8",t:"Move the booking planner and limits out of booking-actions.ts into booking-plan.ts and booking-types.ts",s:"done",pr:"P2",n:"booking-plan.ts holds the planner (about 130 lines) and booking-types.ts holds MAX_SLOTS and the client-safe booking types. booking-actions.ts is smaller. PR #179."},
+ {id:"P8-52",p:"P8",t:"Split list-turf options, form defaults and the success screen into their own files",s:"done",pr:"P2",n:"listing-options.ts and ListingSubmitted.tsx hold the list-turf choices and the submitted screen; page.tsx is smaller. PR #179."},
+ {id:"P8-53",p:"P8",t:"One shared rupee and short-hour formatter in src/lib/format.ts instead of seven copies",s:"done",pr:"P2",n:"src/lib/format.ts holds the rupees and shortHour helpers that were copied in seven files. PR #182."},
+ {id:"P8-54",p:"P8",t:"Move checkout form state into a useCheckoutForm hook; CheckoutSheet takes 12 props instead of about 25",s:"done",pr:"P2",n:"The checkout form logic moved into a hook, and CheckoutSheet now receives about 12 props. PR #182."},
+ {id:"P8-55",p:"P8",t:"Replace 14 copy-pasted scroll regions with one tableScroll props pattern; small cleanups in the welcome page and turf loading state",s:"done",pr:"P2",n:"tableScroll props replace 14 copies of the same scroll markup. Welcome page uses a shared FeatureGrid. An unused Field component was removed. arenas/[id]/loading.tsx was added. PR #182."},
+ {id:"P8-56",p:"P8",t:"CI runs duplicate-code and unused-code checks (npm run dup and npm run unused)",s:"done",pr:"P2",n:"npm run dup uses jscpd with .jscpd.json and npm run unused uses knip with knip.json. At merge both report 0 clones and nothing unused. PR #182."}
 );
 
 /* ===================== BOOT ===================== */

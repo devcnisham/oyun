@@ -1,4 +1,6 @@
 // "List your turf" form rules, shared by the browser (instant feedback) and the server (the real check)
+import { hoursError } from '../hours';
+
 
 export interface ApplicationFields {
   ownerName: string;
@@ -57,7 +59,7 @@ export function validateApplication(f: ApplicationFields, steps: number[] = [1, 
   check('address', t('address').length < 10 ? 'Enter the full address with a landmark' : t('address').length > 300 && 'Address is too long');
   check('surface', !t('surface') && 'Choose the surface type');
   check('openTime', !TIME.test(t('openTime')) && 'Enter an opening time');
-  check('closeTime', !TIME.test(t('closeTime')) ? 'Enter a closing time' : t('closeTime') === t('openTime') && 'Closing time must be different from opening time');
+  check('closeTime', !TIME.test(t('closeTime')) ? 'Enter a closing time' : hoursError(t('openTime'), t('closeTime')) ?? false);
   check('weekdayPrice', price(t('weekdayPrice'), 'weekday rate'));
   check('eveningPrice', price(t('eveningPrice'), 'evening rate'));
   check('weekendPrice', price(t('weekendPrice'), 'weekend rate'));

@@ -1,0 +1,9 @@
+{
+  "path": ["src"],
+  "minLines": 8,
+  "minTokens": 70,
+  "ignore": ["**/*.test.*", "**/*.css", "**/node_modules/**"],
+  "reporters": ["console"],
+  "threshold": 0.5,
+  "gitignore": true
+}

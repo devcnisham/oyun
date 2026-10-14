@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { rupees } from '@/lib/format';
 import styles from './dash.module.css';
 
 export function PageHeader({ title, desc, children }: { title: string; desc?: string; children?: React.ReactNode }) {
@@ -58,15 +59,14 @@ export function Tabs({ items, active }: { items: { href: string; label: string; 
   );
 }
 
-export function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className={styles.field}>
-      <span className={styles.label}>{label}</span>
-      {children}
-    </label>
-  );
-}
+/** Props for a sideways-scrolling table region: focusable and labelled so keyboard and screen reader users can scroll it. */
+export const tableScroll = {
+  className: styles.tableWrap,
+  tabIndex: 0,
+  role: 'region',
+  'aria-label': 'Table, scrolls sideways',
+} as const;
 
-export const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+export const inr = (n: number) => rupees(Math.round(n));
 
 export { styles as dash };

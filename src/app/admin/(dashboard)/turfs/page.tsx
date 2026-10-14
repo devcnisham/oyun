@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, inr } from '@/components/dash/ui';
+import { Badge, PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
 import { quickUpdateTurf } from '@/lib/admin-actions';
 import { canOptimize } from '@/lib/images';
 import { commissionFor } from '@/lib/pricing';
@@ -37,7 +37,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
             <button className={`${dash.btn} ${dash.btnSecondary}`}>Filter</button>
           </form>
         </div>
-        <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+        <div {...tableScroll}>
           <table className={dash.table}>
             <thead>
               <tr>

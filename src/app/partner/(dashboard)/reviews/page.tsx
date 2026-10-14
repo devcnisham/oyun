@@ -1,4 +1,4 @@
-import { PageHeader, Stat, dash } from '@/components/dash/ui';
+import { PageHeader, Stat, dash, tableScroll } from '@/components/dash/ui';
 import Stars from '@/components/Stars';
 import { requirePartner } from '@/lib/partner-auth';
 import { turfReviews } from '@/lib/reviews';
@@ -22,7 +22,7 @@ export default async function PartnerReviews() {
         {reviews.length === 0 ? (
           <p className={dash.muted}>No reviews yet. Players are asked to rate the turf on their booking after you check them in.</p>
         ) : (
-          <div className={dash.tableWrap} tabIndex={0} role="region" aria-label="Table, scrolls sideways">
+          <div {...tableScroll}>
             <table className={dash.table}>
               <thead><tr><th>Rating</th><th>Review</th><th>Player</th><th>When</th></tr></thead>
               <tbody>

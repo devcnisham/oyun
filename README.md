@@ -17,6 +17,7 @@ That's all: with no `.env.local` the app stores data in `.data/db.json` (startin
 
 - **Test the mobile app view on your phone:** `npm run dev:lan`, then open `http://<your-computer-IP>:3000` on the same Wi-Fi.
 - **Use Supabase locally:** copy `.env.example` to `.env.local`, fill in `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SECRET_KEY`, and run `supabase/migrations/20261006000000_oyun_store.sql` in the Supabase SQL editor. If the tables are missing, dev falls back to the local file and prints how to fix it.
+- **Sign-in with Clerk (optional):** set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` together (the publishable key alone turns Clerk on, and server auth then fails without the secret). With no publishable key players use a device name-and-phone fallback.
 - **Start local data over:** stop the server and delete `.data/`.
 - **Something looks stale after pulling:** `npm install`, delete `.next/`, restart.
 
@@ -31,6 +32,8 @@ That's all: with no `.env.local` the app stores data in `.data/db.json` (startin
 | `npm run test:e2e` | Playwright end-to-end tests |
 | `npm run build` | Production build |
 
+CI runs these on every pull request, plus `npm audit`. Dependabot opens dependency updates weekly (TypeScript and ESLint majors are skipped until the toolchain supports them).
+
 ## Deploying (Vercel)
 
 Add every variable from `.env.example` in the Vercel project settings, apply the migration to the Supabase project once, then deploy.
@@ -38,6 +41,14 @@ Add every variable from `.env.example` in the Vercel project settings, apply the
 ## Launch checklist
 
 See [docs/GO-LIVE.md](docs/GO-LIVE.md) for the steps to take the site live, and [docs/LAUNCH-SEO.md](docs/LAUNCH-SEO.md) for Search Console, analytics, error alerts and the backlink plan.
+
+## More docs
+
+- [FEATURE_LIST.md](FEATURE_LIST.md): what is built, partly built and still to do.
+- [docs/TASK-WORKFLOW.md](docs/TASK-WORKFLOW.md): ordered task queue and how to pick up the next task.
+- [docs/SLOT-BOOKING-DB.md](docs/SLOT-BOOKING-DB.md): slot booking and double-booking guard design.
+- [docs/NEXT16-NOTES.md](docs/NEXT16-NOTES.md): Next.js 16 conventions used in this repo.
+- [docs/JIRA.md](docs/JIRA.md): Jira setup and CSV export.
 
 ## How data is stored
 
