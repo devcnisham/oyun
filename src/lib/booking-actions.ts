@@ -18,6 +18,7 @@ import { getDb, mutate, newId, storageInfo } from './store';
 import { BOOKING_DAYS, addDays, formatHour, formatSlotRange, isValidDate, istNow } from './time';
 import type { Booking, Database, PitchSize, Slot } from './types';
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
+import { notifyWaitlistWhenSlotFreed } from './waitlist';
 
 const MAX_DAYS_AHEAD = BOOKING_DAYS - 1;
 const HOLD_MINUTES = 8;
@@ -28,7 +29,11 @@ function checkDate(date: string) {
 }
 
 async function clientIp() {
-  return (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  try {
+    return (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  } catch {
+    return '127.0.0.1';
+  }
 }
 
 // Throws a friendly error when one network or device is making requests too fast
@@ -219,6 +224,7 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
       } else {
         booking.status = 'cancelled';
       }
+      notifyWaitlistWhenSlotFreed(db, booking.turfId, booking.date, booking.hour);
     });
     refreshAll();
     return { ok: true };

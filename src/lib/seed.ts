@@ -42,6 +42,7 @@ export function migrate(data: Database): Database {
   data.settings = { ...DEFAULT_SETTINGS, ...data.settings };
   data.walletTxns ??= [];
   data.holds ??= [];
+  data.waitlist ??= [];
   if (data.site) data.site.ads ??= [];
   // The old football-only default headline becomes the multi-sport one; a headline the admin wrote is kept
   if (data.site?.heroTitle === OLD_HERO_TITLE) data.site.heroTitle = NEW_HERO_TITLE;
@@ -121,6 +122,7 @@ export function seed(): Database {
     applications: [],
     walletTxns: [],
     holds: [],
+    waitlist: [],
   };
 
   // One OYUN operations account manages the launch turfs until each owner joins. It can sign in to
