@@ -1,9 +1,10 @@
 // Lighthouse gate (launch checklist: score >= 90 on home, arenas list and a turf page).
 // Usage: node scripts/lighthouse-check.mjs [baseUrl]   (default http://localhost:3000, run against `next start`)
 // Env: LH_MIN (default 0.9) minimum score for every category; LH_MIN_PERFORMANCE, LH_MIN_ACCESSIBILITY,
-// LH_MIN_BEST_PRACTICES, LH_MIN_SEO override it per category; LH_VERSION pins the Lighthouse CLI.
+// LH_MIN_BEST_PRACTICES, LH_MIN_SEO override it per category; LH_VERSION pins the Lighthouse CLI;
+// LH_OUT_DIR keeps the full JSON report of every page in that folder.
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -14,7 +15,10 @@ const PAGES = ['/', '/arenas', '/arenas/perfect-pass-kodialbail'];
 const CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo'];
 const minFor = (c) => Number(process.env[`LH_MIN_${c.replace(/-/g, '_').toUpperCase()}`] ?? defaultMin);
 
-const dir = mkdtempSync(join(tmpdir(), 'lh-'));
+// LH_OUT_DIR keeps the full Lighthouse JSON per page (CI uploads it as an artifact); otherwise a throwaway folder
+const keepDir = process.env.LH_OUT_DIR;
+if (keepDir) mkdirSync(keepDir, { recursive: true });
+const dir = keepDir ?? mkdtempSync(join(tmpdir(), 'lh-'));
 let failed = false;
 try {
   // Warm every page first so the first Lighthouse run does not measure a cold server
@@ -85,7 +89,7 @@ try {
     if (bad.length) failed = true;
   }
 } finally {
-  rmSync(dir, { recursive: true, force: true });
+  if (!keepDir) rmSync(dir, { recursive: true, force: true });
 }
 if (failed) {
   console.error(`Lighthouse: a score is below its minimum (${CATEGORIES.map((c) => `${c} ${Math.round(minFor(c) * 100)}`).join(', ')})`);

@@ -140,8 +140,17 @@ jobs:
           # (home 60 to 80, arenas 75 to 91, turf page 76 to 89): React and the Next router are the heaviest scripts and their run time
           # follows the runner CPU, with about 10 points of run to run noise. Raise this floor as the numbers allow.
           LH_MIN_PERFORMANCE: '0.55'
+          LH_OUT_DIR: lighthouse-reports
           NEXT_PUBLIC_SUPABASE_URL: ''
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ''
           SUPABASE_SECRET_KEY: ''
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ''
           CLERK_SECRET_KEY: ''
+      # Full Lighthouse reports (open in https://googlechrome.github.io/lighthouse/viewer/) to see the real LCP chain
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse-reports
+          path: lighthouse-reports/
+          if-no-files-found: ignore
+          retention-days: 7
