@@ -112,7 +112,12 @@ function takenHalves(db: Database, turf: PublicTurf, date: string, holder: strin
     for (const h of halvesOf(part)) set.add(h);
     map.set(hour, set);
   };
-  for (const b of db.bookings) if (b.turfId === turf.id && b.date === date && ACTIVE_BOOKING.has(b.status)) add(booked, b.hour, b.pitch);
+  for (const b of db.bookings) {
+    if (b.turfId === turf.id && b.date === date && ACTIVE_BOOKING.has(b.status)) {
+      const hours = b.hours && b.hours.length > 0 ? b.hours : [b.hour];
+      for (const h of hours) add(booked, h, b.pitch);
+    }
+  }
   for (const h of db.holds ?? []) if (h.turfId === turf.id && h.date === date && h.expiresAt > nowIso && h.holder !== holder) add(held, h.hour, h.pitch);
   const blocked = new Set(db.blocks.filter((b) => b.turfId === turf.id && b.date === date).map((b) => b.hour));
   return { booked, held, blocked };

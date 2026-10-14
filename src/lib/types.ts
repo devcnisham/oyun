@@ -200,12 +200,23 @@ export interface PriceBreakdown {
 // venue: reserved online, paid at the turf; full/advance: paid online (when a payment gateway is connected)
 export type PaymentMode = 'venue' | 'full' | 'advance' | 'cash' | 'upi';
 
+export interface BookingItem {
+  id: string;
+  bookingId: string;
+  hour: number;
+  timeLabel: string;
+  durationMinutes: number;
+  pitch?: PitchPart;
+  price: number;
+}
+
 export interface Booking {
   id: string;
   code: string; // check-in code shown as QR
   turfId: string;
   date: string;
   hour: number;
+  hours?: number[];
   timeLabel: string;
   durationMinutes?: number;
   pitch?: PitchPart; // missing means the whole pitch
@@ -215,6 +226,7 @@ export interface Booking {
   source: 'online' | 'walk_in';
   createdBy: string | null; // partner/staff name for walk-ins
   addOns: BookingAddOn[];
+  items?: BookingItem[];
   pricing: PriceBreakdown;
   paymentMode: PaymentMode;
   amountPaid: number;

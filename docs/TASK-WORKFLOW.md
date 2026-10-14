@@ -46,7 +46,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] R007 Multi-court venues in the booking flow.
 - [x] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
 - [x] Switch slots over to the v2 functions, keep the realtime broadcast.
-- [ ] R010 One order per checkout.
+- [x] R010 One order per checkout.
 - [ ] R008 Retire the jsonb store for bookings, holds, blocks, pricing.
 - [ ] pg_cron expire holds (P10-06). GATE: runs on production only after user approves.
 - [ ] P10-02 Per-turf version (may be superseded by v2).

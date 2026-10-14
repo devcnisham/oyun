@@ -47,7 +47,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
         <div className={dash.slotGrid}>
           {slots.map((s) => {
             // A pitch that splits can have two bookings in one hour (half A and half B)
-            const hourBookings = bookings.filter((b) => b.hour === s.hour);
+            const hourBookings = bookings.filter((b) => b.hour === s.hour || (b.hours && b.hours.includes(s.hour)));
             const booking = hourBookings[0];
             const block = blocks.find((b) => b.hour === s.hour);
             const cls = s.reason === 'past' ? dash.slotPast : booking ? dash.slotBooked : block ? dash.slotBlocked : dash.slotFree;

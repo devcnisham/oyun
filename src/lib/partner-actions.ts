@@ -207,7 +207,7 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
 
     const res = await mutate((db) => {
       const taken = db.bookings.some(
-        (b) => b.turfId === ctx.turf.id && b.date === date && b.hour === hour && ['confirmed', 'checked_in'].includes(b.status)
+        (b) => b.turfId === ctx.turf.id && b.date === date && (b.hour === hour || (b.hours && b.hours.includes(hour))) && ['confirmed', 'checked_in'].includes(b.status)
       );
       if (taken) throw new ValidationError('This slot already has a booking — cancel it first');
       if (db.blocks.some((b) => b.turfId === ctx.turf.id && b.date === date && b.hour === hour)) {

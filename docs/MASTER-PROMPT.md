@@ -92,7 +92,7 @@ Follow `docs/SLOT-BOOKING-DB.md` → "Moving the app over".
   - `cancelMyBooking` → `cancel_booking`
   - partner blocks and walk-ins → `block_slot` and `hold_slots` + `confirm_hold`
   - Keep the realtime broadcast after each change.
-- [ ] **R010 One order per checkout.** A multi-hour booking is one booking with several items: one code, one invoice, one cancel or refund.
+- [x] **R010 One order per checkout.** A multi-hour booking is one booking with several items: one code, one invoice, one cancel or refund.
 - [ ] **R008 Retire the jsonb store** for booking data: `bookings`, `holds`, `blocks`, `pricing`. Remove `load_changes` and `apply_changes` usage for them.
 - [ ] **Expire holds every minute** with pg_cron (`select oyun.expire_holds()`).
 - [ ] **Move everything else off the jsonb store** (partners, staff, players, reviews, promos, add-ons, settings), then delete the old tables in a separate PR, only after I confirm.

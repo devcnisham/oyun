@@ -18,8 +18,17 @@ export default function Invoice({ booking, turf, partner, settings, hidePhone = 
   const p = booking.pricing;
   const gst = gstSplit(p.total, settings.gstPercent);
   const business = partner?.business;
+  const slotLines = booking.items && booking.items.length > 1
+    ? booking.items.map((item) => ({
+        label: `Turf booking — ${formatDate(booking.date, { day: 'numeric', month: 'short', year: 'numeric' })}, ${formatSlotRange(item.hour, item.durationMinutes)}${halfNote(item.pitch)}`,
+        amount: item.price,
+      }))
+    : [{
+        label: `Turf booking — ${formatDate(booking.date, { day: 'numeric', month: 'short', year: 'numeric' })}, ${formatSlotRange(booking.hour, booking.durationMinutes ?? 60)}${halfNote(booking.pitch)}`,
+        amount: p.slotPrice,
+      }];
   const lines = [
-    { label: `Turf booking — ${formatDate(booking.date, { day: 'numeric', month: 'short', year: 'numeric' })}, ${formatSlotRange(booking.hour, booking.durationMinutes ?? 60)}${halfNote(booking.pitch)}`, amount: p.slotPrice },
+    ...slotLines,
     ...(p.offer ? [p.offer] : []),
     ...(p.promo ? [p.promo] : []),
     ...booking.addOns.map((a) => ({ label: `${a.name} × ${a.qty}`, amount: a.price * a.qty })),

@@ -52,7 +52,7 @@ export function buildWeek(db: Database, turf: PublicTurf, start: string, now: { 
 
     const cells: CalendarCell[] = hours.map((hour) => {
       const bookings = dayBookings
-        .filter((b) => b.hour === hour)
+        .filter((b) => b.hour === hour || (b.hours && b.hours.includes(hour)))
         .map((b) => ({ id: b.id, code: b.code, name: b.customerName, phone: b.customerPhone, status: b.status, source: b.source, part: b.pitch ?? 'full' }) as CalendarBooking);
       const block = dayBlocks.find((b) => b.hour === hour) ?? null;
       const past = date < now.date || (date === now.date && hour < now.hour);
