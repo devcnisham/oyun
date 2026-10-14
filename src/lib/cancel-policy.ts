@@ -9,6 +9,14 @@ function minutesUntil(date: string, hour: number) {
   return (start - Date.now()) / 60_000;
 }
 
-export function canSelfCancel(b: Pick<Booking, 'status' | 'source' | 'date' | 'hour'>) {
-  return b.status === 'confirmed' && b.source === 'online' && minutesUntil(b.date, b.hour) >= CANCEL_CUTOFF_HOURS * 60;
+export function canSelfCancel(
+  b: Pick<Booking, 'status' | 'source' | 'date' | 'hour'>,
+  isWeatherDisruption = false
+) {
+  if (b.status !== 'confirmed') return false;
+  if (isWeatherDisruption) {
+    // Under Rain Policy, players can cancel up to the start of the slot without cutoff penalty
+    return b.source === 'online' && minutesUntil(b.date, b.hour) >= 0;
+  }
+  return b.source === 'online' && minutesUntil(b.date, b.hour) >= CANCEL_CUTOFF_HOURS * 60;
 }
