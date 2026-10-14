@@ -37,6 +37,13 @@ try {
     const lcpEl = audits['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet;
     if (lcpEl) console.log(`  LCP element: ${lcpEl.slice(0, 160)}`);
     const boot = audits['bootup-time']?.details?.items ?? [];
+    // What is inside the heaviest script chunk (a name hash tells nothing)
+    const top = boot.find((b) => /\.js(\?|$)/.test(String(b.url)) && b.scripting > 300);
+    if (top) {
+      const text = await fetch(top.url).then((r) => r.text()).catch(() => '');
+      const marks = ['framer-motion', 'clerk', 'supabase', 'react-dom', 'qrcode', 'googletagmanager', 'vercel'].filter((m) => text.toLowerCase().includes(m));
+      console.log(`  heaviest chunk ${String(top.url).split('/').pop()}: ${Math.round(text.length / 1024)} KiB, mentions: ${marks.join(', ') || 'none of the usual suspects'}`);
+    }
     for (const b of boot.slice(0, 5)) console.log(`  script ${Math.round(b.total)} ms (scripting ${Math.round(b.scripting)} ms): ${String(b.url).slice(0, 100)}`);
     for (const ref of categories.performance?.auditRefs ?? []) {
       const a = audits[ref.id];
