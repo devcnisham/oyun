@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { openConsentSettings } from '@/components/consent/consent';
+import PrivacyDataControls from '@/components/PrivacyDataControls';
 import styles from './Settings.module.css';
 
 // Everything a player can change or look up about their OYUN experience, in one list
@@ -42,6 +43,11 @@ export default function SettingsList({ supportEmail }: { supportEmail: string })
           <li><Link href="/terms"><span aria-hidden>📄</span><b>Terms &amp; conditions</b><i>Bookings, payments and cancellations</i></Link></li>
           <li><a href={`mailto:${supportEmail}`}><span aria-hidden>✉️</span><b>Email support</b><i>{supportEmail}</i></a></li>
         </ul>
+      </section>
+
+      <section className={styles.card}>
+        <h2>Your Data &amp; DPDP Rights</h2>
+        <PrivacyDataControls />
       </section>
 
       <p className={styles.about}>OYUN · Sports turfs and courts in Mangalore</p>
