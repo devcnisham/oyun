@@ -42,7 +42,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   images: {
-    formats: ["image/avif", "image/webp"],
+    // webp only: AVIF encodes several times slower on a cold image cache, which cost seconds of LCP
+    formats: ["image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,
     // Object form (not new URL) so Unsplash's ?q=&w= query strings are allowed
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com", pathname: "/**" }],
