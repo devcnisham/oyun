@@ -74,21 +74,30 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
       ) : (
         <div className={styles.list}>
           {shown.map((b) => (
-            <Link key={b.id} href={`/bookings/${b.id}`} className={`${styles.card} ${newIds.includes(b.id) ? styles.cardNew : ''}`}>
-              <div className={styles.thumb}>
-                <Image src={b.image} alt="" fill sizes="88px" unoptimized={!canOptimize(b.image)} />
-              </div>
-              <div className={styles.info}>
-                <b>{b.turfName}</b>
-                <span>{prettyDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</span>
-                <span className={styles.meta}>
-                  <em className={b.status === 'confirmed' || b.status === 'checked_in' ? styles.ok : styles.off}>{STATUS[b.status]}</em>
-                  {b.due > 0 && b.status === 'confirmed' && <> · ₹{b.due} at venue</>}
-                  {b.status === 'checked_in' && !b.reviewed && <> · <strong className={styles.rate}>⭐ Rate your game</strong></>}
-                </span>
-              </div>
-              <span className={styles.chev} aria-hidden>›</span>
-            </Link>
+            <div key={b.id} className={`${styles.cardWrapper} ${newIds.includes(b.id) ? styles.cardNew : ''}`}>
+              <Link href={`/bookings/${b.id}`} className={styles.card}>
+                <div className={styles.thumb}>
+                  <Image src={b.image} alt="" fill sizes="88px" unoptimized={!canOptimize(b.image)} />
+                </div>
+                <div className={styles.info}>
+                  <b>{b.turfName}</b>
+                  <span>{prettyDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</span>
+                  <span className={styles.meta}>
+                    <em className={b.status === 'confirmed' || b.status === 'checked_in' ? styles.ok : styles.off}>{STATUS[b.status]}</em>
+                    {b.due > 0 && b.status === 'confirmed' && <> · ₹{b.due} at venue</>}
+                    {b.status === 'checked_in' && !b.reviewed && <> · <strong className={styles.rate}>⭐ Rate your game</strong></>}
+                  </span>
+                </div>
+                <span className={styles.chev} aria-hidden>›</span>
+              </Link>
+              {tab === 'past' && (
+                <div className={styles.cardActions}>
+                  <Link href={`/arenas/${b.turfId}`} className={styles.bookAgainBtn}>
+                    Book again
+                  </Link>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
