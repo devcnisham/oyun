@@ -56,13 +56,26 @@ function purgeExpiredHolds(db: Database) {
   db.holds = db.holds.filter((h) => h.expiresAt > nowIso);
 }
 
+import {
+  isV2SlotsActive,
+  v2GetSlotsForDate,
+  v2HoldSlots,
+  v2ReleaseHolds,
+  v2CancelBooking,
+} from './v2-slots';
+
 /* ---------- slots ---------- */
 
 export async function getSlotsForDate(turfId: string, date: string, size: PitchSize = 'full'): Promise<Slot[]> {
   const db = await getDb();
   const turf = bookableTurf(db, String(turfId));
   if (!turf || !checkDate(String(date))) return [];
-  return getSlots(db, turf, date, istNow(), await deviceHolder(false), false, cleanSize(size));
+  const holder = await deviceHolder(false);
+  if (isV2SlotsActive()) {
+    const v2Slots = await v2GetSlotsForDate(String(turfId), String(date), cleanSize(size), undefined, holder);
+    if (v2Slots) return v2Slots;
+  }
+  return getSlots(db, turf, date, istNow(), holder, false, cleanSize(size));
 }
 
 export type HoldResult = { ok: true; expiresInMs: number; slots: Slot[] } | { ok: false; error: string; slots: Slot[] };
@@ -76,6 +89,17 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
     await throttle('hold', 60, holder, 15);
     if (!checkDate(String(date))) throw new ValidationError('Pick a date within the next week');
     const wanted = cleanHours(hours);
+
+    if (isV2SlotsActive()) {
+      const v2Res = await v2HoldSlots(turfId, date, wanted, holder, pitchSize);
+      if (v2Res) {
+        if (!v2Res.ok) {
+          return { ok: false, error: v2Res.error, slots: await getSlotsForDate(turfId, date, pitchSize) };
+        }
+        return { ok: true, expiresInMs: v2Res.expiresInMs, slots: await getSlotsForDate(turfId, date, pitchSize) };
+      }
+    }
+
     const expiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString();
     await mutate((db) => {
       const turf = bookableTurf(db, String(turfId));
@@ -105,6 +129,9 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
 export async function releaseHolds(): Promise<void> {
   const holder = await deviceHolder(false);
   if (!holder) return;
+  if (isV2SlotsActive()) {
+    await v2ReleaseHolds(holder);
+  }
   try {
     await mutate((db) => {
       db.holds = db.holds.filter((h) => h.holder !== holder);
@@ -232,6 +259,9 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
       }
       notifyWaitlistWhenSlotFreed(db, booking.turfId, booking.date, booking.hour);
     });
+    if (isV2SlotsActive()) {
+      await v2CancelBooking(id, 'player cancelled');
+    }
     refreshAll();
     return { ok: true };
   } catch (err) {

@@ -22,6 +22,7 @@ import { mapTurfToResourcesAndBookables } from './venue-mapping';
 import { withDate, withoutDate } from './rain';
 import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
+import { isV2SlotsActive, v2BlockSlot } from './v2-slots';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
   const booking = db.bookings.find((b) => b.id === bookingId);
@@ -204,6 +205,13 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
     const reason = required(fd, 'reason', 'Reason', 120);
     if (date < istNow().date) throw new ValidationError('That date has already passed');
     if (!turfHours(ctx.turf).includes(hour)) throw new ValidationError(`${ctx.turf.name} is not open at ${formatHour(hour)}`);
+
+    if (isV2SlotsActive()) {
+      const v2Res = await v2BlockSlot(ctx.turf.id, date, hour, reason);
+      if (v2Res && !v2Res.ok) {
+        throw new ValidationError(v2Res.error);
+      }
+    }
 
     return await mutate((db) => {
       const taken = db.bookings.some(
