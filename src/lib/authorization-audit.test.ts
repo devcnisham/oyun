@@ -82,6 +82,7 @@ describe('API and file routes', () => {
     'src/app/api/privacy/delete/route.ts': ['sharedRateLimit(', 'cleanPhone('],
     'src/app/api/privacy/consent/route.ts': ['sharedRateLimit(', "consent !== 'all' && consent !== 'essential'"],
     'src/app/api/cron/retention-purge/route.ts': ['runRetentionPurge(', 'authHeader !== `Bearer ${cronSecret}`'],
+    'src/app/api/webhooks/razorpay/route.ts': ['verifyRazorpaySignature(', 'sharedRateLimit('],
   };
 
   test('every route file is classified, and nothing listed has gone missing', () => {

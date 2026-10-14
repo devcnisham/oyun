@@ -69,6 +69,7 @@ Every exported action calls `requireAdmin()` before touching data: approve and r
 | `POST /api/holds/release` | Same-origin check; releases only the caller's device holds |
 | `GET /bookings/[id]/calendar` | Unguessable booking id (capability link); no phone number |
 | `GET /partner/payouts/export` | Partner session with the `payouts` permission |
+| `POST /api/webhooks/razorpay` | HMAC SHA256 signature verification, shared rate limit 120/IP/min |
 
 ## Pages
 
