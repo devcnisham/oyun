@@ -7,7 +7,10 @@ import { getBookingSummaries } from '@/lib/booking-actions';
 import { DEVICE_EVENT, getMyBookingIds, getProfile } from '@/lib/client/device';
 import { clerkEnabled } from '@/lib/clerk';
 import { useTranslation } from '@/lib/client/use-translation';
-import ClerkAccount from './ClerkAccount';
+import dynamic from 'next/dynamic';
+
+// Own chunk: without Clerk keys the branch below is dropped at build time and the Clerk hooks are never shipped
+const ClerkAccount = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? dynamic(() => import('./ClerkAccount')) : null;
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
@@ -121,7 +124,7 @@ export default function Navbar() {
             </Link>
 
             {/* Account: Clerk sign-in when configured, otherwise the name saved on this device */}
-            {clerkEnabled ? (
+            {clerkEnabled && ClerkAccount ? (
               <ClerkAccount className={styles.account} nameClassName={styles.accountName} />
             ) : (
             <Link href={signedIn ? '/profile' : '/login'} className={styles.account} aria-label={signedIn ? `Account${firstName ? ` of ${firstName}` : ''}` : t('nav_sign_in')}>

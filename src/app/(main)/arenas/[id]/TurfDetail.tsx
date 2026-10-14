@@ -33,7 +33,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
     <div className={styles.page}>
       {/* Mobile Image Header */}
       <div className={styles.imageHeader}>
-        <Image src={imageSrc} alt={turf.name} fill preload sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
+        <Image src={imageSrc} alt={turf.name} fill preload fetchPriority="high" sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
 
         <div className={styles.topNav}>
           <BackButton fallback="/arenas" className={styles.iconBtn}>←</BackButton>

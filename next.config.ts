@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
   // Let phones on the same Wi-Fi open the dev server (e.g. http://192.168.1.5:3000) to test the mobile app view
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*", "172.*.*.*", "*.local"],
   poweredByHeader: false,
+  // Always define the Clerk key at build time (empty when unset) so the bundler can drop every Clerk import when sign-in is not configured
+  env: { NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? '' },
   // Styles ship inside the HTML: four render-blocking stylesheet requests held first paint back by ~300 ms on phones
   experimental: { inlineCss: true },
   compress: true,

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { createClient } from '@/utils/supabase/client';
 import { SLOTS_CHANGED, slotTopic } from '@/lib/slot-topic';
 
 const realtimeConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
@@ -31,20 +30,26 @@ export function useSlotUpdates(turfId: string, date: string, onChange: () => voi
     window.addEventListener('focus', fire);
 
     let cleanupChannel = () => {};
+    let cancelled = false;
     if (realtimeConfigured) {
-      try {
-        const supabase = createClient();
-        const channel = supabase.channel(slotTopic(turfId, date)).on('broadcast', { event: SLOTS_CHANGED }, () => callback.current()).subscribe();
-        cleanupChannel = () => void supabase.removeChannel(channel);
-      } catch {
-        // realtime unavailable: polling keeps things fresh
-      }
+      // The Supabase client is large and only needed once the page is interactive: load it on demand, not with the page bundle
+      void import('@/utils/supabase/client')
+        .then(({ createClient }) => {
+          if (cancelled) return;
+          const supabase = createClient();
+          const channel = supabase.channel(slotTopic(turfId, date)).on('broadcast', { event: SLOTS_CHANGED }, () => callback.current()).subscribe();
+          cleanupChannel = () => void supabase.removeChannel(channel);
+        })
+        .catch(() => {
+          // realtime unavailable: polling keeps things fresh
+        });
     }
 
     return () => {
       window.clearInterval(poll);
       document.removeEventListener('visibilitychange', fire);
       window.removeEventListener('focus', fire);
+      cancelled = true;
       cleanupChannel();
     };
   }, [turfId, date, enabled]);

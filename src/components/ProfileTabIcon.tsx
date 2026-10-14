@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import dynamic from 'next/dynamic';
 import { clerkEnabled } from '@/lib/clerk';
 import { DEVICE_EVENT, getProfile } from '@/lib/client/device';
 import styles from './BottomNav.module.css';
@@ -12,13 +12,9 @@ const PLAIN = (
   </svg>
 );
 
-// Signed in with Clerk: the player's photo
-function ClerkIcon() {
-  const { isSignedIn, user } = useUser();
-  if (!isSignedIn) return PLAIN;
-  // eslint-disable-next-line @next/next/no-img-element -- Clerk serves the sized photo
-  return <img src={user.imageUrl} alt="" width={26} height={26} className={styles.avatar} />;
-}
+// Signed in with Clerk: the player's photo. Its own chunk, so builds and deployments without Clerk never ship the Clerk hooks.
+// The key is read inline so the bundler drops this branch (and the import) when Clerk is off.
+const ClerkIcon = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? dynamic(() => import('./ClerkProfileIcon')) : null;
 
 // Signed in on this device only: the first letter of the saved name
 function DeviceIcon() {
@@ -35,5 +31,5 @@ function DeviceIcon() {
 
 // Profile tab icon: plain person when signed out, the player's own picture once signed in
 export default function ProfileTabIcon() {
-  return clerkEnabled ? <ClerkIcon /> : <DeviceIcon />;
+  return clerkEnabled && ClerkIcon ? <ClerkIcon /> : <DeviceIcon />;
 }

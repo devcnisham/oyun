@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useClerk, useUser } from '@clerk/nextjs';
-import { clerkEnabled } from '@/lib/clerk';
 import { DEVICE_EVENT, getProfile } from './device';
 
 export interface Account {
@@ -26,24 +24,13 @@ function useDeviceAccount(): Account {
   return account;
 }
 
-function useClerkAccount(): Account {
-  const { isLoaded, isSignedIn, user } = useUser();
-  return {
-    ready: isLoaded,
-    signedIn: Boolean(isSignedIn),
-    name: user?.fullName ?? '',
-    phone: (user?.primaryPhoneNumber?.phoneNumber ?? '').replace(/\D/g, '').slice(-10),
-  };
-}
-
 // Who is signed in: the Clerk user when Clerk is set up, otherwise the account saved on this device.
-// clerkEnabled is fixed at build time, so the same hook runs on every render.
-export const useAccount: () => Account = clerkEnabled ? useClerkAccount : useDeviceAccount;
-
-function useClerkOpenSignIn() {
-  const clerk = useClerk();
-  return () => clerk.openSignIn({ forceRedirectUrl: window.location.href, signUpForceRedirectUrl: window.location.href });
-}
+// The Clerk key is fixed at build time, so the same hook runs on every render.
+// The key is read inline (always defined at build, see next.config.ts) so the bundler drops the Clerk hooks when it is empty.
+// Loaded with require so the whole Clerk module is dropped from the bundle when the key is empty.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const clerkHooks = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? (require('./use-account-clerk') as typeof import('./use-account-clerk')) : null;
+export const useAccount: () => Account = clerkHooks ? clerkHooks.useClerkAccount : useDeviceAccount;
 
 // Opens Clerk's sign-in modal (Clerk mode only)
-export const useOpenClerkSignIn: () => () => void = clerkEnabled ? useClerkOpenSignIn : () => () => {};
+export const useOpenClerkSignIn: () => () => void = clerkHooks ? clerkHooks.useClerkOpenSignIn : () => () => {};

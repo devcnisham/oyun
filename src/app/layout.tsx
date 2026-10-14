@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import ConsentManager from "@/components/consent/ConsentManager";
@@ -9,6 +10,17 @@ import AuthProvider from "@/components/AuthProvider";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+
+// Inter's Latin-Extended file is 85 KB and the only reason a page asks for it is the rupee sign (U+20B9).
+// This is that one glyph cut from the same Inter file (1 KB), listed ahead of Inter so the big file is never fetched.
+const rupee = localFont({
+  src: "./fonts/inter-rupee.woff2",
+  weight: "100 900",
+  variable: "--font-rupee",
+  display: "swap",
+  adjustFontFallback: false,
+  declarations: [{ prop: "unicode-range", value: "U+20B9" }],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -48,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-IN" className={inter.variable}>
+    <html lang="en-IN" className={`${rupee.variable} ${inter.variable}`}>
       <body>
         <AuthProvider>
         {children}

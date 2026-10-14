@@ -95,7 +95,7 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
         <Link href="/arenas" className={styles.seeAll}>See all {turfs.length} turfs</Link>
       </section>
 
-      <Link href="/list-turf" className={styles.ownerCta}>
+      <Link href="/list-turf" prefetch={false} className={styles.ownerCta}>
         <span>💼</span>
         <div>
           <b>Own a turf?</b>
