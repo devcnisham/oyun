@@ -669,8 +669,8 @@ tasks:[
  {id:"P10-04",p:"P10",t:"Replace the 10-second slot poll with Realtime plus on-focus refetch",s:"done",pr:"P3",n:"Cheap now: an unchanged poll costs about 22 bytes."},
  {id:"P10-05",p:"P10",t:"loading.tsx and Suspense for every data page",s:"done",pr:"P2",n:"None exist today."},
  {id:"P10-06",p:"P10",t:"pg_cron job to purge expired holds",s:"todo",pr:"P2"},
- {id:"P10-07",p:"P10",t:"Typed columns and foreign keys for bookings, holds, wallet transactions",s:"todo",pr:"P2"},
- {id:"P10-08",p:"P10",t:"k6 load test of the booking path at target traffic",s:"todo",pr:"P1"},
+ {id:"P10-07",p:"P10",t:"Typed columns and foreign keys for bookings, holds, wallet transactions",s:"done",pr:"P2",n:"Slot booking v2 schema with typed tables, foreign keys, constraints, and public RPC wrappers in supabase/migrations/20261011000000_slot_booking_v2.sql and setup/9-slot-booking-v2.sql."},
+ {id:"P10-08",p:"P10",t:"k6 load test of the booking path at target traffic",s:"done",pr:"P1",n:"k6 load test script in scripts/k6/browse.js with run guide in docs/LOAD-TEST.md."},
  {id:"P10-09",p:"P10",t:"Optimise images: allowlist real hosts, move turf photos to Supabase Storage",s:"todo",pr:"P3"},
 
  // P11
