@@ -24,7 +24,9 @@ try {
   const images = new Set();
   for (const path of PAGES) {
     const html = await fetch(`${base}${path}`, { headers: { 'user-agent': MOBILE_UA } }).then((r) => r.text()).catch(() => '');
+    // srcset candidates are separated by ", " and a URL itself has no space; pull every /_next/image URL out
     for (const m of html.matchAll(/\/_next\/image\?[^"'\s,]+/g)) images.add(m[0].replace(/&amp;/g, '&'));
+    if (!html) console.warn(`  warm-up: no HTML from ${base}${path}`);
   }
   const queue = [...images];
   await Promise.all(
