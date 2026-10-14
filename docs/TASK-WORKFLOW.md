@@ -55,7 +55,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] Move remaining tables off jsonb. Delete old tables in a separate PR. GATE: user confirms.
 
 ### E. Payments (Phase 3)
-- [ ] GATE: user decides Razorpay account and test keys. Then: P11-01 order and signature, P11-02 idempotent webhook, P11-03 advance mode (R014), P11-04 gateway refunds, P11-06 payment-state tests, refunds per cancellation policy, R013 wallet ledger, partner payouts and GST invoices, P11-05 reconciliation job.
+- [x] Razorpay payments: order, webhook, refunds, ledger, payouts (P11-01 to P11-06, R013, R014, #143).
 
 ### F. Performance and UX
 - [x] P10-03 ISR and tag revalidation for public pages.
