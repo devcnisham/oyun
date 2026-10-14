@@ -28,7 +28,33 @@ export interface Turf {
   // Pitch can be split down the middle into two halves (A and B) that are booked separately
   halfPitch?: boolean;
   halfPricePercent?: number; // price of one half as a % of the full pitch; default 50
+  // Relational multi-court and bookables mapping (Database v2)
+  resources?: VenueResource[];
+  bookables?: Bookable[];
   createdAt: string;
+}
+
+// Physical unit that can only be used by one booking at a time: "Pitch half A", "Court 1", etc.
+export interface VenueResource {
+  id: string;
+  venueId: string;
+  name: string;
+  sort: number;
+  active: boolean;
+}
+
+// What a player picks: "7-a-side Full Pitch", "Badminton Court 2", etc.
+export interface Bookable {
+  id: string;
+  venueId: string;
+  sport: string; // 'football', 'box_cricket', 'badminton', 'pickleball'
+  name: string;
+  slotMinutes: number; // 15, 30, 45, 60, 90, 120
+  maxSlots: number;
+  basePrice: number; // in rupees
+  active: boolean;
+  sort: number;
+  resourceIds: string[]; // which physical resources this bookable occupies
 }
 
 // A turf as the public site and its client components may see it: no owner account link, no commission

@@ -42,8 +42,8 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] P9-01 Rotate the old Supabase secret key. GATE: user only.
 
 ### D. Database v2 (Phase 2, follow `docs/SLOT-BOOKING-DB.md`)
-- [ ] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers; keep `test:sql` green in CI.
-- [ ] Data mapping: turf to venue, resources, bookables; partner screens for courts.
+- [x] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers (PR #220, #133).
+- [x] Data mapping: turf to venue, resources, bookables; partner screens for courts (#134).
 - [ ] R007 Multi-court venues in the booking flow.
 - [ ] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
 - [ ] Switch slots over to the v2 functions, keep the realtime broadcast.

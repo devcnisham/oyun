@@ -61,6 +61,10 @@ const EXPECTED: Record<string, string | null> = {
   deleteStaff: 'staff',
   updateTurfProfile: 'turf',
   updateBusiness: 'payouts',
+  addCourtResource: 'turf',
+  deleteCourtResource: 'turf',
+  addBookableOffering: 'turf',
+  deleteBookableOffering: 'turf',
 };
 
 describe('partner actions', () => {
