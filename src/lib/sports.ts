@@ -7,6 +7,10 @@ export const SPORTS = [
   { value: 'Pickleball', label: 'Pickleball', icon: '🏓', place: 'court', image: 'https://images.unsplash.com/photo-1693142517898-2f986215e412?q=80&w=600&auto=format&fit=crop' },
 ] as const;
 
+// URL slug for a sport, e.g. "Box Cricket" -> "box-cricket" (used by /sports/[sport])
+export const sportSlug = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export const sportFromSlug = (slug: string) => SPORTS.find((s) => sportSlug(s.value) === slug) ?? null;
+
 export const sportHref = (value: string) => `/arenas?sport=${encodeURIComponent(value)}`;
 
 // Every sport on the site in one phrase, for titles and descriptions: "football, box cricket, badminton and pickleball"

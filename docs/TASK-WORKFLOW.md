@@ -75,7 +75,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] Privacy (DPDP): export and delete my data, retention purge, notice matches reality.
 - [x] `docs/SECURITY.md` written (PR docs).
 - [ ] Backup restore runbook (needs the Supabase plan and a tested restore).
-- [ ] SEO landing pages per city, area, sport; structured data.
+- [x] SEO landing pages per city (`/arenas`), area (`/turfs/[area]`), sport (`/sports/[sport]`); structured data.
 - [ ] Monitoring dashboard (double bookings must be 0), runbooks. GATE: uptime service choice.
 
 ## Rules the loop never breaks
