@@ -19,6 +19,8 @@ import { formatHour, isValidDate, istNow } from './time';
 import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from './types';
 import { checkInWindow } from './checkin-window';
 import { mapTurfToResourcesAndBookables } from './venue-mapping';
+import { withDate, withoutDate } from './rain';
+import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
@@ -211,6 +213,29 @@ export async function unblockSlot(_prev: ActionResult, fd: FormData): Promise<Ac
       db.blocks = db.blocks.filter((b) => !(b.id === id && b.turfId === ctx.turf.id));
       if (db.blocks.length === before) throw new ValidationError('Block not found');
       return { ok: 'Slot reopened' };
+    });
+  });
+}
+
+/* ---------- rain policy ---------- */
+
+// The owner or desk marks their own outdoor turf as rained out for a date (or clears it). While it is on, players
+// with a booking that day can cancel without the 2 hour cutoff and get a full wallet refund. Only ever the turf
+// of the signed-in context: there is no turf id in the form.
+export async function setRainOut(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('slots');
+    const date = required(fd, 'date', 'Date', 10);
+    if (!isValidDate(date)) throw new ValidationError('Pick a valid date');
+    const clear = str(fd, 'mode') === 'clear';
+    const today = istNow().date;
+    if (!clear && date < today) throw new ValidationError('That date has already passed');
+    if (!clear && !isOutdoorTurf(ctx.turf)) throw new ValidationError('Rain policy only applies to outdoor turfs');
+    return await mutate((db) => {
+      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
+      if (!turf) throw new ValidationError('Turf not found');
+      turf.rainOutDates = clear ? withoutDate(turf.rainOutDates, date) : withDate(turf.rainOutDates, date, today);
+      return { ok: clear ? `Rain cleared for ${date}` : `Marked as rained out on ${date}. Players can cancel for a full wallet refund.` };
     });
   });
 }

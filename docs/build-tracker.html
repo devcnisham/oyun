@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #226 (main at 6a36f88, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #236 (main at c5b1d48, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -675,7 +675,7 @@ tasks:[
 
  // P11
  {id:"P11-01",p:"P11",t:"Razorpay order creation and server-side signature verification",s:"todo",pr:"P0"},
- {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"done",pr:"P0"},
+ {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"doing",pr:"P0",n:"Signature check, duplicate-event handling and the race-lost refund exist (PR #222), but processed events live in memory (processedEvents in src/lib/payments.ts): replay protection resets on a restart and is not shared across serverless instances. Needs a durable store before this is done."},
  {id:"P11-03",p:"P11",t:"Advance payment mode (advancePercent already computed)",s:"todo",pr:"P1"},
  {id:"P11-04",p:"P11",t:"Gateway refunds tied to the cancel and refund flows",s:"todo",pr:"P1"},
  {id:"P11-05",p:"P11",t:"Payout and commission reconciliation against gateway settlements",s:"done",pr:"P1",n:"reconcilePayoutSettlements in src/lib/payouts.ts matching online bookings against gateway settlement transaction reports and detecting discrepancies."},
@@ -1175,7 +1175,7 @@ featureGroups:[
   ["Save and share","built","Heart toggle; Web Share with copy-link fallback","ShareButton.tsx"],
   ["Search data for Google","built","Title, canonical, SportsActivityLocation with rating, breadcrumbs","lib/schema.ts"],
   ["Deep links","built","?date= sets the date, ?ref= fills the referral code","page.tsx"],
-  ["Monsoon rain notice","built","Open-air turfs (no covered or indoor amenity) show a rain protection notice promising a 100% wallet refund in heavy rain. Nothing applies that promise yet: no caller passes the rain flag that skips the 2-hour cancel cutoff (PR #217)","arenas/[id]/TurfDetail.tsx, lib/weather.ts, lib/cancel-policy.ts"]
+  ["Monsoon rain notice","built","Open-air turfs (no covered or indoor amenity) show a rain protection notice promising a 100% wallet refund in heavy rain. The promise applies when the owner marks the date rained out or the admin declares a rain day; the server then skips the 2-hour cancel cutoff (PR #217, P13-15)","arenas/[id]/TurfDetail.tsx, lib/weather.ts, lib/cancel-policy.ts"]
  ]},
  {g:"Slots, holds and live updates",a:"Player",subs:[
   ["Booking window","built","Today plus 6 days: 7 date chips; the server refuses later dates (PR #58)","lib/time.ts (BOOKING_DAYS), booking-actions.ts"],
@@ -1245,6 +1245,7 @@ featureGroups:[
   ["My bookings list","built","Upcoming and past tabs; built from this device's ids plus the Clerk account","bookings/MyBookings.tsx"],
   ["Rate your game badge and balance due","built","Shown on each booking","MyBookings.tsx"],
   ["Self-cancel","built","Confirmed online bookings, up to 2 hours before; the same account must cancel an account booking; slot reopens live","lib/cancel-policy.ts"],
+  ["Rain cancel and refund","built","On an outdoor turf on a rained-out date (owner mark or admin rain day), the 2 hour cutoff is lifted for cancel and reschedule and everything paid goes to the wallet. The server decides from the stored turf and date, not from the client. Cancel reason is rain (P13-15, pushed to main as c5b1d48)","lib/rain.ts, lib/booking-actions.ts"],
   ["Partner and admin cancel","built","Partner any time; admin refund with confirmation","partner-actions.ts, admin-actions.ts"],
   ["Summary cap","built","100 booking ids per request","booking-actions.ts"]
  ]},
@@ -1327,7 +1328,9 @@ featureGroups:[
   ["Offers","built","Create, pause, delete; happy hour or first-time; name up to 40","partner/offers"],
   ["Add-ons","built","Name up to 60, price 0 to 10,000, edit, hide, delete; sold only through walk-ins","partner/add-ons"],
   ["Calendar view","built","Week view, Monday to Sunday, every opening hour for seven days; cells show past, free, booked, blocked or held; split pitches show both halves. PR #117.","partner/calendar"],
-  ["Calendar day view","built","Day view across all physical courts and pitch halves with booking details, multi-court grid columns (PR #237, P7-45, R007).","partner/calendar"]
+  ["Calendar day view","built","Day view across all physical courts and pitch halves with booking details, multi-court grid columns (PR #240, P7-45, R007).","partner/calendar"],
+  ["Courts and pitches","built","Lists the physical courts (resources) and bookable offerings (full pitch, each half) derived from the turf. Add or delete a court or an offering; saved on the turf. Bookings still run on the turf, not on these courts (PR #236)","partner/courts/page.tsx, lib/venue-mapping.ts, lib/partner-actions.ts"],
+  ["Rain marking for outdoor turfs","built","Owner marks an outdoor turf as rained out for a date, or clears it. Past dates are refused and indoor turfs are refused (setRainOut, needs the slots permission). Players can then cancel for a full wallet refund (P13-15)","partner/turf/page.tsx, lib/partner-actions.ts"]
  ]},
  {g:"Owner: staff, payouts and profile",a:"Owner",subs:[
   ["Staff accounts","built","Manager or front desk, temporary password shown once, reset, delete; email unique across partners and staff","partner/staff"],
@@ -1361,7 +1364,9 @@ featureGroups:[
   ["Settings","built","Commission, advance %, minimum and maximum advance, GST, support email and phone, cashback, referral","admin/settings"],
   ["Promo codes","built","Create, edit, pause, delete; code 3 to 20 letters or digits","admin/settings"],
   ["Homepage content","built","Hero headline, announcement bar, promo cards (first is the popup)","admin/customization"],
-  ["Audit log, analytics, export, dispute queue, bulk actions","planned","Not built","–"]
+  ["Analytics dashboard","built","/admin/analytics: area performance, peak hour histogram, sport distribution and conversion funnel (PR #232)","admin/analytics/page.tsx, lib/analytics.ts"],
+  ["Rain day","built","Admin declares or clears a city-wide rain day from Settings. Outdoor turfs on that date qualify for the rain cancel and refund rule (setRainDay, P13-15)","admin/settings, lib/admin-actions.ts"],
+  ["Audit log, export, dispute queue, bulk actions","planned","Not built","–"]
  ]},
  {g:"Sign-in, sessions and roles",a:"Platform",subs:[
   ["Session cookie","built","Signed, httpOnly, secure in production, 8 hours","lib/session.ts"],
@@ -1381,6 +1386,11 @@ featureGroups:[
   ["Backups and restore","planned","Depends on the Supabase plan; none in the repo","–"],
   ["Custom 404 and error pages","built","Yes","not-found.tsx, global-error.tsx"],
   ["Double-booking monitor and paging","built","Live endpoint for double bookings; alert thresholds in src/lib/alerts.ts; on-call paging through PagerDuty, OpsGenie or a webhook (PR #224)","api/monitoring/double-bookings, lib/alerts.ts"]
+ ]},
+ {g:"Community: find players and tournaments",a:"Player",subs:[
+  ["Find players (open matches)","built","/matches: a player hosts a local game (sport, date, hour, players needed) or joins one. Host name and phone are required (PR #232)","(main)/matches, lib/community.ts"],
+  ["Tournaments directory and team registration","built","/tournaments lists tournaments with capacity and prize pool. A captain registers a team; full tournaments take no more teams (PR #232)","(main)/tournaments, lib/tournaments.ts"],
+  ["Tournament fixtures and brackets","planned","No fixtures or match schedule yet (NEXT-04)","–"]
  ]}
 ],
 
@@ -1853,7 +1863,7 @@ D2.lists = [
  {id:"NEXT",st:"grow",name:"Next features",goal:"What to build after the core is solid.",items:[
   ["NEXT-01","Owner analytics: occupancy, revenue, peak hours","P2",0],
   ["NEXT-02","Real map with distance from the player","P2",0],
-  ["NEXT-03","Find players to complete a team","P3",0],
+  ["NEXT-03","Find players to complete a team","P3",1,"Open matches with a players-needed count, host and join (PR #232)."],
   ["NEXT-04","Tournaments and leagues with fixtures","P3",0],
   ["NEXT-05","Prepaid packs and memberships (for example 10 hours)","P3",0],
   ["NEXT-06","Split the payment among team members","P3",1,"Per-player calculation with ceiling rounding, customizable player count, UPI deep-links, and one-tap WhatsApp share."],
@@ -2190,6 +2200,9 @@ DATA.tasks.push(
  {id:"P7-46",p:"P7",t:"Launching soon page: /welcome shows a live countdown to 17 Oct 2026 (IST), with a new /about page and a shared header",s:"done",pr:"P2",n:"Commit 6a36f88 (no PR number, pushed to main). Old /welcome marketing sections removed on purpose. The header hides on scroll down and shows on scroll up; the bottom tab bar is hidden on both pages."},
  {id:"P7-47",p:"P7",t:"Service worker: caches the start files, shows push messages and handles notification clicks",s:"done",pr:"P2",n:"Registered in production only (public/sw.js). No code yet saves push subscriptions or sends pushes, so P12-05 stays open. PR #212."},
  {id:"P8-66",p:"P8",t:"Lighthouse fixes for home, arenas and turf pages, with per-category thresholds",s:"done",pr:"P2",n:"PR #206. P8-64 stays open until the scores reach 90."},
+ {id:"P9-28",p:"P9",t:"Security hardening: session expiry check, login timing, error-webhook mentions, HTTPS redirect host, hold-release Origin",s:"done",pr:"P1",n:"PR #187. A session token with a non-numeric expiry is refused (it used to pass because NaN is never less than now). An unknown partner email burns a dummy scrypt check so timing does not reveal accounts. Error-webhook text from the unauthenticated client-error endpoint has mentions neutralised. The HTTPS redirect only follows hostname-shaped hosts. A malformed or null Origin on hold release returns 403 instead of throwing. Tests in src/lib/session.test.ts and monitoring.test.ts."},
+ {id:"P8-67",p:"P8",t:"Brief plan with workflow diagrams and tickets; 10 gap tasks added to the tracker",s:"done",pr:"P2",n:"PR #188. docs/BRIEF-PLAN.md and a refreshed docs/jira-import.csv."},
+ {id:"P8-68",p:"P8",t:"Read-only check of which database setup steps are applied (supabase/setup/check-applied.sql)",s:"done",pr:"P2",n:"PR #189. Select only: one yes or no row per setup file 1 to 8, so a production database can be checked before running the missing steps. Checked against an empty database, steps 1 to 5, and all 8."},
  {id:"P9-25",p:"P9",t:"Admin can ban the author of an abusive review and hide the review",s:"done",pr:"P1",n:"Sets the author's player status to banned and hides the review, then recalculates the turf rating. PR #210."},
  {id:"P9-26",p:"P9",t:"Partner and staff sign-in take the same time whether or not the account is active",s:"done",pr:"P2",n:"The password check always runs, so an inactive account does not answer faster. The dummy hash is made on first use, not at start-up. PR #206."},
  {id:"P9-27",p:"P9",t:"Cron routes only check CRON_SECRET when it is set; make the check fail closed",s:"done",pr:"P0",n:"Both routes use requireCronSecret() (src/lib/cron-auth.ts): no secret gives 503, wrong token 401. Still to do by the owner: set CRON_SECRET on production (P11-10). Commit 348404b."},
@@ -2199,7 +2212,9 @@ DATA.tasks.push(
  {id:"P13-12",p:"P13",t:"Reschedule a confirmed booking to another slot",s:"done",pr:"P2",n:"Same 2 hour cutoff and checks as cancel: operating hours, slot free, policy. PR #219."},
  {id:"P13-13",p:"P13",t:"Book again from a past booking",s:"done",pr:"P3",n:"A Book again button on each booking card opens the turf page; it does not book in one tap yet. PR #211."},
  {id:"P13-14",p:"P13",t:"Monsoon rain notice on open-air turfs",s:"done",pr:"P3",n:"Turfs with no covered or indoor amenity show the rain protection notice. PR #217."},
- {id:"P13-15",p:"P13",t:"Wire the rain policy into cancel and refund: no cutoff and a 100% wallet refund in heavy rain",s:"todo",pr:"P1",n:"The notice promises it, but no caller passes the rain flag of canSelfCancel (src/lib/cancel-policy.ts), and no automatic rain refund was found in PR #217."},
+ {id:"P13-15",p:"P13",t:"Wire the rain policy into cancel and refund: no cutoff and a 100% wallet refund in heavy rain",s:"done",pr:"P1",n:"Partner marks an outdoor turf rained out (setRainOut), admin declares a city-wide rain day (setRainDay). isRainDisruption() in src/lib/rain.ts is checked on the booking page and again in cancelMyBooking and rescheduleBooking, so the 2 hour cutoff is lifted only when the server finds rain. Cancel reason is rain and everything paid goes to the wallet. No PR number: pushed to main as c5b1d48."},
+ {id:"P10-19",p:"P10",t:"Map turfs to venues, resources and bookables (relational model), with a partner courts screen",s:"done",pr:"P2",n:"PR #236 (the commit title also cites #134). supabase/setup/10-map-turfs-to-venues.sql and src/lib/venue-mapping.ts; courts screen at /partner/courts."},
+ {id:"P10-20",p:"P10",t:"Run supabase/setup/10-map-turfs-to-venues.sql on production",s:"todo",pr:"P1",n:"Maps turfs to venues, resources and bookables (PR #236). The repo does not show whether production has it; check the database first."},
 );
 
 /* ===================== BOOT ===================== */

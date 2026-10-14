@@ -13,7 +13,7 @@ import { homeStats } from '@/lib/home-stats';
 import { getDb } from '@/lib/store';
 import HeroSearchBar from './HeroSearchBar';
 import { SPORTS, sportHref } from '@/lib/sports';
-import PopupAd from '@/components/PopupAd';
+import PopupAd from '@/components/PopupAdLazy';
 import MobileHome from './_home/MobileHome';
 import styles from './page.module.css';
 

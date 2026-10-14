@@ -115,7 +115,8 @@
 .slash {
   padding: 0 1.5rem;
   font-style: normal;
-  color: rgba(255, 255, 255, 0.55);
+  /* On the red ticker: 55% white measured under 4.5:1, so the separator is solid white */
+  color: #fff;
 }
 
 .foot {

@@ -31,6 +31,7 @@ export interface Turf {
   // Relational multi-court and bookables mapping (Database v2)
   resources?: VenueResource[];
   bookables?: Bookable[];
+  rainOutDates?: string[]; // YYYY-MM-DD dates the owner marked as rained out (outdoor turfs only); missing means none
   createdAt: string;
 }
 
@@ -251,6 +252,7 @@ export interface Booking {
   accountId?: string | null; // signed-in player account (Clerk user id) that made the booking
   review?: BookingReview | null; // the player's rating after playing
   cancelledAt?: string | null;
+  cancelReason?: string | null; // 'rain' when cancelled under the rain policy
   rescheduledAt?: string | null;
   originalSlot?: { date: string; hour: number } | null;
   recurringGroupId?: string | null;
@@ -282,6 +284,7 @@ export interface PromoCode {
 }
 
 export interface PlatformSettings {
+  rainDays?: string[]; // city-wide rain days declared by the admin, YYYY-MM-DD; missing means none
   commissionPercent: number;
   advancePercent: number;
   // The advance for each hour booked stays between these rupee amounts (and never above that hour's price)

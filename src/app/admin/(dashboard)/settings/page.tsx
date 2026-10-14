@@ -1,6 +1,6 @@
 import ActionForm from '@/components/dash/ActionForm';
 import { Badge, PageHeader, dash, tableScroll } from '@/components/dash/ui';
-import { deletePromoCode, savePromoCode, saveSettings, togglePromoCode } from '@/lib/admin-actions';
+import { deletePromoCode, savePromoCode, saveSettings, setRainDay, togglePromoCode } from '@/lib/admin-actions';
 import { getDb } from '@/lib/store';
 
 export default async function AdminSettings() {
@@ -76,6 +76,33 @@ export default async function AdminSettings() {
             <p className={dash.muted}>Commission applies to online payments; individual turfs can override it on their edit page. Cashback and referral credit are paid by OYUN, not the turf.</p>
             <div className={dash.actions}><button className={dash.btn}>Save settings</button></div>
           </ActionForm>
+        </div>
+
+        <div className={dash.card}>
+          <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Rain days</h2></div>
+          <p className={dash.muted}>On a rain day, players with a booking at any outdoor turf can cancel up to the start of the slot and get a full wallet refund. Indoor and covered turfs are not affected.</p>
+          <ActionForm action={setRainDay} resetOnSuccess>
+            <input type="hidden" name="mode" value="set" />
+            <label className={dash.field}>
+              <span className={dash.label}>Date</span>
+              <input name="date" type="date" required className={dash.input} />
+            </label>
+            <div className={dash.actions}><button className={dash.btn}>Declare rain day</button></div>
+          </ActionForm>
+          {(s.rainDays ?? []).length > 0 && (
+            <ul>
+              {(s.rainDays ?? []).map((d) => (
+                <li key={d}>
+                  <ActionForm action={setRainDay} inline>
+                    <input type="hidden" name="mode" value="clear" />
+                    <input type="hidden" name="date" value={d} />
+                    <span className={dash.strong}>{d}</span>{' '}
+                    <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Clear</button>
+                  </ActionForm>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className={dash.card}>

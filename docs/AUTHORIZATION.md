@@ -48,7 +48,7 @@ Each calls `requirePartnerAction(permission)` before touching data, and scopes e
 | any partner or staff | `switchTurf` (only to the caller's own turfs) |
 | bookings | `createWalkIn`, `cancelBooking`, `getWalkInSlots` |
 | checkin | `checkInBooking` (cash confirmation when a balance is due), `markNoShow` |
-| slots | `blockSlot`, `unblockSlot` |
+| slots | `blockSlot`, `unblockSlot`, `setRainOut` (only the signed-in context turf; no turf id is read from the form) |
 | pricing | `savePricing` |
 | offers | `createOffer`, `toggleOffer`, `deleteOffer` |
 | addons | `saveAddOn`, `toggleAddOn`, `deleteAddOn` |
@@ -58,7 +58,7 @@ Each calls `requirePartnerAction(permission)` before touching data, and scopes e
 
 ## Admin actions (`src/lib/admin-actions.ts`)
 
-Every exported action calls `requireAdmin()` before touching data: approve and reject applications, update turfs and partners, suspend and reset partners, ban players, adjust wallets, refund bookings, save settings, promo codes, site content, promo cards and sponsor ads.
+Every exported action calls `requireAdmin()` before touching data: approve and reject applications, update turfs and partners, suspend and reset partners, ban players, adjust wallets, refund bookings, save settings, declare or clear a city-wide rain day (`setRainDay`), promo codes, site content, promo cards and sponsor ads.
 
 ## API and file routes
 
@@ -67,6 +67,8 @@ Every exported action calls `requireAdmin()` before touching data: approve and r
 | `GET /api/health` | None; returns yes/no flags only, never keys or data |
 | `POST /api/client-error` | Shared rate limit 20/IP/min; 5 KB body cap; no cookies or headers logged |
 | `POST /api/holds/release` | Same-origin check; releases only the caller's device holds |
+| `GET /api/privacy/export` | Signed-in Clerk account only (401 otherwise); data is found by that account id, never by a phone in the request; 10/account/min |
+| `POST /api/privacy/delete` | Same-origin check plus signed-in Clerk account only (401 otherwise); erases only that account's records; 5/account/min |
 | `GET /bookings/[id]/calendar` | Unguessable booking id (capability link); no phone number |
 | `GET /partner/payouts/export` | Partner session with the `payouts` permission |
 | `POST /api/webhooks/razorpay` | HMAC SHA256 signature verification, shared rate limit 120/IP/min |
