@@ -10,6 +10,8 @@ import type { ActionResult, Database, TurfStatus } from './types';
 import { MAX_SPONSOR_ADS, isAllowedAdLink, isAllowedImage } from './validation/site-content';
 import { createPlayer, refundDue, walletTxn } from './wallet';
 import { recomputeTurfRating } from './reviews';
+import { withDate, withoutDate } from './rain';
+import { isValidDate, istNow } from './time';
 
 async function requireAdmin() {
   if (!(await hasSession('admin'))) throw new AccessError('Your admin session has expired. Please log in again.');
@@ -346,9 +348,26 @@ export async function saveSettings(_prev: ActionResult, fd: FormData): Promise<A
       refereeReward: int(fd, 'refereeReward', { min: 0, max: 5000, label: 'New player reward' }),
     };
     await mutate((db) => {
-      db.settings = settings;
+      // Keep fields this form does not edit (like declared rain days)
+      db.settings = { ...db.settings, ...settings };
     });
     return { ok: 'Platform settings saved' };
+  });
+}
+
+// City-wide rain day: every outdoor turf is treated as rained out on that date (see isRainDisruption)
+export async function setRainDay(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    await requireAdmin();
+    const date = required(fd, 'date', 'Date', 10);
+    if (!isValidDate(date)) throw new ValidationError('Pick a valid date');
+    const clear = str(fd, 'mode') === 'clear';
+    const today = istNow().date;
+    if (!clear && date < today) throw new ValidationError('That date has already passed');
+    await mutate((db) => {
+      db.settings.rainDays = clear ? withoutDate(db.settings.rainDays, date) : withDate(db.settings.rainDays, date, today);
+    });
+    return { ok: clear ? `Rain day cleared for ${date}` : `Rain day declared for ${date}. Players at outdoor turfs can cancel for a full wallet refund.` };
   });
 }
 

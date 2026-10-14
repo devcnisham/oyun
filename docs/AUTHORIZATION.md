@@ -48,7 +48,7 @@ Each calls `requirePartnerAction(permission)` before touching data, and scopes e
 | any partner or staff | `switchTurf` (only to the caller's own turfs) |
 | bookings | `createWalkIn`, `cancelBooking`, `getWalkInSlots` |
 | checkin | `checkInBooking` (cash confirmation when a balance is due), `markNoShow` |
-| slots | `blockSlot`, `unblockSlot` |
+| slots | `blockSlot`, `unblockSlot`, `setRainOut` (only the signed-in context turf; no turf id is read from the form) |
 | pricing | `savePricing` |
 | offers | `createOffer`, `toggleOffer`, `deleteOffer` |
 | addons | `saveAddOn`, `toggleAddOn`, `deleteAddOn` |
@@ -58,7 +58,7 @@ Each calls `requirePartnerAction(permission)` before touching data, and scopes e
 
 ## Admin actions (`src/lib/admin-actions.ts`)
 
-Every exported action calls `requireAdmin()` before touching data: approve and reject applications, update turfs and partners, suspend and reset partners, ban players, adjust wallets, refund bookings, save settings, promo codes, site content, promo cards and sponsor ads.
+Every exported action calls `requireAdmin()` before touching data: approve and reject applications, update turfs and partners, suspend and reset partners, ban players, adjust wallets, refund bookings, save settings, declare or clear a city-wide rain day (`setRainDay`), promo codes, site content, promo cards and sponsor ads.
 
 ## API and file routes
 

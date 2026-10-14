@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 import { headers } from 'next/headers';
 import { auth } from '@clerk/nextjs/server';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from './cancel-policy';
+import { isRainDisruption } from './rain';
 import { REVIEW_MAX_LENGTH, publicName, recomputeTurfRating } from './reviews';
 import { clerkEnabled } from './clerk';
 import { ValidationError, refreshAll } from './action-utils';
@@ -211,15 +212,20 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
       if (!booking) throw new ValidationError('Booking not found');
       proveBookingOwner(booking, accountId, phone, 'cancel');
       if (booking.status !== 'confirmed') throw new ValidationError('This booking can no longer be cancelled');
-      if (!canSelfCancel(booking)) {
+      // Rain is decided here from the stored turf and date, never from anything the client sends
+      const rain = isRainDisruption(db.turfs.find((t) => t.id === booking.turfId), booking.date, db);
+      if (!canSelfCancel(booking, rain)) {
         throw new ValidationError(`Bookings can be cancelled up to ${CANCEL_CUTOFF_HOURS} hours before the slot. Please call the turf.`);
       }
       booking.cancelledAt = new Date().toISOString();
-      // The advance and anything paid from the wallet go back to the wallet
+      if (rain) booking.cancelReason = 'rain';
+      // Everything actually paid (wallet credit used, plus anything paid online) goes back to the wallet, in full.
+      // refundDue already counts all of it, so the rain case is the same amount, just allowed past the cutoff.
       const refund = refundDue(booking);
       if (refund > 0 && booking.playerId) {
         const player = db.players.find((pl) => pl.id === booking.playerId);
-        if (player) walletTxn(db, player, refund, 'refund', `Booking ${booking.code} cancelled`, booking.id);
+        const note = rain ? `Booking ${booking.code} cancelled: rain policy, full refund` : `Booking ${booking.code} cancelled`;
+        if (player) walletTxn(db, player, refund, 'refund', note, booking.id);
         booking.status = 'refunded';
       } else {
         booking.status = 'cancelled';
@@ -268,7 +274,8 @@ export async function rescheduleBooking(
       if (booking.status !== 'confirmed') {
         throw new ValidationError('Only confirmed bookings can be rescheduled');
       }
-      if (!canSelfCancel(booking)) {
+      const rain = isRainDisruption(db.turfs.find((t) => t.id === booking.turfId), booking.date, db);
+      if (!canSelfCancel(booking, rain)) {
         throw new ValidationError(`Bookings can be rescheduled up to ${CANCEL_CUTOFF_HOURS} hours before the slot. Please call the turf.`);
       }
 
