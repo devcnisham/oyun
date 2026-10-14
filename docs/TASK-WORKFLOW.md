@@ -76,7 +76,8 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] Lighthouse 90: CI job and `npm run test:lighthouse` added; job is report-only (`continue-on-error`). First CI run: performance home 45, arenas 84, turf 66; other categories 96 to 100. Stays open until every score is 90 or more and the job is made blocking.
 - [ ] Privacy (DPDP): export and delete my data, retention purge, notice matches reality.
 - [x] `docs/SECURITY.md` written (PR docs).
-- [ ] Backup restore runbook (needs the Supabase plan and a tested restore).
+- [x] Backup restore runbook (`docs/RUNBOOKS.md` section 6).
+- [x] P8-62 Runbooks: payout failed, refund failed, webhook down, double booking found (`docs/RUNBOOKS.md`).
 - [x] SEO landing pages per city (`/arenas`), area (`/turfs/[area]`), sport (`/sports/[sport]`); structured data.
 - [ ] Monitoring dashboard (double bookings must be 0), runbooks. GATE: uptime service choice.
 
