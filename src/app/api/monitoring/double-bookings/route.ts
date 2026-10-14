@@ -29,7 +29,7 @@ export async function GET(req: Request) {
       {
         status: 'critical_alert',
         doubleBookings: result.count,
-        conflicts: result.conflicts,
+        // Booking ids and codes stay in the on-call page above: this route is public and an id opens a ticket
       },
       { status: 500 }
     );
