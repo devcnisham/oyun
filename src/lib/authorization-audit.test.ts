@@ -84,6 +84,8 @@ describe('API and file routes', () => {
     'src/app/api/cron/retention-purge/route.ts': ['runRetentionPurge(', 'authHeader !== `Bearer ${cronSecret}`'],
     'src/app/api/webhooks/razorpay/route.ts': ['verifyRazorpaySignature(', 'sharedRateLimit('],
     'src/app/api/monitoring/double-bookings/route.ts': ['sharedRateLimit(', 'detectDoubleBookings('],
+    'src/app/api/partner/payouts/[id]/statement/route.ts': ["!ctx || !ctx.can('payouts')", 'payout.partnerId !== ctx.partner.id'],
+    'src/app/api/cron/payouts/settle/route.ts': ['createSettlementBatch(', 'authHeader !== `Bearer ${cronSecret}`'],
   };
 
   test('every route file is classified, and nothing listed has gone missing', () => {
