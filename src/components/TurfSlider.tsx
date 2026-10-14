@@ -48,9 +48,9 @@ export default function TurfSlider({ title, turfs, viewAllLink }: TurfSliderProp
       </div>
       <div className={styles.sliderWrapper}>
         <div className={styles.slider} ref={scrollRef}>
-          {turfs.map((turf) => (
+          {turfs.map((turf, i) => (
             <div key={turf.id} className={styles.slide}>
-              <TurfCard turf={turf} />
+              <TurfCard turf={turf} eager={i < 2} />
             </div>
           ))}
         </div>

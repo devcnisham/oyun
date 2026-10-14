@@ -36,6 +36,8 @@ try {
     console.log(`  LCP ${metric('largest-contentful-paint')} FCP ${metric('first-contentful-paint')} TBT ${metric('total-blocking-time')} CLS ${metric('cumulative-layout-shift')} SI ${metric('speed-index')}`);
     const lcpEl = audits['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet;
     if (lcpEl) console.log(`  LCP element: ${lcpEl.slice(0, 160)}`);
+    const boot = audits['bootup-time']?.details?.items ?? [];
+    for (const b of boot.slice(0, 5)) console.log(`  script ${Math.round(b.total)} ms (scripting ${Math.round(b.scripting)} ms): ${String(b.url).slice(0, 100)}`);
     for (const ref of categories.performance?.auditRefs ?? []) {
       const a = audits[ref.id];
       if (!a || a.score === null || a.score >= 0.9 || ref.group === 'metrics') continue;

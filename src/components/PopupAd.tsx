@@ -54,7 +54,7 @@ export default function PopupAd({ promos }: { promos: PromoCard[] }) {
           </svg>
         </button>
         <div className={styles.imageContainer}>
-          <Image src={promo.image} alt={promo.title} fill sizes="(max-width: 600px) 100vw, 460px" className={styles.image} unoptimized={!canOptimize(promo.image)} />
+          <Image src={promo.image} alt={promo.title} fill sizes="(max-width: 600px) 100vw, 460px" className={styles.image} loading="eager" fetchPriority="high" unoptimized={!canOptimize(promo.image)} />
           <span className={styles.tag}>Offer</span>
         </div>
         <div className={styles.content}>
