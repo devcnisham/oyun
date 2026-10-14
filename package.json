@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:sql": "bash scripts/sql-tests.sh",
+    "test:lighthouse": "node scripts/lighthouse-check.mjs",
     "prepare": "node scripts/install-hooks.mjs"
   },
   "dependencies": {
