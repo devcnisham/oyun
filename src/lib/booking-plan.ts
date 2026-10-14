@@ -19,7 +19,7 @@ export function bookableTurf(db: Database, turfId: string) {
  * The quote runs this on a throwaway copy, so the price shown is exactly what booking charges.
  * Add-ons are attached to the first hour only.
  */
-export function planBooking(db: Database, req: BookingRequest, holder: string | null, strict: boolean) {
+export function planBooking(db: Database, req: BookingRequest, holder: string | null, strict: boolean, accountId: string | null = null) {
   const turf = bookableTurf(db, req.turfId);
   if (!turf) throw new ValidationError('This turf is not taking bookings right now');
   const hours = cleanHours(req.hours);
@@ -28,14 +28,34 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
   const name = req.name.trim().slice(0, 80) || 'Player';
   const now = istNow();
 
-  let player = phone.length === 10 ? db.players.find((p) => p.phone === phone) : undefined;
+  // Lookup player by Clerk accountId first (P9-03), falling back to phone
+  let player = accountId
+    ? db.players.find((p) => p.accountId === accountId)
+    : undefined;
+
+  if (!player && phone.length === 10) {
+    const existing = db.players.find((p) => p.phone === phone);
+    if (existing) {
+      if (accountId && existing.accountId && existing.accountId !== accountId) {
+        throw new ValidationError('This mobile number belongs to another registered account.');
+      }
+      if (accountId && !existing.accountId) {
+        existing.accountId = accountId;
+      }
+      player = existing;
+    }
+  }
+
   if (player?.status === 'banned') throw new ValidationError('This number cannot make bookings. Contact support.');
-  const walletBalance = player && player.status === 'active' ? player.walletBalance : 0;
+
   if (!player) {
     const referrer = db.settings.referralEnabled ? findByReferralCode(db, req.referralCode) : undefined;
     if (strict && req.referralCode?.trim() && !referrer) throw new ValidationError('That referral code is not valid');
-    player = createPlayer(db, name, phone || '0000000000', referrer && referrer.status === 'active' ? referrer.id : null);
+    player = createPlayer(db, name, phone || '0000000000', referrer && referrer.status === 'active' ? referrer.id : null, accountId);
   }
+
+  const walletAllowed = !player.accountId || player.accountId === accountId;
+  const walletBalance = player.status === 'active' && walletAllowed ? player.walletBalance : 0;
 
   const bookings: Booking[] = [];
   const adjustments = new Map<string, number>();
@@ -48,7 +68,7 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
   hours.forEach((hour, i) => {
     const quote = buildQuote(
       db,
-      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, source: 'online', holder, size },
+      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, accountId, source: 'online', holder, size },
       now
     );
     if (!quote) throw new ValidationError('Turf not found');
@@ -85,6 +105,7 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
       amountPaid: 0,
       status: 'confirmed',
       checkedInAt: null,
+      accountId: accountId ?? null,
       createdAt: new Date().toISOString(),
     };
     db.bookings.push(booking);
