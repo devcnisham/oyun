@@ -10,6 +10,15 @@ import { SITE_CITY, areaSlug } from '@/lib/site';
 import { SPORTS, sportFromSlug, sportSlug } from '@/lib/sports';
 import styles from '../../turfs/[area]/page.module.css';
 
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const all = await listPublicTurfs();
+  return SPORTS
+    .filter((s) => all.some((t) => t.sports.some((x) => sportSlug(x) === sportSlug(s.value))))
+    .map((s) => ({ sport: sportSlug(s.value) }));
+}
+
 interface Props {
   params: Promise<{ sport: string }>;
 }

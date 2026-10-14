@@ -16,6 +16,13 @@ function areaSports(turfs: { sports: string[] }[]) {
   return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] ?? 'sports';
 }
 
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const turfs = await listPublicTurfs();
+  return listAreas(turfs).map((a) => ({ area: areaSlug(a) }));
+}
+
 interface Props {
   params: Promise<{ area: string }>;
 }
