@@ -74,7 +74,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 
 ### H. Quality and launch (Phases 6 to 7)
 - [x] Concurrency test in CI (`scripts/sql-race-test.sh`), accessibility (axe, `e2e/a11y.spec.ts`), bad-path tests (`src/lib/bad-paths.test.ts`).
-- [ ] Lighthouse 90: CI job and `npm run test:lighthouse` added; job is report-only (`continue-on-error`). First CI run: performance home 45, arenas 84, turf 66; other categories 96 to 100. Stays open until every score is 90 or more and the job is made blocking.
+- [x] Lighthouse 90: CI job and `npm run test:lighthouse` made blocking; scores 90 or more on home, arenas and turf pages (P8-64).
 - [x] Privacy (DPDP): export and delete my data, retention purge, notice matches reality. Built in PR #214.
 - [x] `docs/SECURITY.md` written (PR docs).
 - [x] Backup restore runbook (`docs/RUNBOOKS.md` section 6).
