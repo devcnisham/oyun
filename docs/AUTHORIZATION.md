@@ -70,6 +70,7 @@ Every exported action calls `requireAdmin()` before touching data: approve and r
 | `GET /bookings/[id]/calendar` | Unguessable booking id (capability link); no phone number |
 | `GET /partner/payouts/export` | Partner session with the `payouts` permission |
 | `POST /api/webhooks/razorpay` | HMAC SHA256 signature verification, shared rate limit 120/IP/min |
+| `GET /api/monitoring/double-bookings` | Shared rate limit 60/IP/min; monitors live double bookings and triggers SEV-1 paging |
 
 ## Pages
 
