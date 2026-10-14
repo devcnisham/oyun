@@ -11,6 +11,7 @@ import MapEmbed from './MapEmbed';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { primarySport, sportInfo } from '@/lib/sports';
+import { getWeatherAlert } from '@/lib/weather';
 
 interface TurfDetailProps {
   turf: PublicTurf;
@@ -81,6 +82,19 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             )}
           </ul>
         )}
+
+        {(() => {
+          const alert = getWeatherAlert(turf);
+          return alert.active ? (
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '10px 14px', margin: '14px 0', fontSize: 13, color: '#1e40af', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 20 }} aria-hidden>🌧️</span>
+              <div>
+                <strong>{alert.title}</strong>
+                <p style={{ margin: '2px 0 0', color: '#1e3a8a', fontSize: 12 }}>{alert.description}</p>
+              </div>
+            </div>
+          ) : null;
+        })()}
 
 
         {offers.length > 0 && (

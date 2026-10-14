@@ -17,7 +17,11 @@ export function buildFaqs(s: PlatformSettings) {
     },
     {
       q: 'What is the cancellation policy?',
-      a: 'Open your booking and tap Cancel booking, up to 2 hours before your slot. Closer to the time, call the turf or OYUN support. You pay at the venue, so there is nothing to refund.',
+      a: 'Open your booking and tap Cancel booking, up to 2 hours before your slot. Any advance or wallet deduction is credited back to your OYUN wallet immediately. Within 2 hours of the slot, self-cancellation closes; please contact the turf or OYUN support.',
+    },
+    {
+      q: 'What is the rain and weather cancellation policy?',
+      a: 'For open-air outdoor turfs in Mangalore, our Monsoon Rain Guarantee gives you a 100% full wallet refund if matches are rained out or the turf is waterlogged, even right up until your scheduled slot time.',
     },
     {
       q: 'How do I check in at the turf?',

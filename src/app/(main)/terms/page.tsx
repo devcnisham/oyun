@@ -51,9 +51,10 @@ export default async function TermsPage() {
 
           <h2>4. Cancellations, no-shows and refunds</h2>
           <ul>
-            <li>You can cancel a booking yourself from its booking page up to 2 hours before the slot starts. After that, contact the turf or OYUN support. As you pay at the venue, there is nothing to refund.</li>
-            <li>If you don&apos;t arrive for your slot, it may be marked as a no-show. Repeated no-shows can lead to your account being blocked from booking.</li>
-            <li>If a turf cancels or can&apos;t host your game (for example due to maintenance or bad weather), we will tell you as soon as possible and help you rebook.</li>
+            <li><strong>Standard cancellation:</strong> You can cancel a booking yourself from its booking page up to 2 hours before the slot starts. Any advance payment or wallet deduction is refunded 100% to your OYUN wallet immediately. Within 2 hours of the slot, self-cancellation closes; contact the turf or OYUN support.</li>
+            <li><strong>Rain &amp; weather policy (Monsoon guarantee):</strong> For outdoor open turfs, if unplayable monsoon rain or waterlogging occurs, your booking is eligible for an immediate 100% full wallet refund right up until the slot start time.</li>
+            <li><strong>No-shows:</strong> If you don&apos;t arrive for your slot and haven&apos;t cancelled, it will be marked as a no-show. Repeated no-shows can lead to your account being blocked from booking.</li>
+            <li><strong>Turf cancellation:</strong> If a turf cancels or cannot host your game (for maintenance or venue emergencies), you receive a 100% refund to your wallet and our team assists with rebooking.</li>
           </ul>
 
           <h2>5. At the venue</h2>
