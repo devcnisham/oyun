@@ -67,6 +67,8 @@ Every exported action calls `requireAdmin()` before touching data: approve and r
 | `GET /api/health` | None; returns yes/no flags only, never keys or data |
 | `POST /api/client-error` | Shared rate limit 20/IP/min; 5 KB body cap; no cookies or headers logged |
 | `POST /api/holds/release` | Same-origin check; releases only the caller's device holds |
+| `GET /api/privacy/export` | Signed-in Clerk account only (401 otherwise); data is found by that account id, never by a phone in the request; 10/account/min |
+| `POST /api/privacy/delete` | Same-origin check plus signed-in Clerk account only (401 otherwise); erases only that account's records; 5/account/min |
 | `GET /bookings/[id]/calendar` | Unguessable booking id (capability link); no phone number |
 | `GET /partner/payouts/export` | Partner session with the `payouts` permission |
 | `POST /api/webhooks/razorpay` | HMAC SHA256 signature verification, shared rate limit 120/IP/min |

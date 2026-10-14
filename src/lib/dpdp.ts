@@ -5,7 +5,8 @@ import { ValidationError } from '@/lib/errors';
 export interface DataExportPayload {
   regulation: string;
   exportedAt: string;
-  phone: string;
+  accountId: string;
+  phone: string | null;
   player: Player | null;
   bookings: Booking[];
   walletTransactions: WalletTxn[];
@@ -26,15 +27,23 @@ export function cleanPhone(phone: string): string {
 }
 
 /**
+ * Records that belong to a signed-in account: its player, and the bookings made while signed in to it
+ * (or recorded against that player). Phone numbers are never used to find records here, because a phone is
+ * typed, not verified: anyone could ask for another person's data.
+ */
+function accountRecords(db: Database, accountId: string) {
+  if (!accountId) throw new ValidationError('Sign in to continue.');
+  const player = db.players.find((p) => p.accountId === accountId) ?? null;
+  const bookings = (db.bookings ?? []).filter((b) => b.accountId === accountId || (player !== null && b.playerId === player.id));
+  return { player, bookings };
+}
+
+/**
  * Pure function to extract user data from a Database snapshot under India DPDP Act 2023.
  */
-export function extractUserData(db: Database, rawPhone: string): DataExportPayload {
-  const phone = cleanPhone(rawPhone);
-  const player = db.players.find((p) => p.phone === phone) ?? null;
-  const bookings = (db.bookings ?? []).filter((b) => b.customerPhone === phone);
-  const walletTransactions = player
-    ? (db.walletTxns ?? []).filter((w) => w.playerId === player.id)
-    : [];
+export function extractUserData(db: Database, accountId: string): DataExportPayload {
+  const { player, bookings } = accountRecords(db, accountId);
+  const walletTransactions = player ? (db.walletTxns ?? []).filter((w) => w.playerId === player.id) : [];
 
   const reviews = bookings
     .filter((b) => b.review)
@@ -47,7 +56,8 @@ export function extractUserData(db: Database, rawPhone: string): DataExportPaylo
   return {
     regulation: 'Digital Personal Data Protection Act, 2023 (India)',
     exportedAt: new Date().toISOString(),
-    phone,
+    accountId,
+    phone: player?.phone ?? null,
     player,
     bookings,
     walletTransactions,
@@ -58,57 +68,52 @@ export function extractUserData(db: Database, rawPhone: string): DataExportPaylo
 }
 
 /**
- * Export user data by reading the database.
+ * Export the signed-in account's data by reading the database.
  */
-export async function exportUserData(rawPhone: string): Promise<DataExportPayload> {
+export async function exportUserData(accountId: string): Promise<DataExportPayload> {
   const db = await getDb();
-  return extractUserData(db, rawPhone);
+  return extractUserData(db, accountId);
 }
 
 /**
- * Pure function to apply user deletion and data anonymization on a Database in place.
+ * Pure function to apply deletion and anonymization for one account on a Database in place.
  */
-export function applyUserDeletion(db: Database, rawPhone: string): { bookingsAnonymized: number; reviewsAnonymized: number } {
-  const phone = cleanPhone(rawPhone);
-  const player = db.players.find((p) => p.phone === phone);
-  const playerId = player?.id;
+export function applyUserDeletion(db: Database, accountId: string): { bookingsAnonymized: number; reviewsAnonymized: number } {
+  const { player, bookings } = accountRecords(db, accountId);
+  const ids = new Set(bookings.map((b) => b.id));
 
-  // 1. Remove player record
-  db.players = db.players.filter((p) => p.phone !== phone);
+  // 1. Remove the player record
+  if (player) db.players = db.players.filter((p) => p.id !== player.id);
 
   // 2. Anonymize bookings while preserving tax/audit records
   let bookingsAnonymized = 0;
   let reviewsAnonymized = 0;
   for (const b of db.bookings ?? []) {
-    if (b.customerPhone === phone || (playerId && b.playerId === playerId)) {
-      b.customerName = 'Deleted Player';
-      b.customerPhone = '0000000000';
-      b.playerId = null;
-      b.accountId = null;
-      if (b.review) {
-        b.review.name = 'Verified Player';
-        reviewsAnonymized++;
-      }
-      bookingsAnonymized++;
+    if (!ids.has(b.id)) continue;
+    b.customerName = 'Deleted Player';
+    b.customerPhone = '0000000000';
+    b.playerId = null;
+    b.accountId = null;
+    if (b.review) {
+      b.review.name = 'Verified Player';
+      reviewsAnonymized++;
     }
+    bookingsAnonymized++;
   }
 
   // 3. Unlink wallet transactions
-  if (playerId) {
-    db.walletTxns = (db.walletTxns ?? []).filter((w) => w.playerId !== playerId);
-  }
+  if (player) db.walletTxns = (db.walletTxns ?? []).filter((w) => w.playerId !== player.id);
 
   return { bookingsAnonymized, reviewsAnonymized };
 }
 
 /**
- * Delete user data and anonymize records in the persistent database.
+ * Delete the signed-in account's data and anonymize its records in the persistent database.
  */
-export async function deleteUserData(rawPhone: string): Promise<{ ok: boolean; bookingsAnonymized: number; reviewsAnonymized: number }> {
-  cleanPhone(rawPhone);
+export async function deleteUserData(accountId: string): Promise<{ ok: boolean; bookingsAnonymized: number; reviewsAnonymized: number }> {
   let result = { bookingsAnonymized: 0, reviewsAnonymized: 0 };
   await mutate((db) => {
-    result = applyUserDeletion(db, rawPhone);
+    result = applyUserDeletion(db, accountId);
   });
   return { ok: true, ...result };
 }
