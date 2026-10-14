@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { connection } from "next/server";
 import { getSettings, getSiteContent, listAreas, listPublicTurfs } from "@/lib/queries";
 
 export default async function MainLayout({
@@ -8,7 +7,6 @@ export default async function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await connection(); // announcement can change at any time
   const site = await getSiteContent();
   const settings = await getSettings();
   const areas = listAreas(await listPublicTurfs());

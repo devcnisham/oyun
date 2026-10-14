@@ -57,7 +57,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] GATE: user decides Razorpay account and test keys. Then: P11-01 order and signature, P11-02 idempotent webhook, P11-03 advance mode (R014), P11-04 gateway refunds, P11-06 payment-state tests, refunds per cancellation policy, R013 wallet ledger, partner payouts and GST invoices, P11-05 reconciliation job.
 
 ### F. Performance and UX
-- [ ] P10-03 ISR and tag revalidation for public pages.
+- [x] P10-03 ISR and tag revalidation for public pages.
 - [x] P10-05 `loading.tsx` and Suspense on data pages.
 - [x] P10-04 Slot map: Supabase Realtime broadcast plus refetch on focus and tab visibility (`src/lib/client/use-slot-updates.ts`); the 10 s poll is only a safety net.
 - [ ] P10-09 Optimise images. GATE: Supabase Storage setup.
