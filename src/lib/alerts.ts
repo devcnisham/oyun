@@ -48,10 +48,13 @@ export function detectDoubleBookings(bookings: Booking[]): {
   // Group by turfId + date + hour
   const groups = new Map<string, Booking[]>();
   for (const b of activeBookings) {
-    const key = `${b.turfId}:${b.date}:${b.hour}`;
-    const list = groups.get(key) ?? [];
-    list.push(b);
-    groups.set(key, list);
+    const hours = b.hours && b.hours.length > 0 ? b.hours : [b.hour];
+    for (const h of hours) {
+      const key = `${b.turfId}:${b.date}:${h}`;
+      const list = groups.get(key) ?? [];
+      list.push(b);
+      groups.set(key, list);
+    }
   }
 
   for (const [, list] of groups) {
@@ -62,6 +65,7 @@ export function detectDoubleBookings(bookings: Booking[]): {
       for (let j = i + 1; j < list.length; j++) {
         const b1 = list[i];
         const b2 = list[j];
+        if (b1.id === b2.id) continue;
         const p1 = b1.pitch ?? 'full';
         const p2 = b2.pitch ?? 'full';
 

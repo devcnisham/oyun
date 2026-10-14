@@ -230,12 +230,24 @@ export interface PriceBreakdown {
 // venue: reserved online, paid at the turf; full/advance: paid online (when a payment gateway is connected)
 export type PaymentMode = 'venue' | 'full' | 'advance' | 'cash' | 'upi';
 
+export interface BookingItem {
+  id: string;
+  hour: number;
+  timeLabel: string;
+  durationMinutes?: number;
+  startMinute?: number;
+  pitch?: PitchPart;
+  price: number;
+}
+
 export interface Booking {
   id: string;
   code: string; // check-in code shown as QR
   turfId: string;
   date: string;
   hour: number;
+  hours?: number[]; // all slot hours in this unified order (R010)
+  items?: BookingItem[]; // individual slot items belonging to this order (R010)
   timeLabel: string;
   durationMinutes?: number;
   startMinute?: number;
