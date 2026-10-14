@@ -71,7 +71,8 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [ ] P13-01 Find players and open matches; P13-02 tournaments; P13-03 weather alerts; P13-05 admin analytics; P13-07 Kannada.
 
 ### H. Quality and launch (Phases 6 to 7)
-- [ ] Concurrency test in CI, accessibility (axe), Lighthouse 90, bad-path tests.
+- [x] Concurrency test in CI (`scripts/sql-race-test.sh`), accessibility (axe, `e2e/a11y.spec.ts`), bad-path tests (`src/lib/bad-paths.test.ts`).
+- [ ] Lighthouse 90: CI job and `npm run test:lighthouse` added; stays open until the first CI run is green and every score is 90 or more.
 - [ ] Privacy (DPDP): export and delete my data, retention purge, notice matches reality.
 - [x] `docs/SECURITY.md` written (PR docs).
 - [ ] Backup restore runbook (needs the Supabase plan and a tested restore).
