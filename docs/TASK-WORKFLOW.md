@@ -49,7 +49,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
 - [x] Switch slots over to the v2 functions, keep the realtime broadcast (#137).
 - [x] R010 One order per checkout.
-- [ ] R008 Retire the jsonb store for bookings, holds, blocks, pricing.
+- [x] R008 Retire the jsonb store for bookings, holds, blocks, pricing (#139).
 - [ ] pg_cron expire holds (P10-06). GATE: runs on production only after user approves.
 - [x] P10-02 Per-turf version (superseded by v2 row-level exclusion constraints).
 - [ ] Move remaining tables off jsonb. Delete old tables in a separate PR. GATE: user confirms.
