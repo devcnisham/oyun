@@ -117,6 +117,9 @@ export interface BusinessInfo {
   legalName: string;
   gstin: string;
   address: string;
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  bankBeneficiaryName?: string;
 }
 
 export interface Partner {
@@ -338,6 +341,31 @@ export interface Database {
   walletTxns: WalletTxn[];
   holds: SlotHold[];
   waitlist?: WaitlistEntry[];
+  payouts?: PayoutRecord[];
+}
+
+export type PayoutStatus = 'pending' | 'processing' | 'paid' | 'failed' | 'on_hold';
+
+export interface PayoutRecord {
+  id: string; // po_...
+  partnerId: string;
+  turfId: string;
+  periodStart: string; // YYYY-MM-DD
+  periodEnd: string; // YYYY-MM-DD
+  payoutDate: string; // YYYY-MM-DD
+  bookingIds: string[];
+  bookingsCount: number;
+  gross: number;
+  onlineCollected: number;
+  commission: number;
+  commissionGst: number;
+  net: number;
+  status: PayoutStatus;
+  utr: string | null;
+  failureReason: string | null;
+  idempotencyKey: string;
+  createdAt: string;
+  paidAt: string | null;
 }
 
 export interface WaitlistEntry {

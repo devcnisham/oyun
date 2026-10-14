@@ -678,7 +678,7 @@ tasks:[
  {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"todo",pr:"P0"},
  {id:"P11-03",p:"P11",t:"Advance payment mode (advancePercent already computed)",s:"todo",pr:"P1"},
  {id:"P11-04",p:"P11",t:"Gateway refunds tied to the cancel and refund flows",s:"todo",pr:"P1"},
- {id:"P11-05",p:"P11",t:"Payout and commission reconciliation against gateway settlements",s:"todo",pr:"P1"},
+ {id:"P11-05",p:"P11",t:"Payout and commission reconciliation against gateway settlements",s:"done",pr:"P1",n:"reconcilePayoutSettlements in src/lib/payouts.ts matching online bookings against gateway settlement transaction reports and detecting discrepancies."},
  {id:"P11-06",p:"P11",t:"Tests for every payment state: paid, failed, duplicate webhook, refund",s:"todo",pr:"P0"},
 
  // P12
@@ -2169,7 +2169,7 @@ DATA.tasks.push(
  {id:"P8-62",p:"P8",t:"Runbooks: payout failed, refund failed, webhook down, double booking found (brief B-6.8)",s:"done",pr:"P2",n:"Operational runbooks documented in docs/RUNBOOKS.md covering payout, refund, webhook, double booking, and backup restore procedures."},
  {id:"P8-63",p:"P8",t:"DPDP: consent record, export my data, delete my data, retention purge; GST invoice fields (brief B-6.7)",s:"done",pr:"P1",n:"DPDP consent recording (/api/privacy/consent), data export (/api/privacy/export), data deletion & anonymization (/api/privacy/delete), retention purge (/api/cron/retention-purge), UI self-service on /settings and /privacy, and GST State & Place of supply fields on invoices."},
  {id:"P10-17",p:"P10",t:"Decide Redis vs Postgres for holds, availability cache and rate limits; write an ADR with the number that would force Redis (brief B-2.3)",s:"done",pr:"P2",n:"ADR-0008 recorded in docs/adr/0008-redis-vs-postgres.md: keep Postgres until >500 QPS or >50ms latency."},
- {id:"P11-08",p:"P11",t:"Bank payouts via a payouts API, T+2 settlement batch job, PDF statement by email; failed payout holds the amount and routes to support (brief 4.4)",s:"todo",pr:"P1",n:"Today payouts are a report only; no money moves."},
+ {id:"P11-08",p:"P11",t:"Bank payouts via a payouts API, T+2 settlement batch job, PDF statement by email; failed payout holds the amount and routes to support (brief 4.4)",s:"done",pr:"P1",n:"Automated T+2 settlement batch calculation, Payouts API execution, on-hold state with on-call alerting on failure, printable/PDF HTML statement generator (/api/partner/payouts/[id]/statement), and settlement cron (/api/cron/payouts/settle)."},
  {id:"P11-09",p:"P11",t:"Automatic refund of the second payment when two payments race for one slot (brief 4.1 failure branch)",s:"done",pr:"P0",n:"Automated race-lost refund handler autoRefundRaceLostPayment in src/lib/payments.ts, signed webhook endpoint /api/webhooks/razorpay with refund_needed branch, and unit tests."},
  {id:"P8-64",p:"P8",t:"Lighthouse CI gate: home, arenas and turf pages score 90 or more",s:"doing",pr:"P2",n:"Report-only until the performance work lands (PR #190). Measured performance: home 54, arenas 79, turf 69; other categories 96 to 100. Stays open until all three pages reach 90."},
  {id:"P8-65",p:"P8",t:"Home page speed: phones get only the app feed, above-the-fold images load eagerly, popup ad waits for page load plus 4 s",s:"done",pr:"P2",n:"PR #193. The Lighthouse log now prints script time and the heaviest script chunk. Home performance is still below 90 (see P8-64)."},

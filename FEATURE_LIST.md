@@ -25,7 +25,7 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] Razorpay signature check, idempotent webhook, and automatic race-lost refund hook (#204).
 - [ ] Razorpay order creation (waiting on owner account keys).
 - [ ] Gateway refunds tied to cancellation and admin refunds.
-- [ ] Payout and commission reconciliation against settlements.
+- [x] Payout and commission reconciliation against settlements (src/lib/payouts.ts, #169, P11-08).
 
 ### 4. Partner / Turf Owner Dashboard
 *Status: Mostly complete*
