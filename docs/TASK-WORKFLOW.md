@@ -65,7 +65,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### G. Features (Phase 5)
 - [ ] GATE: user chooses WhatsApp or SMS provider. Then P12-01 confirmation, P12-02 reminder, P12-03 owner alerts, P12-04 email receipts, P12-05 web push.
 - [ ] P13-04 Search filters; GATE: user chooses Google Maps or Mapbox for the map.
-- [ ] Partner calendar day and week view.
+- [x] Partner calendar day and week view (single turf; "across all courts" waits for R007 multi-court).
 - [ ] P13-06 Waitlist and recurring weekly bookings.
 - [ ] Split payment link (needs section E).
 - [ ] P13-01 Find players and open matches; P13-02 tournaments; P13-03 weather alerts; P13-05 admin analytics; P13-07 Kannada.
