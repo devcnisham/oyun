@@ -129,6 +129,13 @@
   color: rgba(255, 255, 255, 0.55);
 }
 
+/* The support address is a link on near-black: without this it takes the browser's default blue (about 2:1) */
+.foot a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 @keyframes letterIn {
   from { opacity: 0; transform: translateY(0.5em) rotateX(70deg) scale(0.9); filter: blur(8px); }
   to { opacity: 1; transform: none; filter: none; }

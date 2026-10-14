@@ -31,7 +31,11 @@ async function scan(page: Page, path: string) {
     )
   );
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-  const summary = results.violations.map((v) => `${v.impact ?? 'minor'} ${v.id} (${v.nodes.length}): ${v.help}`);
+  const summary = results.violations.flatMap((v) => [
+    `${v.impact ?? 'minor'} ${v.id} (${v.nodes.length}): ${v.help}`,
+    // Which elements, so a CI log is enough to fix it
+    ...v.nodes.slice(0, 5).map((n) => `    ${n.target.join(' ')} :: ${(n.any[0]?.message ?? n.failureSummary ?? '').split('\n')[0].slice(0, 160)}`),
+  ]);
   return { results, summary };
 }
 
