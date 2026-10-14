@@ -3,6 +3,7 @@ import { SITE_DESCRIPTION } from '@/lib/site';
 import JsonLd from '@/components/JsonLd';
 import { organizationSchema, websiteSchema } from '@/lib/schema';
 import { connection } from 'next/server';
+import { headers } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
 import TurfSlider from '@/components/TurfSlider';
@@ -24,6 +25,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   await connection(); // live data: render per request
+  // A phone only needs the app feed: skip the desktop landing page so it is not sent, parsed and hydrated for nothing
+  const phone = /Mobi|Android|iPhone|iPod/i.test((await headers()).get('user-agent') ?? '');
   const site = await getSiteContent();
   const turfs = await listPublicTurfs();
   const settings = await getSettings();
@@ -71,6 +74,7 @@ export default async function Home() {
     <div className={styles.page}>
       <JsonLd data={[organizationSchema(settings.supportEmail, settings.supportPhone), websiteSchema()]} />
       <PopupAd promos={site.promos} />
+      {!phone && (
       <div className={styles.desktopHome}>
 
       {/* OYO Style Hero Search */}
@@ -238,8 +242,9 @@ export default async function Home() {
         </div>
       </section>
       </div>
+      )}
 
-      <div className={styles.mobileHome}>
+      <div className={`${styles.mobileHome} ${phone ? styles.mobileForced : ''}`}>
         <MobileHome turfs={turfs} promos={site.promos} coupons={coupons} deals={deals} />
       </div>
     </div>

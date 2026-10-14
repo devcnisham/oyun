@@ -733,3 +733,5 @@ a.tagBtn {
   .mobileHome { display: block; }
   .desktopHome { display: none; }
 }
+/* Phones are served only the feed, whatever the screen width (landscape) */
+.mobileForced { display: block; }
