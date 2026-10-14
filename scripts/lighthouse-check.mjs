@@ -15,6 +15,8 @@ const CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo'];
 const dir = mkdtempSync(join(tmpdir(), 'lh-'));
 let failed = false;
 try {
+  // Warm every page first so the first Lighthouse run does not measure a cold server
+  for (const path of PAGES) await fetch(`${base}${path}`).then((r) => r.arrayBuffer()).catch(() => {});
   for (const path of PAGES) {
     const out = join(dir, `${path.replace(/\W+/g, '_') || 'home'}.json`);
     execFileSync(
