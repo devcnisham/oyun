@@ -1,77 +1,59 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getProfile, signOutDevice } from '@/lib/client/device';
+import { useState } from 'react';
+import { signOutDevice } from '@/lib/client/device';
 import styles from './PrivacyDataControls.module.css';
 
+// Export and erasure act on the signed-in account. The server reads the account from the session, so no
+// phone number is asked for or sent: a typed number would let anyone reach another person's data.
 export default function PrivacyDataControls() {
-  const [phone, setPhone] = useState('');
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const p = getProfile();
-    if (p.phone) {
-      queueMicrotask(() => {
-        setPhone(p.phone);
-      });
-    }
-  }, []);
-
-  const handleExport = () => {
-    const cleaned = phone.replace(/\D/g, '').slice(-10);
-    if (cleaned.length !== 10) {
-      setStatus({ type: 'error', message: 'Please enter a valid 10-digit mobile number to export data.' });
-      return;
-    }
+  const handleExport = async () => {
+    setLoading(true);
     setStatus(null);
-    const link = document.createElement('a');
-    link.href = `/api/privacy/export?phone=${encodeURIComponent(cleaned)}`;
-    link.download = `oyun-data-export-${cleaned}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const res = await fetch('/api/privacy/export', { cache: 'no-store' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Could not download your data');
+      }
+      const url = URL.createObjectURL(await res.blob());
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'oyun-data-export.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Could not download your data' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async () => {
-    const cleaned = phone.replace(/\D/g, '').slice(-10);
-    if (cleaned.length !== 10) {
-      setStatus({ type: 'error', message: 'Please enter a valid 10-digit mobile number to delete data.' });
-      return;
-    }
-
     const confirmed = window.confirm(
       'Are you sure you want to delete your personal data? Your player account and reviews will be removed, and all past booking records will be permanently scrubbed of your personal details (pursuant to India DPDP Act 2023).'
     );
-
     if (!confirmed) return;
 
     setLoading(true);
     setStatus(null);
-
     try {
-      const res = await fetch('/api/privacy/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleaned }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to erase data');
-      }
+      const res = await fetch('/api/privacy/delete', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to erase data');
 
       signOutDevice();
-      setPhone('');
       setStatus({
         type: 'success',
         message: 'Your personal data has been erased successfully and past booking records anonymized.',
       });
     } catch (err) {
-      setStatus({
-        type: 'error',
-        message: err instanceof Error ? err.message : 'Failed to erase data',
-      });
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to erase data' });
     } finally {
       setLoading(false);
     }
@@ -80,50 +62,23 @@ export default function PrivacyDataControls() {
   return (
     <div className={styles.container}>
       <p className={styles.description}>
-        Under India&apos;s Digital Personal Data Protection Act, 2023 (DPDP), you can download a copy of all
-        data linked to your phone number or request immediate erasure of your personal data.
+        Under India&apos;s Digital Personal Data Protection Act, 2023 (DPDP), you can download a copy of the data
+        linked to your account or request immediate erasure of your personal data. You need to be signed in.
       </p>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="dpdp-phone" className={styles.label}>
-          Mobile number
-        </label>
-        <input
-          id="dpdp-phone"
-          type="tel"
-          className={styles.input}
-          placeholder="10-digit mobile number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          maxLength={15}
-        />
-      </div>
-
       <div className={styles.buttonRow}>
-        <button
-          type="button"
-          onClick={handleExport}
-          className={styles.primaryBtn}
-          disabled={loading}
-        >
+        <button type="button" onClick={handleExport} className={styles.primaryBtn} disabled={loading}>
           ⬇️ Download my data (JSON)
         </button>
 
-        <button
-          type="button"
-          onClick={handleDelete}
-          className={styles.dangerBtn}
-          disabled={loading}
-        >
+        <button type="button" onClick={handleDelete} className={styles.dangerBtn} disabled={loading}>
           🗑️ Erase my personal data
         </button>
       </div>
 
       {status && (
         <div
-          className={`${styles.notice} ${
-            status.type === 'success' ? styles.noticeSuccess : styles.noticeError
-          }`}
+          className={`${styles.notice} ${status.type === 'success' ? styles.noticeSuccess : styles.noticeError}`}
           role="alert"
         >
           {status.message}
