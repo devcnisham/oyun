@@ -37,17 +37,26 @@ try {
   );
   for (const path of PAGES) {
     const out = join(dir, `${path.replace(/\W+/g, '_') || 'home'}.json`);
-    execFileSync(
-      'npx',
-      [
-        '--yes', `lighthouse@${version}`, `${base}${path}`,
-        '--output=json', `--output-path=${out}`,
-        `--only-categories=${CATEGORIES.join(',')}`,
-        '--chrome-flags=--headless=new --no-sandbox',
-        '--quiet',
-      ],
-      { stdio: ['ignore', 'inherit', 'inherit'] }
-    );
+    // Chrome occasionally fails to start on a busy runner ("waiting for dynamic debugging port"): retry, a score is never retried
+    for (let attempt = 1; ; attempt++) {
+      try {
+        execFileSync(
+          'npx',
+          [
+            '--yes', `lighthouse@${version}`, `${base}${path}`,
+            '--output=json', `--output-path=${out}`,
+            `--only-categories=${CATEGORIES.join(',')}`,
+            '--chrome-flags=--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage',
+            '--quiet',
+          ],
+          { stdio: ['ignore', 'inherit', 'inherit'] }
+        );
+        break;
+      } catch (err) {
+        if (attempt >= 3) throw err;
+        console.warn(`  Lighthouse run failed (attempt ${attempt}), retrying`);
+      }
+    }
     const { categories, audits } = JSON.parse(readFileSync(out, 'utf8'));
     // What to fix: metrics, the LCP element and every performance audit that did not pass
     const metric = (id) => audits[id]?.displayValue ?? 'n/a';
