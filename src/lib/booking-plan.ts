@@ -6,7 +6,7 @@ import { cleanHours, cleanSize, type BookingRequest, type SelectionQuote } from 
 import { buildQuote, freePart, normalizePhone } from './pricing';
 import { newBookingCode, newId } from './store';
 import { formatSlotRange, istNow } from './time';
-import type { Booking, BookingAddOn, Database, PriceLine } from './types';
+import type { Booking, BookingAddOn, BookingItem, Database, PriceBreakdown, PriceLine } from './types';
 import { createPlayer, findByReferralCode, walletTxn } from './wallet';
 
 export function bookableTurf(db: Database, turfId: string) {
@@ -57,13 +57,20 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
   const walletAllowed = !player.accountId || player.accountId === accountId;
   const walletBalance = player.status === 'active' && walletAllowed ? player.walletBalance : 0;
 
-  const bookings: Booking[] = [];
+  const items: BookingItem[] = [];
   const adjustments = new Map<string, number>();
   const addAdjustment = (line: PriceLine | null) => line && adjustments.set(line.label, (adjustments.get(line.label) ?? 0) + line.amount);
   let promoError: string | null = null;
   let promoCode: string | null = null;
   let slotError: string | null = null;
   let addOns: BookingAddOn[] = [];
+
+  let totalBasePrice = 0;
+  let totalSlotPrice = 0;
+  let totalWalletDeduction = 0;
+  let totalSubtotal = 0;
+  let totalOrder = 0;
+  let totalAdvance = 0;
 
   hours.forEach((hour, i) => {
     const quote = buildQuote(
@@ -84,40 +91,26 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
     const heldPart = held && ((held.pitch ?? 'full') === 'full') === (size === 'full') ? (held.pitch ?? 'full') : null;
     const pitch = heldPart ?? freePart(db, turf, req.date, hour, size, holder) ?? (size === 'half' ? 'A' : 'full');
 
-    const booking: Booking = {
-      id: newId('bk'),
-      code: newBookingCode(db),
-      turfId: turf.id,
-      date: req.date,
+    const item: BookingItem = {
+      id: newId('item'),
       hour,
       timeLabel: formatSlotRange(hour, 60, 0),
       durationMinutes: 60,
       startMinute: 0,
       ...(pitch !== 'full' ? { pitch } : {}),
-      customerName: name,
-      customerPhone: phone,
-      playerId: player.id,
-      source: 'online',
-      createdBy: null,
-      addOns: quote.addOns,
-      pricing: quote.breakdown,
-      // Nothing is charged online. The advance (pricing.advance) and the balance are both paid at the turf,
-      // so nothing counts as paid until check-in.
-      paymentMode: 'venue',
-      amountPaid: 0,
-      status: 'confirmed',
-      checkedInAt: null,
-      accountId: accountId ?? null,
-      createdAt: new Date().toISOString(),
+      price: quote.breakdown.slotPrice,
     };
-    db.bookings.push(booking);
-    // Deducting as we go means the next hour's quote sees the remaining balance
-    walletTxn(db, player, -quote.breakdown.walletDeduction, 'booking_payment', `Booking ${booking.code}`, booking.id);
-    bookings.push(booking);
+    items.push(item);
+
+    totalBasePrice += quote.breakdown.basePrice;
+    totalSlotPrice += quote.breakdown.slotPrice;
+    totalWalletDeduction += quote.breakdown.walletDeduction;
+    totalSubtotal += quote.breakdown.subtotal;
+    totalOrder += quote.breakdown.total;
+    totalAdvance += quote.breakdown.advance;
   });
 
-  // A code is used up once per checkout, however many hours it covered. Every hour above was checked
-  // against the counts as they were before this checkout, so a 3-hour booking is not refused halfway.
+  // A code is used up once per checkout, however many hours it covered.
   if (promoCode) {
     const used = db.promoCodes.find((p) => p.code === promoCode);
     if (used) {
@@ -126,27 +119,77 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
     }
   }
 
-  // Each hour carries its own advance (so 3 hours at ₹150 an hour is ₹450)
-  const sum = (f: (b: Booking) => number) => bookings.reduce((s, b) => s + f(b), 0);
-  const total = sum((b) => b.pricing.total);
-  const payNow = sum((b) => b.pricing.advance); // advance due at the turf
+  const sortedHours = [...hours].sort((a, b) => a - b);
+  const minHour = sortedHours[0] ?? 0;
+  const durationTotalMinutes = Math.max(60, hours.length * 60);
+  const timeLabel = hours.length > 1 ? formatSlotRange(minHour, durationTotalMinutes, 0) : formatSlotRange(minHour, 60, 0);
+
+  const combinedPricing: PriceBreakdown = {
+    basePrice: totalBasePrice,
+    adjustments: [...adjustments].map(([label, amount]) => ({ label, amount })),
+    slotPrice: totalSlotPrice,
+    offer: adjustments.get('Offer') ? { label: 'Offer', amount: adjustments.get('Offer')! } : null,
+    promo: adjustments.get('Promo') ? { label: 'Promo', amount: adjustments.get('Promo')! } : null,
+    addOnTotal: addOns.reduce((s, a) => s + a.price * a.qty, 0),
+    subtotal: totalSubtotal,
+    walletDeduction: totalWalletDeduction,
+    total: totalOrder,
+    advance: totalAdvance,
+  };
+
+  const bookingId = newId('bk');
+  const code = newBookingCode(db);
+
+  const singleBooking: Booking = {
+    id: bookingId,
+    code,
+    turfId: turf.id,
+    date: req.date,
+    hour: minHour,
+    hours: sortedHours,
+    items,
+    timeLabel,
+    durationMinutes: durationTotalMinutes,
+    startMinute: 0,
+    ...(items[0]?.pitch && items[0].pitch !== 'full' ? { pitch: items[0].pitch } : {}),
+    customerName: name,
+    customerPhone: phone,
+    playerId: player.id,
+    source: 'online',
+    createdBy: null,
+    addOns,
+    pricing: combinedPricing,
+    paymentMode: 'venue',
+    amountPaid: 0,
+    status: 'confirmed',
+    checkedInAt: null,
+    accountId: accountId ?? null,
+    createdAt: new Date().toISOString(),
+  };
+
+  db.bookings.push(singleBooking);
+  if (totalWalletDeduction > 0) {
+    walletTxn(db, player, -totalWalletDeduction, 'booking_payment', `Booking ${code}`, singleBooking.id);
+  }
+
   const quote: SelectionQuote = {
-    slots: bookings.map((b) => ({ hour: b.hour, label: b.timeLabel, price: b.pricing.slotPrice })),
-    slotTotal: sum((b) => b.pricing.slotPrice),
+    slots: items.map((item) => ({ hour: item.hour, label: item.timeLabel, price: item.price })),
+    slotTotal: totalSlotPrice,
     adjustments: [...adjustments].map(([label, amount]) => ({ label, amount })),
     addOns,
-    addOnTotal: sum((b) => b.pricing.addOnTotal),
+    addOnTotal: combinedPricing.addOnTotal,
     walletBalance,
-    walletDeduction: sum((b) => b.pricing.walletDeduction),
-    total,
-    advancePercent: total > 0 ? Math.round((payNow / total) * 1000) / 10 : 0, // what is actually asked, after the limits
+    walletDeduction: totalWalletDeduction,
+    total: totalOrder,
+    advancePercent: totalOrder > 0 ? Math.round((totalAdvance / totalOrder) * 1000) / 10 : 0,
     minAdvance: db.settings.minAdvance,
     maxAdvance: db.settings.maxAdvance,
-    payNow,
-    payAtVenue: total - payNow,
+    payNow: totalAdvance,
+    payAtVenue: totalOrder - totalAdvance,
     promoCode,
     promoError: req.promoCode ? promoError : null,
     slotError,
   };
-  return { bookings, quote };
+
+  return { bookings: [singleBooking], quote };
 }

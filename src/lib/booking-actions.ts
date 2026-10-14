@@ -257,7 +257,10 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
       } else {
         booking.status = 'cancelled';
       }
-      notifyWaitlistWhenSlotFreed(db, booking.turfId, booking.date, booking.hour);
+      const hoursFreed = booking.hours && booking.hours.length > 0 ? booking.hours : [booking.hour];
+      for (const h of hoursFreed) {
+        notifyWaitlistWhenSlotFreed(db, booking.turfId, booking.date, h);
+      }
     });
     if (isV2SlotsActive()) {
       await v2CancelBooking(id, 'player cancelled');

@@ -54,7 +54,7 @@ export function buildWeek(db: Database, turf: PublicTurf, start: string, now: { 
 
     const cells: CalendarCell[] = hours.map((hour) => {
       const bookings = dayBookings
-        .filter((b) => b.hour === hour)
+        .filter((b) => (b.hours && b.hours.length > 0 ? b.hours.includes(hour) : b.hour === hour))
         .map((b) => ({ id: b.id, code: b.code, name: b.customerName, phone: b.customerPhone, status: b.status, source: b.source, part: b.pitch ?? 'full' }) as CalendarBooking);
       const block = dayBlocks.find((b) => b.hour === hour) ?? null;
       const past = isSlotInPast(date, hour, { date: now.date, hour: now.hour, minute: 0 }, openHour, true, 0, 60);
@@ -109,7 +109,7 @@ export function buildDayAcrossCourts(
     const cells: CourtCalendarCell[] = resources.map((res) => {
       const bookings = dayBookings
         .filter((b) => {
-          if (b.hour !== hour) return false;
+          if (b.hours && b.hours.length > 0 ? !b.hours.includes(hour) : b.hour !== hour) return false;
           if (turf.halfPitch) {
             if (b.pitch === 'full') return true;
             if (b.pitch === 'A' && res.name.includes('Half A')) return true;
