@@ -9,6 +9,7 @@ import { WALLET_TXN_LABELS, cashbackFor } from '@/lib/wallet';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/lib/cancel-policy';
+import { isRainDisruption } from '@/lib/rain';
 import CancelBooking from './CancelBooking';
 import RescheduleBooking from './RescheduleBooking';
 import ReviewForm from './ReviewForm';
@@ -39,6 +40,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
   const txns = player ? db.walletTxns.filter((t) => t.playerId === player.id).slice(-5).reverse() : [];
   const expectedCashback = active ? cashbackFor(db, booking) : 0;
   const s = db.settings;
+  const rain = isRainDisruption(turf, booking.date, db);
 
   const h = await headers();
   const origin = `${h.get('x-forwarded-proto') ?? 'http'}://${h.get('host') ?? 'localhost:3000'}`;
@@ -124,8 +126,9 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
             />
           </>
         )}
-        {canSelfCancel(booking) && (
+        {canSelfCancel(booking, rain) && (
           <>
+            {rain && <p className={styles.rewardLine}>Rain: you can cancel any time before the slot and get a full refund to your wallet.</p>}
             <RescheduleBooking
               bookingId={booking.id}
               currentDate={booking.date}

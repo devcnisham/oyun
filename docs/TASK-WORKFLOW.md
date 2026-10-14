@@ -30,20 +30,21 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P9-04 Refund `walletDeduction` on cancel (verify the bug first, add a test).
 - [x] P9-10 DTOs: strip `passwordHash` and phones before anything reaches a client component.
 - [x] P9-05 Ticket page: phone masked (PR #98); cancel and review on anonymous tickets need the booking phone (PR #122). Not a signed token; real identity is P9-03.
-- [ ] P9-03 Bind wallet and booking identity to the Clerk account, not a typed phone.
+- [x] P9-03 Bind wallet and booking identity to the Clerk account, not a typed phone (PR #216).
 - [x] P9-07 Lockout keyed by email plus IP.
 - [x] P9-08 / R012 Promo codes: expiry, max uses, per-player limit.
 - [x] P9-11 Check-in requires cash-collected confirmation.
 - [x] P9-12 Validate turf image URLs, allowlist hosts.
+- [x] P9-27 Cron routes fail closed without `CRON_SECRET` (OYUN-307). GATE left: owner sets `CRON_SECRET` on production; payout settlement stays unscheduled until real transfers replace the simulation (P11-10).
 - [x] P9-14 CHECK constraints: wallet and amounts not negative.
 - [x] P9-16 Remove or document the unused Supabase auth proxy step.
-- [ ] P9-13 CSP nonces, drop `'unsafe-inline'` for scripts.
+- [x] P9-13 CSP nonces, drop `'unsafe-inline'` for scripts (PR #215).
 - [ ] P9-09 Admin MFA, per-user accounts, session revocation. GATE: choose TOTP vs Clerk for admin.
 - [ ] P9-01 Rotate the old Supabase secret key. GATE: user only.
 
 ### D. Database v2 (Phase 2, follow `docs/SLOT-BOOKING-DB.md`)
-- [ ] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers; keep `test:sql` green in CI.
-- [ ] Data mapping: turf to venue, resources, bookables; partner screens for courts.
+- [x] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers (PR #220, #133).
+- [x] Data mapping: turf to venue, resources, bookables; partner screens for courts (#134).
 - [ ] R007 Multi-court venues in the booking flow.
 - [ ] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
 - [ ] Switch slots over to the v2 functions, keep the realtime broadcast.
@@ -69,7 +70,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] Partner calendar day and week view (single turf; "across all courts" waits for R007 multi-court).
 - [x] P13-06 Waitlist and recurring weekly bookings (PR #225).
 - [x] Split payment link (PR #221).
-- [x] P13-01 Find players and open matches; P13-02 tournaments; [x] P13-03 weather alerts (PR #217); [x] P13-05 admin analytics; [x] P13-07 Kannada (PR #218).
+- [x] P13-15 Rain policy in cancel and refund: owner or admin declares rain, full wallet refund (OYUN-314); [x] P13-01 Find players and open matches; P13-02 tournaments; [x] P13-03 weather alerts (PR #217); [x] P13-05 admin analytics; [x] P13-07 Kannada (PR #218).
 
 ### H. Quality and launch (Phases 6 to 7)
 - [x] Concurrency test in CI (`scripts/sql-race-test.sh`), accessibility (axe, `e2e/a11y.spec.ts`), bad-path tests (`src/lib/bad-paths.test.ts`).

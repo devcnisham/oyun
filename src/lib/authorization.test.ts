@@ -49,6 +49,7 @@ const EXPECTED: Record<string, string | null> = {
   markNoShow: 'checkin',
   blockSlot: 'slots',
   unblockSlot: 'slots',
+  setRainOut: 'slots',
   savePricing: 'pricing',
   createOffer: 'offers',
   toggleOffer: 'offers',
@@ -61,6 +62,10 @@ const EXPECTED: Record<string, string | null> = {
   deleteStaff: 'staff',
   updateTurfProfile: 'turf',
   updateBusiness: 'payouts',
+  addCourtResource: 'turf',
+  deleteCourtResource: 'turf',
+  addBookableOffering: 'turf',
+  deleteBookableOffering: 'turf',
 };
 
 describe('partner actions', () => {
