@@ -21,6 +21,12 @@ select step, what, applied from (values
       exists (select 1 from pg_constraint c join pg_namespace n on n.oid = c.connamespace where n.nspname = 'public' and c.contype = 'c' and c.conrelid::regclass::text in ('bookings','public.bookings'))),
   (8, '8-rate-limits: rate_limits table and rl_hit()',
       exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'rate_limits')
-      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'rl_hit'))
+      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'rl_hit')),
+  (9, '9-slot-booking-v2: schema oyun and public RPC wrappers',
+      exists (select 1 from information_schema.schemata where schema_name = 'oyun')
+      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'hold_slots')),
+  (10, '10-map-turfs-to-venues: mapped venues, resources, bookables',
+      exists (select 1 from information_schema.tables where table_schema = 'oyun' and table_name = 'venues')
+      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'oyun' and p.proname = 'sync_turf_to_venue'))
 ) as t(step, what, applied)
 order by step;
