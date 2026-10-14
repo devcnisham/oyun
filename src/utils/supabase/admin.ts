@@ -11,7 +11,13 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const secretKey = process.env.SUPABASE_SECRET_KEY;
 
 export function supabaseConfigured() {
-  return Boolean(supabaseUrl && secretKey);
+  if (!supabaseUrl || !secretKey) return false;
+  try {
+    new URL(supabaseUrl);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 const globalClient = globalThis as unknown as { __oyunSupabaseAdmin?: SupabaseClient };

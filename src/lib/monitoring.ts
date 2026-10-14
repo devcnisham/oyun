@@ -21,6 +21,15 @@ export async function reportError(report: ErrorReport) {
 
   const webhook = process.env.ERROR_WEBHOOK_URL;
   if (!webhook) return;
+
+  // Only send to an https:// endpoint to prevent SSRF via a misconfigured env var.
+  try {
+    const webhookUrl = new URL(webhook);
+    if (webhookUrl.protocol !== 'https:') return;
+  } catch {
+    return;
+  }
+
   // One notification per distinct error per 10 minutes, so a broken page doesn't flood the channel
   const key = `${report.source}:${report.message}:${report.path}`;
   const last = recent.get(key) ?? 0;

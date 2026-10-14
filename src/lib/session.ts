@@ -31,9 +31,18 @@ export function verifySessionToken(token: string | undefined, role: Role): strin
   const secret = sessionSecret();
   if (!token || !secret) return null;
 
-  const [tokenRole, subject, expiresAt, signature] = token.split('.');
+  const parts = token.split('.');
+  // Must have exactly 4 parts; more would mean a subject or signature containing dots snuck in.
+  if (parts.length !== 4) return null;
+  const [tokenRole, subject, expiresAt, signature] = parts;
   if (tokenRole !== role || !subject || !expiresAt || !signature) return null;
   if (Number(expiresAt) < Date.now() / 1000) return null;
+
+  // Validate subject shape to prevent unexpected values reaching the application.
+  const subjectOk = role === 'admin'
+    ? subject === 'admin'
+    : /^[ps]:[a-z0-9_-]+$/i.test(subject);
+  if (!subjectOk) return null;
 
   return safeEqual(signature, sign(`${tokenRole}.${subject}.${expiresAt}`, secret)) ? subject : null;
 }

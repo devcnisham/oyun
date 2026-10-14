@@ -22,7 +22,10 @@ interface Entry {
 export function createLoginThrottle({ maxFailures = 5, maxFailuresPerIp = 20, windowMs = 15 * 60 * 1000, maxEntries = 10_000, now = Date.now }: ThrottleOptions = {}) {
   const entries = new Map<string, Entry>();
 
-  const keys = (role: string, email: string, ip: string) => [`acct:${role}:${email}:${ip}`, `ip:${role}:${ip}`] as const;
+  const keys = (role: string, email: string, ip: string) =>
+    // URL-encode components so that a crafted email containing ":" cannot collide with another key's namespace.
+    [`acct:${encodeURIComponent(role)}:${encodeURIComponent(email)}:${encodeURIComponent(ip)}`,
+     `ip:${encodeURIComponent(role)}:${encodeURIComponent(ip)}`] as const;
 
   function live(key: string) {
     const e = entries.get(key);

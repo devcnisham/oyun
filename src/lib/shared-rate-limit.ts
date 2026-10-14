@@ -42,8 +42,11 @@ export async function sharedRateLimit(key: string, limit: number, windowMs: numb
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_PER_ACCOUNT = 5;
 const MAX_PER_IP = 20;
-const acctKey = (role: string, email: string, ip: string) => `login:acct:${role}:${email}:${ip}`;
-const ipKey = (role: string, ip: string) => `login:ip:${role}:${ip}`;
+// Keys use URL-encoding so that colons in email or IP cannot bridge namespace boundaries.
+const acctKey = (role: string, email: string, ip: string) =>
+  `login:acct:${encodeURIComponent(role)}:${encodeURIComponent(email)}:${encodeURIComponent(ip)}`;
+const ipKey = (role: string, ip: string) =>
+  `login:ip:${encodeURIComponent(role)}:${encodeURIComponent(ip)}`;
 
 export const sharedLoginThrottle = {
   async isLocked(role: string, email: string, ip: string): Promise<boolean> {

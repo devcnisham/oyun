@@ -44,7 +44,7 @@ export function refreshAll() {
   revalidatePath('/', 'layout');
 }
 
-// Turns thrown access/validation errors into a form message
+// Turns thrown access/validation errors into a form message, catching unexpected errors to prevent crashes
 export async function run(fn: () => ActionResult | Promise<ActionResult>): Promise<ActionResult> {
   try {
     const result = await fn();
@@ -52,7 +52,17 @@ export async function run(fn: () => ActionResult | Promise<ActionResult>): Promi
     return result;
   } catch (err) {
     if (err instanceof ValidationError || err instanceof AccessError) return { error: err.message };
-    throw err;
+    console.error('[action] unhandled error in action:', err);
+    try {
+      const { reportError } = await import('./monitoring');
+      await reportError({
+        source: 'server',
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        path: 'server-action',
+      });
+    } catch {}
+    return { error: 'Something went wrong. Please try again in a moment.' };
   }
 }
 

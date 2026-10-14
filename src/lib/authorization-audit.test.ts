@@ -74,7 +74,7 @@ describe('API and file routes', () => {
   const ROUTES: Record<string, string[]> = {
     'src/app/api/health/route.ts': ['never keys or data'],
     'src/app/api/client-error/route.ts': ['sharedRateLimit(', 'raw.length > 5000'],
-    'src/app/api/holds/release/route.ts': ["origin", 'new URL(origin).host !== host', 'deviceHolder(false)'],
+    'src/app/api/holds/release/route.ts': ["!origin", 'new URL(origin).host !== host', 'deviceHolder(false)', 'sharedRateLimit('],
     'src/app/(main)/bookings/[id]/calendar/route.ts': ['db.bookings.find((b) => b.id === id)'],
     'src/app/partner/(dashboard)/payouts/export/route.ts': ["!ctx || !ctx.can('payouts')"],
   };

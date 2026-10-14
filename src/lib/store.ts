@@ -130,9 +130,15 @@ function changedSlotDays(before: Map<Table, Map<string, string>>, changes: Retur
 function announceSlotChanges(slots: { turfId: string; date: string }[]) {
   if (slots.length === 0) return;
   try {
-    after(() => broadcastSlotChanges(slots));
+    after(async () => {
+      try {
+        await broadcastSlotChanges(slots);
+      } catch (err) {
+        console.warn('[store] failed to announce slot changes:', err);
+      }
+    });
   } catch {
-    void broadcastSlotChanges(slots); // outside a request (scripts): fire and forget
+    broadcastSlotChanges(slots).catch((err) => console.warn('[store] failed to announce slot changes:', err));
   }
 }
 
@@ -144,35 +150,92 @@ const SLOT_TAKEN: Record<string, string> = {
   holds_slot_uniq: 'Someone else is checking out this slot right now. Please pick another slot.',
 };
 
-async function applyChanges(changes: { upserts: TableRows; deletes: Partial<Record<Table, string[]>> }, expectedRev: number | null) {
-  const { data, error } = await createAdminClient().rpc('apply_changes', { changes, expected_rev: expectedRev });
-  if (!error) return Number(data);
-  // 40001: someone else wrote first; 23505 on players: same new player created concurrently
-  if (error.code === '40001' || (error.code === '23505' && error.message.includes('players_phone_uniq'))) {
-    throw new StoreConflict(error.message);
+function isTransientDbError(err: unknown): boolean {
+  if (err instanceof StoreConflict) return true;
+  if (!err) return false;
+  const code = typeof err === 'object' && err !== null && 'code' in err ? String((err as { code: unknown }).code) : '';
+  if (['40001', '40P01', '57P01', '57P02', '57P03', '08000', '08001', '08003', '08004', '08006', '53300'].includes(code)) {
+    return true;
   }
-  const taken = Object.keys(SLOT_TAKEN).find((name) => error.message.includes(name));
-  if (taken) throw new ValidationError(SLOT_TAKEN[taken]);
-  throw new Error(`[store] write failed: ${error.message}`);
+  const msg = (err instanceof Error ? err.message : typeof err === 'object' && err !== null && 'message' in err ? String((err as { message: unknown }).message) : String(err)).toLowerCase();
+  return (
+    msg.includes('fetch failed') ||
+    msg.includes('network') ||
+    msg.includes('econnreset') ||
+    msg.includes('etimedout') ||
+    msg.includes('econnrefused') ||
+    msg.includes('socket hang up') ||
+    msg.includes('503') ||
+    msg.includes('502') ||
+    msg.includes('504') ||
+    msg.includes('server busy') ||
+    msg.includes('connection terminated') ||
+    msg.includes('connection refused') ||
+    msg.includes('upstream') ||
+    msg.includes('timeout')
+  );
+}
+
+async function applyChanges(changes: { upserts: TableRows; deletes: Partial<Record<Table, string[]>> }, expectedRev: number | null) {
+  try {
+    const { data, error } = await createAdminClient().rpc('apply_changes', { changes, expected_rev: expectedRev });
+    if (!error) return Number(data);
+    // 40001: someone else wrote first; 23505 on players: same new player created concurrently
+    if (error.code === '40001' || (error.code === '23505' && error.message.includes('players_phone_uniq'))) {
+      throw new StoreConflict(error.message);
+    }
+    const taken = Object.keys(SLOT_TAKEN).find((name) => error.message.includes(name));
+    if (taken) throw new ValidationError(SLOT_TAKEN[taken]);
+    if (isTransientDbError(error)) {
+      throw new StoreConflict(`Transient database error: ${error.message}`);
+    }
+    throw new Error(`[store] write failed: ${error.message}`);
+  } catch (err) {
+    if (err instanceof StoreConflict || err instanceof ValidationError) throw err;
+    if (isTransientDbError(err)) {
+      throw new StoreConflict(`Transient database error: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    throw err;
+  }
 }
 
 async function loadFull(): Promise<Loaded> {
+  let lastError: unknown = null;
   for (let attempt = 0; attempt < 3; attempt++) {
-    const { data, error } = await createAdminClient().rpc('load_state');
-    if (error) throw new Error(`[store] could not load data from Supabase: ${error.message}. Did you apply supabase/migrations?`);
-    const state = data as TableRows & { rev: number | null };
-    if (state.rev !== null) return cacheFull(state, Number(state.rev));
-
-    // Empty database: start it with the launch data once
-    const db = seed();
     try {
-      const rev = await applyChanges({ upserts: toRows(db), deletes: {} }, null);
-      return cacheFull(toRows(db), rev);
+      const { data, error } = await createAdminClient().rpc('load_state');
+      if (error) {
+        lastError = error;
+        if (error.code === 'PGRST202' || error.code === '42883') {
+          throw new Error(`[store] could not load data from Supabase: ${error.message}. Did you apply supabase/migrations?`);
+        }
+        if (attempt < 2 && isTransientDbError(error)) {
+          await new Promise((r) => setTimeout(r, 100 * (attempt + 1) + Math.random() * 50));
+          continue;
+        }
+        throw new Error(`[store] could not load data from Supabase: ${error.message}. Did you apply supabase/migrations?`);
+      }
+      const state = data as TableRows & { rev: number | null };
+      if (state.rev !== null) return cacheFull(state, Number(state.rev));
+
+      // Empty database: start it with the launch data once
+      const db = seed();
+      try {
+        const rev = await applyChanges({ upserts: toRows(db), deletes: {} }, null);
+        return cacheFull(toRows(db), rev);
+      } catch (err) {
+        if (!(err instanceof StoreConflict)) throw err; // another server seeded first
+      }
     } catch (err) {
-      if (!(err instanceof StoreConflict)) throw err; // another server seeded first
+      lastError = err;
+      if (attempt < 2 && isTransientDbError(err)) {
+        await new Promise((r) => setTimeout(r, 100 * (attempt + 1) + Math.random() * 50));
+        continue;
+      }
+      throw err;
     }
   }
-  throw new Error('[store] could not initialise the database');
+  throw new Error(`[store] could not initialise the database: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
 }
 
 /*
@@ -247,25 +310,34 @@ async function syncOnce(): Promise<Loaded> {
   const cache = memory.__oyunCache;
   if (!cache || memory.__oyunNoDelta) return loadFull();
   const since = cache.rev;
-  const { data, error } = await createAdminClient().rpc('load_changes', { since });
-  if (error) {
-    // Migration not applied yet: keep working the old way (whole state per request)
-    if (error.code === 'PGRST202' || error.code === '42883') {
-      memory.__oyunNoDelta = true;
-      console.warn('[store] load_changes is missing; run supabase/migrations/20261007000000_delta_sync.sql. Loading everything per request until then.');
+  try {
+    const { data, error } = await createAdminClient().rpc('load_changes', { since });
+    if (error) {
+      // Migration not applied yet: keep working the old way (whole state per request)
+      if (error.code === 'PGRST202' || error.code === '42883') {
+        memory.__oyunNoDelta = true;
+        console.warn('[store] load_changes is missing; run supabase/migrations/20261007000000_delta_sync.sql. Loading everything per request until then.');
+        return loadFull();
+      }
+      console.warn(`[store] load_changes failed (${error.message}), falling back to full reload`);
       return loadFull();
     }
-    throw new Error(`[store] could not load changes from Supabase: ${error.message}`);
+    const delta = data as Delta & TableRows;
+    if (delta.full) {
+      if (delta.rev === null) return loadFull(); // store was reset: seed it again
+      return cacheFull(delta, Number(delta.rev));
+    }
+    // A write on this server moved the cache on while we waited; this delta is older
+    if (memory.__oyunCache !== cache || cache.rev !== since) return { db: memory.__oyunCache!.db, rev: memory.__oyunCache!.rev };
+    if (Number(delta.rev) === cache.rev) return { db: cache.db, rev: cache.rev };
+    return applyToCache(cache, delta.upserts ?? {}, delta.deletes ?? {}, Number(delta.rev));
+  } catch (err) {
+    if (cache) {
+      console.warn('[store] delta sync network glitch; using cached memory state:', err instanceof Error ? err.message : String(err));
+      return { db: cache.db, rev: cache.rev };
+    }
+    throw err;
   }
-  const delta = data as Delta & TableRows;
-  if (delta.full) {
-    if (delta.rev === null) return loadFull(); // store was reset: seed it again
-    return cacheFull(delta, Number(delta.rev));
-  }
-  // A write on this server moved the cache on while we waited; this delta is older
-  if (memory.__oyunCache !== cache || cache.rev !== since) return { db: memory.__oyunCache!.db, rev: memory.__oyunCache!.rev };
-  if (Number(delta.rev) === cache.rev) return { db: cache.db, rev: cache.rev };
-  return applyToCache(cache, delta.upserts ?? {}, delta.deletes ?? {}, Number(delta.rev));
 }
 
 // One sync at a time per server; concurrent requests share it
@@ -288,9 +360,16 @@ function loadFile(): Database {
   if (existsSync(DATA_FILE)) {
     try {
       const parsed = JSON.parse(readFileSync(DATA_FILE, 'utf8')) as Database;
-      if (parsed.version === DB_VERSION) return migrate(parsed);
-    } catch {
-      // fall through and reseed
+      if (parsed && typeof parsed === 'object' && parsed.version === DB_VERSION) return migrate(parsed);
+    } catch (err) {
+      console.error('[store] corrupt or invalid db.json; backing up and recovering:', err);
+      try {
+        renameSync(DATA_FILE, `${DATA_FILE}.corrupt.${Date.now()}`);
+      } catch {}
+      if (globalStore.__oyunArenaDb) {
+        saveFile(globalStore.__oyunArenaDb);
+        return globalStore.__oyunArenaDb;
+      }
     }
   }
   const seeded = seed();
@@ -301,7 +380,7 @@ function loadFile(): Database {
 function saveFile(data: Database) {
   try {
     mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-    const tmp = `${DATA_FILE}.tmp`;
+    const tmp = `${DATA_FILE}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
     writeFileSync(tmp, JSON.stringify(data));
     renameSync(tmp, DATA_FILE);
     globalStore.__oyunArenaPersisted = true;
@@ -363,6 +442,10 @@ export async function getDb(): Promise<Database> {
   } catch (err) {
     state.current = null;
     if (fallBackInDev(err)) return fileDb();
+    if (memory.__oyunCache?.db) {
+      console.error('[store] getDb() failed, serving cached copy to prevent server crash:', err);
+      return memory.__oyunCache.db;
+    }
     throw err;
   }
 }
@@ -384,6 +467,10 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
       loaded = await loadSupabase();
     } catch (err) {
       if (fallBackInDev(err)) return mutate(fn);
+      if (attempt < 4 && isTransientDbError(err)) {
+        await new Promise((r) => setTimeout(r, 50 * (attempt + 1) + Math.random() * 50));
+        continue;
+      }
       throw err;
     }
     // Work on a private copy: the loaded object is shared with other requests on this server
@@ -402,8 +489,8 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
       announceSlotChanges(changedSlotDays(before, changes));
       return result;
     } catch (err) {
-      if (!(err instanceof StoreConflict)) throw err;
-      await new Promise((r) => setTimeout(r, 30 * (attempt + 1) + Math.random() * 50));
+      if (!isTransientDbError(err)) throw err;
+      await new Promise((r) => setTimeout(r, 40 * (attempt + 1) + Math.random() * 60));
     }
   }
   throw new ValidationError('The server is busy. Please try again.');
