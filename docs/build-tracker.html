@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #182 (main at d7e2498, 12 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #193 (main at 15b48f8, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -666,7 +666,7 @@ tasks:[
  {id:"P10-01",p:"P10",t:"Delta sync: per-server cache plus load_changes(since) instead of load_state per request",s:"done",pr:"P0",n:"store.ts, supabase/migrations/20261007000000_delta_sync.sql, supabase/setup/5-delta-sync.sql. 16 end-to-end checks passed against a local Postgres; production build passes."},
  {id:"P10-02",p:"P10",t:"Per-turf version instead of one global rev",s:"todo",pr:"P1",n:"Two turfs must not conflict."},
  {id:"P10-03",p:"P10",t:"Cache public pages with ISR and tag revalidation; drop connection() from the public layout",s:"todo",pr:"P1"},
- {id:"P10-04",p:"P10",t:"Replace the 10-second slot poll with Realtime plus on-focus refetch",s:"todo",pr:"P3",n:"Cheap now: an unchanged poll costs about 22 bytes."},
+ {id:"P10-04",p:"P10",t:"Replace the 10-second slot poll with Realtime plus on-focus refetch",s:"done",pr:"P3",n:"Cheap now: an unchanged poll costs about 22 bytes."},
  {id:"P10-05",p:"P10",t:"loading.tsx and Suspense for every data page",s:"done",pr:"P2",n:"None exist today."},
  {id:"P10-06",p:"P10",t:"pg_cron job to purge expired holds",s:"todo",pr:"P2"},
  {id:"P10-07",p:"P10",t:"Typed columns and foreign keys for bookings, holds, wallet transactions",s:"todo",pr:"P2"},
@@ -1287,6 +1287,7 @@ featureGroups:[
  {g:"SEO, legal and analytics",a:"Platform",subs:[
   ["Sitemap and robots","built","Dynamic sitemap with images; private areas disallowed","sitemap.ts, robots.ts"],
   ["Welcome landing page","built","/welcome: static marketing page for players with hero, sports, three-step flow, feature cards and an owner band linking to /list-turf. Listed in the sitemap; home page unchanged. Booking section and booking FAQ added in PR #125. PR #121.","(main)/welcome/page.tsx, (main)/welcome/page.module.css"],
+  ["Sport landing pages","built","/sports/[sport] for each city, area and sport, with structured data; listed in the sitemap (PR #191)","(main)/sports/[sport]"],
   ["Structured data and share images","built","Organization, WebSite, location, breadcrumbs, FAQ; generated Open Graph images","lib/schema.ts"],
   ["Terms, privacy, FAQ","partial","Built, but still describe pay-at-venue and say nothing to refund; stale against the advance flow","(main)/terms, privacy, faq"],
   ["Help center page","built","Support email and phone, quick links, FAQ accordion (same questions as /faq, shared via src/lib/faq.ts), legal links","(main)/help/page.tsx, lib/faq.ts"],
@@ -1317,7 +1318,8 @@ featureGroups:[
   ["Pricing rules page","built","Base price plus peak, weekend and last-minute rules","partner/pricing"],
   ["Offers","built","Create, pause, delete; happy hour or first-time; name up to 40","partner/offers"],
   ["Add-ons","built","Name up to 60, price 0 to 10,000, edit, hide, delete; sold only through walk-ins","partner/add-ons"],
-  ["Calendar view","built","Week view, Monday to Sunday, every opening hour for seven days; cells show past, free, booked, blocked or held; split pitches show both halves. PR #117.","partner/calendar"]
+  ["Calendar view","built","Week view, Monday to Sunday, every opening hour for seven days; cells show past, free, booked, blocked or held; split pitches show both halves. PR #117.","partner/calendar"],
+  ["Calendar day view","partial","Day view for one turf with booking details (PR #192). Across all courts is not built yet; waits for R007 (multi-court venues).","partner/calendar"]
  ]},
  {g:"Owner: staff, payouts and profile",a:"Owner",subs:[
   ["Staff accounts","built","Manager or front desk, temporary password shown once, reset, delete; email unique across partners and staff","partner/staff"],
@@ -2168,7 +2170,12 @@ DATA.tasks.push(
  {id:"P8-63",p:"P8",t:"DPDP: consent record, export my data, delete my data, retention purge; GST invoice fields (brief B-6.7)",s:"todo",pr:"P1"},
  {id:"P10-17",p:"P10",t:"Decide Redis vs Postgres for holds, availability cache and rate limits; write an ADR with the number that would force Redis (brief B-2.3)",s:"todo",pr:"P2",n:"Rate limits already live in Postgres."},
  {id:"P11-08",p:"P11",t:"Bank payouts via a payouts API, T+2 settlement batch job, PDF statement by email; failed payout holds the amount and routes to support (brief 4.4)",s:"todo",pr:"P1",n:"Today payouts are a report only; no money moves."},
- {id:"P11-09",p:"P11",t:"Automatic refund of the second payment when two payments race for one slot (brief 4.1 failure branch)",s:"todo",pr:"P0"}
+ {id:"P11-09",p:"P11",t:"Automatic refund of the second payment when two payments race for one slot (brief 4.1 failure branch)",s:"todo",pr:"P0"},
+ {id:"P8-64",p:"P8",t:"Lighthouse CI gate: home, arenas and turf pages score 90 or more",s:"doing",pr:"P2",n:"Report-only until the performance work lands (PR #190). Measured performance: home 54, arenas 79, turf 69; other categories 96 to 100. Stays open until all three pages reach 90."},
+ {id:"P8-65",p:"P8",t:"Home page speed: phones get only the app feed, above-the-fold images load eagerly, popup ad waits for page load plus 4 s",s:"done",pr:"P2",n:"PR #193. The Lighthouse log now prints script time and the heaviest script chunk. Home performance is still below 90 (see P8-64)."},
+ {id:"P3-07",p:"P3",t:"Sport landing pages at /sports/[sport] for each city, area and sport, with structured data and sitemap entries",s:"done",pr:"P2",n:"PR #191. Sitemap entries are in src/app/sitemap.ts."},
+ {id:"P7-44",p:"P7",t:"Partner calendar day view for one turf, with booking details",s:"done",pr:"P2",n:"PR #192. Test added in e2e/partner.spec.ts."},
+ {id:"P7-45",p:"P7",t:"Partner calendar day view across all courts",s:"todo",pr:"P2",n:"Waits for R007 (multi-court venues)."}
 );
 
 /* ===================== BOOT ===================== */
