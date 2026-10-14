@@ -21,7 +21,7 @@ export function findByReferralCode(db: Database, code: string | null | undefined
   return c ? db.players.find((p) => p.referralCode === c) : undefined;
 }
 
-export function createPlayer(db: Database, name: string, phone: string, referredBy: string | null = null): Player {
+export function createPlayer(db: Database, name: string, phone: string, referredBy: string | null = null, accountId: string | null = null): Player {
   const player: Player = {
     id: `player_${randomBytes(6).toString('hex')}`,
     name,
@@ -32,6 +32,7 @@ export function createPlayer(db: Database, name: string, phone: string, referred
     referredBy,
     referralRewarded: false,
     createdAt: new Date().toISOString(),
+    accountId,
   };
   db.players.push(player);
   return player;

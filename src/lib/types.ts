@@ -153,6 +153,7 @@ export interface Player {
   referredBy: string | null; // player id of whoever referred them
   referralRewarded: boolean; // referral credit paid out after their first game
   createdAt: string;
+  accountId?: string | null; // Clerk user id (P9-03)
 }
 
 export type WalletTxnType = 'cashback' | 'referral' | 'referral_bonus' | 'refund' | 'booking_payment' | 'admin_adjust';

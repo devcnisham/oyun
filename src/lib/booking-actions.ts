@@ -138,7 +138,8 @@ export async function quoteSelection(req: SelectionRequest): Promise<SelectionQu
     await throttle('quote', 300);
     const db = await getDb();
     const holder = await deviceHolder(false);
-    return planBooking(structuredClone(db), { ...req, name: 'Player' }, holder, false).quote;
+    const accountId = await currentAccountId();
+    return planBooking(structuredClone(db), { ...req, name: 'Player' }, holder, false, accountId).quote;
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
     console.error('[booking] quoteSelection error:', err);
@@ -160,7 +161,7 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
 
     const ids = await mutate((db) => {
       purgeExpiredHolds(db);
-      const { bookings, quote } = planBooking(db, req, holder, true);
+      const { bookings, quote } = planBooking(db, req, holder, true, accountId);
       if (quote.slotError) throw new ValidationError(quote.slotError);
       if (quote.promoError) throw new ValidationError(quote.promoError);
       db.holds = db.holds.filter((h) => h.holder !== holder);
