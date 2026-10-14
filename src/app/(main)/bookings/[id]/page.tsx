@@ -10,8 +10,9 @@ import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/lib/cancel-policy';
 import CancelBooking from './CancelBooking';
+import RescheduleBooking from './RescheduleBooking';
 import ReviewForm from './ReviewForm';
-import { halfNote } from '@/lib/pricing';
+import { halfNote, turfHours } from '@/lib/pricing';
 
 const STATUS_TEXT: Record<string, string> = {
   confirmed: 'Booking confirmed',
@@ -113,7 +114,18 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
             <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
           </div>
         )}
-        {canSelfCancel(booking) && <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} needsPhone={!booking.accountId} />}
+        {canSelfCancel(booking) && (
+          <>
+            <RescheduleBooking
+              bookingId={booking.id}
+              currentDate={booking.date}
+              currentHour={booking.hour}
+              openHours={turfHours(turf)}
+              needsPhone={!booking.accountId}
+            />
+            <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} needsPhone={!booking.accountId} />
+          </>
+        )}
         {booking.status === 'checked_in' && (
           <ReviewForm
             bookingId={booking.id}
