@@ -36,3 +36,14 @@ test('partner calendar shows the week and moves between weeks', async ({ page })
   await page.getByRole('link', { name: 'This week' }).click();
   await expect(page.getByRole('link', { name: 'Today' })).toBeVisible();
 });
+
+test('partner calendar day view opens from a day header and moves between days', async ({ page }) => {
+  await page.goto('/partner/calendar');
+  await page.getByRole('link', { name: 'Today' }).click();
+  await expect(page).toHaveURL(/calendar\?day=\d{4}-\d{2}-\d{2}/);
+  await expect(page.getByRole('link', { name: 'Week view' })).toBeVisible();
+  await page.getByRole('link', { name: /Next day/ }).click();
+  await expect(page).toHaveURL(/calendar\?day=\d{4}-\d{2}-\d{2}/);
+  await page.getByRole('link', { name: 'Week view' }).click();
+  await expect(page).toHaveURL(/calendar\?week=\d{4}-\d{2}-\d{2}/);
+});
