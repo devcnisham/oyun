@@ -60,7 +60,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P10-05 `loading.tsx` and Suspense on data pages.
 - [x] P10-04 Slot map: Supabase Realtime broadcast plus refetch on focus and tab visibility (`src/lib/client/use-slot-updates.ts`); the 10 s poll is only a safety net.
 - [ ] P10-09 Optimise images. GATE: Supabase Storage setup.
-- [ ] P10-08 k6 load test of the booking path.
+- [x] P10-08 k6 load test: `scripts/k6/browse.js` covers the public read path (`docs/LOAD-TEST.md`). The booking writes are covered by the SQL race test and e2e (server actions cannot be replayed from k6); not run yet, needs staging.
 
 ### G. Features (Phase 5)
 - [ ] GATE: user chooses WhatsApp or SMS provider. Then P12-01 confirmation, P12-02 reminder, P12-03 owner alerts, P12-04 email receipts, P12-05 web push.
