@@ -66,7 +66,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 
 ### G. Features (Phase 5)
 - [ ] GATE: user chooses WhatsApp or SMS provider. Then P12-01 confirmation, P12-02 reminder, P12-03 owner alerts, P12-04 email receipts, P12-05 web push.
-- [ ] P13-04 Search filters; GATE: user chooses Google Maps or Mapbox for the map.
+- [x] P13-04 Search filters and Google Maps integration (#149).
 - [x] Partner calendar day view across all courts (P7-45, #231) and week view.
 - [x] P13-06 Waitlist and recurring weekly bookings (PR #225).
 - [x] Split payment link (PR #221).
