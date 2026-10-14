@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #193 (main at 15b48f8, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #226 (main at 6a36f88, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -675,7 +675,7 @@ tasks:[
 
  // P11
  {id:"P11-01",p:"P11",t:"Razorpay order creation and server-side signature verification",s:"todo",pr:"P0"},
- {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"todo",pr:"P0"},
+ {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"done",pr:"P0"},
  {id:"P11-03",p:"P11",t:"Advance payment mode (advancePercent already computed)",s:"todo",pr:"P1"},
  {id:"P11-04",p:"P11",t:"Gateway refunds tied to the cancel and refund flows",s:"todo",pr:"P1"},
  {id:"P11-05",p:"P11",t:"Payout and commission reconciliation against gateway settlements",s:"done",pr:"P1",n:"reconcilePayoutSettlements in src/lib/payouts.ts matching online bookings against gateway settlement transaction reports and detecting discrepancies."},
@@ -888,7 +888,8 @@ adr:[
  {t:"Custom cookie auth for admin and partner",ctx:"Few operator accounts, env-provisioned.",dec:"HMAC session cookie, scrypt hashes in the store, role matrix for partners.",tr:"Simple and dependency-free; no MFA, no revocation, in-memory lockout.",rev:"When more than a handful of operators exist (P9-09)."},
  {t:"Supabase Realtime broadcast for slot freshness",ctx:"Players must see a slot disappear while choosing.",dec:"Server posts a ping to slots:{turf}:{date}; clients refetch. Poll every 10 seconds as safety net.",tr:"Cheap and decoupled from RLS; topics are public and carry no data.",rev:"If payloads ever carry data, switch to private channels (P9-15)."},
  {t:"Delta sync instead of loading everything per request",ctx:"Every request downloaded every table; at 1,000 users that was an estimated 100+ GB a month of database egress.",dec:"Each server keeps the store in memory and calls load_changes(since) for rows written after its revision; deletions leave tombstones. Writes still go through apply_changes with the rev check.",tr:"Tiny reads and no API change for 30+ pages; a cold start still loads everything, and memory grows with history.",rev:"When a cold-start load passes about 5 MB, or more than a few servers run at once (P10-14)."},
- {t:"Rate limits counted in Postgres, with a per-server fallback",ctx:"Login lockout, hold and booking limits lived in memory on each server, so a burst spread across servers was not counted together.",dec:"Counters use rl_hit, rl_get and rl_clear in supabase/setup/8-rate-limits.sql. If Supabase is off, the call fails or the SQL has not run, the old per-server limiter is used.",tr:"No new service to run. Each limit check now costs a database call, and a failed call falls back to one server, so a burst can still get through.",rev:"If hold traffic needs faster counters than the database gives (P10)."}
+ {t:"Rate limits counted in Postgres, with a per-server fallback",ctx:"Login lockout, hold and booking limits lived in memory on each server, so a burst spread across servers was not counted together.",dec:"Counters use rl_hit, rl_get and rl_clear in supabase/setup/8-rate-limits.sql. If Supabase is off, the call fails or the SQL has not run, the old per-server limiter is used.",tr:"No new service to run. Each limit check now costs a database call, and a failed call falls back to one server, so a burst can still get through.",rev:"If hold traffic needs faster counters than the database gives (P10)."},
+ {t:"Keep Postgres for holds, availability cache and rate limits (no Redis)",ctx:"The brief suggests Redis for holds, caching and rate limits.",dec:"Rate limits stay in Postgres (src/lib/shared-rate-limit.ts), holds use transactional locks and exclusion constraints, and availability updates go through Supabase Realtime broadcast.",tr:"No new service to run; the cost is more database calls per check.",rev:"When load would force Redis; ADR-0008 in docs/adr/0008-redis-vs-postgres.md has the details."}
 ],
 
 env:[
@@ -1173,7 +1174,8 @@ featureGroups:[
   ["Maintenance state","built","Visible but not bookable, with a notice","TurfDetail.tsx"],
   ["Save and share","built","Heart toggle; Web Share with copy-link fallback","ShareButton.tsx"],
   ["Search data for Google","built","Title, canonical, SportsActivityLocation with rating, breadcrumbs","lib/schema.ts"],
-  ["Deep links","built","?date= sets the date, ?ref= fills the referral code","page.tsx"]
+  ["Deep links","built","?date= sets the date, ?ref= fills the referral code","page.tsx"],
+  ["Monsoon rain notice","built","Open-air turfs (no covered or indoor amenity) show a rain protection notice promising a 100% wallet refund in heavy rain. Nothing applies that promise yet: no caller passes the rain flag that skips the 2-hour cancel cutoff (PR #217)","arenas/[id]/TurfDetail.tsx, lib/weather.ts, lib/cancel-policy.ts"]
  ]},
  {g:"Slots, holds and live updates",a:"Player",subs:[
   ["Booking window","built","Today plus 6 days: 7 date chips; the server refuses later dates (PR #58)","lib/time.ts (BOOKING_DAYS), booking-actions.ts"],
@@ -1224,11 +1226,12 @@ featureGroups:[
   ["Advance shown at checkout","built","Shows \"Advance at the turf\" and \"Balance after you play\"; button is Confirm booking","BookingFlow.tsx"],
   ["Balance after you play","built","The checkout shows Balance after you play; staff shows it at check-in; cash or UPI","BookingFlow.tsx, check-in desk"],
   ["Wallet as payment","built","Deducted at booking, capped at the subtotal, recorded as a transaction","lib/wallet.ts"],
-  ["Online payment gateway (Razorpay)","planned","Nothing is charged today; no webhook, no capture","phase 11"],
+  ["Online payment gateway (Razorpay)","partial","Signed webhook at /api/webhooks/razorpay with rate limiting and idempotency (PR #222). Nothing is charged online yet: order creation and capture are still open (P11-01, P11-03)","api/webhooks/razorpay, lib/payments.ts"],
   ["Full payment mode","planned","The type exists but nothing sets it","lib/types.ts"],
   ["Refunds","built","Only wallet money really paid in goes back to the wallet; online refunds need the gateway (phase 11)","admin-actions.ts, booking-actions.ts"],
   ["Walk-in payment","built","Cash or UPI, full amount recorded as paid","partner-actions.ts"],
-  ["Payouts","partial","Weekly report only; no transfers are made","lib/reports.ts"]
+  ["Payouts","partial","Settlement batch on a T+2 schedule, payout transfer through a payouts API (a failed payout holds the amount), reconciliation against gateway settlements. Not checked against live bank accounts (PR #226)","lib/payouts.ts, api/cron/payouts/settle"],
+  ["Race-lost payment refund","built","When two payments race for one slot, the second is refunded in full automatically and a customer notification is sent (PR #222)","lib/payments.ts autoRefundRaceLostPayment"]
  ]},
  {g:"Ticket, invoice and sharing",a:"Player",subs:[
   ["Ticket page","built","Status banner, QR code of the booking code, balance to pay, wallet and referral box; booking id is the credential","bookings/[id]"],
@@ -1257,10 +1260,11 @@ featureGroups:[
   ["Heart toggle","built","On cards and the turf page; up to 200, kept on the device","lib/client/favourites.ts"],
   ["Sync across devices","built","Through Clerk metadata when signed in, debounced","ClerkProfileSync.tsx"],
   ["Saved page","built","/saved","(main)/saved"],
-  ["One-tap rebook","partial","Book again link only","bookings/[id]"]
+  ["One-tap rebook","partial","Book again button on each booking card in My bookings opens the turf page; it does not book in one tap yet (PR #211)","bookings/MyBookings.tsx"]
  ]},
  {g:"Player account and sign-in",a:"Player",subs:[
   ["Clerk sign-in and sign-up","built","When the Clerk key is set; also a modal at checkout and a header account menu","(auth)/, lib/clerk.ts"],
+  ["Account binding","built","Player record is matched by the Clerk account first, then by phone. A phone already on another account is refused (PR #216)","lib/booking-plan.ts, lib/wallet.ts"],
   ["Device account (no Clerk)","partial","Name plus a 10-digit Indian mobile in localStorage; no OTP, anyone can claim a number","(auth)/_shell/PlayerForm.tsx"],
   ["Profile page","built","Photo (Clerk photo or initial for device sign-in, red ring when active), name (edit in device mode), email, Manage account (openUserProfile), Sign out. Sections: Book (Bookings, Saved turfs, all turfs from sidebar), Help & settings (Help center, Settings, support links, turf owner links moved from side menu). PR #43, #45, #48.","(main)/profile"],
   ["Wallet page, photo, password recovery","planned","Wallet shows only on the ticket page","–"]
@@ -1282,11 +1286,14 @@ featureGroups:[
   ["Install manifest","built","Standalone, portrait, red theme, icons, two shortcuts","manifest.ts"],
   ["Phone shell","built","Hide-on-scroll logo inset header with \"Book · Play · Repeat\" tagline and city chip (Mangalore with pulsing live dot linking /arenas); faint pitch markings in top bar. Side menu removed, menu now on Profile (PR #43). Clerk account and bookings icons in header removed; use Profile tab instead (PR #45). \"Playing in\" area picker strip removed (PR #45). Bottom tab bar with search button in middle, area picker and List your turf pill removed (PR #44, #45).","components/"],
   ["Bottom tab bar","built","Home, Turfs, Bookings, Profile with icon over label, active state in red. Middle raises a red search button; sheet portaled to body. On all player pages; hidden on admin/partner dashboards. Sits below slot selection bar via CSS var --bottom-nav-h; spacer keeps page ends clear. PR #40, #41, #44.","components/BottomNav.tsx"],
-  ["Service worker, offline, push, install prompt","planned","Not built","–"]
+  ["Service worker, offline, push, install prompt","partial","public/sw.js caches a few start files, shows push messages and handles notification clicks; registered in production only. No code saves push subscriptions or sends pushes yet (PR #212)","public/sw.js, ServiceWorkerRegister.tsx"]
  ]},
  {g:"SEO, legal and analytics",a:"Platform",subs:[
   ["Sitemap and robots","built","Dynamic sitemap with images; private areas disallowed","sitemap.ts, robots.ts"],
-  ["Welcome landing page","built","/welcome: static marketing page for players with hero, sports, three-step flow, feature cards and an owner band linking to /list-turf. Listed in the sitemap; home page unchanged. Booking section and booking FAQ added in PR #125. PR #121.","(main)/welcome/page.tsx, (main)/welcome/page.module.css"],
+  ["Welcome landing page","removed","Removed on purpose in 6a36f88. It was a static marketing page with hero, sports, three-step flow, feature cards and an owner band. Replaced by the pre-launch welcome page below. Listed in the sitemap before; home page unchanged. PR #125 and #121 added the booking section and FAQ.","(main)/welcome/page.tsx, (main)/welcome/page.module.css"],
+  ["Pre-launch welcome page","built","/welcome shows Launching soon with a live countdown to 17 Oct 2026, 00:00 India time, a sports ticker and a support email footer (6a36f88)","(launch)/welcome/page.tsx, Countdown.tsx"],
+  ["About page","built","/about, reached from About us in the launch header; listed in the sitemap (6a36f88)","(launch)/about/page.tsx"],
+  ["Launch header","built","Shared header for the launch pages. Hides while scrolling down and comes back on any scroll up. Bottom tab bar hidden on these pages (6a36f88)","(launch)/LaunchHeader.tsx"],
   ["Sport landing pages","built","/sports/[sport] for each city, area and sport, with structured data; listed in the sitemap (PR #191)","(main)/sports/[sport]"],
   ["Structured data and share images","built","Organization, WebSite, location, breadcrumbs, FAQ; generated Open Graph images","lib/schema.ts"],
   ["Terms, privacy, FAQ","partial","Built, but still describe pay-at-venue and say nothing to refund; stale against the advance flow","(main)/terms, privacy, faq"],
@@ -1294,7 +1301,8 @@ featureGroups:[
   ["Settings page","built","Account links, cookie settings button, notifications and language info only, help and legal links","(main)/settings/page.tsx"],
   ["Cookie consent","built","Essential only or Accept all, 1-year cookie; hidden on admin and partner","components/consent"],
   ["Analytics","built","Vercel Analytics, Speed Insights, GA4 only after Accept all","components/consent"],
-  ["Languages","planned","English only","–"]
+  ["Privacy data controls","built","Consent record (all or essential), export of a person's data, delete that anonymises bookings and reviews, and a retention purge of old holds and bookings (8 years by default). The cron routes check CRON_SECRET only when it is set (PR #214)","api/privacy/*, api/cron/retention-purge, lib/dpdp.ts"],
+  ["Languages","partial","English, Kannada, Hindi and Tulu. A language selector sits in Settings and the navbar; the dictionary is in src/lib/i18n.ts. Coverage of each page is not checked (PR #218)","lib/i18n.ts, LanguageSelector"]
  ]},
  {g:"Owner: dashboard and bookings",a:"Owner",subs:[
   ["Overview","built","Month revenue and 7-day chart (owner only), today's schedule, next 7 days, 30-day no-show rate, latest bookings","partner/(dashboard)/page.tsx"],
@@ -1326,6 +1334,7 @@ featureGroups:[
   ["Payouts and GST","partial","Weekly Monday to Sunday for 8 weeks: gross, online, commission, GST on commission, payout; status is inferred from dates, no money moves","partner/payouts, lib/reports.ts"],
   ["CSV export","built","Last 90 days, protected against spreadsheet formula injection","partner/payouts/export"],
   ["Invoices","built","Per booking, GST split","partner/invoices/[id]"],
+  ["Payout statement download","built","Itemised settlement statement for one payout, generated as HTML (PR #226)","partner/payouts, api/partner/payouts/[id]/statement"],
   ["Business details","built","Legal name, GSTIN (format checked), billing address","partner/turf"],
   ["Turf profile","built","Name, area, address, phone, description (1,000), price, hours, size, surface, formats, sports, 12 amenities, images by URL","partner/turf"],
   ["Photo upload","planned","Image links only","–"],
@@ -1348,6 +1357,7 @@ featureGroups:[
   ["Players","built","Search, bookings, no-shows, referrals, wallet adjust, ban","admin/users"],
   ["Bookings and refunds","built","Filters; first 150 shown; refund credits the wallet","admin/transactions"],
   ["Review moderation","built","Hide or show, up to 500 shown","admin/reviews"],
+  ["Ban abusive review authors","built","Hides the review and sets the author's player status to banned (PR #210)","admin/reviews, admin-actions.ts banReviewAuthor"],
   ["Settings","built","Commission, advance %, minimum and maximum advance, GST, support email and phone, cashback, referral","admin/settings"],
   ["Promo codes","built","Create, edit, pause, delete; code 3 to 20 letters or digits","admin/settings"],
   ["Homepage content","built","Hero headline, announcement bar, promo cards (first is the popup)","admin/customization"],
@@ -1365,11 +1375,12 @@ featureGroups:[
  {g:"Operations and platform",a:"Platform",subs:[
   ["Health check","built","/api/health: storage, database, turfs, realtime, sign-in mode, logins; 503 if not ready","api/health"],
   ["Error reporting","built","Server and browser errors to JSON logs and an optional Slack or Discord webhook, deduped for 10 minutes","instrumentation.ts, lib/monitoring.ts"],
-  ["Security headers","built","CSP, HSTS 2 years, frame, nosniff, referrer, COOP, permissions; CSP still allows inline scripts","next.config.ts"],
+  ["Security headers","built","CSP, HSTS 2 years, frame, nosniff, referrer, COOP, permissions. Per-request nonces with strict-dynamic drop unsafe-inline for scripts (PR #215)","next.config.ts, proxy.ts, lib/csp.ts"],
   ["Data store","built","Supabase jsonb tables with delta sync and a revision-checked write; local file in development","lib/store.ts"],
   ["Accessibility checks","partial","axe runs on the main pages and fails on serious findings; a keyboard-only booking test; scrollable tables reachable by keyboard (PR #118, #119). Automated only, no full manual audit (P8-20)","e2e/a11y.spec.ts"],
   ["Backups and restore","planned","Depends on the Supabase plan; none in the repo","–"],
-  ["Custom 404 and error pages","built","Yes","not-found.tsx, global-error.tsx"]
+  ["Custom 404 and error pages","built","Yes","not-found.tsx, global-error.tsx"],
+  ["Double-booking monitor and paging","built","Live endpoint for double bookings; alert thresholds in src/lib/alerts.ts; on-call paging through PagerDuty, OpsGenie or a webhook (PR #224)","api/monitoring/double-bookings, lib/alerts.ts"]
  ]}
 ],
 
@@ -1658,7 +1669,7 @@ D2.lists = [
   ["BOOK-10","Owner can block slots for maintenance or walk-ins","P1",0],
   ["BOOK-11","No-show handling: owner marks no-show, repeat no-shows flagged","P2",0],
   ["BOOK-12","Price rules: peak, off-peak, weekend and holiday prices","P2",0],
-  ["BOOK-13","Recurring weekly bookings for teams","P3",0]
+  ["BOOK-13","Recurring weekly bookings for teams","P3",1,"Atomic recurring weekly bookings (src/lib/recurring.ts). PR #225."]
  ]},
  {id:"QA",st:"build",name:"Testing and QA",goal:"Know a change works before players find out it does not.",items:[
   ["QA-01","Pick test tools: Vitest for rules, Playwright for full flows","P1",1,"Vitest and Playwright (PR #71, #72)."],
@@ -1690,7 +1701,7 @@ D2.lists = [
   ["PAY-01","Razorpay account with KYC done and settlement bank verified","P0",0],
   ["PAY-02","Order created on the server; the amount is never taken from the browser","P0",0],
   ["PAY-03","Payment signature checked on the server before a booking is confirmed","P0",0],
-  ["PAY-04","Webhook is idempotent: the same event twice makes one booking","P0",0],
+  ["PAY-04","Webhook is idempotent: the same event twice makes one booking","P0",1,"Webhook idempotency and duplicate tests (src/lib/payments.test.ts). PR #222."],
   ["PAY-05","Slot released when a payment fails or times out","P0",0],
   ["PAY-06","Full test-mode run including a refund before going live","P0",0],
   ["PAY-07","Refunds follow the policy and are logged with a reason","P1",0],
@@ -2175,7 +2186,20 @@ DATA.tasks.push(
  {id:"P8-65",p:"P8",t:"Home page speed: phones get only the app feed, above-the-fold images load eagerly, popup ad waits for page load plus 4 s",s:"done",pr:"P2",n:"PR #193. The Lighthouse log now prints script time and the heaviest script chunk. Home performance is still below 90 (see P8-64)."},
  {id:"P3-07",p:"P3",t:"Sport landing pages at /sports/[sport] for each city, area and sport, with structured data and sitemap entries",s:"done",pr:"P2",n:"PR #191. Sitemap entries are in src/app/sitemap.ts."},
  {id:"P7-44",p:"P7",t:"Partner calendar day view for one turf, with booking details",s:"done",pr:"P2",n:"PR #192. Test added in e2e/partner.spec.ts."},
- {id:"P7-45",p:"P7",t:"Partner calendar day view across all courts",s:"todo",pr:"P2",n:"Waits for R007 (multi-court venues)."}
+ {id:"P7-45",p:"P7",t:"Partner calendar day view across all courts",s:"todo",pr:"P2",n:"Waits for R007 (multi-court venues)."},
+ {id:"P7-46",p:"P7",t:"Launching soon page: /welcome shows a live countdown to 17 Oct 2026 (IST), with a new /about page and a shared header",s:"done",pr:"P2",n:"Commit 6a36f88 (no PR number, pushed to main). Old /welcome marketing sections removed on purpose. The header hides on scroll down and shows on scroll up; the bottom tab bar is hidden on both pages."},
+ {id:"P7-47",p:"P7",t:"Service worker: caches the start files, shows push messages and handles notification clicks",s:"done",pr:"P2",n:"Registered in production only (public/sw.js). No code yet saves push subscriptions or sends pushes, so P12-05 stays open. PR #212."},
+ {id:"P8-66",p:"P8",t:"Lighthouse fixes for home, arenas and turf pages, with per-category thresholds",s:"done",pr:"P2",n:"PR #206. P8-64 stays open until the scores reach 90."},
+ {id:"P9-25",p:"P9",t:"Admin can ban the author of an abusive review and hide the review",s:"done",pr:"P1",n:"Sets the author's player status to banned and hides the review, then recalculates the turf rating. PR #210."},
+ {id:"P9-26",p:"P9",t:"Partner and staff sign-in take the same time whether or not the account is active",s:"done",pr:"P2",n:"The password check always runs, so an inactive account does not answer faster. The dummy hash is made on first use, not at start-up. PR #206."},
+ {id:"P9-27",p:"P9",t:"Cron routes only check CRON_SECRET when it is set; make the check fail closed",s:"todo",pr:"P0",n:"src/app/api/cron/payouts/settle and src/app/api/cron/retention-purge both skip the check when CRON_SECRET is empty. The payout route moves money. Set CRON_SECRET on production and change the check to require it."},
+ {id:"P10-18",p:"P10",t:"Run supabase/setup/9-slot-booking-v2.sql on production",s:"todo",pr:"P1",n:"Slot booking v2 tables and public RPC wrappers (PR #220). The repo does not show whether production has it; check the database first."},
+ {id:"P11-10",p:"P11",t:"Schedule the payout settlement and retention purge cron jobs",s:"todo",pr:"P1",n:"No vercel.json in the repo, so no schedule is set in code. Settlement runs at /api/cron/payouts/settle; retention at /api/cron/retention-purge."},
+ {id:"P11-11",p:"P11",t:"Split the team payment: a booking's share link and per-player amounts (UPI link and WhatsApp share)",s:"done",pr:"P3",n:"src/lib/split-payment.ts and SplitPayment on the booking page. PR #221."},
+ {id:"P13-12",p:"P13",t:"Reschedule a confirmed booking to another slot",s:"done",pr:"P2",n:"Same 2 hour cutoff and checks as cancel: operating hours, slot free, policy. PR #219."},
+ {id:"P13-13",p:"P13",t:"Book again from a past booking",s:"done",pr:"P3",n:"A Book again button on each booking card opens the turf page; it does not book in one tap yet. PR #211."},
+ {id:"P13-14",p:"P13",t:"Monsoon rain notice on open-air turfs",s:"done",pr:"P3",n:"Turfs with no covered or indoor amenity show the rain protection notice. PR #217."},
+ {id:"P13-15",p:"P13",t:"Wire the rain policy into cancel and refund: no cutoff and a 100% wallet refund in heavy rain",s:"todo",pr:"P1",n:"The notice promises it, but no caller passes the rain flag of canSelfCancel (src/lib/cancel-policy.ts), and no automatic rain refund was found in PR #217."},
 );
 
 /* ===================== BOOT ===================== */
