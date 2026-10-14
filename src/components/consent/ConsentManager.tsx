@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Script from 'next/script';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { CONSENT_EVENT, readConsent, writeConsent, type Consent } from './consent';
 import styles from './ConsentManager.module.css';
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const ConsentAnalytics = dynamic(() => import('./ConsentAnalytics'));
 
 /*
  * Cookie banner + analytics. Nothing optional loads until the visitor picks "Accept all":
@@ -43,20 +41,7 @@ export default function ConsentManager() {
 
   return (
     <>
-      {analytics && (
-        <>
-          <Analytics />
-          <SpeedInsights />
-          {GA_ID && (
-            <>
-              <Script src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`} strategy="afterInteractive" />
-              <Script id="ga4" strategy="afterInteractive">
-                {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(GA_ID)},{anonymize_ip:true});`}
-              </Script>
-            </>
-          )}
-        </>
-      )}
+      {analytics && <ConsentAnalytics />}
 
       {open && !privateArea && (
         <div className={styles.banner} role="dialog" aria-live="polite" aria-label="Cookie preferences">
