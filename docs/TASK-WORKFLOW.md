@@ -60,7 +60,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P10-05 `loading.tsx` and Suspense on data pages.
 - [x] P10-04 Replace 10 s slot poll with Realtime plus on-focus refetch.
 - [ ] P10-09 Optimise images. GATE: Supabase Storage setup.
-- [ ] P10-08 k6 load test of the booking path.
+- [x] P10-08 k6 load test of the booking path.
 
 ### G. Features (Phase 5)
 - [ ] GATE: user chooses WhatsApp or SMS provider. Then P12-01 confirmation, P12-02 reminder, P12-03 owner alerts, P12-04 email receipts, P12-05 web push.

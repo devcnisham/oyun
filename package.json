@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:sql": "bash scripts/sql-tests.sh",
+    "test:load": "k6 run scripts/load-test.js",
     "prepare": "node scripts/install-hooks.mjs"
   },
   "dependencies": {
