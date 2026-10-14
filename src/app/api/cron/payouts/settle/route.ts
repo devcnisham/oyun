@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
 import { calculateTPlus2SettlementPeriod, createSettlementBatch, executePayoutTransfer } from '@/lib/payouts';
+import { requireCronSecret } from '@/lib/cron-auth';
 import { istNow } from '@/lib/time';
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   try {
     const today = istNow().date;
