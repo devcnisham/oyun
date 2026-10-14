@@ -8,7 +8,7 @@ import { hasSession } from './session';
 import { mutate, newId } from './store';
 import type { ActionResult, Database, TurfStatus } from './types';
 import { MAX_SPONSOR_ADS, isAllowedAdLink, isAllowedImage } from './validation/site-content';
-import { refundDue, walletTxn } from './wallet';
+import { createPlayer, refundDue, walletTxn } from './wallet';
 import { recomputeTurfRating } from './reviews';
 
 async function requireAdmin() {
@@ -182,6 +182,29 @@ export async function toggleReviewHidden(_prev: ActionResult, fd: FormData): Pro
       booking.review.hidden = !booking.review.hidden;
       recomputeTurfRating(db, booking.turfId);
       return { ok: booking.review.hidden ? 'Review hidden' : 'Review visible again' };
+    });
+  });
+}
+
+// Ban the user who posted an abusive review and hide the review
+export async function banReviewAuthor(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    await requireAdmin();
+    return await mutate((db) => {
+      const booking = db.bookings.find((b) => b.id === str(fd, 'bookingId'));
+      if (!booking?.review) throw new ValidationError('Review not found');
+      booking.review.hidden = true;
+      recomputeTurfRating(db, booking.turfId);
+
+      let player = db.players.find((p) => (booking.playerId && p.id === booking.playerId) || (booking.customerPhone && p.phone === booking.customerPhone));
+      if (!player && booking.customerPhone) {
+        player = createPlayer(db, booking.customerName || 'Anonymous', booking.customerPhone);
+      }
+      if (player) {
+        player.status = 'banned';
+      }
+
+      return { ok: `${booking.customerName || 'User'} banned and review hidden` };
     });
   });
 }
