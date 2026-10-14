@@ -20,3 +20,10 @@ export function canSelfCancel(
   }
   return b.source === 'online' && minutesUntil(b.date, b.hour) >= CANCEL_CUTOFF_HOURS * 60;
 }
+
+export function canReschedule(
+  b: Pick<Booking, 'status' | 'source' | 'date' | 'hour'>,
+  isWeatherDisruption = false
+) {
+  return canSelfCancel(b, isWeatherDisruption);
+}

@@ -16,8 +16,8 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] Player sign-in and sign-up through Clerk, with a device name-and-phone fallback when Clerk is not configured.
 - [x] Profile, saved turfs, and a My Bookings area with ticket, QR code, invoice and calendar file.
 - [x] Self-cancel until 2 hours before the slot.
-- [ ] Reschedule a booking.
-- [ ] Bind wallet and booking identity to the signed-in account (today a typed phone number is trusted).
+- [x] Reschedule a booking.
+- [x] Bind wallet and booking identity to the signed-in account (today a typed phone number is trusted).
 
 ### 3. Real Payment Gateway
 *Status: Not started (advance is recorded, not charged)*

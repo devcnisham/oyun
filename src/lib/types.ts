@@ -222,6 +222,8 @@ export interface Booking {
   accountId?: string | null; // signed-in player account (Clerk user id) that made the booking
   review?: BookingReview | null; // the player's rating after playing
   cancelledAt?: string | null;
+  rescheduledAt?: string | null;
+  originalSlot?: { date: string; hour: number } | null;
   createdAt: string;
 }
 

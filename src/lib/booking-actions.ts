@@ -11,11 +11,11 @@ import { ValidationError, refreshAll } from './action-utils';
 import { sharedRateLimit } from './shared-rate-limit';
 import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErrors } from './validation/application';
 import { deviceHolder } from './device-holder';
-import { freePart, getSlots, normalizePhone } from './pricing';
+import { freePart, getSlots, normalizePhone, turfHours } from './pricing';
 import { bookableTurf, planBooking } from './booking-plan';
 import { cleanHours, cleanSize, type BookingRequest, type SelectionQuote, type SelectionRequest } from './booking-types';
 import { getDb, mutate, newId, storageInfo } from './store';
-import { BOOKING_DAYS, addDays, formatHour, isValidDate, istNow } from './time';
+import { BOOKING_DAYS, addDays, formatHour, formatSlotRange, isValidDate, istNow } from './time';
 import type { Booking, Database, PitchSize, Slot } from './types';
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
 
@@ -226,6 +226,74 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
     if (err instanceof ValidationError) return { error: err.message };
     console.error('[booking] cancelMyBooking error:', err);
     return { error: 'Could not cancel booking. Please try again in a moment.' };
+  }
+}
+
+// A player moves an upcoming confirmed booking to another slot at the same turf.
+// Verified via booking ID, ownership check, rate limit, 2-hour cutoff rule, operating hours and collision checks.
+export async function rescheduleBooking(
+  bookingId: string,
+  newDate: string,
+  newHour: number,
+  phone?: string
+): Promise<{ ok: true } | { error: string }> {
+  try {
+    const id = String(bookingId);
+    if (!/^bk_[a-f0-9]{12}$/.test(id)) throw new ValidationError('Booking not found');
+    await throttle('reschedule', 20);
+
+    const dateStr = String(newDate || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) throw new ValidationError('Invalid date');
+    const hourNum = Number(newHour);
+    if (!Number.isInteger(hourNum) || hourNum < 0 || hourNum > 23) {
+      throw new ValidationError('Invalid hour');
+    }
+
+    const slotStart = new Date(`${dateStr}T${String(hourNum).padStart(2, '0')}:00:00+05:30`).getTime();
+    if (slotStart <= Date.now()) {
+      throw new ValidationError('Please choose an upcoming slot in the future');
+    }
+
+    const accountId = await currentAccountId();
+    await mutate((db) => {
+      const booking = db.bookings.find((b) => b.id === id);
+      if (!booking) throw new ValidationError('Booking not found');
+      proveBookingOwner(booking, accountId, phone, 'reschedule');
+      if (booking.status !== 'confirmed') {
+        throw new ValidationError('Only confirmed bookings can be rescheduled');
+      }
+      if (!canSelfCancel(booking)) {
+        throw new ValidationError(`Bookings can be rescheduled up to ${CANCEL_CUTOFF_HOURS} hours before the slot. Please call the turf.`);
+      }
+
+      const turf = db.turfs.find((t) => t.id === booking.turfId);
+      if (!turf) throw new ValidationError('Turf not found');
+      if (!turfHours(turf).includes(hourNum)) {
+        throw new ValidationError('Selected time is outside turf operating hours');
+      }
+
+      const neededSize: PitchSize = booking.pitch === 'A' || booking.pitch === 'B' ? 'half' : 'full';
+      const allocatedPitch = freePart(db, turf, dateStr, hourNum, neededSize, null);
+      if (!allocatedPitch) {
+        throw new ValidationError('Selected slot is not available. Please choose another time.');
+      }
+
+      const oldDate = booking.date;
+      const oldHour = booking.hour;
+      booking.originalSlot = booking.originalSlot || { date: oldDate, hour: oldHour };
+      booking.date = dateStr;
+      booking.hour = hourNum;
+      booking.pitch = allocatedPitch;
+      booking.timeLabel = formatSlotRange(hourNum);
+      booking.rescheduledAt = new Date().toISOString();
+    });
+
+    refreshAll();
+    return { ok: true };
+  } catch (err) {
+    if (err instanceof ValidationError) return { error: err.message };
+    console.error('[booking] rescheduleBooking error:', err);
+    return { error: 'Could not reschedule booking. Please try again in a moment.' };
   }
 }
 
