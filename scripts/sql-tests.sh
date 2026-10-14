@@ -42,6 +42,9 @@ echo "== Data mapping from turfs to venues, resources, bookables (#134)"
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 
+echo "== Check applied setup steps (supabase/setup/check-applied.sql)"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/setup/check-applied.sql
+
 echo "== Double-booking race (parallel sessions on the live store functions)"
 bash scripts/sql-race-test.sh "$STORE_DB"
 
