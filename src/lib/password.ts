@@ -22,9 +22,11 @@ export function verifyPassword(password: string, stored: string) {
 }
 
 // Same cost as a real check, so an unknown email takes as long as a wrong password (no account enumeration by timing)
-const DUMMY_HASH = hashPassword('timing-equaliser');
+// Computed on first use so a cold start does not block on a scrypt run
+let dummyHash: string | undefined;
 export function burnPasswordCheck(password: string) {
-  verifyPassword(password, DUMMY_HASH);
+  dummyHash ??= hashPassword('timing-equaliser');
+  verifyPassword(password, dummyHash);
 }
 
 // Readable temporary password, e.g. for new staff or approved partners

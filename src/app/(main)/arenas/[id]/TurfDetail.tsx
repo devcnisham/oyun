@@ -7,6 +7,7 @@ import FavouriteButton from '@/components/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
 import { shortHour } from '@/lib/format';
 import ShareButton from './ShareButton';
+import MapEmbed from './MapEmbed';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { primarySport, sportInfo } from '@/lib/sports';
@@ -116,16 +117,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         <div className={styles.mapSection}>
           <h2>Location</h2>
           <div className={styles.mapContainer}>
-            <iframe
-              title={`${turf.name} on map`}
-              src={`https://www.google.com/maps?q=${encodeURIComponent(turf.name + ' ' + turf.location)}&output=embed`}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            <MapEmbed name={turf.name} location={turf.location} />
           </div>
         </div>
 

@@ -216,7 +216,8 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
             <h2 className="sr-only">{filtered.length} turfs found</h2>
             <div className={styles.grid}>
               {filtered.map((turf, i) => (
-                <div key={turf.id} className="animate-fadeInUp" style={{ animationDelay: `${i * 0.08}s` }}>
+                // Above-the-fold cards paint at once: a fade-in starts at opacity 0 and would hold back the LCP image
+                <div key={turf.id} className={i < 4 ? undefined : 'animate-fadeInUp'} style={i < 4 ? undefined : { animationDelay: `${Math.min(i - 4, 6) * 0.06}s` }}>
                   <TurfCard turf={turf} eager={i < 2} />
                 </div>
               ))}

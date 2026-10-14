@@ -8,17 +8,20 @@ import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
 import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
-import SignInGate from '@/components/SignInGate';
+import dynamic from 'next/dynamic';
 import { primarySport } from '@/lib/sports';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
 import { describeHours } from './booking-format';
 import { useCheckoutForm } from './useCheckoutForm';
-import CheckoutSheet from './CheckoutSheet';
 import PitchPicker from './PitchPicker';
 import SlotMap from './SlotMap';
 import styles from './BookingFlow.module.css';
+
+// Only needed once the player proceeds to checkout or sign-in
+const CheckoutSheet = dynamic(() => import('./CheckoutSheet'));
+const SignInGate = dynamic(() => import('@/components/SignInGate'));
 
 export interface BookingFlowProps {
   turf: PublicTurf;

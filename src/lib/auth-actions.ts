@@ -35,16 +35,21 @@ async function partnerSubject(email: string, password: string) {
   const opsPassword = process.env.PARTNER_PASSWORD;
   const ops = db.partners.find((p) => p.id === 'partner_oyun');
   if (ops && opsEmail && opsPassword && matches(email, opsEmail)) {
+    // Pay one scrypt on this branch too, so the ops email does not answer faster than a partner email
+    burnPasswordCheck(password);
     return ops.status === 'active' && matches(password, opsPassword) ? `p:${ops.id}` : null;
   }
   const partner = db.partners.find((p) => p.email === email);
   if (partner) {
-    return partner.status === 'active' && verifyPassword(password, partner.passwordHash) ? `p:${partner.id}` : null;
+    // Always run the hash check: an inactive account must not answer faster than an active one
+    const ok = verifyPassword(password, partner.passwordHash);
+    return partner.status === 'active' && ok ? `p:${partner.id}` : null;
   }
   const staff = db.staff.find((s) => s.email === email);
   if (staff) {
     const owner = db.partners.find((p) => p.id === staff.partnerId);
-    return owner?.status === 'active' && verifyPassword(password, staff.passwordHash) ? `s:${staff.id}` : null;
+    const ok = verifyPassword(password, staff.passwordHash);
+    return owner?.status === 'active' && ok ? `s:${staff.id}` : null;
   }
   burnPasswordCheck(password);
   return null;
