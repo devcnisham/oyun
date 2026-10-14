@@ -22,7 +22,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P8-06 Authorization sweep: every admin and partner action rejects without a session.
 - [x] R011 / P9-06 Persistent rate limits in Postgres, same function signature. GATE left: owner runs `supabase/setup/8-rate-limits.sql` on production (P9-22).
 - [x] P8-07 Playwright e2e: browse, hold, book, ticket, cancel; partner check-in; admin approve turf.
-- [ ] P8-12 Staging environment. GATE: Vercel and Supabase branch setup.
+- [x] P8-12 Staging environment. Documented in docs/STAGING.md with automated smoke test (#127).
 
 ### C. Security fixes (Phase 4 items that are small and urgent)
 - [x] P9-18 Remove the hard-coded admin and partner credentials from the login form. P9-20 Remove the seed default partner password and heal old stores. (Found in the online tracker, missing from this queue.)
