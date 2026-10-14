@@ -22,7 +22,8 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 ### 3. Real Payment Gateway
 *Status: Not started (advance is recorded, not charged)*
 - [x] Flat advance per hour (10% of the hour's price, never under or over the configured min and max); the rest is paid at the venue.
-- [ ] Razorpay order creation, signature check and idempotent webhook.
+- [x] Razorpay signature check, idempotent webhook, and automatic race-lost refund hook (#204).
+- [ ] Razorpay order creation (waiting on owner account keys).
 - [ ] Gateway refunds tied to cancellation and admin refunds.
 - [ ] Payout and commission reconciliation against settlements.
 
