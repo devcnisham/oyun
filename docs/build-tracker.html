@@ -682,11 +682,11 @@ tasks:[
  {id:"P11-06",p:"P11",t:"Tests for every payment state: paid, failed, duplicate webhook, refund",s:"todo",pr:"P0"},
 
  // P12
- {id:"P12-01",p:"P12",t:"Booking confirmation by WhatsApp or SMS",s:"todo",pr:"P1"},
- {id:"P12-02",p:"P12",t:"Reminder two hours before the slot (scheduled job)",s:"todo",pr:"P1"},
- {id:"P12-03",p:"P12",t:"Owner alert on new booking and cancellation",s:"todo",pr:"P1"},
- {id:"P12-04",p:"P12",t:"Email receipts through Resend",s:"todo",pr:"P2"},
- {id:"P12-05",p:"P12",t:"Service worker and web push",s:"todo",pr:"P3"},
+ {id:"P12-01",p:"P12",t:"Booking confirmation by WhatsApp or SMS",s:"done",pr:"P1",n:"Unified notifications module (src/lib/notifications.ts) with template generation and dispatch on booking confirmation."},
+ {id:"P12-02",p:"P12",t:"Reminder two hours before the slot (scheduled job)",s:"done",pr:"P1",n:"sendSlotReminder formatted message with directions link and ticket reference."},
+ {id:"P12-03",p:"P12",t:"Owner alert on new booking and cancellation",s:"done",pr:"P1",n:"sendOwnerAlert integrated into booking confirmation and self-cancellation actions."},
+ {id:"P12-04",p:"P12",t:"Email receipts through Resend",s:"done",pr:"P2",n:"sendEmailReceipt formatted receipt template with line items and pricing breakdown."},
+ {id:"P12-05",p:"P12",t:"Service worker and web push",s:"done",pr:"P3",n:"sendWebPush push notification payload generator and service worker receiver."},
 
  // P13
  {id:"P13-01",p:"P13",t:"Find players and teams",s:"done",pr:"P3",n:"Community open matches and player finder module (src/lib/community.ts) and /matches page for hosting and joining local games."},

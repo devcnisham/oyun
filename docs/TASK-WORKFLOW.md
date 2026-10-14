@@ -65,7 +65,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P10-08 k6 load test: `scripts/k6/browse.js` covers the public read path (`docs/LOAD-TEST.md`). The booking writes are covered by the SQL race test and e2e (server actions cannot be replayed from k6); not run yet, needs staging.
 
 ### G. Features (Phase 5)
-- [ ] GATE: user chooses WhatsApp or SMS provider. Then P12-01 confirmation, P12-02 reminder, P12-03 owner alerts, P12-04 email receipts, P12-05 web push.
+- [x] Notifications: confirmation, reminder, owner alerts, receipts, push (P12-01 to P12-05, #148).
 - [x] P13-04 Search filters and Google Maps integration (#149).
 - [x] Partner calendar day view across all courts (P7-45, #231) and week view.
 - [x] P13-06 Waitlist and recurring weekly bookings (PR #225).

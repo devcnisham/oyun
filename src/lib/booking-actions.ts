@@ -20,6 +20,7 @@ import { BOOKING_DAYS, addDays, formatHour, formatSlotRange, isValidDate, istNow
 import type { Booking, Database, PitchSize, Slot } from './types';
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
 import { notifyWaitlistWhenSlotFreed } from './waitlist';
+import { sendBookingConfirmation, sendOwnerAlert } from './notifications';
 
 const MAX_DAYS_AHEAD = BOOKING_DAYS - 1;
 const HOLD_MINUTES = 8;
@@ -237,6 +238,15 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
     });
 
     refreshAll();
+    try {
+      const db = await getDb();
+      const turf = db.turfs.find((t) => t.id === req.turfId);
+      const booking = db.bookings.find((b) => ids?.includes(b.id));
+      if (turf && booking) {
+        sendBookingConfirmation(booking, turf).catch(() => {});
+        sendOwnerAlert(booking, turf, 'new_booking').catch(() => {});
+      }
+    } catch {}
     return { ids };
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
@@ -294,6 +304,10 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
       const hoursFreed = booking.hours && booking.hours.length > 0 ? booking.hours : [booking.hour];
       for (const h of hoursFreed) {
         notifyWaitlistWhenSlotFreed(db, booking.turfId, booking.date, h);
+      }
+      const turf = db.turfs.find((t) => t.id === booking.turfId);
+      if (turf) {
+        sendOwnerAlert(booking, turf, 'cancellation').catch(() => {});
       }
     });
     if (isV2SlotsActive()) {
