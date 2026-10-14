@@ -8,6 +8,7 @@ import styles from './PopupAd.module.css';
 import type { PromoCard } from '@/lib/types';
 
 const SEEN_KEY = 'oyun_popup_seen';
+const POPUP_DELAY_MS = 4000;
 
 // Headline offer shown once per visit on the home page: a centred card on desktop, a bottom sheet on phones
 export default function PopupAd({ promos }: { promos: PromoCard[] }) {
@@ -17,15 +18,24 @@ export default function PopupAd({ promos }: { promos: PromoCard[] }) {
 
   useEffect(() => {
     if (!promo) return;
-    const timer = setTimeout(() => {
-      // Storage can throw in private mode; then just show it
-      try {
-        if (sessionStorage.getItem(SEEN_KEY) === promo.id) return;
-        sessionStorage.setItem(SEEN_KEY, promo.id);
-      } catch {}
-      setVisible(true);
-    }, 900);
-    return () => clearTimeout(timer);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const arm = () => {
+      // Wait for the page to finish loading, then a few seconds, so the offer never competes with the hero image
+      timer = setTimeout(() => {
+        // Storage can throw in private mode; then just show it
+        try {
+          if (sessionStorage.getItem(SEEN_KEY) === promo.id) return;
+          sessionStorage.setItem(SEEN_KEY, promo.id);
+        } catch {}
+        setVisible(true);
+      }, POPUP_DELAY_MS);
+    };
+    if (document.readyState === 'complete') arm();
+    else window.addEventListener('load', arm, { once: true });
+    return () => {
+      window.removeEventListener('load', arm);
+      if (timer) clearTimeout(timer);
+    };
   }, [promo]);
 
   useEffect(() => {
@@ -54,7 +64,7 @@ export default function PopupAd({ promos }: { promos: PromoCard[] }) {
           </svg>
         </button>
         <div className={styles.imageContainer}>
-          <Image src={promo.image} alt={promo.title} fill sizes="(max-width: 600px) 100vw, 460px" className={styles.image} unoptimized={!canOptimize(promo.image)} />
+          <Image src={promo.image} alt={promo.title} fill sizes="(max-width: 600px) 100vw, 460px" className={styles.image} loading="eager" fetchPriority="high" unoptimized={!canOptimize(promo.image)} />
           <span className={styles.tag}>Offer</span>
         </div>
         <div className={styles.content}>

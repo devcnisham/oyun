@@ -217,7 +217,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
             <div className={styles.grid}>
               {filtered.map((turf, i) => (
                 <div key={turf.id} className="animate-fadeInUp" style={{ animationDelay: `${i * 0.08}s` }}>
-                  <TurfCard turf={turf} />
+                  <TurfCard turf={turf} eager={i < 2} />
                 </div>
               ))}
             </div>

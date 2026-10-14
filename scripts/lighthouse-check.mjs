@@ -30,7 +30,28 @@ try {
       ],
       { stdio: ['ignore', 'inherit', 'inherit'] }
     );
-    const { categories } = JSON.parse(readFileSync(out, 'utf8'));
+    const { categories, audits } = JSON.parse(readFileSync(out, 'utf8'));
+    // What to fix: metrics, the LCP element and every performance audit that did not pass
+    const metric = (id) => audits[id]?.displayValue ?? 'n/a';
+    console.log(`  LCP ${metric('largest-contentful-paint')} FCP ${metric('first-contentful-paint')} TBT ${metric('total-blocking-time')} CLS ${metric('cumulative-layout-shift')} SI ${metric('speed-index')}`);
+    const lcpEl = audits['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet;
+    if (lcpEl) console.log(`  LCP element: ${lcpEl.slice(0, 160)}`);
+    const boot = audits['bootup-time']?.details?.items ?? [];
+    // What is inside the heaviest script chunk (a name hash tells nothing)
+    const top = boot.find((b) => /\.js(\?|$)/.test(String(b.url)) && b.scripting > 300);
+    if (top) {
+      const text = await fetch(top.url).then((r) => r.text()).catch(() => '');
+      const marks = ['framer-motion', 'clerk', 'supabase', 'react-dom', 'qrcode', 'googletagmanager', 'vercel'].filter((m) => text.toLowerCase().includes(m));
+      console.log(`  heaviest chunk ${String(top.url).split('/').pop()}: ${Math.round(text.length / 1024)} KiB, mentions: ${marks.join(', ') || 'none of the usual suspects'}`);
+    }
+    for (const b of boot.slice(0, 5)) console.log(`  script ${Math.round(b.total)} ms (scripting ${Math.round(b.scripting)} ms): ${String(b.url).slice(0, 100)}`);
+    for (const ref of categories.performance?.auditRefs ?? []) {
+      const a = audits[ref.id];
+      if (!a || a.score === null || a.score >= 0.9 || ref.group === 'metrics') continue;
+      const saved = a.details?.overallSavingsMs ? ` (saves ~${Math.round(a.details.overallSavingsMs)} ms)` : '';
+      console.log(`  - ${a.title}${a.displayValue ? `: ${a.displayValue}` : ''}${saved}`);
+      for (const item of (a.details?.items ?? []).slice(0, 4)) console.log(`      ${String(item.url ?? item.node?.snippet ?? item.label ?? '').slice(0, 140)}`);
+    }
     const line = CATEGORIES.map((c) => `${c}=${Math.round((categories[c]?.score ?? 0) * 100)}`).join(' ');
     const bad = CATEGORIES.filter((c) => (categories[c]?.score ?? 0) < min);
     console.log(`${bad.length ? 'FAIL' : 'ok  '} ${path}  ${line}`);
