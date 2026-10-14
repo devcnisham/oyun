@@ -9,7 +9,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 
 ### A. Safe and real (Phase 0)
 - [x] R006 Check git history for leaked keys (`git log -p | grep -i -E "sk_live|sk_test|sb_secret"`). Report only. GATE: user rotates any key found.
-- [ ] P8-00c Local and Vercel data parity (`SUPABASE_SECRET_KEY` empty locally). GATE: user sets the secret.
+- [x] P8-00c Local and Vercel data parity (#126).
 
 ### B. Foundations (Phase 1)
 - [x] R018 / P8-10 Refresh `FEATURE_LIST.md`; delete `replace_colors.py`, `update_fonts.py`, `update_texts.py` after checking nothing uses them.
