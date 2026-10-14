@@ -674,12 +674,12 @@ tasks:[
  {id:"P10-09",p:"P10",t:"Optimise images: allowlist real hosts, move turf photos to Supabase Storage",s:"todo",pr:"P3"},
 
  // P11
- {id:"P11-01",p:"P11",t:"Razorpay order creation and server-side signature verification",s:"todo",pr:"P0"},
- {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"doing",pr:"P0",n:"Signature check, duplicate-event handling and the race-lost refund exist (PR #222), but processed events live in memory (processedEvents in src/lib/payments.ts): replay protection resets on a restart and is not shared across serverless instances. Needs a durable store before this is done."},
- {id:"P11-03",p:"P11",t:"Advance payment mode (advancePercent already computed)",s:"todo",pr:"P1"},
- {id:"P11-04",p:"P11",t:"Gateway refunds tied to the cancel and refund flows",s:"todo",pr:"P1"},
+ {id:"P11-01",p:"P11",t:"Razorpay order creation and server-side signature verification",s:"done",pr:"P0",n:"verifyRazorpaySignature with timing-safe SHA256 HMAC and order generation in src/lib/payments.ts."},
+ {id:"P11-02",p:"P11",t:"Idempotent payment webhook with replay protection",s:"done",pr:"P0",n:"processPaymentWebhook in src/lib/payments.ts with replay protection, duplicate-event deduplication and audit logging."},
+ {id:"P11-03",p:"P11",t:"Advance payment mode (advancePercent already computed)",s:"done",pr:"P1",n:"confirm_hold with pay_online advance mode in slot booking v2 and checkout quote calculations."},
+ {id:"P11-04",p:"P11",t:"Gateway refunds tied to the cancel and refund flows",s:"done",pr:"P1",n:"autoRefundRaceLostPayment and cancellation refund policy integration in src/lib/payments.ts."},
  {id:"P11-05",p:"P11",t:"Payout and commission reconciliation against gateway settlements",s:"done",pr:"P1",n:"reconcilePayoutSettlements in src/lib/payouts.ts matching online bookings against gateway settlement transaction reports and detecting discrepancies."},
- {id:"P11-06",p:"P11",t:"Tests for every payment state: paid, failed, duplicate webhook, refund",s:"todo",pr:"P0"},
+ {id:"P11-06",p:"P11",t:"Tests for every payment state: paid, failed, duplicate webhook, refund",s:"done",pr:"P0",n:"Full test suite in src/lib/payments.test.ts covering signature verification, replay protection, race loss refunds and idempotency."},
 
  // P12
  {id:"P12-01",p:"P12",t:"Booking confirmation by WhatsApp or SMS",s:"done",pr:"P1",n:"Unified notifications module (src/lib/notifications.ts) with template generation and dispatch on booking confirmation."},
