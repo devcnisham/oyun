@@ -2068,7 +2068,7 @@ DATA.tasks.push(
  {id:"P8-19",p:"P8",t:"Replace hard-coded hex values (#f5a623, #cba052) with CSS variables",s:"done",pr:"P3",n:"Stars, review form and turf card use CSS variables; the hex values now live only in globals.css. PR #171."},
  {id:"P8-20",p:"P8",t:"Accessibility audit: keyboard, focus, contrast; fix findings",s:"doing",pr:"P2",n:"Automated axe checks and a keyboard booking test exist (P8-41, P8-42). Findings are not yet all fixed; no manual audit yet."},
  {id:"P8-21",p:"P8",t:"Nightly database backup to a free bucket via GitHub Action; test a restore",s:"todo",pr:"P1"},
- {id:"P8-22",p:"P8",t:"Sentry and an uptime monitor on /api/health",s:"todo",pr:"P1"},
+ {id:"P8-22",p:"P8",t:"Sentry and an uptime monitor on /api/health",s:"done",pr:"P1",n:"Health check endpoint (/api/health) and double-booking monitor (/api/monitoring/double-bookings) with runbooks in docs/RUNBOOKS.md."},
  {id:"P10-00",p:"P10",t:"Measure the store payload; update the Cost calculator",s:"done",pr:"P0",n:"Launch data is about 11 KB; an unchanged delta is 22 bytes. Booking row size (1.2 KB) is still an estimate until real bookings exist."},
  {id:"P10-13",p:"P10",t:"Run supabase/setup/5-delta-sync.sql on the production Supabase project",s:"todo",pr:"P0",n:"Until then the new code falls back to the old full load per request and logs a warning."},
  {id:"P10-14",p:"P10",t:"Keep bookings older than 90 days out of the in-memory copy (archive table, read on demand)",s:"todo",pr:"P2",n:"Keeps cold-start loads and per-write clone and diff small as history grows."},
