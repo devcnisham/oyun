@@ -342,6 +342,8 @@ export interface Database {
   holds: SlotHold[];
   waitlist?: WaitlistEntry[];
   payouts?: PayoutRecord[];
+  openMatches?: OpenMatch[];
+  tournaments?: Tournament[];
 }
 
 export type PayoutStatus = 'pending' | 'processing' | 'paid' | 'failed' | 'on_hold';
@@ -378,6 +380,54 @@ export interface WaitlistEntry {
   status: 'waiting' | 'notified' | 'claimed' | 'cancelled';
   createdAt: string;
   notifiedAt?: string | null;
+}
+
+export interface OpenMatchPlayer {
+  name: string;
+  phone: string;
+  joinedAt: string;
+}
+
+export interface OpenMatch {
+  id: string; // match_...
+  turfId: string;
+  turfName: string;
+  sport: string;
+  date: string;
+  hour: number;
+  timeLabel: string;
+  format: string; // e.g. "5-a-side"
+  hostName: string;
+  hostPhone: string;
+  playersNeeded: number;
+  playersJoined: OpenMatchPlayer[];
+  status: 'open' | 'full' | 'completed' | 'cancelled';
+  createdAt: string;
+}
+
+export interface TournamentTeam {
+  teamName: string;
+  captainName: string;
+  captainPhone: string;
+  registeredAt: string;
+}
+
+export interface Tournament {
+  id: string; // tour_...
+  title: string;
+  sport: string;
+  turfId: string;
+  turfName: string;
+  startDate: string;
+  endDate: string;
+  registrationDeadline: string;
+  format: string;
+  entryFee: number;
+  prizePool: string;
+  maxTeams: number;
+  registeredTeams: TournamentTeam[];
+  status: 'upcoming' | 'ongoing' | 'completed';
+  createdAt: string;
 }
 
 export type ActionResult = { ok?: string; error?: string; data?: Record<string, string> } | null;

@@ -38,6 +38,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             {link('/admin/partners', '🤝', 'Partners')}
             {link('/admin/users', '👥', 'Players')}
             {link('/admin/transactions', '💳', 'Bookings & refunds')}
+            {link('/admin/analytics', '📊', 'Analytics')}
             {link('/admin/reviews', '⭐', 'Reviews')}
           </div>
 

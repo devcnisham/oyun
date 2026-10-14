@@ -69,7 +69,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] Partner calendar day and week view (single turf; "across all courts" waits for R007 multi-court).
 - [x] P13-06 Waitlist and recurring weekly bookings (PR #225).
 - [x] Split payment link (PR #221).
-- [ ] P13-01 Find players and open matches; P13-02 tournaments; [x] P13-03 weather alerts (PR #217); P13-05 admin analytics; [x] P13-07 Kannada (PR #218).
+- [x] P13-01 Find players and open matches; P13-02 tournaments; [x] P13-03 weather alerts (PR #217); [x] P13-05 admin analytics; [x] P13-07 Kannada (PR #218).
 
 ### H. Quality and launch (Phases 6 to 7)
 - [x] Concurrency test in CI (`scripts/sql-race-test.sh`), accessibility (axe, `e2e/a11y.spec.ts`), bad-path tests (`src/lib/bad-paths.test.ts`).

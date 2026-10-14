@@ -92,7 +92,7 @@ What is built, what is partly built and what is still to do. Updated 9 Oct 2026 
 - [x] Commission settings per turf.
 - [x] Customization: sponsor strip managed by admin (empty by default).
 - [x] Review moderation screen.
-- [ ] Analytics: bookings by area, busiest hours, conversion.
+- [x] Analytics: bookings by area, busiest hours, conversion (/admin/analytics, src/lib/analytics.ts, P13-05).
 - [ ] Per-user admin accounts, MFA and session revocation (single env credential today).
 
 ### 12. Platform & Growth
