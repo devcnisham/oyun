@@ -12,6 +12,8 @@ interface RescheduleBookingProps {
   currentHour: number;
   openHours: number[];
   needsPhone: boolean;
+  durationMinutes?: number;
+  startMinute?: number;
 }
 
 export default function RescheduleBooking({
@@ -20,6 +22,8 @@ export default function RescheduleBooking({
   currentHour,
   openHours,
   needsPhone,
+  durationMinutes = 60,
+  startMinute = 0,
 }: RescheduleBookingProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -124,7 +128,7 @@ export default function RescheduleBooking({
             >
               {hours.map((h) => (
                 <option key={h} value={h}>
-                  {formatSlotRange(h)}
+                  {formatSlotRange(h, durationMinutes, startMinute)}
                 </option>
               ))}
             </select>

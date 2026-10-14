@@ -1,5 +1,5 @@
 import { turfHours } from './pricing';
-import { addDays, dayOfWeek } from './time';
+import { addDays, dayOfWeek, isSlotInPast, parseHour } from './time';
 import type { Booking, Database, PublicTurf, Turf, VenueResource } from './types';
 import { mapTurfToResourcesAndBookables } from './venue-mapping';
 
@@ -44,6 +44,7 @@ export function weekStart(date: string) {
 
 export function buildWeek(db: Database, turf: PublicTurf, start: string, now: { date: string; hour: number }): { hours: number[]; days: CalendarDay[] } {
   const hours = turfHours(turf);
+  const openHour = parseHour(turf.openTime);
   const nowIso = new Date().toISOString();
   const days: CalendarDay[] = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(start, i);
@@ -56,7 +57,7 @@ export function buildWeek(db: Database, turf: PublicTurf, start: string, now: { 
         .filter((b) => b.hour === hour)
         .map((b) => ({ id: b.id, code: b.code, name: b.customerName, phone: b.customerPhone, status: b.status, source: b.source, part: b.pitch ?? 'full' }) as CalendarBooking);
       const block = dayBlocks.find((b) => b.hour === hour) ?? null;
-      const past = date < now.date || (date === now.date && hour < now.hour);
+      const past = isSlotInPast(date, hour, { date: now.date, hour: now.hour, minute: 0 }, openHour, true, 0, 60);
       const state: CalendarState = bookings.length > 0 ? 'booked' : block ? 'blocked' : dayHolds.some((h) => h.hour === hour) ? 'held' : past ? 'past' : 'free';
       return { date, hour, state, bookings, blockReason: block?.reason ?? null, blockId: block?.id ?? null };
     });
@@ -89,6 +90,7 @@ export function buildDayAcrossCourts(
 } {
   const { resources } = mapTurfToResourcesAndBookables(turf as Turf);
   const hours = turfHours(turf);
+  const openHour = parseHour(turf.openTime);
   const nowIso = new Date().toISOString();
 
   const dayBookings = db.bookings.filter(
@@ -100,7 +102,7 @@ export function buildDayAcrossCourts(
   );
 
   const rows = hours.map((hour) => {
-    const past = date < now.date || (date === now.date && hour < now.hour);
+    const past = isSlotInPast(date, hour, { date: now.date, hour: now.hour, minute: 0 }, openHour, true, 0, 60);
     const block = dayBlocks.find((b) => b.hour === hour) ?? null;
     const hourHolds = dayHolds.filter((h) => h.hour === hour);
 

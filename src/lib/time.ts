@@ -53,15 +53,77 @@ export function isValidDate(date: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(toUtcNoon(date).getTime()) && toUtcNoon(date).toISOString().slice(0, 10) === date;
 }
 
-export function formatHour(hour: number) {
-  const h = ((hour % 24) + 24) % 24;
-  const suffix = h < 12 ? 'AM' : 'PM';
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${String(h12).padStart(2, '0')}:00 ${suffix}`;
+export function formatTime(hour: number, minute: number = 0) {
+  const normHour = ((hour % 24) + 24) % 24;
+  const suffix = normHour < 12 ? 'AM' : 'PM';
+  const h12 = normHour % 12 === 0 ? 12 : normHour % 12;
+  const m = String(minute).padStart(2, '0');
+  return `${String(h12).padStart(2, '0')}:${m} ${suffix}`;
 }
 
-export function formatSlotRange(hour: number) {
-  return `${formatHour(hour)} – ${formatHour(hour + 1)}`;
+export function formatHour(hour: number) {
+  return formatTime(hour, 0);
+}
+
+export function formatSlotRange(startHour: number, durationMinutes: number = 60, startMinute: number = 0) {
+  const startTotal = startHour * 60 + startMinute;
+  const endTotal = startTotal + durationMinutes;
+
+  const startH = Math.floor(startTotal / 60) % 24;
+  const startM = startTotal % 60;
+  const endH = Math.floor(endTotal / 60) % 24;
+  const endM = endTotal % 60;
+
+  return `${formatTime(startH, startM)} – ${formatTime(endH, endM)}`;
+}
+
+export function parseMinute(time?: string) {
+  if (!time || typeof time !== 'string') return 0;
+  const [, m] = time.split(':');
+  const n = Number(m);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/**
+ * Returns the ISO 8601 string in IST (+05:30) for a given slot start.
+ * If hour < openHour for a venue open past midnight, the slot starts on the next calendar day.
+ */
+export function slotTimestamp(date: string, hour: number, openHour: number = 0, minute: number = 0) {
+  const isAfterMidnight = openHour > 0 && hour < openHour;
+  const slotDate = isAfterMidnight ? addDays(date, 1) : date;
+  const h = String(((hour % 24) + 24) % 24).padStart(2, '0');
+  const m = String(minute).padStart(2, '0');
+  return `${slotDate}T${h}:${m}:00+05:30`;
+}
+
+/**
+ * Determines whether a slot has already started or completed in the past.
+ * Accurately accounts for cross-midnight operating sessions.
+ */
+export function isSlotInPast(
+  date: string,
+  hour: number,
+  now: IstNow,
+  openHour: number = 0,
+  walkIn: boolean = false,
+  minute: number = 0,
+  durationMinutes: number = 60
+): boolean {
+  const isAfterMidnight = openHour > 0 && hour < openHour;
+  const slotDate = isAfterMidnight ? addDays(date, 1) : date;
+
+  if (slotDate < now.date) return true;
+  if (slotDate > now.date) return false;
+
+  const slotStartMinutes = hour * 60 + minute;
+  const nowMinutes = now.hour * 60 + now.minute;
+
+  if (walkIn) {
+    const slotEndMinutes = slotStartMinutes + durationMinutes;
+    return slotEndMinutes <= nowMinutes;
+  }
+
+  return slotStartMinutes <= nowMinutes;
 }
 
 export function formatDate(date: string, opts: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' }) {
@@ -79,7 +141,8 @@ export function formatDateTime(iso: string) {
   }).format(new Date(iso));
 }
 
-export function parseHour(time: string) {
+export function parseHour(time?: string) {
+  if (!time || typeof time !== 'string') return 0;
   const [h] = time.split(':');
   const n = Number(h);
   return Number.isFinite(n) ? n : 0;
@@ -90,3 +153,4 @@ export function weekStart(date: string) {
   const dow = dayOfWeek(date);
   return addDays(date, dow === 0 ? -6 : 1 - dow);
 }
+

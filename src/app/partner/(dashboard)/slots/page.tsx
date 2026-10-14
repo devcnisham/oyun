@@ -53,7 +53,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
             const cls = s.reason === 'past' ? dash.slotPast : booking ? dash.slotBooked : block ? dash.slotBlocked : dash.slotFree;
             return (
               <div key={s.hour} className={`${dash.slot} ${cls}`}>
-                <span className={dash.slotTime}>{formatSlotRange(s.hour)}</span>
+                <span className={dash.slotTime}>{s.label || formatSlotRange(s.hour, s.durationMinutes, s.minute)}</span>
                 <span>₹{s.price}{s.tags.length > 0 && <span className={dash.muted}> · {s.tags.join(', ')}</span>}</span>
                 {booking ? (
                   hourBookings.map((b) => (

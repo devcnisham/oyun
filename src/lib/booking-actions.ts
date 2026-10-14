@@ -297,7 +297,7 @@ export async function rescheduleBooking(
       booking.date = dateStr;
       booking.hour = hourNum;
       booking.pitch = allocatedPitch;
-      booking.timeLabel = formatSlotRange(hourNum);
+      booking.timeLabel = formatSlotRange(hourNum, booking.durationMinutes ?? 60, booking.startMinute ?? 0);
       booking.rescheduledAt = new Date().toISOString();
     });
 

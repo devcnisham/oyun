@@ -1,5 +1,6 @@
 import type { Slot } from '@/lib/types';
 import { rupees, shortHour } from '@/lib/format';
+import { formatTime } from '@/lib/time';
 import { SESSIONS, slotTitle, unavailableInfo } from './booking-format';
 import styles from './BookingFlow.module.css';
 
@@ -45,7 +46,7 @@ export default function SlotMap({ slots, selected, loading, onToggle }: SlotMapP
                     >
                       {deal && slot.available && <span className={styles.deal}>{deal.match(/-\d+%/)?.[0] ?? 'Deal'}</span>}
                       {slot.tags.includes('Peak') && slot.available && <span className={styles.peak} title="Peak hours" />}
-                      <span className={styles.seatTime}>{shortHour(slot.hour)}</span>
+                      <span className={styles.seatTime}>{slot.minute ? formatTime(slot.hour, slot.minute) : shortHour(slot.hour)}</span>
                       <span className={styles.seatSub}>
                         {slot.available ? rupees(slot.price) : unavailableInfo(slot).sub}
                       </span>

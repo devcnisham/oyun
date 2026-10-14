@@ -46,7 +46,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers (PR #220, #133).
 - [x] Data mapping: turf to venue, resources, bookables; partner screens for courts (#134).
 - [x] R007 Multi-court venues in the booking flow (#135).
-- [ ] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
+- [x] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
 - [ ] Switch slots over to the v2 functions, keep the realtime broadcast.
 - [ ] R010 One order per checkout.
 - [ ] R008 Retire the jsonb store for bookings, holds, blocks, pricing.

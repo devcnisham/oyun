@@ -58,7 +58,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
         </div>
         <h1 className={styles.turf}>{turf.name}</h1>
         <p className={styles.when}>
-          {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {formatSlotRange(booking.hour)}{halfNote(booking.pitch)}
+          {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}{halfNote(booking.pitch)}
         </p>
         <p className={styles.where}>{turf.location}</p>
 
@@ -111,7 +111,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
                 className={styles.extra}
                 target="_blank"
                 rel="noopener noreferrer"
-                href={`https://wa.me/?text=${encodeURIComponent(`I've booked ${turf.name} on ${formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}, ${formatSlotRange(booking.hour)}. Join the game! ${origin}/arenas/${turf.id}`)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(`I've booked ${turf.name} on ${formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}, ${booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}. Join the game! ${origin}/arenas/${turf.id}`)}`}
               >
                 💬 Share on WhatsApp
               </a>
@@ -120,7 +120,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
             <SplitPayment
               turfName={turf.name}
               dateStr={formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}
-              timeSlot={formatSlotRange(booking.hour)}
+              timeSlot={booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}
               totalAmount={p.total}
               customerName={booking.customerName}
             />
@@ -135,6 +135,8 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
               currentHour={booking.hour}
               openHours={turfHours(turf)}
               needsPhone={!booking.accountId}
+              durationMinutes={booking.durationMinutes}
+              startMinute={booking.startMinute}
             />
             <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} needsPhone={!booking.accountId} />
           </>

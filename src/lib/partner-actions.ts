@@ -15,7 +15,7 @@ import { generateTempPassword, hashPassword } from './password';
 import { TURF_COOKIE, getPartnerContext, requirePartnerAction, type PartnerContext } from './partner-auth';
 import { buildQuote, getSlots, turfHours } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
-import { formatHour, isValidDate, istNow } from './time';
+import { addDays, formatHour, formatSlotRange, isValidDate, istNow, parseHour } from './time';
 import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from './types';
 import { checkInWindow } from './checkin-window';
 import { mapTurfToResourcesAndBookables } from './venue-mapping';
@@ -64,13 +64,17 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       if (quote.slotError) throw new ValidationError(quote.slotError);
 
       const player = upsertPlayer(db, name, phone);
+      const durationMinutes = Math.max(15, Math.min(240, Number(fd.get('durationMinutes')) || 60));
+      const startMinute = Math.max(0, Math.min(45, Number(fd.get('minute')) || 0));
       const booking: Booking = {
         id: newId('bk'),
         code: newBookingCode(db),
         turfId: ctx.turf.id,
         date,
         hour,
-        timeLabel: formatHour(hour),
+        timeLabel: formatSlotRange(hour, durationMinutes, startMinute),
+        durationMinutes,
+        startMinute,
         customerName: name,
         customerPhone: phone,
         playerId: player.id,
@@ -85,7 +89,7 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
         createdAt: new Date().toISOString(),
       };
       db.bookings.push(booking);
-      return { ok: `Walk-in booked: ${name}, ${formatHour(hour)} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booking.code}` };
+      return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booking.code}` };
     });
   });
 }
@@ -131,8 +135,19 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
       }
       if (booking.status === 'checked_in') throw new ValidationError(`${booking.customerName} is already checked in`);
       if (booking.status !== 'confirmed') throw new ValidationError(`This booking is ${booking.status.replace('_', ' ')}`);
-      if (booking.date !== today) throw new ValidationError(`This booking is for ${booking.date}, not today`);
-      const win = checkInWindow(booking.hour, { hour, minute });
+      const openHour = parseHour(ctx.turf.openTime);
+      const isAfterMidnight = openHour > 0 && booking.hour < openHour;
+      const expectedCalendarDate = isAfterMidnight ? addDays(booking.date, 1) : booking.date;
+      if (today !== expectedCalendarDate && booking.date !== today) {
+        throw new ValidationError(`This booking is for ${booking.date}, not today`);
+      }
+      const win = checkInWindow(
+        booking.hour,
+        { hour, minute },
+        booking.durationMinutes ?? 60,
+        booking.startMinute ?? 0,
+        openHour
+      );
       if (win === 'early') throw new ValidationError(`Check-in for ${booking.timeLabel} opens an hour before the slot`);
       if (win === 'late') throw new ValidationError(`The ${booking.timeLabel} slot has ended`);
 

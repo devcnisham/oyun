@@ -14,7 +14,7 @@ import type {
   PublicTurf,
   Turf,
 } from './types';
-import { formatHour, isWeekend, parseHour, type IstNow } from './time';
+import { formatSlotRange, isSlotInPast, isWeekend, parseHour, type IstNow } from './time';
 
 export const DEFAULT_PRICING: PricingRules = {
   peakEnabled: true,
@@ -37,9 +37,19 @@ export function normalizePhone(phone: string) {
 
 export function turfHours(turf: PublicTurf) {
   const open = parseHour(turf.openTime);
-  let close = parseHour(turf.closeTime);
-  if (close <= open) close = 24; // e.g. open till midnight
+  const close = parseHour(turf.closeTime);
   const hours: number[] = [];
+  if (close === open) {
+    // 24 hours open
+    for (let h = 0; h < 24; h++) hours.push(h);
+    return hours;
+  }
+  if (close <= open) {
+    // Closes at midnight (close === 0) or past midnight (close > 0)
+    for (let h = open; h < 24; h++) hours.push(h);
+    for (let h = 0; h < close; h++) hours.push(h);
+    return hours;
+  }
   for (let h = open; h < close; h++) hours.push(h);
   return hours;
 }
@@ -131,9 +141,11 @@ export function getSlots(db: Database, turf: PublicTurf, date: string, now: IstN
   const ownHolds = new Set((db.holds ?? []).filter((h) => h.turfId === turf.id && h.date === date && h.expiresAt > nowIso && h.holder === holder).map((h) => h.hour));
   const happyHours = db.offers.filter((o) => o.turfId === turf.id && o.active && o.type === 'happy_hour');
 
+  const openHour = parseHour(turf.openTime);
+
   return turfHours(turf).map((hour) => {
     const { basePrice, price, tags } = slotPrice(turf, rules, date, hour, now, half ? 'half' : 'full');
-    const past = date < now.date || (date === now.date && (walkIn ? hour < now.hour : hour <= now.hour));
+    const past = isSlotInPast(date, hour, now, openHour, walkIn, 0, 60);
     const b = booked.get(hour) ?? new Set<string>();
     const h = held.get(hour) ?? new Set<string>();
     // Full pitch needs both halves free; a half needs one half that is neither booked nor held
@@ -145,7 +157,9 @@ export function getSlots(db: Database, turf: PublicTurf, date: string, now: IstN
     return {
       date,
       hour,
-      label: formatHour(hour),
+      minute: 0,
+      durationMinutes: 60,
+      label: formatSlotRange(hour, 60, 0),
       basePrice,
       price,
       tags: happy ? [...tags, `${happy.title} -${happy.percentOff}%`] : tags,

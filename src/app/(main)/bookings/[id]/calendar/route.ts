@@ -1,5 +1,6 @@
 import { getDb } from '@/lib/store';
 import { absoluteUrl } from '@/lib/site';
+import { parseHour, slotTimestamp } from '@/lib/time';
 
 // "Add to calendar": the booking as an .ics event (works with Google, Apple and Outlook calendars)
 const ics = (s: string) => s.replace(/[\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
@@ -12,8 +13,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const turf = booking && db.turfs.find((t) => t.id === booking.turfId);
   if (!booking || !turf) return new Response('Not found', { status: 404 });
 
-  const start = new Date(`${booking.date}T${String(booking.hour).padStart(2, '0')}:00:00+05:30`);
-  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const openHour = parseHour(turf.openTime);
+  const start = new Date(slotTimestamp(booking.date, booking.hour, openHour, booking.startMinute ?? 0));
+  const durationMs = (booking.durationMinutes ?? 60) * 60 * 1000;
+  const end = new Date(start.getTime() + durationMs);
   const body = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
