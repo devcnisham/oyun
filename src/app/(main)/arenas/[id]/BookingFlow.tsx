@@ -11,6 +11,7 @@ import { clerkEnabled } from '@/lib/clerk';
 import SignInGate from '@/components/SignInGate';
 import { primarySport } from '@/lib/sports';
 import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
+import { mapTurfToVenue, type MappedBookable } from '@/lib/data-mapping';
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
 import { describeHours } from './booking-format';
@@ -35,6 +36,9 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [selected, setSelected] = useState<number[]>([]);
   const [size, setSize] = useState<PitchSize>('full'); // whole pitch or one half (turfs that split)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapped = mapTurfToVenue(turf as any);
+  const [selectedBookable, setSelectedBookable] = useState<MappedBookable | undefined>(() => mapped.bookables[0]);
   const [loadingSlots, startSlotLoad] = useTransition();
   const [toast, setToast] = useState('');
 
@@ -240,8 +244,16 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         ))}
       </div>
 
-      {/* 2 · Full or half pitch (only on turfs that split down the middle) */}
-      {turf.halfPitch && <PitchPicker turf={turf} size={size} onChange={changeSize} />}
+      {/* 2 · Full or half pitch, or multi-court selection */}
+      {(turf.halfPitch || mapped.bookables.length > 1) && (
+        <PitchPicker
+          turf={turf}
+          size={size}
+          onChange={changeSize}
+          selectedBookableId={selectedBookable?.id}
+          onBookableChange={(b) => setSelectedBookable(b)}
+        />
+      )}
 
       {/* 3 · Slot map */}
       <div className={styles.stepHead}>
@@ -251,7 +263,15 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
       <div className={styles.pitch} aria-hidden>
         <span>
-          {primarySport(turf).icon} {size === 'half' ? 'Half pitch' : primarySport(turf).place === 'court' ? turf.size : `${turf.size} pitch`} · {dateInfo?.label}
+          {primarySport(turf).icon}{' '}
+          {selectedBookable
+            ? `${selectedBookable.name} · ${selectedBookable.slotMinutes} min slots`
+            : size === 'half'
+            ? 'Half pitch'
+            : primarySport(turf).place === 'court'
+            ? turf.size
+            : `${turf.size} pitch`}{' '}
+          · {dateInfo?.label}
         </span>
       </div>
 

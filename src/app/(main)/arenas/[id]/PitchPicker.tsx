@@ -1,16 +1,71 @@
 import { hourlyRate } from '@/lib/pricing';
 import type { PitchSize, PublicTurf } from '@/lib/types';
 import { rupees } from '@/lib/format';
+import { mapTurfToVenue, type MappedBookable } from '@/lib/data-mapping';
 import styles from './BookingFlow.module.css';
 
 interface PitchPickerProps {
   turf: PublicTurf;
   size: PitchSize;
   onChange: (size: PitchSize) => void;
+  selectedBookableId?: string;
+  onBookableChange?: (bookable: MappedBookable) => void;
 }
 
-/** Full or half pitch, for turfs that split down the middle. */
-export default function PitchPicker({ turf, size, onChange }: PitchPickerProps) {
+/** Full or half pitch, or court selection for multi-court venues. */
+export default function PitchPicker({
+  turf,
+  size,
+  onChange,
+  selectedBookableId,
+  onBookableChange,
+}: PitchPickerProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapped = mapTurfToVenue(turf as any);
+
+  // If the turf has multiple bookables (e.g. Badminton courts, Pickleball courts) and is not halfPitch
+  if (!turf.halfPitch && mapped.bookables.length > 1) {
+    return (
+      <>
+        <div className={styles.stepHead}>
+          <h3>Choose court</h3>
+          <span className={styles.muted}>{mapped.bookables.length} available</span>
+        </div>
+        <div className={styles.pitchPick} role="radiogroup" aria-label="Court">
+          {mapped.bookables.map((bookable) => {
+            const isSelected = selectedBookableId
+              ? selectedBookableId === bookable.id
+              : bookable.id === mapped.bookables[0].id;
+            return (
+              <button
+                key={bookable.id}
+                type="button"
+                role="radio"
+                aria-checked={isSelected}
+                className={`${styles.pitchOption} ${isSelected ? styles.pitchOptionOn : ''}`}
+                onClick={() => onBookableChange?.(bookable)}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 18 }}>
+                    {bookable.sport === 'badminton' ? '🏸' : bookable.sport === 'pickleball' ? '🏓' : '⚽'}
+                  </span>
+                  <b>{bookable.name}</b>
+                </div>
+                <small>
+                  {bookable.slotMinutes} min slots · from {rupees(bookable.basePrice)}/slot
+                </small>
+              </button>
+            );
+          })}
+        </div>
+      </>
+    );
+  }
+
+  if (!turf.halfPitch) {
+    return null;
+  }
+
   return (
     <>
       <div className={styles.stepHead}>
