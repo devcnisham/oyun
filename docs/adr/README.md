@@ -9,3 +9,4 @@ One short file per decision that shaped OYUN, with what to watch for before reop
 - [0005 custom cookie sessions for admin and partner](0005-custom-cookie-auth.md)
 - [0006 Realtime broadcast for slot freshness](0006-realtime-broadcast.md)
 - [0007 delta sync](0007-delta-sync.md)
+- [0008 Redis vs Postgres for holds, availability, and rate limits](0008-redis-vs-postgres.md)
