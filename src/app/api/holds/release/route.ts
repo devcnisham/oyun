@@ -1,6 +1,7 @@
 import { deviceHolder } from '@/lib/device-holder';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
 import { mutate } from '@/lib/store';
+import { isV2SlotsActive, v2ReleaseHolds } from '@/lib/v2-slots';
 
 // A malformed or "null" Origin must be refused, not crash the route
 function originHost(origin: string) {
@@ -27,6 +28,9 @@ export async function POST(req: Request) {
 
   const holder = await deviceHolder(false);
   if (holder) {
+    if (isV2SlotsActive()) {
+      await v2ReleaseHolds(holder);
+    }
     try {
       await mutate((db) => {
         db.holds = db.holds.filter((h) => h.holder !== holder);

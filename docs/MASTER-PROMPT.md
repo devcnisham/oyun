@@ -78,14 +78,14 @@ Follow `docs/SLOT-BOOKING-DB.md` → "Moving the app over".
   - Move it into `supabase/migrations/<timestamp>_slot_booking_v2.sql` plus matching `supabase/setup/` steps.
   - Add `public` wrapper functions for the RPCs, or expose the `oyun` schema.
   - Keep the test script passing in CI.
-- [ ] **Data mapping.**
+- [x] **Data mapping.**
   - Seed and migration code turns each existing turf into a venue with resources and bookables.
   - A plain turf gets one resource. A `halfPitch` turf gets Half A, Half B and three bookables.
   - Each badminton or pickleball court is its own resource.
   - Partner screens are added to manage courts and bookables.
-- [ ] **R007 Multi-court venues.** The booking flow lets the player pick a court or pitch size. Slot lengths come from the bookable.
-- [ ] **R009 Any slot length and after-midnight slots** in the UI: slot grid, invoices, calendar file, check-in.
-- [ ] **Switch slots over.**
+- [x] **R007 Multi-court venues.** The booking flow lets the player pick a court or pitch size. Slot lengths come from the bookable.
+- [x] **R009 Any slot length and after-midnight slots** in the UI: slot grid, invoices, calendar file, check-in.
+- [x] **Switch slots over.**
   - `getSlotsForDate` → `available_slots`
   - `holdSlots` → `hold_slots`
   - `createBookings` → `confirm_hold`
