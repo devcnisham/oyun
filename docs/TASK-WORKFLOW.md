@@ -44,7 +44,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### D. Database v2 (Phase 2, follow `docs/SLOT-BOOKING-DB.md`)
 - [x] Turn `supabase/proposals/slot_booking_v2.sql` into a migration plus `supabase/setup/` steps and `public` RPC wrappers (PR #220, #133).
 - [x] Data mapping: turf to venue, resources, bookables; partner screens for courts (#134).
-- [ ] R007 Multi-court venues in the booking flow.
+- [x] R007 Multi-court venues in the booking flow (#135).
 - [ ] R009 Any slot length and after-midnight slots (grid, invoice, calendar, check-in).
 - [ ] Switch slots over to the v2 functions, keep the realtime broadcast.
 - [ ] R010 One order per checkout.
@@ -66,7 +66,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### G. Features (Phase 5)
 - [ ] GATE: user chooses WhatsApp or SMS provider. Then P12-01 confirmation, P12-02 reminder, P12-03 owner alerts, P12-04 email receipts, P12-05 web push.
 - [ ] P13-04 Search filters; GATE: user chooses Google Maps or Mapbox for the map.
-- [x] Partner calendar day and week view (single turf; "across all courts" waits for R007 multi-court).
+- [x] Partner calendar day view across all courts (P7-45, #231) and week view.
 - [x] P13-06 Waitlist and recurring weekly bookings (PR #225).
 - [x] Split payment link (PR #221).
 - [x] P13-01 Find players and open matches; P13-02 tournaments; [x] P13-03 weather alerts (PR #217); [x] P13-05 admin analytics; [x] P13-07 Kannada (PR #218).

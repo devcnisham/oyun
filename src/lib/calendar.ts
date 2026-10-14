@@ -1,6 +1,7 @@
 import { turfHours } from './pricing';
 import { addDays, dayOfWeek } from './time';
-import type { Booking, Database, PublicTurf } from './types';
+import type { Booking, Database, PublicTurf, Turf, VenueResource } from './types';
+import { mapTurfToResourcesAndBookables } from './venue-mapping';
 
 // The partner calendar: one turf, seven days, every opening hour (task RQ-F3).
 
@@ -63,3 +64,96 @@ export function buildWeek(db: Database, turf: PublicTurf, start: string, now: { 
   });
   return { hours, days };
 }
+
+export interface CourtCalendarCell {
+  hour: number;
+  resourceId: string;
+  resourceName: string;
+  state: CalendarState;
+  bookings: CalendarBooking[];
+  blockReason: string | null;
+}
+
+/**
+ * Builds the day view across all courts / resources for a venue (P7-45).
+ */
+export function buildDayAcrossCourts(
+  db: Database,
+  turf: PublicTurf,
+  date: string,
+  now: { date: string; hour: number }
+): {
+  resources: VenueResource[];
+  hours: number[];
+  rows: { hour: number; cells: CourtCalendarCell[] }[];
+} {
+  const { resources } = mapTurfToResourcesAndBookables(turf as Turf);
+  const hours = turfHours(turf);
+  const nowIso = new Date().toISOString();
+
+  const dayBookings = db.bookings.filter(
+    (b) => b.turfId === turf.id && b.date === date && TAKING.has(b.status)
+  );
+  const dayBlocks = db.blocks.filter((b) => b.turfId === turf.id && b.date === date);
+  const dayHolds = (db.holds ?? []).filter(
+    (h) => h.turfId === turf.id && h.date === date && h.expiresAt > nowIso
+  );
+
+  const rows = hours.map((hour) => {
+    const past = date < now.date || (date === now.date && hour < now.hour);
+    const block = dayBlocks.find((b) => b.hour === hour) ?? null;
+    const hourHolds = dayHolds.filter((h) => h.hour === hour);
+
+    const cells: CourtCalendarCell[] = resources.map((res) => {
+      const bookings = dayBookings
+        .filter((b) => {
+          if (b.hour !== hour) return false;
+          if (turf.halfPitch) {
+            if (b.pitch === 'full') return true;
+            if (b.pitch === 'A' && res.name.includes('Half A')) return true;
+            if (b.pitch === 'B' && res.name.includes('Half B')) return true;
+            return false;
+          }
+          return true;
+        })
+        .map(
+          (b) =>
+            ({
+              id: b.id,
+              code: b.code,
+              name: b.customerName,
+              phone: b.customerPhone,
+              status: b.status,
+              source: b.source,
+              part: b.pitch ?? 'full',
+            }) as CalendarBooking
+        );
+
+      const isHeld = hourHolds.length > 0;
+      const state: CalendarState =
+        bookings.length > 0
+          ? 'booked'
+          : block
+            ? 'blocked'
+            : isHeld
+              ? 'held'
+              : past
+                ? 'past'
+                : 'free';
+
+      return {
+        hour,
+        resourceId: res.id,
+        resourceName: res.name,
+        state,
+        bookings,
+        blockReason: block?.reason ?? null,
+      };
+    });
+
+    return { hour, cells };
+  });
+
+  return { resources, hours, rows };
+}
+
