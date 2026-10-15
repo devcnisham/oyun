@@ -14,8 +14,8 @@ declare global {
   }
 }
 
-export default function CheckInDesk() {
-  const [code, setCode] = useState('');
+export default function CheckInDesk({ initialCode = '' }: { initialCode?: string }) {
+  const [code, setCode] = useState(initialCode);
   const [state, formAction, pending] = useActionState(async (prev: ActionResult, fd: FormData) => {
     const res = await checkInBooking(prev, fd);
     if (res?.ok) setCode(''); // ready for the next player
