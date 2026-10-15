@@ -7,8 +7,10 @@ import { addDays, formatDate, formatDateTime, formatSlotRange, isSlotInPast, ist
 import CheckInDesk from './CheckInDesk';
 import { halfNote } from '@/lib/pricing';
 
-export default async function CheckInPage() {
+export default async function CheckInPage({ searchParams }: { searchParams?: Promise<{ code?: string }> }) {
   const ctx = await requirePartner('checkin');
+  const params = await searchParams;
+  const initialCode = params?.code ? String(params.code).trim().toUpperCase() : '';
   const db = await getDb();
   const now = istNow();
   const turfBookings = db.bookings.filter((b) => b.turfId === ctx.turf.id);
@@ -37,7 +39,7 @@ export default async function CheckInPage() {
       <PageHeader title="Check-in desk" desc="Scan the player's QR code or type their booking code at the gate." />
 
       <div className={dash.card}>
-        <CheckInDesk />
+        <CheckInDesk initialCode={initialCode} />
       </div>
 
       <div className={dash.stats}>

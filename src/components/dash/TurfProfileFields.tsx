@@ -1,5 +1,6 @@
 import { AMENITY_OPTIONS } from '@/lib/action-utils';
 import type { Turf } from '@/lib/types';
+import PhotoUploader from './PhotoUploader';
 import styles from './dash.module.css';
 
 // Inputs parsed by parseTurfProfile() — shared by the partner and admin turf editors
@@ -64,10 +65,9 @@ export default function TurfProfileFields({ turf, phoneOptional = false }: { tur
         <span className={styles.label}>Description</span>
         <textarea name="description" defaultValue={turf.description} required maxLength={1000} className={styles.textarea} />
       </label>
-      <label className={styles.field}>
-        <span className={styles.label}>Photos — one link per line (/turfs/turf_1.jpg or https://…)</span>
-        <textarea name="images" defaultValue={turf.images.join('\n')} required className={styles.textarea} />
-      </label>
+      <div className={styles.field}>
+        <PhotoUploader initialImages={turf.images} />
+      </div>
       <div className={styles.field}>
         <span className={styles.label}>Amenities</span>
         <div className={styles.checkGrid}>

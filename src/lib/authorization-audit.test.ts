@@ -85,6 +85,7 @@ describe('API and file routes', () => {
     'src/app/api/webhooks/razorpay/route.ts': ['verifyRazorpaySignature(', 'sharedRateLimit('],
     'src/app/api/monitoring/double-bookings/route.ts': ['sharedRateLimit(', 'detectDoubleBookings('],
     'src/app/api/partner/payouts/[id]/statement/route.ts': ["!ctx || !ctx.can('payouts')", 'payout.partnerId !== ctx.partner.id'],
+    'src/app/api/partner/upload/route.ts': ['getPartnerContext()', "getSessionSubject('admin')"],
     'src/app/api/cron/payouts/settle/route.ts': ['createSettlementBatch(', 'requireCronSecret('],
   };
 

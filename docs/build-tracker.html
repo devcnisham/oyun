@@ -2075,7 +2075,7 @@ DATA.tasks.push(
  {id:"P10-13",p:"P10",t:"Run supabase/setup/5-delta-sync.sql on the production Supabase project",s:"todo",pr:"P0",n:"Until then the new code falls back to the old full load per request and logs a warning."},
  {id:"P10-14",p:"P10",t:"Keep bookings older than 90 days out of the in-memory copy (archive table, read on demand)",s:"todo",pr:"P2",n:"Keeps cold-start loads and per-write clone and diff small as history grows."},
  {id:"P10-15",p:"P10",t:"Avoid cloning and diffing the whole store on every write (row-level write helpers)",s:"done",pr:"P2",n:"Superseded by Slot Booking v2 and RETIRED_BOOKING_TABLES: bookings, holds, blocks, and pricing use row-level Postgres operations."},
- {id:"P13-08",p:"P13",t:"Photo uploads for owners (Supabase Storage)",s:"todo",pr:"P2",n:"Owners paste image URLs today."},
+ {id:"P13-08",p:"P13",t:"Photo uploads for owners (Supabase Storage)",s:"done",pr:"P2",n:"Integrated PhotoUploader in TurfProfileFields with direct drag-and-drop file upload to Supabase Storage bucket turf-photos (/api/partner/upload) with local fallback."},
  {id:"P8-23",p:"P8",t:"Run a real booking end to end in the browser (hold, book, ticket, check-in, cancel) and log what breaks",s:"done",pr:"P1",n:"Automated Playwright suite covers hold, book, ticket view, mobile cancellation, and desk cash-collected check-in in e2e/booking.spec.ts, e2e/partner.spec.ts, and e2e/workflows.spec.ts."},
  {id:"P10-10",p:"P10",t:"Pin Vercel functions to Singapore next to the database; verify latency",s:"done",pr:"P1",n:"Vercel functions pinned to Singapore (sin1) in vercel.json next to Supabase ap-southeast-1."},
  {id:"P10-11",p:"P10",t:"Upgrade Supabase to Pro before launch; set spend cap and usage alerts",s:"todo",pr:"P0"},
