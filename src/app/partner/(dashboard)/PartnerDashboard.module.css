@@ -1,0 +1,1039 @@
+/* ==========================================================================
+   OYUN Partner Command Center — Modern Linear/Stripe-Inspired Design
+   ========================================================================== */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Command Bar / Hero Header
+   -------------------------------------------------------------------------- */
+.commandHero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 10px 24px -6px rgba(0, 0, 0, 0.02);
+}
+
+.heroLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.greetingRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.greetingTitle {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #111827;
+  line-height: 1.15;
+}
+
+.facilityStatusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.facilityOpen {
+  background: rgba(16, 185, 129, 0.12);
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.facilityClosed {
+  background: rgba(100, 116, 139, 0.12);
+  color: #334155;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+}
+
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.heroSubtitle {
+  font-size: 14px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.heroSubtitleDot {
+  color: #d1d5db;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.actionBtnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.actionBtnPrimary:hover {
+  background: linear-gradient(135deg, #d31027 0%, #ef4444 100%);
+  border-color: #b91c1c;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(211, 16, 39, 0.25);
+}
+
+.actionBtnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.actionBtnSecondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   "Next Up" Priority Spotlight Card
+   -------------------------------------------------------------------------- */
+.nextUpCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 18px 24px;
+  background: linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 50%, #ffffff 100%);
+  border: 1px solid #a7f3d0;
+  border-left: 5px solid #10b981;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px -2px rgba(16, 185, 129, 0.12);
+}
+
+.nextUpLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nextUpBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: 8px 12px;
+  background: #059669;
+  color: #ffffff;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.nextUpBadgeLabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.nextUpBadgeTime {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.nextUpDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nextUpPlayer {
+  font-size: 16px;
+  font-weight: 700;
+  color: #064e3b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nextUpCode {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  background: #ffffff;
+  border: 1px solid #6ee7b7;
+  color: #047857;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.nextUpSub {
+  font-size: 13px;
+  color: #047857;
+}
+
+.nextUpAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #059669;
+  color: #ffffff;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+}
+
+.nextUpAction:hover {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Real-Time Court Timeline (Horizontal Slot Ribbon)
+   -------------------------------------------------------------------------- */
+.timelineSection {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.timelineHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.timelineTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.timelineLegend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dotNow {
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.dotBooked {
+  background: #3b82f6;
+}
+
+.dotCheckedIn {
+  background: #059669;
+}
+
+.dotBlocked {
+  background: #f59e0b;
+}
+
+.dotAvailable {
+  background: #e5e7eb;
+}
+
+.timelineTrack {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.timelineTrack::-webkit-scrollbar {
+  height: 6px;
+}
+
+.timelineTrack::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+}
+
+.slotNode {
+  flex: 0 0 130px;
+  min-width: 130px;
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.slotNode:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.slotNodeNow {
+  background: #ecfdf5;
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.slotNodeBooked {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.slotNodeCheckedIn {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.slotNodeBlocked {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.slotTimeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slotHour {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1f2937;
+  letter-spacing: -0.01em;
+}
+
+.slotNowTag {
+  font-size: 9px;
+  font-weight: 900;
+  background: #10b981;
+  color: #ffffff;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.slotStatusText {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #4b5563;
+}
+
+.slotPlayerName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slotQuickBtn {
+  margin-top: auto;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 6px;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  transition: all 0.15s ease;
+}
+
+.slotQuickBtn:hover {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.slotQuickBtnActive {
+  background: #059669;
+  color: #ffffff;
+  border-color: #047857;
+}
+
+.slotQuickBtnActive:hover {
+  background: #047857;
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   KPI Metric Telemetry Grid
+   -------------------------------------------------------------------------- */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.kpiCard {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpiCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5db;
+}
+
+.kpiHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpiLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpiIconBox {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  background: #f3f4f6;
+}
+
+.kpiValue {
+  font-size: 28px;
+  font-weight: 900;
+  color: #111827;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.kpiProgressTrack {
+  width: 100%;
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.kpiProgressBar {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  transition: width 0.5s ease-out;
+}
+
+.kpiFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.kpiPillPositive {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Two-Column Operational Layout
+   -------------------------------------------------------------------------- */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.cardTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.cardSubtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Interactive Revenue Chart
+   -------------------------------------------------------------------------- */
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chartStatsSummary {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #f3f4f6;
+}
+
+.chartStatCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chartStatLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chartStatVal {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.chartBarsWrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 180px;
+  padding-top: 20px;
+}
+
+.chartCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.chartAmountLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  font-variant-numeric: tabular-nums;
+}
+
+.chartBarTrack {
+  width: 100%;
+  max-width: 48px;
+  background: #f3f4f6;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: flex-end;
+  height: 130px;
+}
+
+.chartBarFill {
+  width: 100%;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 8px 8px 0 0;
+  min-height: 4px;
+  transition: height 0.4s ease;
+}
+
+.chartBarFillToday {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+}
+
+.chartDayLabel {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.chartDayLabelToday {
+  color: #059669;
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   Today's Schedule Feed
+   -------------------------------------------------------------------------- */
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.scheduleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.scheduleRow:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.scheduleRowNow {
+  background: #f0fdf4;
+  border-color: #86efac;
+  border-left: 4px solid #10b981;
+}
+
+.scheduleLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.slotTimePill {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1f2937;
+  padding: 4px 8px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.scheduleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.schedulePlayerName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scheduleMeta {
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scheduleRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Modern Linear Bookings Table
+   -------------------------------------------------------------------------- */
+.tableContainer {
+  overflow-x: auto;
+  margin: 0 -24px;
+  padding: 0 24px;
+}
+
+.modernTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.modernTable th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+  background: #f9fafb;
+}
+
+.modernTable td {
+  padding: 14px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  color: #374151;
+}
+
+.modernTable tr:last-child td {
+  border-bottom: none;
+}
+
+.modernTable tr:hover td {
+  background: #fafafa;
+}
+
+.playerCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.playerAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #3730a3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.playerName {
+  font-weight: 700;
+  color: #111827;
+}
+
+.playerContact {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.sourceBadgeOnline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.sourceBadgeWalkIn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.amountCell {
+  text-align: right;
+  font-weight: 800;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Quick Slot Blocker Form & Reason Chips
+   -------------------------------------------------------------------------- */
+.blockerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.presetChipsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.presetChipsLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chipsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chipBtn {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.chipBtn:hover {
+  background: #e5e7eb;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.activeBlocksList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.activeBlockCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #92400e;
+}
+
+.unblockBtn {
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.unblockBtn:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Empty States & Utilities
+   -------------------------------------------------------------------------- */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #6b7280;
+  gap: 8px;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  opacity: 0.8;
+}
+
+.emptyText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .commandHero {
+    padding: 18px 20px;
+  }
+  .greetingTitle {
+    font-size: 20px;
+  }
+  .kpiValue {
+    font-size: 24px;
+  }
+  .card {
+    padding: 18px;
+  }
+  .tableContainer {
+    margin: 0 -18px;
+    padding: 0 18px;
+  }
+}
