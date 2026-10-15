@@ -17,7 +17,7 @@ export default async function AdminTurfEdit({ params }: { params: Promise<{ id: 
     <div className={dash.page}>
       <PageHeader title={`Edit ${turf.name}`} desc={`ID: ${turf.id}`}>
         <Link href="/admin/turfs" className={`${dash.btn} ${dash.btnSecondary}`}><NavIcon name="arrowLeft" size={16} /> All turfs</Link>
-        <Link href={`/arenas/${turf.id}`} target="_blank" className={`${dash.btn} ${dash.btnSecondary}`}>View public page</Link>
+        <Link href={`/arenas/${turf.id}`} className={`${dash.btn} ${dash.btnSecondary}`}>View public page</Link>
       </PageHeader>
 
       <div className={dash.card}>

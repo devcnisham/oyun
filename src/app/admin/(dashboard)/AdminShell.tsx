@@ -82,7 +82,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             <span>Admin Control Center</span>
           </div>
           <div className={styles.headerActions}>
-            <Link href="/" className="btn btn--secondary btn--sm" target="_blank">View site</Link>
+            <Link href="/" className="btn btn--secondary btn--sm">View site</Link>
             <form action={logout.bind(null, 'admin')}>
               <button type="submit" className="btn btn--secondary btn--sm">Log Out</button>
             </form>
