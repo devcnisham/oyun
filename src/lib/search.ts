@@ -62,6 +62,8 @@ export type ArenaFilters = {
   sort: string;
   maxPrice: number;
   amenities: string[];
+  date: string;
+  time: string;
   view: 'grid' | 'map';
 };
 
@@ -74,6 +76,8 @@ export function filtersToParams(current: URLSearchParams, f: ArenaFilters): URLS
   set('sport', f.sport, f.sport === 'All Sports');
   set('sort', f.sort, f.sort === 'featured');
   set('maxPrice', String(f.maxPrice), f.maxPrice === 0);
+  set('date', f.date, false);
+  set('time', f.time, false);
   set('view', f.view, f.view === 'grid');
   next.delete('amenity');
   f.amenities.forEach((a) => next.append('amenity', a));

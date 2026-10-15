@@ -10,10 +10,16 @@ import BackButton from '@/components/BackButton';
 import { SPORTS } from '@/lib/sports';
 import { PRICE_STEPS, filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/lib/search';
 import { locateTurfs } from '@/lib/map-actions';
+import { getOpenHours } from '@/lib/availability-actions';
+import { TIME_WINDOWS, hasOpenSlot, isTimeWindow, type TimeWindow } from '@/lib/availability';
+import { BOOKING_DAYS, addDays, istNow } from '@/lib/time';
 import type { Coords } from '@/lib/geocode';
 
 // Leaflet touches window, so the map loads in the browser only
 const TurfMap = dynamic(() => import('@/components/TurfMap'), { ssr: false, loading: () => <div style={{ height: 420 }} /> });
+
+const formatDay = (d: string) =>
+  new Date(`${d}T12:00:00+05:30`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
 
 const sortOptions = [
   { value: 'featured', label: 'Featured First' },
@@ -42,6 +48,11 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
   const amenityOptions = useMemo(() => [...new Set(turfs.flatMap((t) => t.amenities))].sort(), [turfs]);
   const [amenities, setAmenities] = useState<string[]>(() => searchParams.getAll('amenity').filter((a) => amenityOptions.includes(a)));
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '');
+  const [date, setDate] = useState(pickedDate ?? '');
+  const [time, setTime] = useState<TimeWindow | ''>(() => {
+    const t = searchParams.get('time');
+    return isTimeWindow(t) ? t : '';
+  });
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(searchParams.get('view') === 'map' ? 'map' : 'grid');
 
   // Keep the filters in the address bar so a refresh keeps them and the link can be shared
@@ -53,11 +64,32 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
       sort: sortBy,
       maxPrice,
       amenities,
+      date,
+      time,
       view: viewMode,
     });
     const qs = next.toString();
     window.history.replaceState(null, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
-  }, [searchQuery, selectedArea, selectedSport, sortBy, maxPrice, amenities, viewMode]);
+  }, [searchQuery, selectedArea, selectedSport, sortBy, maxPrice, amenities, date, time, viewMode]);
+
+  // Open slots for the chosen day (today when only a time of day is chosen), fetched when the choice changes
+  const today = useMemo(() => istNow().date, []);
+  const lastDay = addDays(today, BOOKING_DAYS - 1);
+  const queryDate = date || (time ? today : '');
+  const [openSlots, setOpenSlots] = useState<{ date: string; hours: Record<string, number[]> } | null>(null);
+  useEffect(() => {
+    if (!queryDate) return;
+    let cancelled = false;
+    getOpenHours(queryDate)
+      .then((hours) => !cancelled && setOpenSlots({ date: queryDate, hours }))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [queryDate]);
+  const checking = queryDate !== '' && openSlots?.date !== queryDate;
+  // An empty answer means the day is outside the booking window: show everything rather than nothing
+  const openHours = !checking && openSlots && Object.keys(openSlots.hours).length > 0 ? openSlots.hours : null;
 
   // Map positions are looked up the first time the map opens, a few turfs at a time
   const [located, setLocated] = useState<Record<string, Coords>>({});
@@ -96,6 +128,9 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
 
     result = result.filter((t) => matchesExtras(t, { maxPrice, amenities }));
 
+    // Filter by open slots on the chosen day and time of day
+    if (openHours) result = result.filter((t) => hasOpenSlot(openHours[t.id] ?? [], time));
+
     // Filter by search
     if (searchQuery.trim()) {
       result = result.filter((t) => matchesQuery(`${t.name} ${t.location} ${t.area} ${t.sports.join(' ')}`, searchQuery));
@@ -120,7 +155,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
     }
 
     return result;
-  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities]);
+  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time]);
 
   const mapTurfs = filtered.map((t) => (located[t.id] ? { ...t, ...located[t.id] } : t));
 
@@ -137,6 +172,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
               <p className={styles.pageDesc}>
                 {filtered.length} venue{filtered.length !== 1 ? 's' : ''} available
                 {selectedArea !== 'All Areas' ? ` in ${selectedArea}` : ` across ${selectedCity}`}
+                {checking ? ' · checking open slots…' : ''}
               </p>
             </div>
           </div>
@@ -230,6 +266,36 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
                   ))}
                 </select>
               </label>
+              <span className={styles.chipDivider} aria-hidden />
+              <label className={`${styles.chip} ${date ? styles.chipOn : ''}`}>
+                <span aria-hidden>📅</span> {date ? formatDay(date) : 'Any date'}
+                <input
+                  type="date"
+                  className={styles.overlaySelect}
+                  min={today}
+                  max={lastDay}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  onClick={(e) => {
+                    try {
+                      e.currentTarget.showPicker();
+                    } catch {}
+                  }}
+                  aria-label="Date"
+                />
+              </label>
+              {TIME_WINDOWS.map((w) => (
+                <button
+                  key={w.value}
+                  className={`${styles.chip} ${time === w.value ? styles.chipOn : ''}`}
+                  onClick={() => setTime((cur) => (cur === w.value ? '' : w.value))}
+                  aria-pressed={time === w.value}
+                  title={w.hint}
+                >
+                  {w.label}
+                </button>
+              ))}
+              <span className={styles.chipDivider} aria-hidden />
               {amenityOptions.map((a) => (
                 <button
                   key={a}
@@ -252,8 +318,8 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>🏟️</div>
               <h2 className={styles.emptyTitle}>No turfs found</h2>
-              <p className={styles.emptyDesc}>Try a different area, price or search term.</p>
-              <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSelectedSport('All Sports'); setMaxPrice(0); setAmenities([]); setSearchQuery(''); }}>
+              <p className={styles.emptyDesc}>Try a different area, price, day or search term.</p>
+              <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSelectedSport('All Sports'); setMaxPrice(0); setAmenities([]); setDate(''); setTime(''); setSearchQuery(''); }}>
                 Clear Filters
               </button>
             </div>
@@ -269,7 +335,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
               {filtered.map((turf, i) => (
                 // Above-the-fold cards paint at once: a fade-in starts at opacity 0 and would hold back the LCP image
                 <div key={turf.id} className={i < 4 ? undefined : 'animate-fadeInUp'} style={i < 4 ? undefined : { animationDelay: `${Math.min(i - 4, 6) * 0.06}s` }}>
-                  <TurfCard turf={turf} eager={i < 1} date={pickedDate} />
+                  <TurfCard turf={turf} eager={i < 1} date={date || undefined} />
                 </div>
               ))}
             </div>
