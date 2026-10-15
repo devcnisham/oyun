@@ -288,3 +288,77 @@ export async function processPaymentWebhook(
     refundId: refund.refundId,
   };
 }
+
+export interface RazorpayOrderResult {
+  ok: boolean;
+  orderId?: string;
+  amount?: number;
+  currency?: string;
+  keyId?: string;
+  error?: string;
+}
+
+/**
+ * Creates a Razorpay checkout order on the server.
+ * Returns order ID and amount in paise for client checkout SDK.
+ */
+export async function createRazorpayOrder(params: {
+  amount: number; // in rupees
+  currency?: string;
+  receipt?: string;
+  notes?: Record<string, string>;
+}): Promise<RazorpayOrderResult> {
+  const { amount, currency = 'INR', receipt, notes } = params;
+  if (!amount || amount <= 0) {
+    return { ok: false, error: 'invalid_amount' };
+  }
+
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const amountPaise = Math.round(amount * 100);
+
+  if (keyId && keySecret && !keyId.startsWith('dummy_')) {
+    try {
+      const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+      const res = await fetch('https://api.razorpay.com/v1/orders', {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amountPaise,
+          currency,
+          receipt: receipt || `rcpt_${crypto.randomBytes(6).toString('hex')}`,
+          notes: notes || {},
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          ok: true,
+          orderId: data.id,
+          amount: data.amount,
+          currency: data.currency,
+          keyId,
+        };
+      }
+      const errData = await res.json().catch(() => ({}));
+      return { ok: false, error: errData.error?.description || `Gateway error (${res.status})` };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : 'Network error' };
+    }
+  }
+
+  // Fallback for tests & development when live keys are not configured
+  const syntheticOrderId = `order_${crypto.createHash('sha256').update(`${amount}:${Date.now()}:${Math.random()}`).digest('hex').slice(0, 14)}`;
+  return {
+    ok: true,
+    orderId: syntheticOrderId,
+    amount: amountPaise,
+    currency,
+    keyId: keyId || 'rzp_test_mock_key',
+  };
+}
+
