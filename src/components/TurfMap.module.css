@@ -1,5 +1,7 @@
 .map { width: 100%; height: min(70vh, 560px); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); z-index: 0; }
 
+.fill { height: 100%; border: 0; border-radius: 0; }
+
 .pinWrap { background: none; border: 0; }
 /* Anchored by its bottom centre so the pill sits on the spot */
 .pin {

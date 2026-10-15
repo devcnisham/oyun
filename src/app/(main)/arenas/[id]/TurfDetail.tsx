@@ -10,7 +10,7 @@ import FavouriteButton from '@/components/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
 import { shortHour } from '@/lib/format';
 import ShareButton from './ShareButton';
-import MapEmbed from './MapEmbed';
+import TurfMiniMap from './TurfMiniMap';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { sportInfo } from '@/lib/sports';
@@ -153,7 +153,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         <div className={styles.mapSection}>
           <h2>Location</h2>
           <div className={styles.mapContainer}>
-            <MapEmbed name={turf.name} location={turf.location} />
+            <TurfMiniMap turf={turf} />
           </div>
         </div>
 
