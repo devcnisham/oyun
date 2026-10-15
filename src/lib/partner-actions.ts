@@ -227,6 +227,68 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
   });
 }
 
+// Block many slots at once: a date range, optional weekdays (recurring), and an hour range. Slots that are over, already
+// blocked, outside opening hours or booked are skipped and counted, never overwritten.
+export async function blockRange(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('slots');
+    const from = required(fd, 'from', 'From date', 10);
+    const to = required(fd, 'to', 'To date', 10);
+    if (!isValidDate(from) || !isValidDate(to)) throw new ValidationError('Pick valid dates');
+    if (to < from) throw new ValidationError('The end date is before the start date');
+    const today = istNow().date;
+    const start = from < today ? today : from;
+    if (to < today) throw new ValidationError('Those dates have already passed');
+    const hourFrom = int(fd, 'hourFrom', { min: 0, max: 23, label: 'Start time' });
+    const hourTo = int(fd, 'hourTo', { min: 1, max: 24, label: 'End time' });
+    if (hourTo <= hourFrom) throw new ValidationError('The end time must be after the start time');
+    const reason = required(fd, 'reason', 'Reason', 120);
+    const weekdays = fd.getAll('weekday').map((w) => Number(w)).filter((w) => Number.isInteger(w) && w >= 0 && w <= 6);
+
+    const dates: string[] = [];
+    for (let d = start; d <= to && dates.length < 93; d = addDays(d, 1)) {
+      if (weekdays.length === 0 || weekdays.includes(new Date(`${d}T12:00:00Z`).getUTCDay())) dates.push(d);
+    }
+    if (dates.length === 0) throw new ValidationError('No dates match those days of the week');
+    const open = turfHours(ctx.turf).filter((h) => h >= hourFrom && h < hourTo);
+    if (open.length === 0) throw new ValidationError(`${ctx.turf.name} has no open slots in that time range`);
+    if (dates.length * open.length > 500) throw new ValidationError('That is too many slots at once. Shorten the range.');
+
+    // Slots the v2 booking system rejects (already booked there) are skipped like any other conflict
+    const v2Rejected = new Set<string>();
+    if (isV2SlotsActive()) {
+      for (const d of dates) {
+        for (const h of open) {
+          const res = await v2BlockSlot(ctx.turf.id, d, h, reason);
+          if (res && !res.ok) v2Rejected.add(`${d}|${h}`);
+        }
+      }
+    }
+
+    return await mutate((db) => {
+      let blocked = 0;
+      let skipped = 0;
+      const now = new Date().toISOString();
+      for (const d of dates) {
+        for (const h of open) {
+          const conflict =
+            v2Rejected.has(`${d}|${h}`) ||
+            db.bookings.some((b) => b.turfId === ctx.turf.id && b.date === d && (b.hours && b.hours.length > 0 ? b.hours.includes(h) : b.hour === h) && ['confirmed', 'checked_in'].includes(b.status)) ||
+            db.blocks.some((b) => b.turfId === ctx.turf.id && b.date === d && b.hour === h);
+          if (conflict) {
+            skipped++;
+            continue;
+          }
+          db.blocks.push({ id: newId('block'), turfId: ctx.turf.id, date: d, hour: h, reason, createdBy: ctx.userName, createdAt: now });
+          blocked++;
+        }
+      }
+      if (blocked === 0) throw new ValidationError(`Nothing blocked: all ${skipped} slots were already booked or blocked`);
+      return { ok: `Blocked ${blocked} slot${blocked === 1 ? '' : 's'}${skipped ? ` (${skipped} skipped: already booked or blocked)` : ''}` };
+    });
+  });
+}
+
 export async function unblockSlot(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('slots');

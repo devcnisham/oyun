@@ -1,5 +1,7 @@
 // Make Clerk's forms match OYUN: brand red, rounded inputs, no extra card chrome (the page is the card)
 export const clerkAppearance = {
+  // Google / Apple buttons (enabled in the Clerk dashboard) sit above the email/phone form
+  layout: { socialButtonsPlacement: 'top' as const, socialButtonsVariant: 'blockButton' as const },
   variables: {
     colorPrimary: '#d31027',
     colorText: '#222222',
@@ -15,5 +17,6 @@ export const clerkAppearance = {
     header: { display: 'none' }, // the page already has the title
     formButtonPrimary: { fontWeight: 800, fontSize: '15px', padding: '12px', textTransform: 'none' },
     footer: { display: 'none' }, // the page has its own sign-in/sign-up links
+    socialButtonsBlockButton: { borderRadius: '12px', fontWeight: 600 },
   },
 };

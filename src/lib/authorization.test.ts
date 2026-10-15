@@ -48,6 +48,7 @@ const EXPECTED: Record<string, string | null> = {
   checkInBooking: 'checkin',
   markNoShow: 'checkin',
   blockSlot: 'slots',
+  blockRange: 'slots',
   unblockSlot: 'slots',
   setRainOut: 'slots',
   savePricing: 'pricing',

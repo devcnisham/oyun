@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
 import { logout } from '@/lib/auth-actions';
+import NavIcon from '@/components/dash/NavIcon';
+import SidebarToggle from '@/components/dash/SidebarToggle';
 import { ROLE_LABELS, requirePartner } from '@/lib/partner-auth';
 import { switchTurf } from '@/lib/partner-actions';
 import NavLinks, { type NavItem } from './NavLinks';
@@ -11,19 +13,19 @@ export default async function PartnerLayout({ children }: { children: React.Reac
   const ctx = await requirePartner();
 
   const nav: NavItem[] = [
-    { href: '/partner', label: 'Dashboard', icon: '📊' },
-    ...(ctx.can('bookings') ? [{ href: '/partner/bookings', label: 'Bookings', icon: '📅' }] : []),
-    ...(ctx.can('bookings') ? [{ href: '/partner/calendar', label: 'Calendar', icon: '🗓️' }] : []),
-    ...(ctx.can('checkin') ? [{ href: '/partner/check-in', label: 'Check-in', icon: '📷' }] : []),
-    ...(ctx.can('slots') ? [{ href: '/partner/slots', label: 'Manage Slots', icon: '⏰' }] : []),
-    ...(ctx.can('pricing') ? [{ href: '/partner/pricing', label: 'Pricing', icon: '💹' }] : []),
-    { href: '/partner/reviews', label: 'Reviews', icon: '⭐' },
-    ...(ctx.can('offers') ? [{ href: '/partner/offers', label: 'Offers', icon: '🏷️' }] : []),
-    ...(ctx.can('addons') ? [{ href: '/partner/add-ons', label: 'Add-ons', icon: '🧃' }] : []),
-    ...(ctx.can('payouts') ? [{ href: '/partner/payouts', label: 'Payouts & GST', icon: '💰' }] : []),
-    ...(ctx.can('staff') ? [{ href: '/partner/staff', label: 'Staff', icon: '👥' }] : []),
-    ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Turf', icon: '🏟️' }] : []),
-    ...(ctx.can('turf') ? [{ href: '/partner/courts', label: 'Courts & Pitches', icon: '🥅' }] : []),
+    { href: '/partner', label: 'Dashboard', icon: 'dashboard' },
+    ...(ctx.can('bookings') ? [{ href: '/partner/bookings', label: 'Bookings', icon: 'bookings' }] : []),
+    ...(ctx.can('bookings') ? [{ href: '/partner/calendar', label: 'Calendar', icon: 'calendar' }] : []),
+    ...(ctx.can('checkin') ? [{ href: '/partner/check-in', label: 'Check-in', icon: 'checkin' }] : []),
+    ...(ctx.can('slots') ? [{ href: '/partner/slots', label: 'Manage Slots', icon: 'slots' }] : []),
+    ...(ctx.can('pricing') ? [{ href: '/partner/pricing', label: 'Pricing', icon: 'pricing' }] : []),
+    { href: '/partner/reviews', label: 'Reviews', icon: 'reviews' },
+    ...(ctx.can('offers') ? [{ href: '/partner/offers', label: 'Offers', icon: 'offers' }] : []),
+    ...(ctx.can('addons') ? [{ href: '/partner/add-ons', label: 'Add-ons', icon: 'addons' }] : []),
+    ...(ctx.can('payouts') ? [{ href: '/partner/payouts', label: 'Payouts & GST', icon: 'payouts' }] : []),
+    ...(ctx.can('staff') ? [{ href: '/partner/staff', label: 'Staff', icon: 'staff' }] : []),
+    ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Turf', icon: 'turf' }] : []),
+    ...(ctx.can('turf') ? [{ href: '/partner/courts', label: 'Courts & Pitches', icon: 'courts' }] : []),
   ];
 
   return (
@@ -63,13 +65,14 @@ export default async function PartnerLayout({ children }: { children: React.Reac
 
           <div className={styles.navGroup}>
             <div className={styles.navTitle}>Switch to</div>
-            <Link href="/" className={styles.navLink}>
-              <span className={styles.navIcon}>🌐</span> Main site
+            <Link href="/" title="Main site" className={styles.navLink}>
+              <NavIcon name="site" className={styles.navIcon} /> Main site
             </Link>
-            <Link href="/admin" className={styles.navLink}>
-              <span className={styles.navIcon}>🛡️</span> Admin dashboard
+            <Link href="/admin" title="Admin dashboard" className={styles.navLink}>
+              <NavIcon name="shield" className={styles.navIcon} /> Admin dashboard
             </Link>
           </div>
+          <SidebarToggle variant="button" className={styles.hideMenu} />
         </nav>
 
         <div className={styles.sidebarBottom}>
@@ -86,6 +89,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
       <main className={styles.main}>
         <header className={`${styles.header} noPrint`}>
           <div className={styles.headerTitle}>
+            <SidebarToggle className={styles.toggleBtn} />
             {ctx.turfs.length > 1 ? (
               <ActionForm action={switchTurf} inline>
                 <select name="turfId" defaultValue={ctx.turf.id} aria-label="Switch turf" style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', fontWeight: 600 }}>
@@ -100,7 +104,14 @@ export default async function PartnerLayout({ children }: { children: React.Reac
             )}
           </div>
           <div className={styles.headerActions}>
-            <Link href={`/arenas/${ctx.turf.id}`} className="btn btn--secondary btn--sm" target="_blank">View public page</Link>
+            {ctx.can('bookings') && (
+              <form action="/partner/bookings" method="get" role="search" className={styles.headerSearch}>
+                <input type="search" name="q" aria-label="Search bookings by name, phone or code" placeholder="Search bookings" />
+              </form>
+            )}
+            {ctx.can('bookings') && (
+              <Link href="/partner/bookings#walk-in" className="btn btn--primary btn--sm">+ Add booking</Link>
+            )}
             <form action={logout.bind(null, 'partner')}>
               <button type="submit" className="btn btn--secondary btn--sm">Log Out</button>
             </form>

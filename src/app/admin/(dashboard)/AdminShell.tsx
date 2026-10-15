@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/auth-actions';
+import NavIcon from '@/components/dash/NavIcon';
+import SidebarToggle from '@/components/dash/SidebarToggle';
 import styles from './layout.module.css';
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
@@ -10,8 +12,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const link = (href: string, icon: string, label: string) => {
     const active = href === '/admin' ? pathname === href : pathname.startsWith(href);
     return (
-      <Link href={href} className={`${styles.navLink} ${active ? styles.active : ''}`}>
-        <span className={styles.navIcon}>{icon}</span> {label}
+      <Link href={href} title={label} className={`${styles.navLink} ${active ? styles.active : ''}`}>
+        <NavIcon name={icon} className={styles.navIcon} /> {label}
       </Link>
     );
   };
@@ -33,31 +35,32 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <nav className={styles.nav}>
           <div className={styles.navGroup}>
             <div className={styles.navTitle}>Platform</div>
-            {link('/admin', '🛡️', 'Overview & approvals')}
-            {link('/admin/turfs', '🏟️', 'Turfs')}
-            {link('/admin/partners', '🤝', 'Partners')}
-            {link('/admin/users', '👥', 'Players')}
-            {link('/admin/students', '🎓', 'Student IDs')}
-            {link('/admin/transactions', '💳', 'Bookings & refunds')}
-            {link('/admin/analytics', '📊', 'Analytics')}
-            {link('/admin/reviews', '⭐', 'Reviews')}
+            {link('/admin', 'shield', 'Overview & approvals')}
+            {link('/admin/turfs', 'turfs', 'Turfs')}
+            {link('/admin/partners', 'partners', 'Partners')}
+            {link('/admin/users', 'players', 'Players')}
+            {link('/admin/students', 'students', 'Student IDs')}
+            {link('/admin/transactions', 'transactions', 'Bookings & refunds')}
+            {link('/admin/analytics', 'analytics', 'Analytics')}
+            {link('/admin/reviews', 'reviews', 'Reviews')}
           </div>
 
           <div className={styles.navGroup} style={{ marginTop: '24px' }}>
             <div className={styles.navTitle}>System</div>
-            {link('/admin/settings', '⚙️', 'Settings & promo codes')}
-            {link('/admin/customization', '🎨', 'Homepage content')}
+            {link('/admin/settings', 'settings', 'Settings & promo codes')}
+            {link('/admin/customization', 'homepage', 'Homepage content')}
           </div>
 
           <div className={styles.navGroup} style={{ marginTop: '24px' }}>
             <div className={styles.navTitle}>Switch to</div>
-            <Link href="/" className={styles.navLink}>
-              <span className={styles.navIcon}>🌐</span> Main site
+            <Link href="/" title="Main site" className={styles.navLink}>
+              <NavIcon name="site" className={styles.navIcon} /> Main site
             </Link>
-            <Link href="/partner" className={styles.navLink}>
-              <span className={styles.navIcon}>🤝</span> Partner dashboard
+            <Link href="/partner" title="Partner dashboard" className={styles.navLink}>
+              <NavIcon name="partners" className={styles.navIcon} /> Partner dashboard
             </Link>
           </div>
+          <SidebarToggle variant="button" className={styles.hideMenu} />
         </nav>
         
         <div className={styles.sidebarBottom}>
@@ -74,7 +77,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       {/* Main Content */}
       <main className={styles.main}>
         <header className={`${styles.header} noPrint`}>
-          <div className={styles.headerTitle}>Admin Control Center</div>
+          <div className={styles.headerTitle}>
+            <SidebarToggle className={styles.toggleBtn} />
+            <span>Admin Control Center</span>
+          </div>
           <div className={styles.headerActions}>
             <Link href="/" className="btn btn--secondary btn--sm" target="_blank">View site</Link>
             <form action={logout.bind(null, 'admin')}>
