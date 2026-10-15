@@ -10,7 +10,7 @@ Run ONE task from the OYUN queue, then stop. Source of truth: `docs/MASTER-PROMP
 - If the task is marked GATE (needs production, keys, paid service, provider choice, deletion): do NOT start. Print exactly what the user must decide or do, mark it `BLOCKED` in the queue, and pick the next non-gated task.
 
 ## 2. Branch
-- `git checkout -b claude/<short-task-name>` from fresh `main`. One task, one branch, one PR.
+- `git checkout -b feature/<short-task-name>` from fresh `main`. One task, one branch, one PR.
 - If `node_modules` is missing, run `npm ci`. Read the relevant `node_modules/next/dist/docs/` guide before writing any Next.js code (AGENTS.md).
 
 ## 3. Plan, then build
@@ -27,7 +27,7 @@ Run ONE task from the OYUN queue, then stop. Source of truth: `docs/MASTER-PROMP
 ## 5. Ship
 - Commit (imperative, specific message), push, `gh pr create` with: what changed, why, how tested, follow-ups.
 - Do not merge. Wait for the user to merge, or merge only if the user said so for this run.
-- After merge: update `docs/build-tracker.html` (run the `build-tracker-updater` agent, then `node scripts/check-tracker.mjs`), tick `FEATURE_LIST.md`, tick the task in `docs/TASK-WORKFLOW.md`. If `ArtifactData` is available, `set` collection `ticks`, doc id = task id, data `{"done":true,"at":"<ISO>","by":"claude-code"}`.
+- After merge: update `docs/build-tracker.html` (run the `build-tracker-updater` agent, then `node scripts/check-tracker.mjs`), tick `FEATURE_LIST.md`, tick the task in `docs/TASK-WORKFLOW.md`.
 
 ## 6. Report, then stop
 Reply with: 1) what changed (PR link), 2) verification commands and results, 3) security notes, 4) what the user must do themselves, 5) the next task in the queue. Stop. The user runs `/next-task` again, or `/loop /next-task` to chain tasks.
