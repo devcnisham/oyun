@@ -40,6 +40,30 @@ const REMOVED_PADEL_VENUE = 'padel-club-mangalore';
 // Hashes already checked, so the (deliberately slow) password check does not repeat on every read
 const checkedHashes = new Set<string>();
 
+const OPS_PARTNER_ID = 'partner_oyun';
+// The one venue the OYUN operations login manages (the testing venue); every other launch venue has its own owner account
+const TEST_TURF_ID = 'oyun-club-test';
+
+// An unclaimed owner account for one launch venue, so each owner gets their own partner dashboard.
+// The password hash is not a valid hash, so nobody can sign in until an admin sets a password
+// (Admin → Partners → reset password) and the real email (Admin → Partners → edit).
+function ownerPartnerFor(data: Database, t: { id: string; name: string; location: string; ownerName?: string }, createdAt: string): string {
+  const id = `partner_${t.id}`;
+  if (!data.partners.some((p) => p.id === id)) {
+    data.partners.push({
+      id,
+      name: t.ownerName || t.name,
+      email: `${t.id}@owners.oyun.in`,
+      phone: '',
+      passwordHash: '!unclaimed',
+      status: 'active',
+      business: { legalName: t.name, gstin: '', address: t.location },
+      createdAt,
+    });
+  }
+  return id;
+}
+
 export function migrate(data: Database): Database {
   data.settings = { ...DEFAULT_SETTINGS, ...data.settings };
   data.walletTxns ??= [];
@@ -76,6 +100,15 @@ export function migrate(data: Database): Database {
       }
       data.turfs.push({ ...t, city: 'Mangalore', status: t.status ?? 'active', partnerId: opsPartner.id, commissionPercent: null, createdAt: new Date().toISOString() });
       data.pricing[t.id] ??= { ...DEFAULT_PRICING };
+    }
+  }
+  // Each launch venue belongs to its own owner account; only the testing venue stays under OYUN operations.
+  // A venue an admin already handed to a real partner is left alone.
+  for (const t of [...turfSeeds, ...lateTurfSeeds]) {
+    if (t.id === TEST_TURF_ID) continue;
+    const stored = data.turfs.find((x) => x.id === t.id);
+    if (stored && stored.partnerId === OPS_PARTNER_ID) {
+      stored.partnerId = ownerPartnerFor(data, t, stored.createdAt ?? new Date().toISOString());
     }
   }
   // Heal databases created with the removed stock photo (the phone shows a black card with a broken image)
@@ -135,7 +168,7 @@ export function seed(): Database {
 
   // One OYUN operations account manages the launch turfs until each owner joins. It can sign in to
   // the partner dashboard only when PARTNER_EMAIL and PARTNER_PASSWORD are set.
-  const partnerId = 'partner_oyun';
+  const partnerId = OPS_PARTNER_ID;
   data.partners.push({
     id: partnerId,
     name: 'OYUN Operations',
@@ -149,7 +182,8 @@ export function seed(): Database {
   });
 
   for (const t of [...turfSeeds, ...lateTurfSeeds]) {
-    data.turfs.push({ ...t, city: 'Mangalore', status: t.status ?? 'active', partnerId, commissionPercent: null, createdAt });
+    const ownerId = t.id === TEST_TURF_ID ? partnerId : ownerPartnerFor(data, t, createdAt);
+    data.turfs.push({ ...t, city: 'Mangalore', status: t.status ?? 'active', partnerId: ownerId, commissionPercent: null, createdAt });
     data.pricing[t.id] = { ...DEFAULT_PRICING };
   }
 

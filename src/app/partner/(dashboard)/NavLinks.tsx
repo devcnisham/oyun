@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import NavIcon from '@/components/dash/NavIcon';
 
 export interface NavItem {
   href: string;
@@ -25,8 +26,8 @@ export default function NavLinks({ items, linkClass, activeClass, iconClass, exa
       {items.map((item) => {
         const active = item.href === root ? pathname === item.href : pathname.startsWith(item.href);
         return (
-          <Link key={item.href} href={item.href} className={`${linkClass} ${active ? activeClass : ''}`}>
-            <span className={iconClass}>{item.icon}</span> {item.label}
+          <Link key={item.href} href={item.href} title={item.label} className={`${linkClass} ${active ? activeClass : ''}`}>
+            <NavIcon name={item.icon} className={iconClass} /> {item.label}
           </Link>
         );
       })}

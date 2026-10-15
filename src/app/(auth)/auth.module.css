@@ -1,4 +1,5 @@
 .container {
+  position: relative;
   display: flex;
   min-height: 100dvh;
   background: #fff;
@@ -111,7 +112,8 @@
 .topBar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  padding-left: 96px; /* clear the pinned Back button */
   min-height: 40px;
 }
 
@@ -119,8 +121,12 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 10px 8px 4px;
-  margin-left: -4px;
+  /* pinned to the top-left corner of the whole page, above both panels */
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
+  padding: 8px 12px 8px 8px;
   background: none;
   border: none;
   border-radius: 10px;
@@ -374,6 +380,21 @@
 
   .mobileLogo {
     display: none;
+  }
+
+  /* Back sits over the dark brand panel on desktop */
+  .backBtn {
+    top: 24px;
+    left: 32px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .backBtn:hover {
+    color: #fff;
+  }
+
+  .brandInner {
+    padding-top: 96px; /* room for Back above the logo */
   }
 
   .formWrapper {
