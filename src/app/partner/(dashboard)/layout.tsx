@@ -130,7 +130,14 @@ export default async function PartnerLayout({ children }: { children: React.Reac
         <div className={styles.content}>{children}</div>
       </main>
 
-      <MobileTabBar items={tabs} />
+      <MobileTabBar
+        items={tabs}
+        all={nav}
+        extra={[
+          { href: '/', label: 'Main site', icon: 'site' },
+          { href: '/admin', label: 'Admin dashboard', icon: 'shield' },
+        ]}
+      />
     </div>
   );
 }
