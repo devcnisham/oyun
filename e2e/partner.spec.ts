@@ -2,6 +2,11 @@ import { expect, test } from '@playwright/test';
 import { asPlayer, confirmBooking, holdFirstSlot } from './helpers';
 
 test('partner checks in a booking for today by its code', async ({ page }) => {
+  // Between 00:00 and 05:30 IST the runner's date (UTC) is a day behind the server's (IST), so "today" in the browser is already past
+  const istDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+  const runnerDate = new Intl.DateTimeFormat('en-CA').format(new Date());
+  test.skip(istDate !== runnerDate, 'Runner and venue are on different calendar days');
+
   await asPlayer(page, 'Walk Up', '9876500004');
   const hasSlotToday = await holdFirstSlot(page, 0);
   test.skip(!hasSlotToday, 'No open slot left today (late-night run)');

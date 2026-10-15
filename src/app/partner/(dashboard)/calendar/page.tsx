@@ -56,8 +56,8 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
         <div className={dash.card}>
           <div className={styles.toolbar}>
             <div className={styles.segment} role="tablist" aria-label="Calendar view">
-              <Link href={`/partner/calendar?day=${dayDate}`} role="tab" aria-selected className={`${styles.seg} ${styles.segActive}`}>Day</Link>
-              <Link href={`/partner/calendar?week=${dayDate}`} role="tab" aria-selected={false} className={styles.seg}>Week</Link>
+              <Link href={`/partner/calendar?day=${dayDate}`} role="tab" aria-selected aria-label="Day view" className={`${styles.seg} ${styles.segActive}`}>Day</Link>
+              <Link href={`/partner/calendar?week=${dayDate}`} role="tab" aria-selected={false} aria-label="Week view" className={styles.seg}>Week</Link>
             </div>
             <div className={styles.nav}>
               <Link href={`/partner/calendar?day=${addDays(dayDate, -1)}`} className={styles.navBtn} aria-label="Previous day"><NavIcon name="arrowLeft" size={16} /></Link>
