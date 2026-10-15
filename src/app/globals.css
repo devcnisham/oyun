@@ -282,3 +282,8 @@ html {
 @media print {
   .floatingBack { display: none !important; }
 }
+
+/* Desktop: the top bar carries the back arrow, so the in-page floating one is redundant */
+@media (min-width: 769px) {
+  .floatingBackSpot { display: none; }
+}

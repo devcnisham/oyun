@@ -1012,3 +1012,8 @@
   .titleRow .title { font-size: 22px; }
   .hours { padding: 5px 9px; }
 }
+
+/* Desktop: the top bar already has the back arrow */
+@media (min-width: 769px) {
+  .backIcon { display: none; }
+}

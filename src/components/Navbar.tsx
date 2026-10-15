@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { getBookingSummaries } from '@/lib/booking-actions';
 import { DEVICE_EVENT, getMyBookingIds, getProfile } from '@/lib/client/device';
 import { clerkEnabled } from '@/lib/clerk';
@@ -16,6 +16,9 @@ import styles from './Navbar.module.css';
 export default function Navbar() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const router = useRouter();
+  const [q, setQ] = useState('');
+  const [pastHero, setPastHero] = useState(false);
   const isHome = pathname === '/';
   const isArenaDetail = pathname?.startsWith('/arenas/') && pathname !== '/arenas';
   
@@ -36,9 +39,11 @@ export default function Navbar() {
         frame = 0;
         const y = window.scrollY;
         setScrolled(y > 20);
+        setPastHero(y > 420);
         setOverscrolled(y < 0);
         // Slide the header away while reading down the page; bring it back on any scroll back up
-        if (y < 80) setHidden(false);
+        // Desktop keeps the header pinned; only phones slide it away
+        if (y < 80 || window.innerWidth > 768) setHidden(false);
         else if (y > lastY + 6) setHidden(true);
         else if (y < lastY - 6) setHidden(false);
         if (Math.abs(y - lastY) > 6) lastY = y;
@@ -52,6 +57,8 @@ export default function Navbar() {
   }, []);
 
   const headerHidden = hidden;
+  // Desktop: home shows just the search once the hero is scrolled past; every other page shows just back + search
+  const compactBar = !isHome || pastHero;
 
   // Name and upcoming-booking count come from what this device has saved
   useEffect(() => {
@@ -80,7 +87,7 @@ export default function Navbar() {
     <>
     <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
-        <div className={`container ${styles.inner}`}>
+        <div className={`container ${styles.inner} ${compactBar ? styles.searchOnly : ''}`}>
           <div className={styles.left}>
           {/* Logo */}
           <Link href="/" className={styles.logo}>
@@ -99,10 +106,36 @@ export default function Navbar() {
             </svg>
             <span className={styles.logoText}>
               <span className={styles.logoName}>OYUN</span>
-              <small className={styles.tagline}>{t('tagline')}</small>
             </span>
           </Link>
           </div>
+
+          {/* Desktop home: hero search moves up here once it scrolls out of view */}
+          {compactBar && (
+            <>
+            {!isHome && (
+              <button type="button" className={styles.navBack} aria-label="Back" onClick={() => (window.history.length > 1 ? router.back() : router.push('/'))}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+              </button>
+            )}
+            <form
+              className={styles.navSearch}
+              role="search"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const term = q.trim();
+                router.push(term ? `/arenas?q=${encodeURIComponent(term)}` : '/arenas');
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search turfs or areas" aria-label="Search turfs or areas" />
+              <button type="submit">Search</button>
+            </form>
+            </>
+          )}
 
           <div className={styles.right}>
             {/* Phones: city chip with a live dot, opens every turf */}
