@@ -296,7 +296,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           </b>
         </div>
         <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
-          {holding ? 'Holding…' : 'Reserve these slots'}
+          {holding ? 'Holding…' : 'Proceed to checkout'}
         </button>
         <p className={styles.summaryNote}>Nothing is charged online. Pay at the turf.</p>
       </aside>
