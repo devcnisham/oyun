@@ -1,3 +1,4 @@
+import NavIcon from '@/components/dash/NavIcon';
 import Link from 'next/link';
 import { PageHeader, dash } from '@/components/dash/ui';
 import { buildDayAcrossCourts, buildWeek, weekStart, type CalendarCell } from '@/lib/calendar';
@@ -46,9 +47,9 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
         <div className={dash.card}>
           <div className={dash.cardHeader}>
             <div className={dash.inline}>
-              <Link href={`/partner/calendar?day=${addDays(dayDate, -1)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>← Previous day</Link>
+              <Link href={`/partner/calendar?day=${addDays(dayDate, -1)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}><NavIcon name="arrowLeft" size={16} /> Previous day</Link>
               <Link href={`/partner/calendar?day=${now.date}`} className={`${dash.btn} ${dash.btnSm} ${dayDate === now.date ? '' : dash.btnSecondary}`}>Today</Link>
-              <Link href={`/partner/calendar?day=${addDays(dayDate, 1)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Next day →</Link>
+              <Link href={`/partner/calendar?day=${addDays(dayDate, 1)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Next day <NavIcon name="arrowRight" size={16} /></Link>
               <Link href={`/partner/calendar?week=${dayDate}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Week view</Link>
             </div>
             <h2 className={dash.cardTitle}>{formatDate(day.date, { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
@@ -78,7 +79,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                             {b.name}{b.part !== 'full' ? ` · ${b.part}` : ''}{b.source === 'walk_in' ? ' · walk-in' : ''} · {b.phone} · {b.code} · {b.status.replace('_', ' ')}
                           </div>
                         ))}
-                        {c.state === 'blocked' && <span className={dash.calName}>⛔ {c.blockReason}</span>}
+                        {c.state === 'blocked' && <span className={dash.calName}>Blocked: {c.blockReason}</span>}
                         {c.state === 'held' && <span className={dash.muted}>Being booked…</span>}
                         {c.state === 'free' && <span className={dash.muted}>Open</span>}
                         {c.state === 'past' && c.bookings.length === 0 && <span className={dash.muted}>Past</span>}
@@ -104,9 +105,9 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <div className={dash.inline}>
-            <Link href={`/partner/calendar?week=${addDays(start, -7)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>← Previous</Link>
+            <Link href={`/partner/calendar?week=${addDays(start, -7)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}><NavIcon name="arrowLeft" size={16} /> Previous</Link>
             <Link href="/partner/calendar" className={`${dash.btn} ${dash.btnSm} ${start === thisWeek ? '' : dash.btnSecondary}`}>This week</Link>
-            <Link href={`/partner/calendar?week=${addDays(start, 7)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Next →</Link>
+            <Link href={`/partner/calendar?week=${addDays(start, 7)}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Next <NavIcon name="arrowRight" size={16} /></Link>
           </div>
           <h2 className={dash.cardTitle}>{formatDate(start)} – {formatDate(addDays(start, 6))}</h2>
         </div>
@@ -137,7 +138,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                             {b.name}{b.part !== 'full' ? ` · ${b.part}` : ''}{b.source === 'walk_in' ? ' · walk-in' : ''}
                           </span>
                         ))}
-                        {c.state === 'blocked' && <span className={dash.calName} title={c.blockReason ?? ''}>⛔ {c.blockReason}</span>}
+                        {c.state === 'blocked' && <span className={dash.calName} title={c.blockReason ?? ''}>Blocked: {c.blockReason}</span>}
                         {c.state === 'held' && <span className={dash.muted}>Being booked…</span>}
                       </td>
                     );

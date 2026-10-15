@@ -1,3 +1,4 @@
+import NavIcon from '@/components/dash/NavIcon';
 import Link from 'next/link';
 import { Badge, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
@@ -68,7 +69,7 @@ export default async function PartnerDashboard() {
         <div className={styles.heroLeft}>
           <div className={styles.greetingRow}>
             <h1 className={styles.greetingTitle}>
-              {timeGreeting}, {partnerFirstName} 👋
+              {timeGreeting}, {partnerFirstName}
             </h1>
             <div className={`${styles.facilityStatusPill} ${isFacilityOpen ? styles.facilityOpen : styles.facilityClosed}`}>
               {isFacilityOpen && <span className={styles.pulseDot} aria-hidden="true" />}
@@ -92,16 +93,16 @@ export default async function PartnerDashboard() {
           )}
           {ctx.can('checkin') && (
             <Link href="/partner/check-in" className={`${styles.actionBtnSecondary} ${styles.btnGreen}`}>
-              <span>📷</span> Check-in Desk
+              <NavIcon name="camera" size={16} /> Check-in Desk
             </Link>
           )}
           {ctx.can('slots') && (
             <a href="#block-slot" className={`${styles.actionBtnSecondary} ${styles.btnAmber}`}>
-              <span>🔒</span> Block Slot
+              <NavIcon name="lock" size={16} /> Block Slot
             </a>
           )}
           <Link href={`/arenas/${ctx.turf.id}`} target="_blank" rel="noopener noreferrer" className={`${styles.actionBtnSecondary} ${styles.btnBlue}`}>
-            <span>↗</span> Public Page
+            <NavIcon name="external" size={16} /> Public Page
           </Link>
         </div>
       </section>
@@ -130,7 +131,7 @@ export default async function PartnerDashboard() {
               href={`/partner/check-in?code=${nextBooking.code}`}
               className={styles.nextUpAction}
             >
-              <span>📷</span> Check In Player Now
+              <NavIcon name="camera" size={16} /> Check In Player Now
             </Link>
           )}
         </section>
@@ -143,7 +144,7 @@ export default async function PartnerDashboard() {
           <div className={styles.kpiCard}>
             <div className={styles.kpiHeader}>
               <span className={styles.kpiLabel}>Revenue This Month</span>
-              <div className={styles.kpiIconBox} title="Monthly revenue">💰</div>
+              <div className={styles.kpiIconBox} title="Monthly revenue"><NavIcon name="payouts" size={18} /></div>
             </div>
             <div className={styles.kpiValue}>{inr(revenue)}</div>
             <div className={styles.kpiFooter}>
@@ -157,7 +158,7 @@ export default async function PartnerDashboard() {
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
             <span className={styles.kpiLabel}>Today&apos;s Court Occupancy</span>
-            <div className={styles.kpiIconBox} title="Occupancy">📊</div>
+            <div className={styles.kpiIconBox} title="Occupancy"><NavIcon name="analytics" size={18} /></div>
           </div>
           <div className={styles.kpiValue}>{todayOccupancy}%</div>
           <div className={styles.kpiProgressTrack}>
@@ -173,7 +174,7 @@ export default async function PartnerDashboard() {
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
             <span className={styles.kpiLabel}>Next 7 Days Pipeline</span>
-            <div className={styles.kpiIconBox} title="Upcoming pipeline">🗓️</div>
+            <div className={styles.kpiIconBox} title="Upcoming pipeline"><NavIcon name="calendar" size={18} /></div>
           </div>
           <div className={styles.kpiValue}>{upcoming.length} bookings</div>
           <div className={styles.kpiFooter}>
@@ -186,7 +187,7 @@ export default async function PartnerDashboard() {
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
             <span className={styles.kpiLabel}>Player Attendance Rate</span>
-            <div className={styles.kpiIconBox} title="Attendance rate">🎯</div>
+            <div className={styles.kpiIconBox} title="Attendance rate"><NavIcon name="target" size={18} /></div>
           </div>
           <div className={styles.kpiValue}>{attendanceRate}%</div>
           <div className={styles.kpiFooter}>
@@ -209,7 +210,7 @@ export default async function PartnerDashboard() {
                 <p className={styles.cardSubtitle}>Total earnings across online and walk-in sales</p>
               </div>
               <Link href="/partner/payouts" className={styles.actionBtnSecondary} style={{ padding: '6px 12px', fontSize: 13 }}>
-                View Payouts ↗
+                View Payouts <NavIcon name="external" size={14} />
               </Link>
             </div>
 
@@ -274,7 +275,7 @@ export default async function PartnerDashboard() {
 
           {today.length === 0 ? (
             <div className={styles.emptyState}>
-              <span className={styles.emptyIcon}>📅</span>
+              <span className={styles.emptyIcon}><NavIcon name="bookings" size={32} /></span>
               <p className={styles.emptyText}>No bookings scheduled yet today.</p>
               <p style={{ fontSize: 13 }}>Slots are currently open for walk-in or online bookings.</p>
             </div>
@@ -331,7 +332,7 @@ export default async function PartnerDashboard() {
           </div>
           {ctx.can('bookings') && (
             <Link href="/partner/bookings" className={styles.actionBtnSecondary} style={{ padding: '6px 12px', fontSize: 13 }}>
-              View All Bookings ↗
+              View All Bookings <NavIcon name="external" size={14} />
             </Link>
           )}
         </div>
@@ -407,7 +408,7 @@ export default async function PartnerDashboard() {
             </p>
           </div>
           <Link href="/partner/slots" className={styles.actionBtnSecondary} style={{ padding: '6px 12px', fontSize: 13 }}>
-            Full Slot Calendar Grid ↗
+            Full Slot Calendar Grid <NavIcon name="external" size={14} />
           </Link>
         </div>
 

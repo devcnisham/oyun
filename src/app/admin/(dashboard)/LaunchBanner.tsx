@@ -18,7 +18,7 @@ export default async function LaunchBanner() {
 
   return (
     <div className={dash.card} role="alert" style={{ borderColor: '#dc2626', borderWidth: 2, background: '#fef2f2', marginBottom: 16 }}>
-      <h2 className={dash.cardTitle} style={{ color: '#991b1b' }}>⛔ Not ready for live bookings</h2>
+      <h2 className={dash.cardTitle} style={{ color: '#991b1b' }}>Not ready for live bookings</h2>
       <p className={dash.cardDesc} style={{ color: '#7f1d1d' }}>
         Don&apos;t take real bookings until every item below is fixed. Check <code>/api/health</code> after each redeploy; see docs/GO-LIVE.md.
       </p>

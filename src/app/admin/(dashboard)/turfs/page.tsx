@@ -71,12 +71,12 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
                         <ActionForm action={quickUpdateTurf} inline>
                           <input type="hidden" name="turfId" value={t.id} />
                           <input type="hidden" name="field" value="isVerified" />
-                          <button className={`${dash.btn} ${dash.btnSm} ${t.isVerified ? '' : dash.btnSecondary}`}>{t.isVerified ? '✓ Verified' : 'Verify'}</button>
+                          <button className={`${dash.btn} ${dash.btnSm} ${t.isVerified ? '' : dash.btnSecondary}`}>{t.isVerified ? 'Verified' : 'Verify'}</button>
                         </ActionForm>
                         <ActionForm action={quickUpdateTurf} inline>
                           <input type="hidden" name="turfId" value={t.id} />
                           <input type="hidden" name="field" value="isFeatured" />
-                          <button className={`${dash.btn} ${dash.btnSm} ${t.isFeatured ? '' : dash.btnSecondary}`}>{t.isFeatured ? '★ Featured' : 'Feature'}</button>
+                          <button className={`${dash.btn} ${dash.btnSm} ${t.isFeatured ? '' : dash.btnSecondary}`}>{t.isFeatured ? 'Featured' : 'Feature'}</button>
                         </ActionForm>
                       </div>
                     </td>

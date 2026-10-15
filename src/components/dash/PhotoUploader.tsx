@@ -1,5 +1,6 @@
 'use client';
 
+import NavIcon from '@/components/dash/NavIcon';
 import { useState, useRef, type ChangeEvent, type DragEvent } from 'react';
 import styles from './PhotoUploader.module.css';
 
@@ -164,7 +165,7 @@ export default function PhotoUploader({
               if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click();
             }}
           >
-            <span className={styles.uploadIcon}>📸</span>
+            <span className={styles.uploadIcon}><NavIcon name="camera" size={28} /></span>
             <span className={styles.primaryText}>
               Click or drag photos here to upload to Supabase Storage
             </span>
@@ -228,7 +229,7 @@ export default function PhotoUploader({
                           title="Make cover photo"
                           style={{ marginLeft: 3 }}
                         >
-                          ★
+                          <NavIcon name="reviews" size={14} />
                         </button>
                       )}
                     </div>
@@ -238,7 +239,7 @@ export default function PhotoUploader({
                       onClick={() => removeImage(idx)}
                       title="Remove photo"
                     >
-                      ✕
+                      <NavIcon name="close" size={14} />
                     </button>
                   </div>
                 </div>

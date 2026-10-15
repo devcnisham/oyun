@@ -1,3 +1,4 @@
+import NavIcon from '@/components/dash/NavIcon';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Invoice from '@/components/Invoice';
@@ -17,7 +18,7 @@ export default async function PartnerInvoicePage({ params }: { params: Promise<{
   return (
     <div className={dash.page}>
       <div className={`${dash.actions} noPrint`} style={{ justifyContent: 'space-between' }}>
-        <Link href="/partner/bookings" className={`${dash.btn} ${dash.btnSecondary}`}>← Bookings</Link>
+        <Link href="/partner/bookings" className={`${dash.btn} ${dash.btnSecondary}`}><NavIcon name="arrowLeft" size={16} /> Bookings</Link>
         <PrintButton className={dash.btn} />
       </div>
       <Invoice booking={booking} turf={turf} partner={ctx.partner} settings={db.settings} />

@@ -1,3 +1,4 @@
+import NavIcon from '@/components/dash/NavIcon';
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
 import { PageHeader, dash } from '@/components/dash/ui';
@@ -254,7 +255,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                 {booking ? (
                   hourBookings.map((b) => (
                     <Link key={b.id} href={`/partner/bookings?q=${encodeURIComponent(b.code)}`} className={styles.slotNote} title="Open this booking">
-                      {b.customerName}{b.source === 'walk_in' ? ' (walk-in)' : ''}{b.pitch && b.pitch !== 'full' ? ` · half ${b.pitch}` : ''} ↗
+                      {b.customerName}{b.source === 'walk_in' ? ' (walk-in)' : ''}{b.pitch && b.pitch !== 'full' ? ` · half ${b.pitch}` : ''} <NavIcon name="external" size={12} />
                     </Link>
                   ))
                 ) : block ? (
