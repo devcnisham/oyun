@@ -32,17 +32,6 @@ export default async function Home() {
   const settings = await getSettings();
   const recommended = [...turfs].sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating).slice(0, 10);
 
-  // Top areas by number of listed turfs
-  const popularAreas = Object.entries(
-    turfs.reduce<Record<string, number>>((acc, t) => {
-      acc[t.area] = (acc[t.area] ?? 0) + 1;
-      return acc;
-    }, {})
-  )
-    .map(([area, count]) => ({ area, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 4);
-
   // Phone home feed extras: coupons, turf deals and every area with its turf count
   const db = await getDb();
   const stats = homeStats(db.turfs, db.bookings);
@@ -182,50 +171,6 @@ export default async function Home() {
           </div>
         </section>
       )}
-
-      {/* Explore By Area (OYO Style Categories) */}
-      <section className={styles.bgSection}>
-        <div className={`container ${styles.section}`}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Explore popular locations</h2>
-            <Link href="/arenas" className="btn btn--ghost btn--sm">View All →</Link>
-          </div>
-          <div className={styles.areaGrid}>
-            {popularAreas.map(({ area, count }, i) => (
-              <Link href={`/arenas?area=${area}`} key={i} className={styles.areaCard}>
-                <div className={styles.areaInfo}>
-                  <h3 className={styles.areaName}>{area}</h3>
-                  <p className={styles.areaCount}>{count} {count === 1 ? 'Turf' : 'Turfs'} available</p>
-                </div>
-                <div className={styles.areaIcon}>🏟️</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* How it Works / Perks (OYO Style Features) */}
-      <section className={`container ${styles.section}`}>
-        <h2 className={styles.sectionTitle}>Why book with OYUN?</h2>
-        <div className={styles.featureGrid}>
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>⚡</div>
-            <h3 className={styles.featureTitle}>Instant Booking</h3>
-            <p className={styles.featureDesc}>No waiting for confirmations. See real-time availability and book instantly.</p>
-          </div>
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>💵</div>
-            <h3 className={styles.featureTitle}>Pay at the Turf</h3>
-            <p className={styles.featureDesc}>Reserve online in seconds and pay at the venue by cash or UPI: a small advance when you arrive, the rest after you play. Nothing is charged online.</p>
-          </div>
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>🔒</div>
-            <h3 className={styles.featureTitle}>No Double Bookings</h3>
-            <p className={styles.featureDesc}>Your slot is locked while you reserve, and everyone sees holds and bookings live.</p>
-          </div>
-        </div>
-      </section>
 
       {/* CTA Footer */}
       <section className={styles.ctaSection}>
