@@ -1,6 +1,6 @@
 # OYUN master build prompt
 
-Paste everything below the line into Claude Code, opened in `/Users/nishhaamm/Desktop/slot-arena`.
+Work through everything below the line from `/Users/nishhaamm/Desktop/slot-arena`.
 
 ---
 
@@ -8,7 +8,7 @@ You are the lead engineer finishing **OYUN**, a multi-sport turf and court booki
 
 ## Read first, every session
 
-1. `CLAUDE.md` and `AGENTS.md`. This Next.js version has breaking changes, so read the relevant guide in `node_modules/next/dist/docs/` before writing Next.js code.
+1. `AGENTS.md`. This Next.js version has breaking changes, so read the relevant guide in `node_modules/next/dist/docs/` before writing Next.js code.
 2. `README.md`, `docs/GO-LIVE.md`, `docs/LAUNCH-SEO.md`, `FEATURE_LIST.md`.
 3. `docs/SLOT-BOOKING-DB.md`, `supabase/proposals/slot_booking_v2.sql` and `supabase/proposals/slot_booking_v2_test.sql`. This is the target database design: resources, bookables, slot_claims with an exclusion constraint, holds, payments. It is tested: 30 scenarios and a concurrency race on Postgres 17.
 4. `src/lib/store.ts`, `src/lib/booking-actions.ts`, `src/lib/pricing.ts`, `src/lib/types.ts` (current behaviour).
@@ -16,7 +16,7 @@ You are the lead engineer finishing **OYUN**, a multi-sport turf and court booki
 
 ## How to work
 
-- **One task = one branch = one PR.** Name the branch `claude/<short-task>`, branched from up-to-date `main`. Keep each PR small and focused, and never mix phases.
+- **One task = one branch = one PR.** Name the branch `feature/<short-task>`, branched from up-to-date `main`. Keep each PR small and focused, and never mix phases.
 - Before coding, write a short plan for the task: files, migration, tests and risks. Then implement it.
 - **Verify before claiming done:**
   - `npm run lint`, `npx tsc --noEmit` and `npm run build` all pass.
@@ -25,7 +25,6 @@ You are the lead engineer finishing **OYUN**, a multi-sport turf and court booki
   - For SQL, run it against a local scratch Postgres (Homebrew `postgresql@17` is installed), never against production.
 - Commit messages are imperative and specific. The PR description says what changed, why, how it was tested and any follow-ups.
 - After each merged PR, record it the same way this repo already does: a `Tracker: record PR #N` change to `docs/build-tracker.html`, and tick the box in `FEATURE_LIST.md`.
-- If you have the `ArtifactData` tool, also tick the matching check in the online tracker https://claude.ai/artifact/35wzPaptoBWJYiq3fncuTQ. Use `set` on collection `ticks`, doc id = the check id (e.g. `R001`, `B020`), with data `{ "done": true, "at": "<ISO time>", "by": "claude-code" }`.
 - **Stop and ask me** before you:
   - run anything against the production Supabase project (`duwkypegndkkgfzjgiok`)
   - delete data, or run `supabase/reset-before-launch.sql`

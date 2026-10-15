@@ -11,7 +11,7 @@ Read `AGENTS.md` and `docs/NEXT16-NOTES.md` first: this Next.js version differs 
 
 ## Working agreement
 
-- One branch per task, named with the Jira key and a short name, such as `OYUN-67-race-test`, `fix/OYUN-80-mask-phone` or `claude/OYUN-67-race-test`. Branch types and the `staging` branch are in `docs/BRANCHING.md`. Open a pull request into `main`, with the Jira key at the start of the title (`OYUN-67 Double-booking race test`); `main` is what Vercel deploys.
+- One branch per task, named with the Jira key and a short name, such as `OYUN-67-race-test`, `fix/OYUN-80-mask-phone` or `feature/OYUN-67-race-test`. Branch types and the `staging` branch are in `docs/BRANCHING.md`. Open a pull request into `main`, with the Jira key at the start of the title (`OYUN-67 Double-booking race test`); `main` is what Vercel deploys.
 - Keep pull requests small and about one thing. Say what changed, why, how it was tested and any follow-ups (the PR template asks).
 - **Done means:** it works locally, `npm run typecheck`, `npm run lint`, `npm test` and `npm run build` pass, a test exists for any new rule, and `docs/build-tracker.html` and `docs/TASK-WORKFLOW.md` are updated.
 - CI runs lint (zero warnings), type-check, `npm audit` for production dependencies, unit tests, build, the SQL tests on Postgres 17 and Playwright. Merge only when every check is green.

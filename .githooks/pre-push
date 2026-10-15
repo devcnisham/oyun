@@ -11,7 +11,7 @@ while read local_ref local_oid remote_ref remote_oid; do
     echo ""
     echo "======================================================================"
     echo "✖ BLOCKED: Direct push to 'main' is prevented by branch protection rules."
-    echo "  Please push your changes to a feature branch (e.g. claude/<feature>)"
+    echo "  Please push your changes to a feature branch (e.g. feature/<feature>)"
     echo "  and open a Pull Request to merge into main."
     echo ""
     echo "  For emergency hotfixes, bypass with: ALLOW_MAIN_PUSH=1 git push"
