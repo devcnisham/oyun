@@ -49,21 +49,23 @@ describe('matchesExtras', () => {
 });
 
 describe('filtersToParams', () => {
-  const none: ArenaFilters = { q: '', area: 'All Areas', sport: 'All Sports', sort: 'featured', maxPrice: 0, amenities: [], view: 'grid' };
+  const none: ArenaFilters = { q: '', area: 'All Areas', sport: 'All Sports', sort: 'featured', maxPrice: 0, amenities: [], date: '', time: '', view: 'grid' };
   it('leaves defaults out and keeps unrelated parameters', () => {
-    expect(filtersToParams(new URLSearchParams('city=Mangalore&date=2026-10-20'), none).toString()).toBe('city=Mangalore&date=2026-10-20');
+    expect(filtersToParams(new URLSearchParams('city=Mangalore'), none).toString()).toBe('city=Mangalore');
   });
   it('writes every active filter, one amenity parameter each', () => {
-    const f = { ...none, q: ' pass ', area: 'Kadri', sport: 'Football', sort: 'rating', maxPrice: 800, amenities: ['Parking', 'Floodlights'], view: 'map' as const };
+    const f = { ...none, q: ' pass ', area: 'Kadri', sport: 'Football', sort: 'rating', maxPrice: 800, amenities: ['Parking', 'Floodlights'], date: '2026-10-20', time: 'evening', view: 'map' as const };
     const p = filtersToParams(new URLSearchParams(), f);
     expect(p.get('q')).toBe('pass');
     expect(p.get('area')).toBe('Kadri');
     expect(p.get('maxPrice')).toBe('800');
     expect(p.getAll('amenity')).toEqual(['Parking', 'Floodlights']);
+    expect(p.get('date')).toBe('2026-10-20');
+    expect(p.get('time')).toBe('evening');
     expect(p.get('view')).toBe('map');
   });
   it('removes parameters for filters that were cleared', () => {
-    expect(filtersToParams(new URLSearchParams('q=x&maxPrice=800&amenity=Parking'), none).toString()).toBe('');
+    expect(filtersToParams(new URLSearchParams('q=x&maxPrice=800&amenity=Parking&date=2026-10-20&time=night'), none).toString()).toBe('');
   });
 });
 
