@@ -13,6 +13,7 @@ import ShareButton from './ShareButton';
 import MapEmbed from './MapEmbed';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
+import { sportInfo } from '@/lib/sports';
 import { getWeatherAlert } from '@/lib/weather';
 
 interface TurfDetailProps {
