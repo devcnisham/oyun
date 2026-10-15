@@ -18,6 +18,7 @@ function matches(input: string, expected: string) {
 }
 
 import { verifyTotp } from './totp';
+import { clientIpFrom } from '@/lib/client-ip';
 
 export interface AdminUser {
   id: string;
@@ -95,7 +96,7 @@ async function partnerSubject(email: string, password: string) {
 const throttle = sharedLoginThrottle;
 
 async function clientIp() {
-  return (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  return clientIpFrom(await headers());
 }
 
 export async function login(role: Role, _prev: LoginState, formData: FormData): Promise<LoginState> {

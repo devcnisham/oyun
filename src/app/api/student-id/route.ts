@@ -9,6 +9,7 @@ import { STUDENT_ID_EXTENSIONS, applyStudentSubmission, studentIdFileError } fro
 import { StudentIdStorageError, putStudentId, removeStudentIds } from '@/lib/student-id-storage';
 import { getDb, mutate } from '@/lib/store';
 import { createPlayer } from '@/lib/wallet';
+import { clientIpFrom } from '@/lib/client-ip';
 
 const fail = (error: string, status: number) => NextResponse.json({ error }, { status });
 
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
   }
   if (!originHost || !host || originHost !== host) return fail('Forbidden', 403);
 
-  const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+  const ip = clientIpFrom(req.headers);
   if (!(await sharedRateLimit(`student-id:ip:${ip}`, 10, 60 * 60_000))) return fail('Too many tries. Please wait a while and try again.', 429);
 
   const form = await req.formData().catch(() => null);

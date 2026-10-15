@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { processPaymentWebhook, verifyRazorpaySignature } from '@/lib/payments';
+import { clientIpFrom } from '@/lib/client-ip';
+import { processPaymentWebhook, razorpayWebhookSecret, verifyRazorpaySignature } from '@/lib/payments';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
 
 export async function POST(req: Request) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = clientIpFrom(req.headers);
   if (!(await sharedRateLimit(`webhook:razorpay:${ip}`, 120, 60_000))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
@@ -15,7 +16,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Payload too large or empty' }, { status: 400 });
   }
 
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET || 'test_webhook_secret';
+  const secret = razorpayWebhookSecret();
+  if (!secret) {
+    return NextResponse.json({ error: 'Webhook is not configured' }, { status: 503 });
+  }
   if (!verifyRazorpaySignature(rawBody, signature, secret)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }

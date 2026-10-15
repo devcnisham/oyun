@@ -56,6 +56,35 @@ export function resetPaymentStateForTesting(): void {
 }
 
 /**
+ * Records a webhook event once in Postgres (claim_payment_event, supabase/setup/15-payment-events.sql)
+ * so a replay landing on another serverless instance is still recognised. 'unavailable' means no
+ * database or the step has not been run yet: the caller falls back to the per-instance set.
+ */
+async function claimPaymentEvent(eventKey: string, orderId: string, paymentId: string): Promise<'claimed' | 'duplicate' | 'unavailable'> {
+  if (!supabaseConfigured()) return 'unavailable';
+  try {
+    const { data, error } = await createAdminClient().rpc('claim_payment_event', {
+      p_event_key: eventKey,
+      p_order_id: orderId,
+      p_payment_id: paymentId,
+    });
+    if (error) return 'unavailable';
+    return data === true ? 'claimed' : 'duplicate';
+  } catch {
+    return 'unavailable';
+  }
+}
+
+/**
+ * Webhook signing secret. Fails closed in production: an unset variable must never fall back to a
+ * published string, or anyone could forge a "payment captured" event and confirm a booking unpaid.
+ */
+export function razorpayWebhookSecret(): string | undefined {
+  if (process.env.RAZORPAY_WEBHOOK_SECRET) return process.env.RAZORPAY_WEBHOOK_SECRET;
+  return process.env.NODE_ENV === 'production' ? undefined : 'test_webhook_secret';
+}
+
+/**
  * Verifies Razorpay webhook HMAC SHA256 signature in constant time.
  */
 export function verifyRazorpaySignature(payload: string, signature: string, secret: string): boolean {
@@ -229,7 +258,7 @@ export async function processPaymentWebhook(
   rawBody: string,
   signature: string
 ): Promise<WebhookProcessResult> {
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET || 'test_webhook_secret';
+  const secret = razorpayWebhookSecret() ?? '';
   const isValid = verifyRazorpaySignature(rawBody, signature, secret);
   if (!isValid) {
     return { ok: false, action: 'ignored', error: 'invalid_signature' };
@@ -253,12 +282,19 @@ export async function processPaymentWebhook(
     return { ok: true, action: 'ignored', error: 'missing_identifiers' };
   }
 
-  // Idempotency: ignore duplicate webhook delivery
+  // Idempotency: ignore duplicate webhook delivery. Prefer Postgres (P11-02) so a replay
+  // that lands on another serverless instance is still recognised; fall back to memory.
   const eventKey = `${orderId}:${paymentId}`;
-  if (processedEvents.has(eventKey)) {
+  const claimed = await claimPaymentEvent(eventKey, orderId, paymentId);
+  if (claimed === 'duplicate') {
     return { ok: true, action: 'already_confirmed', orderId, paymentId };
   }
-  processedEvents.add(eventKey);
+  if (claimed === 'unavailable') {
+    if (processedEvents.has(eventKey)) {
+      return { ok: true, action: 'already_confirmed', orderId, paymentId };
+    }
+    processedEvents.add(eventKey);
+  }
 
   // Attempt to confirm the slot booking
   const confirmResult = await confirmSlotPayment(orderId, paymentId, amount, slotKey);
@@ -351,7 +387,10 @@ export async function createRazorpayOrder(params: {
     }
   }
 
-  // Fallback for tests & development when live keys are not configured
+  // Fallback for tests & development only. In production a missing key must fail, not mint fake orders.
+  if (process.env.NODE_ENV === 'production') {
+    return { ok: false, error: 'payments_not_configured' };
+  }
   const syntheticOrderId = `order_${crypto.createHash('sha256').update(`${amount}:${Date.now()}:${Math.random()}`).digest('hex').slice(0, 14)}`;
   return {
     ok: true,
