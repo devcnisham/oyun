@@ -36,25 +36,25 @@ export default async function PartnerLayout({ children }: { children: React.Reac
       
       <header className={`${styles.mobileHeader} noPrint`}>
         <Link href="/" className={styles.logo}>
-          <span className={styles.logoIcon}>⚽</span>
+          <span className={styles.logoIcon}><NavIcon name="ball" size={18} /></span>
           <div className={styles.logoText}>
             <span className={styles.logoName}>OYUN</span>
             <span className={styles.logoTag}>Partner</span>
           </div>
         </Link>
-        <DrawerButton open label="Open menu" className={styles.menuBtn}>☰</DrawerButton>
+        <DrawerButton open label="Open menu" className={styles.menuBtn}><NavIcon name="menu" size={20} /></DrawerButton>
       </header>
 
       <aside className={`${styles.sidebar} noPrint`}>
         <div className={styles.brand}>
           <Link href="/" className={styles.logo}>
-            <span className={styles.logoIcon}>⚽</span>
+            <span className={styles.logoIcon}><NavIcon name="ball" size={18} /></span>
             <div className={styles.logoText}>
               <span className={styles.logoName}>OYUN</span>
               <span className={styles.logoTag}>Partner</span>
             </div>
           </Link>
-          <DrawerButton open={false} label="Close menu" className={styles.closeBtn}>✕</DrawerButton>
+          <DrawerButton open={false} label="Close menu" className={styles.closeBtn}><NavIcon name="close" size={18} /></DrawerButton>
         </div>
 
         <nav className={styles.nav}>
