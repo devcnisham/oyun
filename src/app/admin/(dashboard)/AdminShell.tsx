@@ -48,6 +48,16 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             {link('/admin/settings', '⚙️', 'Settings & promo codes')}
             {link('/admin/customization', '🎨', 'Homepage content')}
           </div>
+
+          <div className={styles.navGroup} style={{ marginTop: '24px' }}>
+            <div className={styles.navTitle}>Switch to</div>
+            <Link href="/" className={styles.navLink}>
+              <span className={styles.navIcon}>🌐</span> Main site
+            </Link>
+            <Link href="/partner" className={styles.navLink}>
+              <span className={styles.navIcon}>🤝</span> Partner dashboard
+            </Link>
+          </div>
         </nav>
         
         <div className={styles.sidebarBottom}>
