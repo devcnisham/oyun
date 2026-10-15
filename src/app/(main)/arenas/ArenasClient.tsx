@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import TurfCard from '@/components/TurfCard';
 import type { TurfSummary } from '@/lib/types';
@@ -8,6 +9,11 @@ import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { SPORTS } from '@/lib/sports';
 import { matchesQuery } from '@/lib/search';
+import { locateTurfs } from '@/lib/map-actions';
+import type { Coords } from '@/lib/geocode';
+
+// Leaflet touches window, so the map loads in the browser only
+const TurfMap = dynamic(() => import('@/components/TurfMap'), { ssr: false, loading: () => <div style={{ height: 420 }} /> });
 
 const sortOptions = [
   { value: 'featured', label: 'Featured First' },
@@ -33,8 +39,24 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
   const [selectedSport, setSelectedSport] = useState(urlSport || 'All Sports');
   const [sortBy, setSortBy] = useState(sortOptions.some((o) => o.value === urlSort) ? urlSort! : 'featured');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '');
-  const [mapTurfId, setMapTurfId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(searchParams.get('view') === 'map' ? 'map' : 'grid');
+
+  // Map positions are looked up the first time the map opens, a few turfs at a time
+  const [located, setLocated] = useState<Record<string, Coords>>({});
+  useEffect(() => {
+    if (viewMode !== 'map') return;
+    let cancelled = false;
+    (async () => {
+      for (let i = 0; i < 6 && !cancelled; i++) {
+        const found = await locateTurfs().catch(() => ({}));
+        if (cancelled || !Object.keys(found).length) return;
+        setLocated((prev) => ({ ...prev, ...found }));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [viewMode]);
 
   const filtered = useMemo(() => {
     let result = [...turfs];
@@ -80,11 +102,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
     return result;
   }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery]);
 
-  // The map follows the turf picked from the list, or the only match; otherwise it searches the filtered area
-  const mapTurf = filtered.find((t) => t.id === mapTurfId) ?? (filtered.length === 1 ? filtered[0] : null);
-  const mapQuery = mapTurf
-    ? `${mapTurf.name} ${mapTurf.location}`
-    : `${selectedSport !== 'All Sports' ? selectedSport.toLowerCase() : 'sports'} turf ${selectedArea !== 'All Areas' ? selectedArea : ''} ${selectedCity}`.replace(/\s+/g, ' ').trim();
+  const mapTurfs = filtered.map((t) => (located[t.id] ? { ...t, ...located[t.id] } : t));
 
   return (
     <div className={styles.page}>
@@ -200,26 +218,8 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
             </div>
           ) : viewMode === 'map' ? (
             <div className={styles.mapContainer}>
-              <iframe
-                key={mapQuery}
-                title="Turfs on map"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
-                width="100%"
-                height="420"
-                style={{ border: 0, borderRadius: '12px' }}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-              <div className={styles.mapPinsMock}>
-                {filtered.map((t) => (
-                  <span key={t.id} className={styles.mapPinMock}>
-                    <button type="button" onClick={() => setMapTurfId(t.id)} aria-pressed={mapTurf?.id === t.id} aria-label={`Show ${t.name} on map`}>
-                      📍
-                    </button>{' '}
-                    <a href={`/arenas/${t.id}`}>{t.name} · ₹{t.pricePerHour}</a>
-                  </span>
-                ))}
-              </div>
+              <TurfMap turfs={mapTurfs} />
+              {mapTurfs.some((t) => t.lat === undefined) && <p className={styles.mapNote}>Placing turfs on the map…</p>}
             </div>
           ) : (
             <>
