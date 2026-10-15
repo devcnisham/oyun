@@ -1,5 +1,5 @@
 import 'server-only';
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after } from 'next/server';
@@ -362,7 +362,7 @@ function loadSupabase(): Promise<Loaded> {
 const DATA_DIR = process.env.DATA_DIR || (process.env.VERCEL ? path.join(tmpdir(), 'oyun-data') : path.join(process.cwd(), '.data'));
 const DATA_FILE = path.join(DATA_DIR, 'db.json');
 
-const globalStore = globalThis as unknown as { __oyunArenaDb?: Database; __oyunArenaPersisted?: boolean };
+const globalStore = globalThis as unknown as { __oyunArenaDb?: Database; __oyunArenaPersisted?: boolean; __oyunArenaFileMtime?: number };
 
 function loadFile(): Database {
   if (existsSync(DATA_FILE)) {
@@ -401,11 +401,24 @@ function saveFile(data: Database) {
 function fileDb(): Database {
   // Reload if db.json was deleted (manual reset), but never reseed on every request when the disk is read-only
   const fileGone = globalStore.__oyunArenaPersisted === true && !existsSync(DATA_FILE);
-  if (!globalStore.__oyunArenaDb || fileGone) globalStore.__oyunArenaDb = loadFile();
+  let fileModified = false;
+  if (process.env.NODE_ENV === 'development' && existsSync(DATA_FILE)) {
+    try {
+      const mtime = statSync(DATA_FILE).mtimeMs;
+      if (globalStore.__oyunArenaFileMtime && mtime > globalStore.__oyunArenaFileMtime) {
+        fileModified = true;
+      }
+      globalStore.__oyunArenaFileMtime = mtime;
+    } catch {}
+  }
+  if (!globalStore.__oyunArenaDb || fileGone || fileModified) {
+    globalStore.__oyunArenaDb = loadFile();
+  }
   // A dev server keeps this copy across code reloads, so settings added since it started (like
   // minAdvance) would be missing; migrate fills them in from the defaults and is safe to repeat
   return migrate(globalStore.__oyunArenaDb);
 }
+
 
 /* ---------------- public API ---------------- */
 

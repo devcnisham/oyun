@@ -10,7 +10,7 @@ import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import dynamic from 'next/dynamic';
 import { primarySport } from '@/lib/sports';
-import type { Bookable, PitchSize, PublicTurf, Slot } from '@/lib/types';
+import type { AddOn, Bookable, PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
@@ -32,9 +32,10 @@ export interface BookingFlowProps {
   initialSlots: Slot[];
   rewards: { cashbackEnabled: boolean; cashbackPercent: number; cashbackMax: number; referralEnabled: boolean; refereeReward: number };
   initialReferral: string;
+  addOns?: AddOn[];
 }
 
-export default function BookingFlow({ turf, dates, initialDate, initialSlots, rewards, initialReferral }: BookingFlowProps) {
+export default function BookingFlow({ turf, dates, initialDate, initialSlots, rewards, initialReferral, addOns }: BookingFlowProps) {
   const router = useRouter();
   const { bookables } = mapTurfToResourcesAndBookables(turf);
   const [selectedBookable, setSelectedBookable] = useState<Bookable | undefined>(() => bookables?.[0]);
@@ -62,6 +63,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     referralEnabled: rewards.referralEnabled,
     initialCode: initialReferral,
     account,
+    availableAddOns: addOns,
   });
 
   const { reset: resetForm } = form;
@@ -311,6 +313,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           signedIn={account.signedIn}
           cashback={cashback}
           form={form}
+          addOns={addOns}
           onClose={() => closeCheckout()}
           onPay={pay}
         />

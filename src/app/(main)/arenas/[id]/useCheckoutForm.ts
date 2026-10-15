@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { checkReferralCode, quoteSelection, type ReferralCheck } from '@/lib/booking-actions';
 import type { SelectionQuote } from '@/lib/booking-types';
 import { getProfile } from '@/lib/client/device';
-import type { PitchSize } from '@/lib/types';
+import type { AddOn, PitchSize } from '@/lib/types';
 
 interface CheckoutFormOptions {
   turfId: string;
@@ -14,6 +14,7 @@ interface CheckoutFormOptions {
   referralEnabled: boolean;
   initialCode: string;
   account: { ready: boolean; name: string; phone: string };
+  availableAddOns?: AddOn[];
 }
 
 /**
@@ -29,6 +30,7 @@ export function useCheckoutForm({ turfId, date, hours, size, active, referralEna
   const [referral, setReferral] = useState<ReferralCheck | null>(null);
   const [codeError, setCodeError] = useState('');
   const [useWallet, setUseWallet] = useState(false);
+  const [selectedAddOns, setSelectedAddOns] = useState<{ id: string; qty: number }[]>([]);
   const [quote, setQuote] = useState<SelectionQuote | null>(null);
   const [error, setError] = useState('');
 
@@ -36,7 +38,10 @@ export function useCheckoutForm({ turfId, date, hours, size, active, referralEna
   const codeApplied = promo !== null || referral?.status === 'valid';
 
   // What the server needs to price or book the current selection
-  const base = useMemo(() => ({ turfId, date, hours, addOns: [], useWallet, size }), [turfId, date, hours, useWallet, size]);
+  const base = useMemo(
+    () => ({ turfId, date, hours, addOns: selectedAddOns, useWallet, size }),
+    [turfId, date, hours, selectedAddOns, useWallet, size]
+  );
 
   // Fill in the signed-in player's name and number
   useEffect(() => {
@@ -101,6 +106,14 @@ export function useCheckoutForm({ turfId, date, hours, size, active, referralEna
     setCodeError(('error' in tryPromo ? null : tryPromo.promoError) ?? 'Invalid promo or referral code');
   };
 
+  const setAddOnQty = useCallback((id: string, qty: number) => {
+    setSelectedAddOns((prev) => {
+      const next = prev.filter((a) => a.id !== id);
+      if (qty > 0) next.push({ id, qty });
+      return next;
+    });
+  }, []);
+
   /** Clears the priced quote and any message when the sheet closes. */
   const reset = useCallback(() => {
     setQuote(null);
@@ -113,6 +126,7 @@ export function useCheckoutForm({ turfId, date, hours, size, active, referralEna
     code, setCode, codeError, codeApplied, applyCode,
     promo, referral,
     useWallet, setUseWallet,
+    selectedAddOns, setAddOnQty,
     quote, error, setError,
     base,
     reset,

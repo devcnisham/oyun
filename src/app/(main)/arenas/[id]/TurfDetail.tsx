@@ -1,6 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import { canOptimize } from '@/lib/images';
-import type { Offer, PublicTurf, Slot } from '@/lib/types';
+import type { AddOn, Offer, PublicTurf, Slot } from '@/lib/types';
 import type { PublicReview } from '@/lib/reviews';
 import Stars from '@/components/Stars';
 import FavouriteButton from '@/components/FavouriteButton';
@@ -23,17 +26,20 @@ interface TurfDetailProps {
   rewards: BookingFlowProps['rewards'];
   initialReferral: string;
   reviews: PublicReview[];
+  addOns?: AddOn[];
 }
 
 
-export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, bookable, rewards, initialReferral, reviews }: TurfDetailProps) {
-  const imageSrc = turf.images[0];
+export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, bookable, rewards, initialReferral, reviews, addOns }: TurfDetailProps) {
+  const [imgIdx, setImgIdx] = useState(0);
+  const images = turf.images && turf.images.length > 0 ? turf.images : ['/turfs/turf_0.jpg'];
+  const imageSrc = images[imgIdx] || images[0];
 
   return (
     <div className={styles.page}>
-      {/* Mobile Image Header */}
+      {/* Mobile Image Header with Carousel (P13-10) */}
       <div className={styles.imageHeader}>
-        <Image src={imageSrc} alt={turf.name} fill preload fetchPriority="high" sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
+        <Image src={imageSrc} alt={`${turf.name} photo ${imgIdx + 1}`} fill preload fetchPriority="high" sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
 
         <div className={styles.topNav}>
           <BackButton fallback="/arenas" className={styles.iconBtn}>←</BackButton>
@@ -44,8 +50,30 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           </div>
         </div>
 
-        <div className={styles.imageCounter}>📸 1/{turf.images.length}</div>
+        {images.length > 1 && (
+          <>
+            <button
+              type="button"
+              className={`${styles.carouselBtn} ${styles.carouselPrev}`}
+              onClick={() => setImgIdx((i) => (i === 0 ? images.length - 1 : i - 1))}
+              aria-label="Previous photo"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              className={`${styles.carouselBtn} ${styles.carouselNext}`}
+              onClick={() => setImgIdx((i) => (i === images.length - 1 ? 0 : i + 1))}
+              aria-label="Next photo"
+            >
+              ›
+            </button>
+          </>
+        )}
+
+        <div className={styles.imageCounter}>📸 {imgIdx + 1}/{images.length}</div>
       </div>
+
 
       <div className={`container ${styles.content} ${styles.layout}`}>
         {/* Left column (top on mobile): turf name and highlights */}
@@ -122,6 +150,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             initialSlots={initialSlots}
             rewards={rewards}
             initialReferral={initialReferral}
+            addOns={addOns}
           />
         )}
         </aside>

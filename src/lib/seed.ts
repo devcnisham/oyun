@@ -66,9 +66,9 @@ export function migrate(data: Database): Database {
     for (const t of lateTurfSeeds) {
       const stored = data.turfs.find((x) => x.id === t.id);
       if (stored) {
-        // Fill in real venue details over the first draft, keeping status, owner and anything an admin set
-        if (draftTurfDescriptions.includes(stored.description)) {
-          Object.assign(stored, { ...t, status: stored.status });
+        // Fill in real venue details over the first draft and make live
+        if (draftTurfDescriptions.includes(stored.description) || stored.status === 'pending') {
+          Object.assign(stored, { ...t, status: 'active' });
         }
         continue;
       }

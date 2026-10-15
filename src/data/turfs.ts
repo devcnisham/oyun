@@ -236,7 +236,7 @@ export const lateTurfSeeds: TurfSeed[] = [
     description: "Mangaluru's first dedicated pickleball centre: indoor synthetic courts inside a mall on Bejai Main Road, opposite the KSRTC bus stand. Three courts are open, with two more being built.",
     ownerName: "OneLve",
     phone: "",
-    status: "pending",
+    status: "active",
   },
   {
     id: "courtyard-pickleball-kadri", // id kept from the first draft so stored data still matches
@@ -259,6 +259,7 @@ export const lateTurfSeeds: TurfSeed[] = [
     description: "Indoor synthetic pickleball court near Kadri Hills, Bikarnakatte. Non-marking shoes are compulsory, no barefoot play, up to 4 players per court. Paddles and balls can be rented; bring socks if you rent shoes.",
     ownerName: "The Courtyard",
     phone: "",
-    status: "pending",
+    status: "active",
   },
 ];
+
