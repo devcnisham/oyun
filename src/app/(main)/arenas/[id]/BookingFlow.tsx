@@ -14,6 +14,7 @@ import { isHalfBookable, mapTurfToResourcesAndBookables } from '@/lib/venue-mapp
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
 import { parseHour } from '@/lib/time';
+import { swapHours } from '@/lib/side-hint';
 import { describeHours } from './booking-format';
 import { useCheckoutForm } from './useCheckoutForm';
 import PitchPicker from './PitchPicker';
@@ -43,6 +44,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [selected, setSelected] = useState<number[]>([]);
   const [size, setSize] = useState<PitchSize>('full'); // whole pitch or one half (turfs that split)
   const [side, setSide] = useState<PitchSide | undefined>(); // which half, once the player picked one
+  const [other, setOther] = useState<{ key: string; slots: Slot[] }>({ key: '', slots: [] }); // the other half's slots, to offer it when this one is taken
   const [loadingSlots, startSlotLoad] = useTransition();
   const [toast, setToast] = useState('');
 
@@ -99,6 +101,18 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     refreshSlots(date).catch(() => {});
   }, [date, refreshSlots]);
   useSlotUpdates(turf.id, date, refreshCurrent, !inCheckout);
+
+  // On a split pitch, also look at the other half so a taken side can point to a free one
+  useEffect(() => {
+    if (size !== 'half' || !side || inCheckout) return;
+    let live = true;
+    getSlotsForDate(turf.id, date, 'half', side === 'A' ? 'B' : 'A')
+      .then((fresh) => live && setOther({ key: `${date}${side}`, slots: fresh }))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [turf.id, date, size, side, slots, inCheckout]);
 
   // Leaving mid-checkout (closing the tab, navigating away) frees the held slots for others at once
   useEffect(() => {
@@ -286,6 +300,22 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         <span className={styles.muted}>{loadingSlots ? 'Updating…' : `${availableCount} open`}</span>
       </div>
 
+      {size === 'half' && side && other.key === `${date}${side}` && swapHours(slots, other.slots).length > 0 && (() => {
+        const hours = swapHours(slots, other.slots);
+        const sideBookable = (want: PitchSide) => bookables?.find((b) => isHalfBookable(turf, b) && b.sort === (want === 'A' ? 1 : 2));
+        const here = sideBookable(side)?.name ?? 'This side';
+        const there = sideBookable(side === 'A' ? 'B' : 'A');
+        return (
+          <p className={styles.sideHint} role="status">
+            {here} is taken at {describeHours(hours, parseHour(turf.openTime))}.{' '}
+            {there && (
+              <button type="button" className={styles.linkBtn} onClick={() => pickBookable(there)}>
+                See {there.name} instead
+              </button>
+            )}
+          </p>
+        );
+      })()}
       <SlotMap slots={slots} selected={selected} loading={loadingSlots} onToggle={toggleSlot} />
       </div>
       </div>
