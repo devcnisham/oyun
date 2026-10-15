@@ -13,7 +13,6 @@ import ShareButton from './ShareButton';
 import MapEmbed from './MapEmbed';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
-import { primarySport, sportInfo } from '@/lib/sports';
 import { getWeatherAlert } from '@/lib/weather';
 
 interface TurfDetailProps {
@@ -78,9 +77,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
       <div className={`container ${styles.content} ${styles.layout}`}>
         {/* Left column (top on mobile): turf name and highlights */}
         <div className={styles.info}>
-        <span className={styles.typeBadge}>
-          <span aria-hidden>{primarySport(turf).icon}</span> {primarySport(turf).label} · {turf.size} · {turf.surface}
-        </span>
         {/* Name, badge and address on the left; hours and map link on the right */}
         <div className={styles.titleRow}>
           <div className={styles.titleMain}>
