@@ -86,7 +86,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
                     <td>
                       <div className={dash.inline}>
                         <Link href={`/admin/turfs/${t.id}`} className={`${dash.btn} ${dash.btnSm}`}>Edit</Link>
-                        <Link href={`/arenas/${t.id}`} target="_blank" className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>View</Link>
+                        <Link href={`/arenas/${t.id}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>View</Link>
                       </div>
                     </td>
                   </tr>

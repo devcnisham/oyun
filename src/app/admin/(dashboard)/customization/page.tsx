@@ -12,7 +12,7 @@ export default async function AdminCustomization() {
   return (
     <div className={dash.page}>
       <PageHeader title="Homepage content" desc="Change what visitors see on the public site. Changes go live immediately.">
-        <Link href="/" target="_blank" className={`${dash.btn} ${dash.btnSecondary}`}>Open homepage</Link>
+        <Link href="/" className={`${dash.btn} ${dash.btnSecondary}`}>Open homepage</Link>
       </PageHeader>
 
       <div className={dash.card}>

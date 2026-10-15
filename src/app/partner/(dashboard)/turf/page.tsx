@@ -15,7 +15,7 @@ export default async function MyTurfPage() {
       <PageHeader title="My turf" desc="Everything here appears on your public booking page.">
         <Badge status={turf.status} />
         {turf.isVerified && <Badge status="active" label="Verified" />}
-        <Link href={`/arenas/${turf.id}`} target="_blank" className={`${dash.btn} ${dash.btnSecondary}`}>View public page</Link>
+        <Link href={`/arenas/${turf.id}`} className={`${dash.btn} ${dash.btnSecondary}`}>View public page</Link>
       </PageHeader>
 
       {turf.status !== 'active' && (
