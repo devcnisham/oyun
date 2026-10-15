@@ -8,7 +8,7 @@ import type { TurfSummary } from '@/lib/types';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { SPORTS } from '@/lib/sports';
-import { matchesQuery } from '@/lib/search';
+import { PRICE_STEPS, matchesExtras, matchesQuery } from '@/lib/search';
 import { locateTurfs } from '@/lib/map-actions';
 import type { Coords } from '@/lib/geocode';
 
@@ -38,6 +38,9 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
   const [selectedArea, setSelectedArea] = useState(defaultArea);
   const [selectedSport, setSelectedSport] = useState(urlSport || 'All Sports');
   const [sortBy, setSortBy] = useState(sortOptions.some((o) => o.value === urlSort) ? urlSort! : 'featured');
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [amenities, setAmenities] = useState<string[]>([]);
+  const amenityOptions = useMemo(() => [...new Set(turfs.flatMap((t) => t.amenities))].sort(), [turfs]);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(searchParams.get('view') === 'map' ? 'map' : 'grid');
 
@@ -76,6 +79,8 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
       result = result.filter((t) => t.sports.includes(selectedSport));
     }
 
+    result = result.filter((t) => matchesExtras(t, { maxPrice, amenities }));
+
     // Filter by search
     if (searchQuery.trim()) {
       result = result.filter((t) => matchesQuery(`${t.name} ${t.location} ${t.area} ${t.sports.join(' ')}`, searchQuery));
@@ -100,7 +105,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
     }
 
     return result;
-  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery]);
+  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities]);
 
   const mapTurfs = filtered.map((t) => (located[t.id] ? { ...t, ...located[t.id] } : t));
 
@@ -199,6 +204,27 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
                   {sport === 'All Sports' ? 'All sports' : sport}
                 </button>
               ))}
+              <span className={styles.chipDivider} aria-hidden />
+              <label className={`${styles.chip} ${maxPrice > 0 ? styles.chipOn : ''}`}>
+                {maxPrice > 0 ? `Up to ₹${maxPrice}/hr` : 'Any price'}
+                <span aria-hidden className={styles.caret}>▾</span>
+                <select className={styles.overlaySelect} value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} aria-label="Maximum price per hour">
+                  <option value={0}>Any price</option>
+                  {PRICE_STEPS.map((p) => (
+                    <option key={p} value={p}>{`Up to ₹${p}/hr`}</option>
+                  ))}
+                </select>
+              </label>
+              {amenityOptions.map((a) => (
+                <button
+                  key={a}
+                  className={`${styles.chip} ${amenities.includes(a) ? styles.chipOn : ''}`}
+                  onClick={() => setAmenities((cur) => (cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a]))}
+                  aria-pressed={amenities.includes(a)}
+                >
+                  {a}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -211,8 +237,8 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>🏟️</div>
               <h2 className={styles.emptyTitle}>No turfs found</h2>
-              <p className={styles.emptyDesc}>Try a different area or search term.</p>
-              <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSearchQuery(''); }}>
+              <p className={styles.emptyDesc}>Try a different area, price or search term.</p>
+              <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSelectedSport('All Sports'); setMaxPrice(0); setAmenities([]); setSearchQuery(''); }}>
                 Clear Filters
               </button>
             </div>

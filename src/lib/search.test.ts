@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSuggestions, matchesQuery, type SearchEntry } from './search';
+import { buildSuggestions, matchesExtras, matchesQuery, type SearchEntry } from './search';
 
 const entries: SearchEntry[] = [
   { id: 't1', name: 'Perfect Pass', area: 'Kodialbail', location: 'Kodialbail, Mangalore', sports: ['Football'] },
@@ -30,5 +30,20 @@ describe('buildSuggestions', () => {
   it('finds a sport and an area', () => {
     expect(buildSuggestions(entries, 'pickle').some((s) => s.kind === 'sport' && s.label === 'Pickleball')).toBe(true);
     expect(buildSuggestions(entries, 'kadri').some((s) => s.kind === 'area' && s.href === '/arenas?area=Kadri')).toBe(true);
+  });
+});
+
+describe('matchesExtras', () => {
+  const turf = { pricePerHour: 800, amenities: ['Parking', 'Floodlights'] };
+  it('keeps everything when no filter is set', () => {
+    expect(matchesExtras(turf, { maxPrice: 0, amenities: [] })).toBe(true);
+  });
+  it('drops turfs above the price cap, keeps ones at it', () => {
+    expect(matchesExtras(turf, { maxPrice: 800, amenities: [] })).toBe(true);
+    expect(matchesExtras(turf, { maxPrice: 799, amenities: [] })).toBe(false);
+  });
+  it('needs every chosen amenity', () => {
+    expect(matchesExtras(turf, { maxPrice: 0, amenities: ['Parking', 'Floodlights'] })).toBe(true);
+    expect(matchesExtras(turf, { maxPrice: 0, amenities: ['Parking', 'Showers'] })).toBe(false);
   });
 });

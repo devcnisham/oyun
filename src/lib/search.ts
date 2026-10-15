@@ -43,3 +43,14 @@ export function buildSuggestions(entries: SearchEntry[], query: string): Suggest
 
   return [...turfs, ...areas, ...sports];
 }
+
+export const PRICE_STEPS = [500, 800, 1000, 1500, 2000] as const;
+
+// Extra filters on the arenas page: a price cap (0 = none) and amenities that every shown turf must have
+export function matchesExtras(
+  turf: { pricePerHour: number; amenities: string[] },
+  { maxPrice, amenities }: { maxPrice: number; amenities: string[] },
+): boolean {
+  if (maxPrice > 0 && turf.pricePerHour > maxPrice) return false;
+  return amenities.every((a) => turf.amenities.includes(a));
+}
