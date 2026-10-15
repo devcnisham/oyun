@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { beforeEach, describe, expect, test } from 'vitest';
 import {
   autoRefundRaceLostPayment,
+  createRazorpayOrder,
   processPaymentWebhook,
   resetPaymentStateForTesting,
   verifyRazorpaySignature,
@@ -193,4 +194,31 @@ describe('payments & race-lost auto-refund (P11-09)', () => {
       expect(data.error).toBe('Invalid signature');
     });
   });
+
+  describe('createRazorpayOrder', () => {
+    test('generates order with valid amount and currency', async () => {
+      const res = await createRazorpayOrder({
+        amount: 1200,
+        currency: 'INR',
+        notes: { turfId: 'turf_test_1', date: '2026-10-16' },
+      });
+
+      expect(res.ok).toBe(true);
+      expect(res.orderId).toBeDefined();
+      expect(res.amount).toBe(120000); // 1200 * 100 paise
+      expect(res.currency).toBe('INR');
+      expect(res.keyId).toBeDefined();
+    });
+
+    test('rejects non-positive amount', async () => {
+      const resZero = await createRazorpayOrder({ amount: 0 });
+      expect(resZero.ok).toBe(false);
+      expect(resZero.error).toBe('invalid_amount');
+
+      const resNegative = await createRazorpayOrder({ amount: -500 });
+      expect(resNegative.ok).toBe(false);
+      expect(resNegative.error).toBe('invalid_amount');
+    });
+  });
 });
+
