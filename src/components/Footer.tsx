@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { SOCIAL_LINKS, areaSlug } from '@/lib/site';
+import { SOCIAL_LINKS } from '@/lib/site';
 import CookieSettingsLink from './consent/CookieSettingsLink';
 import styles from './Footer.module.css';
 
-export default function Footer({ areas, supportEmail }: { areas: string[]; supportEmail: string }) {
+export default function Footer({ supportEmail }: { supportEmail: string }) {
   return (
     <footer className={styles.footer}>
       <div className={`container ${styles.inner}`}>
@@ -64,16 +64,6 @@ export default function Footer({ areas, supportEmail }: { areas: string[]; suppo
                 <li><Link href="/faq">How booking works</Link></li>
               </ul>
             </div>
-            {areas.length > 0 && (
-              <div className={styles.linkGroup}>
-                <p className={styles.linkGroupTitle}>Turfs by area</p>
-                <ul className={styles.linkList}>
-                  {areas.slice(0, 8).map((a) => (
-                    <li key={a}><Link href={`/turfs/${areaSlug(a)}`}>Turfs in {a}</Link></li>
-                  ))}
-                </ul>
-              </div>
-            )}
             <div className={styles.linkGroup}>
               <p className={styles.linkGroupTitle}>Turf owners</p>
               <ul className={styles.linkList}>
