@@ -11,7 +11,7 @@ if (envFile) {
   }
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || 'https://nimfjwxzolkwiyqmnaat.supabase.co';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || 'https://duwkypegndkkgfzjgiok.supabase.co';
 const activeKey = process.env.SUPABASE_SECRET_KEY || env.SUPABASE_SECRET_KEY;
 const oldKeyCandidate = process.argv[2] || process.env.OLD_SUPABASE_SECRET_KEY || 'sb_secret_revoked_sample_token_that_must_fail';
 

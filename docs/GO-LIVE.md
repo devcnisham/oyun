@@ -2,7 +2,7 @@
 
 Everything the site needs before launch day. **Launch day: Monday 19 October 2026.** Do the steps in order; each takes a few minutes.
 
-## 1. Database (Supabase project `nimfjwxzolkwiyqmnaat`)
+## 1. Database (Supabase project `duwkypegndkkgfzjgiok`)
 
 1. Open supabase.com → your project → **SQL Editor** → **New query**.
 2. Run the eight files in `supabase/setup/` **in order**, one at a time
@@ -29,7 +29,7 @@ Vercel → **slot-arena** → **Settings → Environment Variables**. Tick **Pro
 
 | Name | Type | Value |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Config | `https://nimfjwxzolkwiyqmnaat.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_URL` | Config | `https://duwkypegndkkgfzjgiok.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Config | `sb_publishable_…` (Supabase → API Keys) |
 | `SUPABASE_SECRET_KEY` | Secret | `sb_secret_…` from step 1.4 |
 | `SESSION_SECRET` | Secret | any long random text, at least 32 characters |

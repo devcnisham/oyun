@@ -13,7 +13,7 @@ k6 run -e BASE_URL=https://<staging-host> -e PEAK_VUS=200 scripts/k6/browse.js
 ```
 
 ## Rules
-- Local or staging only. Do not point it at production (`nimfjwxzolkwiyqmnaat`, the live site) without the owner approving the run: it creates real load and real database reads.
+- Local or staging only. Do not point it at production (`duwkypegndkkgfzjgiok`, the live site) without the owner approving the run: it creates real load and real database reads.
 - A local `next start` on a laptop measures your laptop. For numbers that mean something, use staging (P8-12).
 
 ## What is not covered

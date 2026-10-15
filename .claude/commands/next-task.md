@@ -16,7 +16,7 @@ Run ONE task from the OYUN queue, then stop. Source of truth: `docs/MASTER-PROMP
 ## 3. Plan, then build
 - Write a 5 line plan: files, migration, tests, risks. Then implement the smallest change that finishes the task.
 - Follow the security rules in MASTER-PROMPT.md: authenticate, authorize against the exact record, validate input, rate-limit, no secrets in code or logs, a test per authorization rule touched.
-- Never touch production Supabase (`nimfjwxzolkwiyqmnaat`), Vercel or Clerk settings, or keys. SQL runs only on a local scratch Postgres.
+- Never touch production Supabase (`duwkypegndkkgfzjgiok`), Vercel or Clerk settings, or keys. SQL runs only on a local scratch Postgres.
 
 ## 4. Verify (all must pass; show the output)
 - `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`.
