@@ -20,6 +20,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
     ...(ctx.can('checkin') ? [{ href: '/partner/check-in', label: 'Check-in', icon: 'checkin' }] : []),
     ...(ctx.can('slots') ? [{ href: '/partner/slots', label: 'Manage Slots', icon: 'slots' }] : []),
     ...(ctx.can('pricing') ? [{ href: '/partner/pricing', label: 'Pricing', icon: 'pricing' }] : []),
+    ...(ctx.can('payouts') ? [{ href: '/partner/analytics', label: 'Analytics', icon: 'analytics' }] : []),
     { href: '/partner/reviews', label: 'Reviews', icon: 'reviews' },
     ...(ctx.can('offers') ? [{ href: '/partner/offers', label: 'Offers', icon: 'offers' }] : []),
     ...(ctx.can('addons') ? [{ href: '/partner/add-ons', label: 'Add-ons', icon: 'addons' }] : []),
