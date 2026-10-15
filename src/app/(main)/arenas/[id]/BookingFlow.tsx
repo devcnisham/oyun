@@ -9,8 +9,8 @@ import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import dynamic from 'next/dynamic';
-import type { AddOn, Bookable, PitchSize, PublicTurf, Slot } from '@/lib/types';
-import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
+import type { AddOn, Bookable, PitchSide, PitchSize, PublicTurf, Slot } from '@/lib/types';
+import { isHalfBookable, mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import { MAX_SLOTS } from '@/lib/booking-types';
 import { rupees } from '@/lib/format';
 import { parseHour } from '@/lib/time';
@@ -42,6 +42,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [selected, setSelected] = useState<number[]>([]);
   const [size, setSize] = useState<PitchSize>('full'); // whole pitch or one half (turfs that split)
+  const [side, setSide] = useState<PitchSide | undefined>(); // which half, once the player picked one
   const [loadingSlots, startSlotLoad] = useTransition();
   const [toast, setToast] = useState('');
 
@@ -58,6 +59,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     date,
     hours: selected,
     size,
+    side,
     active: holdUntil !== null,
     referralEnabled: rewards.referralEnabled,
     initialCode: initialReferral,
@@ -81,7 +83,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   // Keep the slot map live, like a cinema seat map
   const refreshSlots = useCallback(
     async (forDate: string) => {
-      const fresh = await getSlotsForDate(turf.id, forDate, size);
+      const fresh = await getSlotsForDate(turf.id, forDate, size, side);
       setSlots(fresh);
       setSelected((prev) => {
         const still = prev.filter((h) => fresh.find((s) => s.hour === h)?.available);
@@ -89,7 +91,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         return still;
       });
     },
-    [turf.id, size, flash]
+    [turf.id, size, side, flash]
   );
 
   // Live seat map: other players' holds and bookings show up within a second
@@ -135,10 +137,10 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   }, [inCheckout, secondsLeft, paying, closeCheckout]);
 
   // New date or size: a different price and availability, so start the pick again
-  const reloadSlots = (nextDate: string, nextSize: PitchSize) => {
+  const reloadSlots = (nextDate: string, nextSize: PitchSize, nextSide: PitchSide | undefined = side) => {
     setSelected([]);
     startSlotLoad(async () => {
-      setSlots(await getSlotsForDate(turf.id, nextDate, nextSize));
+      setSlots(await getSlotsForDate(turf.id, nextDate, nextSize, nextSide));
     });
   };
 
@@ -153,6 +155,17 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     if (next === size) return;
     setSize(next);
     reloadSlots(date, next);
+  };
+
+  // A court picked on the pitch picker: the whole pitch, or one half (Right or Left)
+  const pickBookable = (b: Bookable) => {
+    setSelectedBookable(b);
+    const nextSize: PitchSize = isHalfBookable(turf, b) ? 'half' : 'full';
+    const nextSide: PitchSide | undefined = nextSize === 'half' ? (b.sort === 2 ? 'B' : 'A') : undefined;
+    if (nextSize === size && nextSide === side) return;
+    setSize(nextSize);
+    setSide(nextSide);
+    reloadSlots(date, nextSize, nextSide);
   };
 
   const toggleSlot = (slot: Slot) => {
@@ -174,7 +187,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     if (selected.length === 0 || holding) return;
     setHolding(true);
     try {
-      const result = await holdSlots(turf.id, date, selected, size);
+      const result = await holdSlots(turf.id, date, selected, size, side);
       setSlots(result.slots);
       if (!result.ok) {
         setSelected((prev) => prev.filter((h) => result.slots.find((s) => s.hour === h)?.available));
@@ -261,7 +274,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           size={size}
           onChange={changeSize}
           selectedBookableId={selectedBookable?.id}
-          onBookableChange={(b) => setSelectedBookable(b)}
+          onBookableChange={pickBookable}
         />
         </div>
       )}

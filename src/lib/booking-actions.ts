@@ -14,10 +14,10 @@ import { STEP_FIELDS, validateApplication, type ApplicationFields, type FieldErr
 import { deviceHolder } from './device-holder';
 import { freePart, getSlots, normalizePhone, turfHours } from './pricing';
 import { bookableTurf, planBooking } from './booking-plan';
-import { cleanHours, cleanSize, type BookingRequest, type SelectionQuote, type SelectionRequest } from './booking-types';
+import { cleanHours, cleanSide, cleanSize, type BookingRequest, type SelectionQuote, type SelectionRequest } from './booking-types';
 import { getDb, mutate, newId, storageInfo } from './store';
 import { BOOKING_DAYS, addDays, formatHour, formatSlotRange, isValidDate, istNow } from './time';
-import type { Booking, Database, HalfNames, PitchSize, Slot } from './types';
+import type { Booking, Database, HalfNames, PitchSide, PitchSize, Slot } from './types';
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
 import { notifyWaitlistWhenSlotFreed } from './waitlist';
 import { sendBookingConfirmation, sendOwnerAlert } from './notifications';
@@ -69,7 +69,7 @@ import { createAdminClient } from '@/utils/supabase/admin';
 
 /* ---------- slots ---------- */
 
-export async function getSlotsForDate(turfId: string, date: string, size: PitchSize = 'full'): Promise<Slot[]> {
+export async function getSlotsForDate(turfId: string, date: string, size: PitchSize = 'full', side?: PitchSide): Promise<Slot[]> {
   const db = await getDb();
   const turf = bookableTurf(db, String(turfId));
   if (!turf || !checkDate(String(date))) return [];
@@ -78,15 +78,16 @@ export async function getSlotsForDate(turfId: string, date: string, size: PitchS
     const v2Slots = await v2GetSlotsForDate(String(turfId), String(date), cleanSize(size), undefined, holder);
     if (v2Slots) return v2Slots;
   }
-  return getSlots(db, turf, date, istNow(), holder, false, cleanSize(size));
+  return getSlots(db, turf, date, istNow(), holder, false, cleanSize(size), cleanSide(side));
 }
 
 export type HoldResult = { ok: true; expiresInMs: number; slots: Slot[] } | { ok: false; error: string; slots: Slot[] };
 
 // Lock the chosen slots for this device while it checks out. Replaces any earlier hold.
-export async function holdSlots(turfId: string, date: string, hours: number[], size: PitchSize = 'full'): Promise<HoldResult> {
+export async function holdSlots(turfId: string, date: string, hours: number[], size: PitchSize = 'full', side?: PitchSide): Promise<HoldResult> {
   const holder = (await deviceHolder(true))!;
   const pitchSize = cleanSize(size);
+  const pitchSide = pitchSize === 'half' ? cleanSide(side) : undefined;
   try {
     assertBookingsAreSaved();
     await throttle('hold', 60, holder, 15);
@@ -97,9 +98,9 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
       const v2Res = await v2HoldSlots(turfId, date, wanted, holder, pitchSize);
       if (v2Res) {
         if (!v2Res.ok) {
-          return { ok: false, error: v2Res.error, slots: await getSlotsForDate(turfId, date, pitchSize) };
+          return { ok: false, error: v2Res.error, slots: await getSlotsForDate(turfId, date, pitchSize, pitchSide) };
         }
-        return { ok: true, expiresInMs: v2Res.expiresInMs, slots: await getSlotsForDate(turfId, date, pitchSize) };
+        return { ok: true, expiresInMs: v2Res.expiresInMs, slots: await getSlotsForDate(turfId, date, pitchSize, pitchSide) };
       }
     }
 
@@ -109,10 +110,10 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
       if (!turf) throw new ValidationError('This turf is not taking bookings right now');
       purgeExpiredHolds(db);
       db.holds = db.holds.filter((h) => h.holder !== holder);
-      const slots = getSlots(db, turf, date, istNow(), holder, false, pitchSize);
+      const slots = getSlots(db, turf, date, istNow(), holder, false, pitchSize, pitchSide);
       for (const hour of wanted) {
         const slot = slots.find((s) => s.hour === hour);
-        const pitch = slot?.available ? freePart(db, turf, date, hour, pitchSize, holder) : null;
+        const pitch = slot?.available ? freePart(db, turf, date, hour, pitchSize, holder, pitchSide) : null;
         if (!slot?.available || !pitch) {
           const what = slot?.reason === 'held' ? 'is being booked by someone else right now' : 'was just taken';
           throw new ValidationError(`${slot?.label ?? formatHour(hour)} ${what}. Please pick another slot.`);
@@ -121,9 +122,9 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
         db.holds.push({ id: newId('hold'), turfId: turf.id, date, hour, holder, pitch, expiresAt });
       }
     });
-    return { ok: true, expiresInMs: HOLD_MINUTES * 60_000, slots: await getSlotsForDate(turfId, date, pitchSize) };
+    return { ok: true, expiresInMs: HOLD_MINUTES * 60_000, slots: await getSlotsForDate(turfId, date, pitchSize, pitchSide) };
   } catch (err) {
-    if (err instanceof ValidationError) return { ok: false, error: err.message, slots: await getSlotsForDate(turfId, date, pitchSize) };
+    if (err instanceof ValidationError) return { ok: false, error: err.message, slots: await getSlotsForDate(turfId, date, pitchSize, pitchSide) };
     console.error('[booking] holdSlots error:', err);
     return { ok: false, error: 'Could not hold slots. Please try again in a moment.', slots: [] };
   }
