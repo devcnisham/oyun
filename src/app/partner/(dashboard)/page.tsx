@@ -101,7 +101,7 @@ export default async function PartnerDashboard() {
               <NavIcon name="lock" size={16} /> Block Slot
             </a>
           )}
-          <Link href={`/arenas/${ctx.turf.id}`} target="_blank" rel="noopener noreferrer" className={`${styles.actionBtnSecondary} ${styles.btnBlue}`}>
+          <Link href={`/arenas/${ctx.turf.id}`} className={`${styles.actionBtnSecondary} ${styles.btnBlue}`}>
             <NavIcon name="external" size={16} /> Public Page
           </Link>
         </div>
