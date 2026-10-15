@@ -2253,10 +2253,10 @@ function initControls(){
 function refresh(){ renderOverview(); renderPhases(); renderTracker(); renderLists(); }
 
 async function connect(){
-  const c = window.claude; if(!c || !c.use){ $('#ls-sub').textContent='Ticks are saved in this browser only. Open the page in Claude to share them.'; $('#trk-sub').textContent='Read-only here: task changes are saved only when the page is opened in Claude.'; return; }
+  const c = window.claude; if(!c || !c.use){ $('#ls-sub').textContent='Ticks are saved in this browser only.'; $('#trk-sub').textContent='Read-only here: task changes are not saved from this page.'; return; }
   try{ userNs = await c.use('user'); }catch(e){}
   try{ dbNs = await c.use('db'); }catch(e){}
-  if(!dbNs){ $('#ls-sub').textContent='Ticks are saved in this browser only. Open the page in Claude to share them.'; $('#trk-sub').textContent='Sign in to see and change shared task status. Showing default statuses.'; return; }
+  if(!dbNs){ $('#ls-sub').textContent='Ticks are saved in this browser only.'; $('#trk-sub').textContent='Sign in to see and change shared task status. Showing default statuses.'; return; }
   try{ myId = userNs ? await userNs.id() : null; }catch(e){}
   let cw = null; try{ cw = userNs ? await userNs.can('data.write') : null; }catch(e){}
   canWrite = cw !== false;
