@@ -438,18 +438,3 @@ export async function v2BlockSlot(
     return null;
   }
 }
-
-/**
- * Runs expire_holds RPC.
- */
-export async function v2ExpireHolds(clientOverride?: SupabaseClient): Promise<number> {
-  if (!isV2SlotsActive() && !clientOverride) return 0;
-  const client = clientOverride ?? createAdminClient();
-  try {
-    const { data } = await client.rpc('expire_holds');
-    return Number(data) || 0;
-  } catch (err) {
-    console.warn('[v2-slots] v2ExpireHolds error:', err);
-    return 0;
-  }
-}

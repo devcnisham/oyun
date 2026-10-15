@@ -29,6 +29,7 @@ export function revokeSession(token: string) {
   if (token) revokedTokens.add(token);
 }
 
+/** @public Revokes every admin session issued before now; kept as API for the admin security screen (no caller yet). */
 export function revokeAllAdminSessions() {
   adminRevokedBeforeTimestamp = Math.floor(Date.now() / 1000);
 }
