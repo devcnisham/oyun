@@ -54,11 +54,12 @@
 
 .heroTitle {
   color: #fff;
-  font-size: 34px;
-  font-weight: 900;
-  margin-bottom: 32px;
-  letter-spacing: -0.02em;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.7);
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 28px;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
 }
 
 .searchWrapper {
@@ -72,39 +73,37 @@
 
 .searchBar {
   display: flex;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-lg);
+  align-items: center;
+  background: #fff;
+  border-radius: 14px;
   padding: 6px;
   flex: 1;
-  max-width: 780px;
+  max-width: 760px;
   margin: 0;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 
 .mapBtn {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  padding: 0 24px;
-  height: 48px;
-  border-radius: var(--radius-md);
+  background: #fff;
+  color: #1a1a1a;
+  justify-content: center;
+  width: 56px;
+  padding: 0;
+  height: 56px;
+  border-radius: 14px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  white-space: nowrap;
   text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 
 .mapBtn:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #f3f3f3;
 }
 
 .searchInputGroup {
@@ -116,52 +115,58 @@
 .searchField {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: 0 14px;
+  height: 48px;
   flex: 1;
-  gap: 8px;
+  gap: 10px;
 }
 
 .searchIcon {
-  font-size: 16px;
+  color: #6b7280;
+  flex-shrink: 0;
 }
 
 .searchInput {
   border: none;
   outline: none;
   background: transparent;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
   width: 100%;
 }
 
 .searchInput::placeholder {
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  color: #8a8f98;
 }
 
 .searchDivider {
   width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.3);
+  height: 28px;
+  background: #e3e5e8;
 }
 
 .searchBtn {
-  background: var(--primary-gradient); /* Brand Red */
+  background: var(--primary-700, #b3161f);
   color: #fff;
+  font-family: inherit;
   font-size: 15px;
-  font-weight: 700;
-  padding: 0 32px;
-  border-radius: var(--radius-md);
-  text-decoration: none;
+  font-weight: 600;
+  height: 48px;
+  padding: 0 28px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: background 0.15s;
 }
 
 .searchBtn:hover {
-  background: var(--primary-gradient-hover);
+  background: var(--primary-800, #8f1018);
 }
 
 .filterActions {

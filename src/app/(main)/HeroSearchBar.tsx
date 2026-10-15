@@ -25,7 +25,7 @@ export default function HeroSearchBar() {
     <div className={styles.searchBar}>
       <div className={styles.searchInputGroup}>
         <div className={styles.searchField}>
-          <span className={styles.searchIcon}>📍</span>
+          <svg className={styles.searchIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
           <input 
             type="text" 
             placeholder="Search by city, location or arena name" 
@@ -36,16 +36,16 @@ export default function HeroSearchBar() {
           />
         </div>
         <div className={styles.searchDivider}></div>
-        <div className={styles.searchField} style={{ flex: '0 0 auto', width: '180px' }}>
-          <span className={styles.searchIcon}>📅</span>
+        <div className={styles.searchField} style={{ flex: '0 0 auto', width: '190px' }}>
+          <svg className={styles.searchIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
           <input 
             type="date" 
-            aria-label="Date" 
+            aria-label="Date"
             className={styles.searchInput} 
             value={dateStr}
             onChange={(e) => setDateStr(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            style={{ cursor: 'pointer', colorScheme: 'dark' }}
+            style={{ cursor: 'pointer' }}
           />
         </div>
       </div>

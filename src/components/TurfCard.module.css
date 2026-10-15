@@ -104,6 +104,7 @@
 .priceRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
 
@@ -152,3 +153,22 @@
   transition: transform 0.12s;
 }
 .fav:active { transform: scale(0.88); }
+
+/* Compact variant: small card with a Book button */
+.compact .imageWrap { padding-top: 56%; }
+.compact .content { padding: 10px 12px 12px; }
+.compact .title { font-size: 15px; }
+.compact .rating { font-size: 10px; padding: 1px 5px; }
+.compact .location { font-size: 12px; margin-bottom: 8px; }
+.compact .amenities { display: none; }
+.compact .badgeTop { top: 8px; font-size: 10px; padding: 3px 8px; }
+.compact .fav { top: 8px; right: 8px; width: 32px; height: 32px; }
+.compact .price { font-size: 17px; }
+.bookBtn {
+  background: var(--primary-700, #d31027);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+}

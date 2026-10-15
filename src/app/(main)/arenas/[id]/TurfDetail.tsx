@@ -42,7 +42,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         <Image src={imageSrc} alt={`${turf.name} photo ${imgIdx + 1}`} fill preload fetchPriority="high" sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
 
         <div className={styles.topNav}>
-          <BackButton fallback="/arenas" className={styles.iconBtn}>←</BackButton>
+          <BackButton fallback="/arenas" className={`${styles.iconBtn} ${styles.backIcon}`}>←</BackButton>
           <div className={styles.midBadge}>{turf.isVerified ? 'Verified Turf' : 'Premium Turf'}</div>
           <div className={styles.topNavRight}>
             <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.iconBtn} />
