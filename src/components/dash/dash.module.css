@@ -464,6 +464,23 @@
   }
 }
 
+/* phones: two stat cards per row, tighter cards */
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stat {
+    padding: 14px;
+  }
+  .statValue {
+    font-size: 21px;
+  }
+  .statLabel {
+    font-size: 11px;
+  }
+}
+
 @media print {
   .noPrint {
     display: none !important;

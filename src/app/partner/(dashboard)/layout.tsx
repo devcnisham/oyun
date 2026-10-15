@@ -35,7 +35,8 @@ export default async function PartnerLayout({ children }: { children: React.Reac
   const tabs = ['/partner', '/partner/bookings', '/partner/calendar', '/partner/slots', '/partner/check-in', '/partner/reviews']
     .map((href) => nav.find((n) => n.href === href))
     .filter((n): n is NavItem => Boolean(n))
-    .slice(0, 4);
+    .slice(0, 4)
+    .map((n) => ({ ...n, label: ({ Dashboard: 'Home', 'Manage Slots': 'Slots' } as Record<string, string>)[n.label] ?? n.label }));
 
   return (
     <div className={styles.layout}>

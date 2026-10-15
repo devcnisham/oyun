@@ -257,5 +257,25 @@
 
 @media (max-width: 600px) {
   .nav { width: 100%; }
-  .navBtn { flex: 1; }
+  .navBtn { flex: 1; white-space: nowrap; }
+  .segment { width: 100%; }
+  .seg { flex: 1; text-align: center; }
+  .legend { gap: 8px 14px; }
+
+  /* week grid scrolls sideways under a pinned, compact time column */
+  .grid { min-width: 600px; }
+  .grid th.hourCol { width: 70px; }
+  .hour {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 70px;
+    padding: 0 6px;
+    background: var(--bg-primary);
+    font-size: 10px;
+    line-height: 1.25;
+    white-space: normal;
+  }
+  .cell { height: 48px; padding: 4px; font-size: 11px; }
+  .dnum { font-size: 17px; }
 }
