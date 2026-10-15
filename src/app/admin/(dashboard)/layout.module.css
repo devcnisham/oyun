@@ -273,13 +273,21 @@
 
 @media (max-width: 768px) {
   .layout { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
-  .nav { padding: 16px; overflow-x: auto; white-space: nowrap; }
-  .navGroup { flex-direction: row; gap: 8px; align-items: center; }
-  .navTitle { display: none; }
-  .sidebarBottom { display: none; }
-  .header { padding: 0 16px; }
-  .content { padding: 16px; }
+  /* the bottom tab bar + "More" sheet replace the stacked sidebar */
+  .sidebar { display: none; }
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: auto;
+    min-height: 56px;
+    padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .headerTitle { min-width: 0; flex: 1; }
+  .headerActions { flex-shrink: 0; gap: 8px; }
+  .headerActions a { display: none; } /* View site lives in the More sheet */
+  .content { padding: 16px 16px calc(88px + env(safe-area-inset-bottom)); }
 }
 
 /* the page name lives in the top bar, so hide the duplicate big title inside the page (descriptions stay) */

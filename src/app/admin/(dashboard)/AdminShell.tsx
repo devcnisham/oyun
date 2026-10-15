@@ -6,19 +6,20 @@ import { logout } from '@/lib/auth-actions';
 import NavIcon from '@/components/dash/NavIcon';
 import HeaderPageTitle from '@/components/dash/HeaderPageTitle';
 import SidebarToggle from '@/components/dash/SidebarToggle';
+import AdminTabBar from './AdminTabBar';
 import styles from './layout.module.css';
 
 const ADMIN_PAGES = [
-  { href: '/admin', label: 'Overview & approvals' },
-  { href: '/admin/turfs', label: 'Turfs' },
-  { href: '/admin/partners', label: 'Partners' },
-  { href: '/admin/users', label: 'Players' },
-  { href: '/admin/students', label: 'Student IDs' },
-  { href: '/admin/transactions', label: 'Bookings & refunds' },
-  { href: '/admin/analytics', label: 'Analytics' },
-  { href: '/admin/reviews', label: 'Reviews' },
-  { href: '/admin/settings', label: 'Settings & promo codes' },
-  { href: '/admin/customization', label: 'Homepage content' },
+  { href: '/admin', label: 'Overview & approvals', tab: 'Overview', icon: 'shield' },
+  { href: '/admin/turfs', label: 'Turfs', icon: 'turfs' },
+  { href: '/admin/partners', label: 'Partners', icon: 'partners' },
+  { href: '/admin/transactions', label: 'Bookings & refunds', tab: 'Bookings', icon: 'transactions' },
+  { href: '/admin/users', label: 'Players', icon: 'players' },
+  { href: '/admin/students', label: 'Student IDs', icon: 'students' },
+  { href: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
+  { href: '/admin/reviews', label: 'Reviews', icon: 'reviews' },
+  { href: '/admin/settings', label: 'Settings & promo codes', icon: 'settings' },
+  { href: '/admin/customization', label: 'Homepage content', icon: 'homepage' },
 ];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
@@ -107,6 +108,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           {children}
         </div>
       </main>
+
+      <AdminTabBar pages={ADMIN_PAGES} />
     </div>
   );
 }
