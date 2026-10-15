@@ -11,14 +11,16 @@ interface TurfCardProps {
   eager?: boolean;
   // Small card with a Book button (home sliders)
   compact?: boolean;
+  // Date picked in search (YYYY-MM-DD): the turf page opens on it
+  date?: string;
 }
 
-export default function TurfCard({ turf, eager = false, compact = false }: TurfCardProps) {
+export default function TurfCard({ turf, eager = false, compact = false, date }: TurfCardProps) {
 
   return (
     <div className={`${styles.cardWrap} ${compact ? styles.compact : ''}`}>
     <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.fav} />
-    <Link href={`/arenas/${turf.id}`} className={styles.card}>
+    <Link href={date ? `/arenas/${turf.id}?date=${date}` : `/arenas/${turf.id}`} className={styles.card}>
       <div className={styles.imageWrap}>
         <Image src={turf.images[0]} alt={turf.name} fill sizes="(max-width: 768px) 100vw, 400px" className={styles.image} {...(eager ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})} unoptimized={!canOptimize(turf.images[0])} />
         {turf.isFeatured && (
