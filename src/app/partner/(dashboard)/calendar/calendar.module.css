@@ -1,0 +1,261 @@
+/* Partner calendar: toolbar, week grid and day grid */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 14px;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.navBtn:hover {
+  border-color: var(--primary-700);
+  color: var(--primary-700);
+}
+
+.navActive,
+.navActive:hover {
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+}
+
+.segment {
+  display: inline-flex;
+  padding: 4px;
+  gap: 2px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.seg {
+  padding: 7px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.segActive,
+.segActive:hover {
+  background: #111827;
+  color: #fff;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stat {
+  padding: 4px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.hint a {
+  color: var(--primary-700);
+  font-weight: 700;
+}
+
+/* grid */
+.wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.grid {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 12px 8px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.grid thead th a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.dow {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+}
+
+.dnum {
+  display: block;
+  margin: 2px 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.dsub {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.todayHead {
+  background: #fff5f5 !important;
+}
+
+.todayHead .dnum {
+  color: var(--primary-700);
+}
+
+.grid th.hourCol {
+  width: 92px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.hour {
+  padding: 0 10px;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cell {
+  height: 56px;
+  padding: 6px;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  vertical-align: top;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.3;
+  background: var(--bg-card);
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+.free:hover {
+  background: #fafafa;
+}
+
+.booked { background: #eff8ff; }
+.checked { background: #ecfdf3; }
+.noshow { background: #fff4ed; }
+.blocked { background: #fffaeb; }
+.held { background: #f4f3ff; }
+.past { background: var(--bg-muted); color: var(--text-muted); }
+
+.name {
+  display: block;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub {
+  display: block;
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dayCell {
+  height: auto;
+  min-height: 56px;
+}
+
+.courtHead {
+  text-align: left !important;
+  font-size: 13px !important;
+  color: var(--text-primary) !important;
+}
+
+@media (max-width: 600px) {
+  .nav { width: 100%; }
+  .navBtn { flex: 1; }
+}
