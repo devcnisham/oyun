@@ -229,6 +229,8 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
   return (
     <div className={styles.flow}>
+      <div className={styles.layoutGrid}>
+      <div className={styles.steps}>
       {/* 1 · Date strip */}
       <div className={styles.stepCard}>
       <div className={styles.stepHead}>
@@ -271,6 +273,29 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       </div>
 
       <SlotMap slots={slots} selected={selected} loading={loadingSlots} onToggle={toggleSlot} />
+      </div>
+      </div>
+
+      {/* Desktop: sticky reservation summary beside the steps (phones use the bar below) */}
+      <aside className={styles.summary} aria-label="Your reservation">
+        <span className={styles.summaryEyebrow}>Your reservation</span>
+        <h3 className={styles.summaryTitle}>{turf.name}</h3>
+        <p className={styles.summaryMuted}>{turf.area}, Mangalore</p>
+        <dl className={styles.summaryList}>
+          <div><dt>Date</dt><dd>{dateInfo?.label}</dd></div>
+          <div><dt>Pitch</dt><dd>{selectedBookable ? selectedBookable.name : size === 'half' ? 'Half pitch' : turf.size}</dd></div>
+          <div><dt>Time</dt><dd>{selected.length > 0 ? describeHours(selected, parseHour(turf.openTime)) : 'Pick your slots'}</dd></div>
+          <div><dt>Slots</dt><dd>{selected.length}</dd></div>
+        </dl>
+        <div className={styles.summaryTotal}>
+          <span>Total</span>
+          <b>{selected.length > 0 ? rupees(estimate) : '₹0'}</b>
+        </div>
+        <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
+          {holding ? 'Holding…' : 'Reserve these slots'}
+        </button>
+        <p className={styles.summaryNote}>Nothing is charged online. Pay at the turf.</p>
+      </aside>
       </div>
 
       {/* Sticky selection bar */}

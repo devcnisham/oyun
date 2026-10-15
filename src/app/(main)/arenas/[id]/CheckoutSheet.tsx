@@ -50,23 +50,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
         </div>
 
         <div className={styles.sheetBody}>
-          <div className={styles.ticket}>
-            <div>
-              <b>{turf.name}</b>
-              <span className={styles.muted}>{turf.area} · {bookableName ?? (size === 'half' ? 'Half pitch' : turf.size)}</span>
-            </div>
-            <div className={styles.ticketRow}>
-              <span>{dateLabel}</span>
-              <b>{describeHours(selected)}</b>
-            </div>
-            <div className={styles.chips}>
-              {chips.map((s) => (
-                <span key={s.hour} className={styles.chip}>{shortHour(s.hour)} · {rupees(s.price)}</span>
-              ))}
-            </div>
-            <p className={styles.holdNote}>🔒 These slots are reserved for you until the timer runs out.</p>
-          </div>
-
+          <div className={styles.coLeft}>
           <section>
             <h3>Your details</h3>
             <div className={styles.fields}>
@@ -145,6 +129,25 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
             <p>💵 Nothing is charged online. You pay at the turf by cash or UPI: {advanceSummary(quote)} when you arrive, and the balance after you play.</p>
           </section>
 
+          </div>
+          <aside className={styles.coRight}>
+          <div className={styles.ticket}>
+            <div>
+              <b>{turf.name}</b>
+              <span className={styles.muted}>{turf.area} · {bookableName ?? (size === 'half' ? 'Half pitch' : turf.size)}</span>
+            </div>
+            <div className={styles.ticketRow}>
+              <span>{dateLabel}</span>
+              <b>{describeHours(selected)}</b>
+            </div>
+            <div className={styles.chips}>
+              {chips.map((s) => (
+                <span key={s.hour} className={styles.chip}>{shortHour(s.hour)} · {rupees(s.price)}</span>
+              ))}
+            </div>
+            <p className={styles.holdNote}>🔒 These slots are reserved for you until the timer runs out.</p>
+          </div>
+
           {quote && (
             <section className={styles.bill}>
               <div><span>Slots ({quote.slots.length})</span><span>{rupees(quote.slotTotal)}</span></div>
@@ -169,9 +172,19 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           )}
 
           {error && <p className={styles.error} role="alert">{error}</p>}
+            <div className={`${styles.sheetFoot} ${styles.footDesktop}`}>
+<div className={styles.barInfo}>
+                <b>{quote ? rupees(quote.payNow) : '…'}</b>
+                <span>Advance due at the turf</span>
+              </div>
+              <button className={styles.primary} onClick={onPay} disabled={!quote || paying}>
+                {paying ? 'Reserving…' : signedIn ? 'Confirm booking' : 'Sign in to confirm'}
+              </button>
+                    </div>
+          </aside>
         </div>
 
-        <div className={styles.sheetFoot}>
+        <div className={`${styles.sheetFoot} ${styles.footMobile}`}>
           <div className={styles.barInfo}>
             <b>{quote ? rupees(quote.payNow) : '…'}</b>
             <span>Advance due at the turf</span>

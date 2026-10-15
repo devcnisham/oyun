@@ -1075,3 +1075,23 @@
   margin-bottom: 12px;
   box-shadow: var(--shadow-sm);
 }
+
+/* Desktop: info on top, then steps + reservation summary full width, then details */
+@media (min-width: 1024px) {
+  .content.layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: 'info' 'booking' 'more';
+  }
+  .bookingPanel { position: static; max-height: none; overflow: visible; margin: 0 0 20px; }
+  .bookingPanel .panelTitle { display: none; }
+}
+.titleSide .mapLink {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
