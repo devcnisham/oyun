@@ -19,6 +19,8 @@
 .stepHead:first-child { margin-top: 0; }
 .stepHead h3 { font-size: 17px; font-weight: 800; }
 .muted { color: var(--text-muted); font-size: 13px; font-weight: 500; }
+.sideHint { margin: 0 0 12px; font-size: 13px; color: var(--text-secondary); }
+.linkBtn { background: none; border: 0; padding: 0; font: inherit; font-weight: 700; color: var(--text-primary); text-decoration: underline; cursor: pointer; }
 
 /* Date strip */
 .dates {
