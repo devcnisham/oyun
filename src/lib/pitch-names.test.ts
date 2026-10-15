@@ -42,8 +42,15 @@ describe('named pitch halves', () => {
     expect(formats('futsal-dugout-pandeshwar')).toEqual(['5-a-side', '6-a-side']);
     expect(formats('city-arena-kodialbail')).toEqual(['5-a-side', '6-a-side']);
     expect(formats('squad-x-kankanady')).toEqual(['6-a-side', '7-a-side']);
-    for (const id of ['perfect-pass-kodialbail', 'greens-field-ullal']) {
+    for (const id of ['perfect-pass-kodialbail', 'greens-field-ullal', 'griffins']) {
       expect(formats(id)).toEqual(['5-a-side (Right)', '5-a-side (Left)', 'Full Court']);
     }
+  });
+
+  test('Griffins is a split pitch that starts hidden until its real details are in', () => {
+    const griffins = turfSeeds.find((t) => t.id === 'griffins');
+    expect(griffins?.halfPitch).toBe(true);
+    expect(griffins?.halfNames).toEqual({ A: '5-a-side (Right)', B: '5-a-side (Left)' });
+    expect(griffins?.status).toBe('pending');
   });
 });
