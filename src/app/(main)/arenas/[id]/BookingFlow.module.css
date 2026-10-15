@@ -358,3 +358,14 @@
 
 /* Pay-at-venue note in checkout */
 .venueNote p { font-size: 14px; color: var(--text-secondary); background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px 14px; }
+
+/* Each step is its own card */
+.stepCard {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.stepCard .stepHead { margin: 0 0 12px; }

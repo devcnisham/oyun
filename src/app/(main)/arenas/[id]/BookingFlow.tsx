@@ -231,6 +231,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   return (
     <div className={styles.flow}>
       {/* 1 · Date strip */}
+      <div className={styles.stepCard}>
       <div className={styles.stepHead}>
         <h3>Select date</h3>
       </div>
@@ -248,9 +249,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           </button>
         ))}
       </div>
+      </div>
 
       {/* 2 · Full or half pitch, or multi-court bookables (R007) */}
       {(turf.halfPitch || (bookables && bookables.length > 1)) && (
+        <div className={styles.stepCard}>
         <PitchPicker
           turf={turf}
           size={size}
@@ -258,9 +261,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           selectedBookableId={selectedBookable?.id}
           onBookableChange={(b) => setSelectedBookable(b)}
         />
+        </div>
       )}
 
       {/* 3 · Slot map */}
+      <div className={styles.stepCard}>
       <div className={styles.stepHead}>
         <h3>Pick your slots</h3>
         <span className={styles.muted}>{loadingSlots ? 'Updating…' : `${availableCount} open`}</span>
@@ -281,6 +286,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       </div>
 
       <SlotMap slots={slots} selected={selected} loading={loadingSlots} onToggle={toggleSlot} />
+      </div>
 
       {/* Sticky selection bar */}
       <div className={`${styles.bar} ${selected.length > 0 && !inCheckout ? styles.barShow : ''}`}>

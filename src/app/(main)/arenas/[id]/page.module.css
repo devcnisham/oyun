@@ -1055,3 +1055,23 @@
   .info { margin-bottom: 16px; }
   .bookingPanel { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: #fff; border-radius: 16px; padding: 18px; margin: 0 0 16px; }
 }
+
+/* Booking panel only groups the step cards, so it drops its own frame */
+.bookingPanel {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+@media (min-width: 1024px) {
+  .bookingPanel { padding: 0; border: none; box-shadow: none; background: transparent; }
+  .panelFooter { margin: 12px 0 0; border: 1px solid var(--border); border-radius: 16px; bottom: 0; }
+}
+.bookingPanel .panelTitle {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
