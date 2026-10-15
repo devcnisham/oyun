@@ -86,15 +86,9 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
               <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
             </h1>
             <p className={styles.addressBlock}>{turf.location}</p>
+            <p className={styles.hoursText}>{turf.openTime} – {turf.closeTime}</p>
           </div>
           <div className={styles.titleSide}>
-            <span className={styles.hours}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              {turf.openTime} – {turf.closeTime}
-            </span>
             <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink} aria-label="View on map" title="View on map">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z" /><path d="M9 4v13M15 7v13" /></svg>
             </a>

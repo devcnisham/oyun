@@ -1098,3 +1098,5 @@
 @media (max-width: 1023px) {
   .bookingPanel .panelTitle { display: none; }
 }
+
+.hoursText { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
