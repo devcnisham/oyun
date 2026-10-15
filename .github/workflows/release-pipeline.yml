@@ -37,6 +37,7 @@ jobs:
           name: next-build-artifact
           path: .next/
           retention-days: 3
+          include-hidden-files: true
 
   staging-gate:
     name: Staging smoke and load gate
