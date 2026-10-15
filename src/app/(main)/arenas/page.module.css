@@ -219,12 +219,6 @@
 /* ===== MAP VIEW ===== */
 .mapContainer {
   width: 100%;
-  height: calc(100vh - 160px);
-  position: sticky;
-  top: 88px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
 }
 
 .mapPlaceholder {
@@ -320,6 +314,4 @@
   overflow: visible;
 }
 
-.mapContainer .mapPinMock button { background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; }
-.mapContainer .mapPinMock button[aria-pressed='true'] { filter: drop-shadow(0 0 3px #fff); }
-.mapContainer .mapPinMock a { color: inherit; text-decoration: none; }
+.mapNote { margin-top: 8px; font-size: 13px; color: var(--text-muted); }

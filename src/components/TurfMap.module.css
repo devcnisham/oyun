@@ -1,0 +1,40 @@
+.map { width: 100%; height: min(70vh, 560px); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); z-index: 0; }
+
+.pinWrap { background: none; border: 0; }
+/* Anchored by its bottom centre so the pill sits on the spot */
+.pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.pinName {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1a1a;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+.pinPrice {
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--primary-700, #b3161f);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card { display: flex; flex-direction: column; gap: 2px; min-width: 150px; }
+.cardName { font-size: 14px; }
+.cardMeta { font-size: 12px; color: #6b7280; }
+.cardLink { margin-top: 6px; font-weight: 700; color: var(--primary-700, #b3161f); text-decoration: none; }
