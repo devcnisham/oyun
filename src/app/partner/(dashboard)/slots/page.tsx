@@ -66,9 +66,9 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
       <div className={dash.card}>
         <div className={styles.datePanel}>
           <div className={styles.toolbar}>
-            <div className={styles.segment} role="tablist" aria-label="Calendar view">
+            <div className={styles.segment} aria-label="Calendar view">
               {(['day', 'week', 'month'] as const).map((v) => (
-                <Link key={v} href={href(date, v)} role="tab" aria-selected={view === v} className={`${styles.segBtn} ${view === v ? styles.segActive : ''}`}>
+                <Link key={v} href={href(date, v)} aria-current={view === v ? 'page' : undefined} className={`${styles.segBtn} ${view === v ? styles.segActive : ''}`}>
                   {v === 'day' ? 'Day' : v === 'week' ? 'Week' : 'Month'}
                 </Link>
               ))}
