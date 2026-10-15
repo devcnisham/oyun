@@ -40,3 +40,19 @@
 .cardName { font-size: 14px; }
 .cardMeta { font-size: 12px; color: #6b7280; }
 .cardLink { margin-top: 6px; font-weight: 700; color: var(--primary-700, #b3161f); text-decoration: none; }
+
+/* Several turfs too close to show as separate price pins */
+.cluster {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary-700, #b3161f);
+  border: 3px solid #fff;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
