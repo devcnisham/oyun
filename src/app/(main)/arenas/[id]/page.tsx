@@ -1,3 +1,4 @@
+import { platformOffersFor } from '@/lib/platform-offers';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getSlots } from '@/lib/pricing';
@@ -72,7 +73,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
       dates={dates}
       initialDate={initialDate}
       initialSlots={getSlots(db, turf, initialDate, now, await deviceHolder(false))}
-      offers={db.offers.filter((o) => o.turfId === turf.id && o.active)}
+      offers={[...db.offers.filter((o) => o.turfId === turf.id && o.active), ...platformOffersFor(db.settings, turf.id, true).filter((o) => o.active)]}
       bookable={turf.status === 'active'}
       rewards={{
         cashbackEnabled: db.settings.cashbackEnabled,

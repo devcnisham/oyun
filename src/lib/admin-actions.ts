@@ -13,6 +13,9 @@ import { createPlayer, refundDue, walletTxn } from './wallet';
 import { recomputeTurfRating } from './reviews';
 import { withDate, withoutDate } from './rain';
 import { isValidDate, istNow } from './time';
+import { parsePlatformOfferForm } from './platform-offers';
+import { applyStudentDecision } from './student-id';
+import { removeStudentIds } from './student-id-storage';
 
 async function requireAdmin() {
   if (!(await hasSession('admin'))) throw new AccessError('Your admin session has expired. Please log in again.');
@@ -336,6 +339,50 @@ export async function refundBooking(_prev: ActionResult, fd: FormData): Promise<
       }
       return { ok: notes.length ? `${notes.join('. ')}.` : 'Booking marked as refunded' };
     });
+  });
+}
+
+/* ---------- platform offers and student IDs ---------- */
+
+// The two offers every turf gets while they are on: Regular for everyone, Student for approved students
+export async function savePlatformOffers(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    await requireAdmin();
+    const get = (key: string) => String(fd.get(key) ?? '');
+    let regular;
+    let student;
+    try {
+      regular = parsePlatformOfferForm(get, 'regular');
+      student = parsePlatformOfferForm(get, 'student');
+    } catch (err) {
+      throw new ValidationError((err as Error).message);
+    }
+    await mutate((db) => {
+      db.settings = { ...db.settings, platformOffers: { regular, student } };
+    });
+    return { ok: 'Offers saved' };
+  });
+}
+
+// Approve or reject a pending student ID. The photo is deleted either way.
+export async function reviewStudentId(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    await requireAdmin();
+    const decision = str(fd, 'decision') === 'approve' ? 'approve' : 'reject';
+    const note = str(fd, 'note', 200);
+    let removed: string | undefined;
+    const name = await mutate((db) => {
+      const player = db.players.find((p) => p.id === str(fd, 'playerId'));
+      if (!player) throw new ValidationError('Player not found');
+      try {
+        removed = applyStudentDecision(player, decision, note, new Date().toISOString());
+      } catch (err) {
+        throw new ValidationError((err as Error).message);
+      }
+      return player.name;
+    });
+    await removeStudentIds([removed]);
+    return { ok: decision === 'approve' ? `${name} is now a verified student` : `${name}'s ID was not approved` };
   });
 }
 

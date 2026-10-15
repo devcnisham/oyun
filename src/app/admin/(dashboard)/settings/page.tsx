@@ -1,11 +1,13 @@
 import ActionForm from '@/components/dash/ActionForm';
 import { Badge, PageHeader, dash, tableScroll } from '@/components/dash/ui';
-import { deletePromoCode, savePromoCode, saveSettings, setRainDay, togglePromoCode } from '@/lib/admin-actions';
+import { deletePromoCode, savePlatformOffers, savePromoCode, saveSettings, setRainDay, togglePromoCode } from '@/lib/admin-actions';
+import { platformOffersOf } from '@/lib/platform-offers';
 import { getDb } from '@/lib/store';
 
 export default async function AdminSettings() {
   const db = await getDb();
   const s = db.settings;
+  const offers = platformOffersOf(s);
 
   return (
     <div className={dash.page}>
@@ -75,6 +77,38 @@ export default async function AdminSettings() {
 
             <p className={dash.muted}>Commission applies to online payments; individual turfs can override it on their edit page. Cashback and referral credit are paid by OYUN, not the turf.</p>
             <div className={dash.actions}><button className={dash.btn}>Save settings</button></div>
+          </ActionForm>
+        </div>
+
+        <div className={dash.card}>
+          <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Offers for players</h2></div>
+          <p className={dash.muted}>Two offers that apply to every turf while they are on. A player gets the single best offer for a booking: these, the turf&apos;s own offers and first-time offers do not add up. The Student offer only applies to players whose student ID you have approved (see Student IDs).</p>
+          <ActionForm action={savePlatformOffers}>
+            <h3 className={dash.cardTitle}>Regular offer</h3>
+            <label className={dash.check}><input type="checkbox" name="regularActive" defaultChecked={offers.regular.active} /> On: for every player</label>
+            <div className={dash.formGrid}>
+              <label className={dash.field}>
+                <span className={dash.label}>Name shown to players</span>
+                <input name="regularTitle" maxLength={40} defaultValue={offers.regular.title} className={dash.input} required />
+              </label>
+              <label className={dash.field}>
+                <span className={dash.label}>Discount %</span>
+                <input name="regularPercent" type="number" min={1} max={90} defaultValue={offers.regular.percentOff} className={dash.input} required />
+              </label>
+            </div>
+            <h3 className={dash.cardTitle}>Student offer</h3>
+            <label className={dash.check}><input type="checkbox" name="studentActive" defaultChecked={offers.student.active} /> On: for players with an approved student ID</label>
+            <div className={dash.formGrid}>
+              <label className={dash.field}>
+                <span className={dash.label}>Name shown to players</span>
+                <input name="studentTitle" maxLength={40} defaultValue={offers.student.title} className={dash.input} required />
+              </label>
+              <label className={dash.field}>
+                <span className={dash.label}>Discount %</span>
+                <input name="studentPercent" type="number" min={1} max={90} defaultValue={offers.student.percentOff} className={dash.input} required />
+              </label>
+            </div>
+            <div className={dash.actions}><button className={dash.btn}>Save offers</button></div>
           </ActionForm>
         </div>
 

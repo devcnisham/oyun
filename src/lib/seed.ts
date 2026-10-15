@@ -1,3 +1,4 @@
+import { DEFAULT_PLATFORM_OFFERS } from './platform-offers';
 import { draftTurfDescriptions, lateTurfSeeds, turfSeeds } from '@/data/turfs';
 import { randomBytes } from 'node:crypto';
 import { DEFAULT_PRICING } from './pricing';
@@ -13,6 +14,7 @@ const LAUNCH_PROMO_IMAGE = '/turfs/turf_0.jpg';
 const DEAD_LAUNCH_PROMO_IMAGE = 'https://images.unsplash.com/photo-1529900965798-eb5043b428d0?q=80&w=2000&auto=format&fit=crop';
 
 const DEFAULT_SETTINGS: PlatformSettings = {
+  platformOffers: DEFAULT_PLATFORM_OFFERS, // both off until an admin switches them on
   commissionPercent: 0,
   advancePercent: 10,
   minAdvance: 150,

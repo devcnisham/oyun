@@ -1,6 +1,8 @@
 import { getDb, mutate } from '@/lib/store';
 import type { Database, Player, Booking, WalletTxn, BookingReview } from '@/lib/types';
 import { ValidationError } from '@/lib/errors';
+import { expireStudentIds } from '@/lib/student-id';
+import { removeStudentIds } from '@/lib/student-id-storage';
 
 export interface DataExportPayload {
   regulation: string;
@@ -78,11 +80,11 @@ export async function exportUserData(accountId: string): Promise<DataExportPaylo
 /**
  * Pure function to apply deletion and anonymization for one account on a Database in place.
  */
-export function applyUserDeletion(db: Database, accountId: string): { bookingsAnonymized: number; reviewsAnonymized: number } {
+export function applyUserDeletion(db: Database, accountId: string): { bookingsAnonymized: number; reviewsAnonymized: number; studentIdPath?: string } {
   const { player, bookings } = accountRecords(db, accountId);
   const ids = new Set(bookings.map((b) => b.id));
 
-  // 1. Remove the player record
+  // 1. Remove the player record (a student ID photo still waiting for review is deleted by the caller)
   if (player) db.players = db.players.filter((p) => p.id !== player.id);
 
   // 2. Anonymize bookings while preserving tax/audit records
@@ -104,18 +106,20 @@ export function applyUserDeletion(db: Database, accountId: string): { bookingsAn
   // 3. Unlink wallet transactions
   if (player) db.walletTxns = (db.walletTxns ?? []).filter((w) => w.playerId !== player.id);
 
-  return { bookingsAnonymized, reviewsAnonymized };
+  return { bookingsAnonymized, reviewsAnonymized, studentIdPath: player?.student?.idPath };
 }
 
 /**
  * Delete the signed-in account's data and anonymize its records in the persistent database.
  */
 export async function deleteUserData(accountId: string): Promise<{ ok: boolean; bookingsAnonymized: number; reviewsAnonymized: number }> {
-  let result = { bookingsAnonymized: 0, reviewsAnonymized: 0 };
+  let result: ReturnType<typeof applyUserDeletion> = { bookingsAnonymized: 0, reviewsAnonymized: 0 };
   await mutate((db) => {
     result = applyUserDeletion(db, accountId);
   });
-  return { ok: true, ...result };
+  await removeStudentIds([result.studentIdPath]);
+  const { bookingsAnonymized, reviewsAnonymized } = result;
+  return { ok: true, bookingsAnonymized, reviewsAnonymized };
 }
 
 /**
@@ -126,7 +130,7 @@ export async function deleteUserData(accountId: string): Promise<{ ok: boolean; 
 export function applyRetentionPurge(
   db: Database,
   options: { nowIso?: string; maxAgeDays?: number } = {}
-): { holdsPurged: number; oldBookingsAnonymized: number } {
+): { holdsPurged: number; oldBookingsAnonymized: number; studentIdPaths: string[] } {
   const nowIso = options.nowIso || new Date().toISOString();
   const maxAgeDays = options.maxAgeDays ?? 365 * 8; // 8 years statutory limit
   const cutoffTime = new Date(Date.parse(nowIso) - maxAgeDays * 24 * 60 * 60 * 1000).toISOString();
@@ -148,16 +152,20 @@ export function applyRetentionPurge(
     }
   }
 
-  return { holdsPurged, oldBookingsAnonymized };
+  // 3. Student ID photos nobody reviewed in time
+  const studentIdPaths = expireStudentIds(db, nowIso);
+
+  return { holdsPurged, oldBookingsAnonymized, studentIdPaths };
 }
 
 /**
  * Execute retention purge on persistent database.
  */
 export async function runRetentionPurge(options: { maxAgeDays?: number } = {}): Promise<{ holdsPurged: number; oldBookingsAnonymized: number }> {
-  let result = { holdsPurged: 0, oldBookingsAnonymized: 0 };
+  let result: ReturnType<typeof applyRetentionPurge> = { holdsPurged: 0, oldBookingsAnonymized: 0, studentIdPaths: [] };
   await mutate((db) => {
     result = applyRetentionPurge(db, options);
   });
-  return result;
+  await removeStudentIds(result.studentIdPaths);
+  return { holdsPurged: result.holdsPurged, oldBookingsAnonymized: result.oldBookingsAnonymized };
 }

@@ -1,3 +1,4 @@
+import { isApprovedStudent, platformOffersFor } from './platform-offers';
 import type {
   AddOn,
   BookingAddOn,
@@ -260,7 +261,8 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
     phone.length === 10 &&
     !db.bookings.some((b) => b.customerPhone === phone && b.status !== 'cancelled' && b.status !== 'refunded');
 
-  const turfOffers = db.offers.filter((o) => o.turfId === turf.id);
+  // The turf's own offers plus the platform-wide ones an admin switched on; the player gets the single best one
+  const turfOffers = [...db.offers.filter((o) => o.turfId === turf.id), ...platformOffersFor(db.settings, turf.id, isApprovedStudent(player))];
   const offer = input.source === 'walk_in' ? null : bestOffer(turfOffers, input.hour, firstTime, slotPriceValue);
   let running = slotPriceValue + (offer?.amount ?? 0);
 
