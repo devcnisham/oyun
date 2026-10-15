@@ -74,7 +74,7 @@
 
 .slider {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -87,14 +87,14 @@
 }
 
 .slide {
-  flex: 0 0 calc(25% - 18px); /* 4 items per view approx */
-  min-width: 260px;
+  flex: 0 0 calc(20% - 13px); /* 5 items per view approx */
+  min-width: 200px;
   scroll-snap-align: start;
 }
 
 @media (max-width: 1024px) {
   .slide {
-    flex: 0 0 calc(33.333% - 16px);
+    flex: 0 0 calc(25% - 12px);
   }
 }
 
@@ -112,7 +112,7 @@
     gap: 16px;
   }
   .slide {
-    flex: 0 0 75vw;
-    max-width: 300px;
+    flex: 0 0 60vw;
+    max-width: 220px;
   }
 }

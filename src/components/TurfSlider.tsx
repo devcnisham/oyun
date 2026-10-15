@@ -18,7 +18,7 @@ export default function TurfSlider({ title, turfs, viewAllLink }: TurfSliderProp
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       // 300px roughly covers a card + gap. For desktop, scrolling 2 cards at a time feels good.
-      const scrollAmount = 600; 
+      const scrollAmount = 500; 
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
@@ -50,7 +50,7 @@ export default function TurfSlider({ title, turfs, viewAllLink }: TurfSliderProp
         <div className={styles.slider} ref={scrollRef}>
           {turfs.map((turf, i) => (
             <div key={turf.id} className={styles.slide}>
-              <TurfCard turf={turf} eager={i < 2} />
+              <TurfCard turf={turf} eager={i < 2} compact />
             </div>
           ))}
         </div>

@@ -70,6 +70,7 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
                   </div>
                   <b>{t.name}</b>
                   <span>{t.area} · {rupees(t.pricePerHour)}/hr</span>
+                  <span className={styles.bookBtn}>Book</span>
                 </Link>
               ))}
             </div>

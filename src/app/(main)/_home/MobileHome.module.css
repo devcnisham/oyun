@@ -179,3 +179,8 @@ button.sportIcon { background: none; border: 0; padding: 0; font: inherit; curso
 }
 @keyframes shimmer { to { background-position: -220% 0; } }
 @keyframes badgePop { from { opacity: 0; transform: translateY(8px) scale(0.8); } to { opacity: 1; transform: none; } }
+
+/* Book button on turf rows and rail cards */
+.bookBtn { background: var(--primary-700, #b3161f); color: #fff !important; font-size: 13px !important; font-weight: 700; padding: 6px 16px; border-radius: 8px; }
+.railCard .bookBtn { align-self: flex-start; margin-top: 8px; }
+.rowMeta { gap: 8px; }

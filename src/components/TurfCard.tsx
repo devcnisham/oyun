@@ -9,12 +9,14 @@ interface TurfCardProps {
   turf: PublicTurf;
   // Above-the-fold cards: load the image right away instead of lazily (it is the page's largest paint)
   eager?: boolean;
+  // Small card with a Book button (home sliders)
+  compact?: boolean;
 }
 
-export default function TurfCard({ turf, eager = false }: TurfCardProps) {
+export default function TurfCard({ turf, eager = false, compact = false }: TurfCardProps) {
 
   return (
-    <div className={styles.cardWrap}>
+    <div className={`${styles.cardWrap} ${compact ? styles.compact : ''}`}>
     <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.fav} />
     <Link href={`/arenas/${turf.id}`} className={styles.card}>
       <div className={styles.imageWrap}>
@@ -40,7 +42,7 @@ export default function TurfCard({ turf, eager = false }: TurfCardProps) {
         <div className={styles.pricing}>
           <div className={styles.priceRow}>
             <span className={styles.price}>₹{turf.pricePerHour}</span>
-            <span className={`btn btn--primary btn--sm ${styles.bookBtn}`}>Book</span>
+            <span className={styles.bookBtn}>Book</span>
           </div>
         </div>
       </div>

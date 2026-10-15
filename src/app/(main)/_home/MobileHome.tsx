@@ -87,6 +87,7 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
                 <span className={styles.rowMeta}>
                   {t.reviewCount > 0 ? <em>★ {t.rating}</em> : <em>New</em>}
                   <strong>{rupees(t.pricePerHour)}<small>/hr</small></strong>
+                  <span className={styles.bookBtn}>Book</span>
                 </span>
               </div>
             </Link>

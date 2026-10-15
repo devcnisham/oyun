@@ -86,9 +86,11 @@ export default async function Home() {
           
           <div className={styles.searchWrapper}>
             <HeroSearchBar />
-            <Link href="/arenas?view=map" className={styles.mapBtn}>
-              <span className={styles.filterActionIcon}>🗺️</span>
-              <span>Map View</span>
+            <Link href="/arenas?view=map" className={styles.mapBtn} aria-label="Map view" title="Map view">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z" />
+                <path d="M9 4v13M15 7v13" />
+              </svg>
             </Link>
           </div>
         </div>
