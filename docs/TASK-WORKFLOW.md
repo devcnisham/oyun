@@ -1,6 +1,6 @@
 # OYUN task workflow
 
-Run `/next-task` (see `.claude/commands/next-task.md`). Each run does one task: branch, code, tests, PR, tracker. Tasks run one by one in the order below. `/loop /next-task` chains them; the loop stops itself at a GATE.
+Run `/next-task`. Each run does one task: branch, code, tests, PR, tracker. Tasks run one by one in the order below. `/loop /next-task` chains them; the loop stops itself at a GATE.
 
 Status: `[x]` merged, `[ ]` open, `GATE` needs a human decision or action first, `BLOCKED` was skipped for a gate.
 First step of every run: tick anything already merged (check `git log`). Merged as of 9 Oct 2026: R001 to R005, R015, R016, R017, Vitest lib tests (PR #64 to #71). Verify R006 and R018 before starting them.

@@ -6,8 +6,8 @@
 | --- | --- | --- | --- |
 | `main` | What customers get. Always passes CI. | Vercel **Production** | Only through a merged pull request |
 | `staging` | Pre-release check with test data. Merge `main` into it (or a risky PR before `main`) to try it on the staging database. | Vercel Preview `git-staging` URL | Pull requests, or a merge from `main` |
-| `claude/<task>` or `feature/<task>` | One task, one pull request | Vercel Preview per branch | The developer or Claude |
-| `fix/<task>` | A bug fix, same rules | Vercel Preview per branch | The developer or Claude |
+| `feature/<task>` | One task, one pull request | Vercel Preview per branch | The developer |
+| `fix/<task>` | A bug fix, same rules | Vercel Preview per branch | The developer |
 | `hotfix/<task>` | An urgent production fix, branched from `main`, merged straight to `main` | Production after merge | The developer |
 
 `staging` is only useful once Preview has its own Supabase project (task P8-12, and the Preview variables listed in `docs/ENVIRONMENTS.md`). Until then it behaves like any other preview. Branch protection (required reviews and checks) needs GitHub Pro on a private repository, so for now the rules are by agreement: merge only when every CI check is green.
@@ -16,7 +16,7 @@
 
 Jira's **Development** panel on an issue lists the branches, commits and pull requests that mention its key (for example `OYUN-67`). That works once the "GitHub for Atlassian" app is connected to this repository. To make an item show up, put the key in:
 
-- the **branch name**: `OYUN-67-race-test`, or `claude/OYUN-67-race-test`;
+- the **branch name**: `OYUN-67-race-test`, or `feature/OYUN-67-race-test`;
 - the **pull request title**: `OYUN-67 Double-booking race test (P8-04)`;
 - commit messages, when you can: `OYUN-67 add parallel session test`.
 

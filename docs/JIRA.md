@@ -7,11 +7,11 @@ Everything on the OYUN build is tracked in `docs/build-tracker.html` (tasks, pha
 
 ## Before you start
 
-1. Sign in to Jira yourself in the browser Claude in Chrome controls. Claude never types your password or handles two-factor codes.
+1. Sign in to Jira yourself in the browser that runs the import. Never put your password or two-factor codes into a script or prompt.
 2. You need permission to create projects (a Jira site admin). If you cannot, ask your admin to run prompt 1.
 3. Put `docs/jira-import.csv` where the browser can upload it: it is in your repo checkout, for example `/Users/nishhaamm/Desktop/slot-arena/docs/jira-import.csv`.
 
-Paste each prompt below into Claude in Chrome, one at a time, and check the result before the next one.
+Run each step below one at a time, and check the result before the next one.
 
 ## Prompt 1: create the project
 
@@ -89,7 +89,7 @@ Then add a comment on each: "Merged in PR #<NUMBER>: <PR URL>".
 Do not move any other issue.
 ```
 
-Claude Code can do this step too, without the browser, when the Atlassian connector is signed in. Ask it: "Move the tracker tasks done in PR #N to Done in the OYUN Jira project." It only changes issues whose summary starts with a tracker id.
+This step can also be done without the browser when the Atlassian connector is signed in: "Move the tracker tasks done in PR #N to Done in the OYUN Jira project." It only changes issues whose summary starts with a tracker id.
 
 ## Prompt 7 (optional): link GitHub
 
@@ -101,7 +101,7 @@ Ask me to approve any GitHub permission screen myself.
 
 After this, put the Jira key in branch names and pull request titles (for example `OYUN-12 Guard secret-key modules`) and Jira shows the branches and PRs on each issue.
 
-## Rules for Claude in Chrome on this project
+## Rules for browser automation on this project
 
 - Work only in the OYUN project. Never touch DI, GAP, SCHLR, SCHOLV1 or VAS.
 - Never delete issues, epics, filters or the project. If something looks wrong, report it.
@@ -127,7 +127,7 @@ Priorities map as P0 = Highest, P1 = High, P2 = Medium, P3 = Low.
 
 ## Keeping Jira in step (done after each merge)
 
-Claude Code does this through the Atlassian connector, so the browser prompts are only needed for first-time setup:
+This is done through the Atlassian connector, so the browser steps are only needed for first-time setup:
 1. Find the issues by summary prefix (JQL `project = OYUN AND summary ~ "P9-12"`).
 2. Transition them (this project's transitions are global: To Do 11, In Progress 21, Done 31, Blocked 2).
 3. Comment with the pull request link. Create new tasks under their epic (P9 is OYUN-10, P10 is OYUN-11, and so on).

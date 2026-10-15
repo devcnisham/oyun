@@ -1,6 +1,6 @@
 // Turns docs/build-tracker.html (tasks and phases) plus the MASTER-PROMPT roadmap into a CSV that Jira can import.
 // Usage: node scripts/export-jira.mjs   (writes docs/jira-import.csv). Re-run after the tracker changes.
-// See docs/JIRA.md for how to import it and for the prompts that drive Claude in Chrome.
+// See docs/JIRA.md for how to import it and for the browser steps.
 import { readFileSync, writeFileSync } from 'node:fs';
 import vm from 'node:vm';
 

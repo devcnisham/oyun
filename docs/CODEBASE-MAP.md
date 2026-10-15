@@ -291,7 +291,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-  T[Task in Jira OYUN-n] --> BR[Branch claude/OYUN-n-name]
+  T[Task in Jira OYUN-n] --> BR[Branch feature/OYUN-n-name]
   BR --> PR[Pull request with the key in its title]
   PR --> CI{CI checks}
   CI --> C1[lint, 0 warnings]
@@ -437,4 +437,4 @@ flowchart TD
 | Admin MFA design | P9-09 | Choose TOTP or Clerk |
 | Staging | P8-12 | Vercel and Supabase branch setup |
 
-The loop that works the queue: `/next-task` picks the first open non-gated task, branches, builds, tests, opens a PR; merges happen only when every CI check is green. See `.claude/commands/next-task.md`.
+The loop that works the queue: `/next-task` picks the first open non-gated task, branches, builds, tests, opens a PR; merges happen only when every CI check is green.
