@@ -357,7 +357,9 @@
 /* Desktop home, scrolled past the hero: the header is just the search bar */
 @media (min-width: 769px) {
   .searchOnly { justify-content: center; position: relative; }
-  .searchOnly .right { display: none; }
+  /* Profile stays pinned right; the other right-hand items drop away */
+  .searchOnly .right { position: absolute; right: 32px; top: 50%; transform: translateY(-50%); }
+  .searchOnly .right > :not(.account) { display: none; }
   /* Only the OYUN wordmark stays, pinned left */
   .searchOnly .left { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); }
   .searchOnly .logo svg,

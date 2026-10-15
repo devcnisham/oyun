@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getSettings, getSiteContent, listAreas, listPublicTurfs } from "@/lib/queries";
+import { getSettings, getSiteContent } from "@/lib/queries";
 
 export default async function MainLayout({
   children,
@@ -9,7 +9,6 @@ export default async function MainLayout({
 }>) {
   const site = await getSiteContent();
   const settings = await getSettings();
-  const areas = listAreas(await listPublicTurfs());
   return (
     <>
       {site.announcementActive && site.announcement && (
@@ -23,7 +22,7 @@ export default async function MainLayout({
       )}
       <Navbar />
       <main className="appMain">{children}</main>
-      <Footer areas={areas} supportEmail={settings.supportEmail} />
+      <Footer supportEmail={settings.supportEmail} />
     </>
   );
 }
