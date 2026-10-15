@@ -48,3 +48,7 @@ next-env.d.ts
 /playwright-report/
 .lighthouse-data/
 lighthouse-reports/
+
+# agent worktrees and local Claude Code state
+/.claude/worktrees/
+/.claude/settings.local.json

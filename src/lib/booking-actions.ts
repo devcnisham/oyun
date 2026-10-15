@@ -21,6 +21,7 @@ import type { Booking, Database, HalfNames, PitchSide, PitchSize, Slot } from '.
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
 import { notifyWaitlistWhenSlotFreed } from './waitlist';
 import { sendBookingConfirmation, sendOwnerAlert } from './notifications';
+import { clientIpFrom } from '@/lib/client-ip';
 
 const MAX_DAYS_AHEAD = BOOKING_DAYS - 1;
 const HOLD_MINUTES = 8;
@@ -32,7 +33,7 @@ function checkDate(date: string) {
 
 async function clientIp() {
   try {
-    return (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    return clientIpFrom(await headers());
   } catch {
     return '127.0.0.1';
   }
@@ -505,7 +506,7 @@ export async function submitApplication(req: ApplicationRequest): Promise<{ id?:
   const startedAt = Number(req.startedAt);
   if (!Number.isFinite(startedAt) || Date.now() - startedAt < 4000) return fake();
 
-  const ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = clientIpFrom(await headers());
   if (!(await sharedRateLimit(`apply:${ip}`, 5, 60 * 60_000))) return { error: 'Too many applications from your network. Please try again in an hour.' };
 
   const s = (v: unknown, max = 200) => String(v ?? '').trim().slice(0, max);

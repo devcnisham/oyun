@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import { detectDoubleBookings, triggerOnCallPage } from '@/lib/alerts';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
 import { getDb } from '@/lib/store';
+import { clientIpFrom } from '@/lib/client-ip';
 
 export async function GET(req: Request) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = clientIpFrom(req.headers);
   if (!(await sharedRateLimit(`monitor:double-bookings:${ip}`, 60, 60_000))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
