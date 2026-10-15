@@ -40,6 +40,7 @@ export default function TurfCard({ turf, eager = false }: TurfCardProps) {
         <div className={styles.pricing}>
           <div className={styles.priceRow}>
             <span className={styles.price}>₹{turf.pricePerHour}</span>
+            <span className={`btn btn--primary btn--sm ${styles.bookBtn}`}>Book</span>
           </div>
         </div>
       </div>

@@ -104,7 +104,13 @@
 .priceRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
+}
+
+.bookBtn {
+  margin-left: auto;
+  pointer-events: none; /* the whole card is the link */
 }
 
 .price {
