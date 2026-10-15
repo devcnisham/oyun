@@ -27,9 +27,6 @@ export default function TurfCard({ turf, eager = false }: TurfCardProps) {
       <div className={styles.content}>
         <div className={styles.header}>
           <h3 className={styles.title}>{turf.name}</h3>
-          <div className={styles.rating}>
-            {turf.reviewCount > 0 ? `${turf.rating} ★ (${turf.reviewCount} Ratings)` : 'New'}
-          </div>
         </div>
         
         <p className={styles.location}>{turf.location}</p>
