@@ -358,3 +358,130 @@
 
 /* Pay-at-venue note in checkout */
 .venueNote p { font-size: 14px; color: var(--text-secondary); background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px 14px; }
+
+/* Each step is its own card */
+.stepCard {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.stepCard .stepHead { margin: 0 0 12px; }
+
+/* Layout: steps stack on phones; on desktop they sit beside a sticky summary */
+.layoutGrid { display: block; }
+.summary { display: none; }
+@media (min-width: 1024px) {
+  .layoutGrid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; align-items: start; }
+  .steps { counter-reset: step; }
+  .stepCard { counter-increment: step; position: relative; padding: 20px 20px 20px 76px; margin-bottom: 20px; }
+  .stepCard::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--open-bg);
+    color: var(--open);
+    font-size: 14px;
+    font-weight: 800;
+  }
+  .stepCard .stepHead h3 { font-size: 20px; }
+  .summary {
+    display: block;
+    position: sticky;
+    top: 96px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+  }
+  .summaryEyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .summaryTitle { font-size: 22px; font-weight: 800; margin: 8px 0 2px; }
+  .summaryMuted { font-size: 13px; color: var(--text-muted); margin: 0 0 16px; }
+  .summaryList { margin: 0 0 16px; border-top: 1px solid var(--border); }
+  .summaryList > div { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .summaryList dt { color: var(--text-muted); }
+  .summaryList dd { margin: 0; font-weight: 700; text-align: right; }
+  .summaryTotal { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+  .summaryTotal span { font-weight: 700; }
+  .summaryTotal b { font-size: 30px; font-weight: 800; }
+  .summary .primary { width: 100%; padding: 16px; }
+  .summaryNote { margin: 12px 0 0; text-align: center; font-size: 12px; color: var(--text-muted); }
+  .bar { display: none !important; }
+}
+
+/* Checkout: bottom sheet on phones; on desktop a two-column page of separate cards */
+.footDesktop { display: none; }
+@media (min-width: 1024px) {
+  .overlay { align-items: flex-start; padding: 0; background: #f4f5f7; overflow-y: auto; }
+  .sheet { max-width: 1120px; width: 100%; max-height: none; background: transparent; border-radius: 0; margin: 0 auto; animation: fade 0.2s ease-out; }
+  .sheetHead { background: #fff; border: 1px solid var(--border); border-radius: 16px; margin: 24px 0 20px; padding: 16px 20px; }
+  .sheetBody { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; overflow: visible; padding: 0 0 48px; }
+  .coLeft { display: flex; flex-direction: column; gap: 20px; }
+  .coLeft > section { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); }
+  .coLeft > section h3 { font-size: 18px; margin-bottom: 14px; }
+  .coLeft .fields { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .coRight { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 16px; background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-md); }
+  .footMobile { display: none; }
+  .footDesktop { display: flex; flex-direction: column; align-items: stretch; border-top: 1px solid var(--border); padding: 16px 0 0; }
+  .footDesktop .primary { width: 100%; padding: 16px; }
+  .footDesktop .barInfo { flex-direction: row; justify-content: space-between; align-items: baseline; }
+}
+@media (max-width: 1023px) {
+  .coLeft, .coRight { display: contents; }
+  .sheetBody .ticket { order: -1; }
+  .sheetBody .bill { order: 5; }
+  .sheetBody .error { order: 6; }
+}
+
+/* Phones: numbered step cards, checkout sections as cards on a soft background */
+@media (max-width: 1023px) {
+  .steps { counter-reset: step; }
+  .stepCard { counter-increment: step; position: relative; padding: 16px 16px 16px 62px; }
+  .stepCard::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--open-bg);
+    color: var(--open);
+    font-size: 13px;
+    font-weight: 800;
+  }
+  /* the date strip and pickers need the full width, so they sit under the heading row */
+  .stepCard .dates,
+  .stepCard .pitchPick,
+  .stepCard .map { margin-left: -46px; }
+  .sheetBody { background: var(--bg-muted); }
+  .coLeft > section,
+  .sheetBody .bill { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .sheetBody .bill { gap: 8px; }
+}
+
+/* Desktop: date chips fill the card width, aligned with the card edges */
+@media (min-width: 1024px) {
+  .stepCard .dates,
+  .stepCard .pitchPick,
+  .stepCard .map { margin-left: -56px; }
+  .stepCard .dates { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; overflow: visible; padding: 4px 2px 10px; }
+  .stepCard .date { width: auto; padding: 14px 0; border-radius: 16px; gap: 4px; }
+  .stepCard .date small { font-size: 12px; }
+  .stepCard .date b { font-size: 24px; }
+}
+
+/* Original price shown struck through next to the discounted one */
+.wasPrice { display: block; font-size: 11px; font-weight: 600; text-decoration: line-through; opacity: 0.65; line-height: 1.1; }
+.summaryTotal b .wasPrice { display: inline; margin-right: 8px; font-size: 15px; }

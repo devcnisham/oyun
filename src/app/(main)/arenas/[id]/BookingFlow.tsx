@@ -9,7 +9,6 @@ import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import dynamic from 'next/dynamic';
-import { primarySport } from '@/lib/sports';
 import type { AddOn, Bookable, PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import { MAX_SLOTS } from '@/lib/booking-types';
@@ -71,6 +70,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const secondsLeft = holdUntil ? Math.max(0, Math.ceil((holdUntil - now) / 1000)) : 0;
   const selectedSlots = slots.filter((s) => selected.includes(s.hour));
   const estimate = selectedSlots.reduce((sum, s) => sum + s.price, 0);
+  const listTotal = selectedSlots.reduce((sum, s) => sum + Math.max(s.basePrice, s.price), 0);
   const dateInfo = dates.find((d) => d.date === date);
 
   const flash = useCallback((message: string) => {
@@ -230,7 +230,10 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
 
   return (
     <div className={styles.flow}>
+      <div className={styles.layoutGrid}>
+      <div className={styles.steps}>
       {/* 1 · Date strip */}
+      <div className={styles.stepCard}>
       <div className={styles.stepHead}>
         <h3>Select date</h3>
       </div>
@@ -248,9 +251,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           </button>
         ))}
       </div>
+      </div>
 
       {/* 2 · Full or half pitch, or multi-court bookables (R007) */}
       {(turf.halfPitch || (bookables && bookables.length > 1)) && (
+        <div className={styles.stepCard}>
         <PitchPicker
           turf={turf}
           size={size}
@@ -258,29 +263,44 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           selectedBookableId={selectedBookable?.id}
           onBookableChange={(b) => setSelectedBookable(b)}
         />
+        </div>
       )}
 
       {/* 3 · Slot map */}
+      <div className={styles.stepCard}>
       <div className={styles.stepHead}>
         <h3>Pick your slots</h3>
         <span className={styles.muted}>{loadingSlots ? 'Updating…' : `${availableCount} open`}</span>
       </div>
 
-      <div className={styles.pitch} aria-hidden>
-        <span>
-          {primarySport(turf).icon}{' '}
-          {selectedBookable
-            ? selectedBookable.name
-            : size === 'half'
-              ? 'Half pitch'
-              : primarySport(turf).place === 'court'
-                ? turf.size
-                : `${turf.size} pitch`}{' '}
-          · {dateInfo?.label}
-        </span>
+      <SlotMap slots={slots} selected={selected} loading={loadingSlots} onToggle={toggleSlot} />
+      </div>
       </div>
 
-      <SlotMap slots={slots} selected={selected} loading={loadingSlots} onToggle={toggleSlot} />
+      {/* Desktop: sticky reservation summary beside the steps (phones use the bar below) */}
+      <aside className={styles.summary} aria-label="Your reservation">
+        <span className={styles.summaryEyebrow}>Your reservation</span>
+        <h3 className={styles.summaryTitle}>{turf.name}</h3>
+        <p className={styles.summaryMuted}>{turf.area}, Mangalore</p>
+        <dl className={styles.summaryList}>
+          <div><dt>Date</dt><dd>{dateInfo?.label}</dd></div>
+          <div><dt>Pitch</dt><dd>{selectedBookable ? selectedBookable.name : size === 'half' ? 'Half pitch' : turf.size}</dd></div>
+          <div><dt>Time</dt><dd>{selected.length > 0 ? describeHours(selected, parseHour(turf.openTime)) : 'Pick your slots'}</dd></div>
+          <div><dt>Slots</dt><dd>{selected.length}</dd></div>
+        </dl>
+        <div className={styles.summaryTotal}>
+          <span>Total</span>
+          <b>
+            {selected.length > 0 && listTotal > estimate && <s className={styles.wasPrice}>{rupees(listTotal)}</s>}
+            {selected.length > 0 ? rupees(estimate) : '₹0'}
+          </b>
+        </div>
+        <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
+          {holding ? 'Holding…' : 'Proceed to checkout'}
+        </button>
+        <p className={styles.summaryNote}>Nothing is charged online. Pay at the turf.</p>
+      </aside>
+      </div>
 
       {/* Sticky selection bar */}
       <div className={`${styles.bar} ${selected.length > 0 && !inCheckout ? styles.barShow : ''}`}>

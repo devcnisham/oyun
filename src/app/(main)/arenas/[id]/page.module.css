@@ -1017,3 +1017,86 @@
 @media (min-width: 769px) {
   .backIcon { display: none; }
 }
+
+/* Each block is its own card instead of one long white sheet */
+.content.layout {
+  background: transparent;
+  box-shadow: none;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.info,
+.mapSection,
+.detailsSection,
+.amenitiesSection,
+.reviewsSection {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+}
+.more { display: flex; flex-direction: column; gap: 20px; }
+.more .divider { display: none; }
+.bookingPanel { margin: 0 0 20px; }
+@media (min-width: 769px) {
+  .content.layout { padding: 0; margin-top: -60px; margin-bottom: 40px; }
+  .info { margin-bottom: 20px; }
+}
+@media (min-width: 1024px) {
+  .bookingPanel { margin: 0; }
+}
+@media (max-width: 768px) {
+  .info,
+  .mapSection,
+  .detailsSection,
+  .amenitiesSection,
+  .reviewsSection { padding: 18px; border-radius: 16px; }
+  .info { margin-bottom: 16px; }
+  .bookingPanel { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: #fff; border-radius: 16px; padding: 18px; margin: 0 0 16px; }
+}
+
+/* Booking panel only groups the step cards, so it drops its own frame */
+.bookingPanel {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+@media (min-width: 1024px) {
+  .bookingPanel { padding: 0; border: none; box-shadow: none; background: transparent; }
+  .panelFooter { margin: 12px 0 0; border: 1px solid var(--border); border-radius: 16px; bottom: 0; }
+}
+.bookingPanel .panelTitle {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Desktop: info on top, then steps + reservation summary full width, then details */
+@media (min-width: 1024px) {
+  .content.layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: 'info' 'booking' 'more';
+  }
+  .bookingPanel { position: static; max-height: none; overflow: visible; margin: 0 0 20px; }
+  .bookingPanel .panelTitle { display: none; }
+}
+.titleSide .mapLink {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+@media (max-width: 1023px) {
+  .bookingPanel .panelTitle { display: none; }
+}
+
+.hoursText { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }

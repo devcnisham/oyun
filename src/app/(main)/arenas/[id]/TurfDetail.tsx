@@ -13,7 +13,7 @@ import ShareButton from './ShareButton';
 import MapEmbed from './MapEmbed';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
-import { primarySport, sportInfo } from '@/lib/sports';
+import { sportInfo } from '@/lib/sports';
 import { getWeatherAlert } from '@/lib/weather';
 
 interface TurfDetailProps {
@@ -78,9 +78,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
       <div className={`container ${styles.content} ${styles.layout}`}>
         {/* Left column (top on mobile): turf name and highlights */}
         <div className={styles.info}>
-        <span className={styles.typeBadge}>
-          <span aria-hidden>{primarySport(turf).icon}</span> {primarySport(turf).label} · {turf.size} · {turf.surface}
-        </span>
         {/* Name, badge and address on the left; hours and map link on the right */}
         <div className={styles.titleRow}>
           <div className={styles.titleMain}>
@@ -89,16 +86,12 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
               <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
             </h1>
             <p className={styles.addressBlock}>{turf.location}</p>
+            <p className={styles.hoursText}>{turf.openTime} – {turf.closeTime}</p>
           </div>
           <div className={styles.titleSide}>
-            <span className={styles.hours}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              {turf.openTime} – {turf.closeTime}
-            </span>
-            <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink}>View on map</a>
+            <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink} aria-label="View on map" title="View on map">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z" /><path d="M9 4v13M15 7v13" /></svg>
+            </a>
           </div>
         </div>
 

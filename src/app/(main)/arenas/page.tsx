@@ -15,15 +15,15 @@ export const metadata: Metadata = {
   openGraph: { url: '/arenas' },
 };
 
-export default async function ArenasPage({ searchParams }: { searchParams: Promise<{ q?: string; area?: string; sport?: string }> }) {
-  const { q = '', area = '', sport = '' } = await searchParams;
+export default async function ArenasPage({ searchParams }: { searchParams: Promise<{ q?: string; area?: string; sport?: string; date?: string }> }) {
+  const { q = '', area = '', sport = '', date = '' } = await searchParams;
   await connection(); // live availability: render per request
   const turfs = await listPublicTurfs();
   return (
     <>
     <JsonLd data={[itemListSchema(turfs, 'Turfs and courts in Mangalore'), breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Turfs in Mangalore', path: '/arenas' }])]} />
     <Suspense fallback={<div className={styles.loading}>Loading arenas...</div>}>
-      <ArenasClient key={`${q}|${area}|${sport}`} turfs={turfs} areaNames={listAreas(turfs)} />
+      <ArenasClient key={`${q}|${area}|${sport}|${date}`} turfs={turfs} areaNames={listAreas(turfs)} />
     </Suspense>
     </>
   );
