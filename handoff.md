@@ -203,6 +203,21 @@ down until Vercel points at Mumbai, so do it in one sitting, before public launc
 `PARTNER_PASSWORD` (12+ characters) if the operations login is wanted. Lighthouse home is 60 to 80 on CI against a 0.55
 floor (about 85 to 94 locally); see the CI job's `lighthouse-reports` artifact for the trace.
 
+## 6. Session update (15 October 2026)
+
+- **Sync:** `main` was pulled (59 commits, then #336 and #337) and merged into branch `security-hardening`.
+- **Branch `security-hardening`** (not yet merged to `main`): payment-event idempotency
+  (`supabase/setup/15-payment-events.sql`, `claim_payment_event()`), shared client-IP helper (`src/lib/client-ip.ts`),
+  stricter checks on API routes (holds release, student ID, privacy consent, partner upload, Razorpay webhook).
+- **Setup SQL numbering:** upstream owns steps 9 to 14. Payment events is step 15 and is added to `check-applied.sql`.
+  It must be run in Supabase before the payments change is relied on.
+- **Local dev:** after pulling, run `npm install`; a stale `node_modules` made `/`, `/admin`, `/partner` and `/welcome`
+  return 500.
+- **Go-live gate still failing** (`/api/health`): set in Vercel `NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a
+  `SESSION_SECRET` of at least 32 characters, then redeploy. See `docs/GO-LIVE.md`.
+- **To finish:** open the PR from `security-hardening` to `main`, merge after review, then run step 15 in Supabase.
+
 ---
 
 *Handoff tasks fully resolved, verified, and audited across the OYUN Arena codebase.*
