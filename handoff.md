@@ -2,7 +2,7 @@
 
 **Timestamp:** 2026-10-15  
 **Current Git Branch:** `main`  
-**Current Head Commit:** `645a965` (merged PRs #187 to #287 on `origin/main`)  
+**Current Head Commit:** `818643d` (merged PRs #187 to #338 on `origin/main`)  
 **Working Tree Status:** Clean, zero uncommitted changes  
 
 ---
@@ -13,7 +13,7 @@ All automated verification gates are passing with 100% success on `main`:
 
 | Verification Suite | Command | Result | Details |
 |---|---|---|---|
-| **Unit Tests** | `npm test` | **PASS** | 53 test files, 430 tests passing (100%) |
+| **Unit Tests** | `npm test` | **PASS** | 61 test files, 501 tests passing (100%) |
 | **Type Check** | `npm run typecheck` | **PASS** | 0 TypeScript errors (`tsc --noEmit`) |
 | **Lint** | `npm run lint -- --max-warnings=0` | **PASS** | 0 ESLint errors, 0 warnings |
 | **Duplicates** | `npm run dup` | **PASS** | 0 clone tokens found across codebase |
@@ -156,7 +156,7 @@ All automated verification gates are passing with 100% success on `main`:
 ## 4. Current Operational & Production Status
 
 1. **Codebase Gate Status:**
-   - Unit & Integration Tests: **53 test files, 432 tests passing (100%)**
+   - Unit & Integration Tests: **61 test files, 501 tests passing (100%)**
    - SQL Migration & Constraint Suite: **35/35 passing (100%)**
    - Linter: **0 errors, 0 warnings**
    - TypeScript: **0 errors**
@@ -192,7 +192,7 @@ down until Vercel points at Mumbai, so do it in one sitting, before public launc
 3. Owner: copy the new `sb_secret_...` key (the assistant cannot read it): Project Settings, API Keys.
 4. Owner: in Vercel, project `slot-arena`, Production and Preview, set `NEXT_PUBLIC_SUPABASE_URL`,
    `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (from the assistant) and `SUPABASE_SECRET_KEY` (Sensitive). Redeploy.
-5. Assistant: check `/api/health`, then `/arenas`. The first page load re-seeds the 11 launch turfs.
+5. Assistant: check `/api/health`, then `/arenas`. The first page load re-seeds the launch turfs.
 6. Owner: once Mumbai works, delete the paused Tokyo project. Update `.env.local`, `.env.example`, `docs/GO-LIVE.md`,
    `scripts/verify-supabase-key.mjs` and the guardrail docs with the new project ref.
 
@@ -205,5 +205,14 @@ floor (about 85 to 94 locally); see the CI job's `lighthouse-reports` artifact f
 
 ---
 
-*Handoff tasks fully resolved, verified, and audited across the OYUN Arena codebase.*
+## 6. Changes since the first version of this file (PRs #288 to #338)
+
+- Student offers: Regular and Student offers in admin, student ID upload and check at checkout (#331, #334; migration `20261015020000_student_ids_bucket.sql`).
+- Split pitches: players pick the Right or Left half, and the booking screen points to the other half when taken (#333, #335).
+- Map: overlapping pins group into numbered circles (#332).
+- Main site, admin and partner dashboards link to each other (footer, "Switch to" sidebar group). API routes that change bookings (Razorpay webhook, hold release, student ID upload, payout settlement) now refresh pages (#337).
+- Security hardening: client IP helper and payment event table `supabase/setup/15-payment-events.sql` (#338). Apply it to the live database.
+- ESLint ignores `.claude/worktrees` (#336).
+
+*Status verified on `main` at `818643d`: typecheck, lint, knip clean; 61 test files, 501 tests pass.*
 
