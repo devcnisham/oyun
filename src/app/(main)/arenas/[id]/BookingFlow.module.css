@@ -441,3 +441,32 @@
   .sheetBody .bill { order: 5; }
   .sheetBody .error { order: 6; }
 }
+
+/* Phones: numbered step cards, checkout sections as cards on a soft background */
+@media (max-width: 1023px) {
+  .steps { counter-reset: step; }
+  .stepCard { counter-increment: step; position: relative; padding: 16px 16px 16px 62px; }
+  .stepCard::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--open-bg);
+    color: var(--open);
+    font-size: 13px;
+    font-weight: 800;
+  }
+  /* the date strip and pickers need the full width, so they sit under the heading row */
+  .stepCard .dates,
+  .stepCard .pitchPick,
+  .stepCard .map { margin-left: -46px; }
+  .sheetBody { background: var(--bg-muted); }
+  .coLeft > section,
+  .sheetBody .bill { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .sheetBody .bill { gap: 8px; }
+}
