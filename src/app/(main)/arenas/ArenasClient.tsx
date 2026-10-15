@@ -7,6 +7,7 @@ import type { TurfSummary } from '@/lib/types';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { SPORTS } from '@/lib/sports';
+import { matchesQuery } from '@/lib/search';
 
 const sortOptions = [
   { value: 'featured', label: 'Featured First' },
@@ -54,12 +55,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
 
     // Filter by search
     if (searchQuery.trim()) {
-      // Every word must match somewhere: "perfect kodialbail" finds Perfect Pass in Kodialbail
-      const words = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
-      result = result.filter((t) => {
-        const hay = `${t.name} ${t.location} ${t.area} ${t.sports.join(' ')}`.toLowerCase();
-        return words.every((w) => hay.includes(w));
-      });
+      result = result.filter((t) => matchesQuery(`${t.name} ${t.location} ${t.area} ${t.sports.join(' ')}`, searchQuery));
     }
 
     // Sort

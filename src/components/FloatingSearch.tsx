@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
+import SearchSuggestions, { useSuggestions } from './SearchSuggestions';
 import styles from './FloatingSearch.module.css';
 
 // Raised red search button in the middle of the phone tab bar; opens a search sheet
@@ -11,6 +12,7 @@ export default function FloatingSearch({ className }: { className: string }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const input = useRef<HTMLInputElement>(null);
+  const suggestions = useSuggestions(q, open);
 
   useEffect(() => {
     if (open) input.current?.focus();
@@ -57,6 +59,7 @@ export default function FloatingSearch({ className }: { className: string }) {
               />
               <button type="button" className={styles.close} onClick={() => setOpen(false)}>Cancel</button>
             </form>
+            <SearchSuggestions query={q} suggestions={suggestions} onPick={() => setOpen(false)} />
             <button type="button" className={styles.all} onClick={() => go('')}>Browse all turfs</button>
           </div>
         </div>
