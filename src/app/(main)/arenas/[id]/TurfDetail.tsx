@@ -85,8 +85,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         <div className={styles.titleRow}>
           <div className={styles.titleMain}>
             <h1 className={styles.title}>
-              {turf.name}{' '}
-              <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
+              {turf.name}
             </h1>
             <p className={styles.addressBlock}>{turf.location}</p>
           </div>
