@@ -33,6 +33,7 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
   const [selectedSport, setSelectedSport] = useState(urlSport || 'All Sports');
   const [sortBy, setSortBy] = useState(sortOptions.some((o) => o.value === urlSort) ? urlSort! : 'featured');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '');
+  const [mapTurfId, setMapTurfId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(searchParams.get('view') === 'map' ? 'map' : 'grid');
 
   const filtered = useMemo(() => {
@@ -78,6 +79,12 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
 
     return result;
   }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery]);
+
+  // The map follows the turf picked from the list, or the only match; otherwise it searches the filtered area
+  const mapTurf = filtered.find((t) => t.id === mapTurfId) ?? (filtered.length === 1 ? filtered[0] : null);
+  const mapQuery = mapTurf
+    ? `${mapTurf.name} ${mapTurf.location}`
+    : `${selectedSport !== 'All Sports' ? selectedSport.toLowerCase() : 'sports'} turf ${selectedArea !== 'All Areas' ? selectedArea : ''} ${selectedCity}`.replace(/\s+/g, ' ').trim();
 
   return (
     <div className={styles.page}>
@@ -194,8 +201,9 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
           ) : viewMode === 'map' ? (
             <div className={styles.mapContainer}>
               <iframe
+                key={mapQuery}
                 title="Turfs on map"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(`${selectedSport !== 'All Sports' ? selectedSport.toLowerCase() : 'sports'} turf ${selectedArea !== 'All Areas' ? selectedArea : ''} ${selectedCity}`)}&output=embed`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
                 width="100%"
                 height="420"
                 style={{ border: 0, borderRadius: '12px' }}
@@ -204,7 +212,12 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
               />
               <div className={styles.mapPinsMock}>
                 {filtered.map((t) => (
-                  <a key={t.id} href={`/arenas/${t.id}`} className={styles.mapPinMock}>{t.name} · ₹{t.pricePerHour}</a>
+                  <span key={t.id} className={styles.mapPinMock}>
+                    <button type="button" onClick={() => setMapTurfId(t.id)} aria-pressed={mapTurf?.id === t.id} aria-label={`Show ${t.name} on map`}>
+                      📍
+                    </button>{' '}
+                    <a href={`/arenas/${t.id}`}>{t.name} · ₹{t.pricePerHour}</a>
+                  </span>
                 ))}
               </div>
             </div>
