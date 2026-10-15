@@ -1,5 +1,6 @@
 'use server';
 
+import { parseCoordinates, type Coords } from './geocode';
 import { ValidationError, bool, int, parseTurfProfile, required, run, slugify, str } from './action-utils';
 import { AccessError } from './partner-auth';
 import { generateTempPassword, hashPassword } from './password';
@@ -130,6 +131,12 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
     const commissionPercent = commissionRaw === '' ? null : int(fd, 'commissionPercent', { min: 0, max: 50, label: 'Commission' });
     const rating = Number(str(fd, 'rating'));
     if (!Number.isFinite(rating) || rating < 0 || rating > 5) throw new ValidationError('Rating must be between 0 and 5');
+    let coords: Coords | null;
+    try {
+      coords = parseCoordinates(str(fd, 'lat'), str(fd, 'lng'));
+    } catch (err) {
+      throw new ValidationError((err as Error).message);
+    }
     const partnerId = str(fd, 'partnerId') || null;
     const halfPitch = bool(fd, 'halfPitch');
     const halfPricePercent = halfPitch ? int(fd, 'halfPricePercent', { min: 30, max: 80, label: 'Half pitch price' }) : undefined;
@@ -148,6 +155,13 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
         halfPitch,
         halfPricePercent: halfPricePercent ?? turf.halfPricePercent,
       });
+      if (coords) {
+        turf.lat = coords.lat;
+        turf.lng = coords.lng;
+      } else {
+        delete turf.lat;
+        delete turf.lng;
+      }
       return { ok: `${turf.name} saved` };
     });
   });
