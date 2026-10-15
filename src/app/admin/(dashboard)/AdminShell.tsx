@@ -4,8 +4,22 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/auth-actions';
 import NavIcon from '@/components/dash/NavIcon';
+import HeaderPageTitle from '@/components/dash/HeaderPageTitle';
 import SidebarToggle from '@/components/dash/SidebarToggle';
 import styles from './layout.module.css';
+
+const ADMIN_PAGES = [
+  { href: '/admin', label: 'Overview & approvals' },
+  { href: '/admin/turfs', label: 'Turfs' },
+  { href: '/admin/partners', label: 'Partners' },
+  { href: '/admin/users', label: 'Players' },
+  { href: '/admin/students', label: 'Student IDs' },
+  { href: '/admin/transactions', label: 'Bookings & refunds' },
+  { href: '/admin/analytics', label: 'Analytics' },
+  { href: '/admin/reviews', label: 'Reviews' },
+  { href: '/admin/settings', label: 'Settings & promo codes' },
+  { href: '/admin/customization', label: 'Homepage content' },
+];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -79,7 +93,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <header className={`${styles.header} noPrint`}>
           <div className={styles.headerTitle}>
             <SidebarToggle className={styles.toggleBtn} />
-            <span>Admin Control Center</span>
+            <HeaderPageTitle items={ADMIN_PAGES} fallback="Admin" className={styles.pageName} />
+            <span className={styles.turfName}>Admin Control Center</span>
           </div>
           <div className={styles.headerActions}>
             <Link href="/" className="btn btn--secondary btn--sm">View site</Link>

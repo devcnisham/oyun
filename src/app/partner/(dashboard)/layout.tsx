@@ -2,6 +2,7 @@ import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
 import { logout } from '@/lib/auth-actions';
 import NavIcon from '@/components/dash/NavIcon';
+import HeaderPageTitle from '@/components/dash/HeaderPageTitle';
 import SidebarToggle from '@/components/dash/SidebarToggle';
 import { ROLE_LABELS, requirePartner } from '@/lib/partner-auth';
 import { switchTurf } from '@/lib/partner-actions';
@@ -98,6 +99,8 @@ export default async function PartnerLayout({ children }: { children: React.Reac
         <header className={`${styles.header} noPrint`}>
           <div className={styles.headerTitle}>
             <SidebarToggle className={styles.toggleBtn} />
+            <HeaderPageTitle items={[...nav, { href: '/partner/invoices', label: 'Invoice' }]} fallback="Dashboard" className={styles.pageName} />
+            <span className={styles.turfName}>
             {ctx.turfs.length > 1 ? (
               <ActionForm action={switchTurf} inline>
                 <select name="turfId" defaultValue={ctx.turf.id} aria-label="Switch turf" style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', fontWeight: 600 }}>
@@ -110,6 +113,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
             ) : (
               ctx.turf.name
             )}
+            </span>
           </div>
           <div className={styles.headerActions}>
             {ctx.can('bookings') && (

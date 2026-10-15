@@ -281,3 +281,30 @@
   .header { padding: 0 16px; }
   .content { padding: 16px; }
 }
+
+/* the page name lives in the top bar, so hide the duplicate big title inside the page (descriptions stay) */
+.pageName {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.turfName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content h1[class*='pageTitle'] {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .turfName { display: none; }
+}
