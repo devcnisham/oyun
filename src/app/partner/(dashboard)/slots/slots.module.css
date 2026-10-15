@@ -755,3 +755,44 @@
 @media (max-width: 600px) {
   .bulkFoot { flex-direction: column; }
 }
+
+.occ {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.tileActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.addLink {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.addLink:hover {
+  border-color: var(--primary-700);
+  color: var(--primary-700);
+}
+
+a.slotNote {
+  text-decoration: none;
+}
+
+a.slotNote:hover {
+  color: var(--primary-700);
+}
+
+.tileActions .blockBox[open] {
+  flex-basis: 100%;
+}

@@ -105,6 +105,11 @@ export default async function PartnerLayout({ children }: { children: React.Reac
           </div>
           <div className={styles.headerActions}>
             {ctx.can('bookings') && (
+              <form action="/partner/bookings" method="get" role="search" className={styles.headerSearch}>
+                <input type="search" name="q" aria-label="Search bookings by name, phone or code" placeholder="Search bookings" />
+              </form>
+            )}
+            {ctx.can('bookings') && (
               <Link href="/partner/bookings#walk-in" className="btn btn--primary btn--sm">+ Add booking</Link>
             )}
             <form action={logout.bind(null, 'partner')}>

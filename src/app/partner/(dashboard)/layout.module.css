@@ -277,6 +277,27 @@
   gap: 16px;
 }
 
+.headerSearch input {
+  width: 200px;
+  height: 36px;
+  padding: 0 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px;
+  transition: width 0.2s, border-color 0.15s;
+}
+
+.headerSearch input:focus {
+  outline: none;
+  width: 260px;
+  border-color: var(--primary-700);
+}
+
+@media (max-width: 900px) {
+  .headerSearch { display: none; }
+}
+
 .headerActions :global(.btn) {
   border-radius: 999px;
 }

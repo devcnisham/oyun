@@ -189,7 +189,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                       return (
                         <td key={weekDays[i]}>
                           {c ? (
-                            <Link href={href(weekDays[i], 'day')} className={`${styles.cell} ${styles[c.status]}`} aria-label={`${formatDate(weekDays[i])} ${label}: ${c.status}`}>
+                            <Link href={href(weekDays[i], 'day')} className={`${styles.cell} ${styles[c.status]}`} title={`${formatDate(weekDays[i])}, ${label}: ${c.status}`} aria-label={`${formatDate(weekDays[i])} ${label}: ${c.status}`}>
                               {c.status === 'free' ? '' : c.status === 'booked' ? 'Booked' : c.status === 'blocked' ? 'Blocked' : '–'}
                             </Link>
                           ) : null}
@@ -213,9 +213,14 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
               const cells = statusFor(d);
               const count = (st: Cell['status']) => cells.filter((c) => c.status === st).length;
               const allPast = cells.length > 0 && cells.every((c) => c.status === 'past');
+              const playable = cells.filter((c) => c.status !== 'past' && c.status !== 'blocked').length;
+              const occupancy = playable > 0 ? Math.round((count('booked') / playable) * 100) : 0;
               return (
                 <Link key={d} href={href(d, 'day')} className={`${styles.day} ${d === now.date ? styles.dayToday : ''} ${allPast ? styles.dayPast : ''}`}>
-                  <span className={styles.dayNum}>{Number(d.slice(8))}</span>
+                  <span className={styles.dayNum}>
+                    {Number(d.slice(8))}
+                    {!allPast && playable > 0 && <span className={styles.occ}>{occupancy}%</span>}
+                  </span>
                   <span className={styles.dayStats}>
                     {count('booked') > 0 && <span className={`${styles.pill} ${styles.booked}`}>{count('booked')} booked</span>}
                     {count('blocked') > 0 && <span className={`${styles.pill} ${styles.blocked}`}>{count('blocked')} blocked</span>}
@@ -248,9 +253,9 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                 </div>
                 {booking ? (
                   hourBookings.map((b) => (
-                    <span key={b.id} className={styles.slotNote}>
-                      {b.customerName}{b.source === 'walk_in' ? ' (walk-in)' : ''}{b.pitch && b.pitch !== 'full' ? ` · half ${b.pitch}` : ''}
-                    </span>
+                    <Link key={b.id} href={`/partner/bookings?q=${encodeURIComponent(b.code)}`} className={styles.slotNote} title="Open this booking">
+                      {b.customerName}{b.source === 'walk_in' ? ' (walk-in)' : ''}{b.pitch && b.pitch !== 'full' ? ` · half ${b.pitch}` : ''} ↗
+                    </Link>
                   ))
                 ) : block ? (
                   <>
@@ -263,6 +268,8 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                     )}
                   </>
                 ) : s.reason === 'past' ? null : (
+                  <div className={styles.tileActions}>
+                  <Link href="/partner/bookings#walk-in" className={styles.addLink}>+ Add booking</Link>
                   <details className={styles.blockBox}>
                     <summary>Block this slot</summary>
                     <ActionForm action={blockSlot}>
@@ -272,6 +279,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                       <button className={`${dash.btn} ${dash.btnSecondary}`}>Confirm block</button>
                     </ActionForm>
                   </details>
+                  </div>
                 )}
               </div>
             );
