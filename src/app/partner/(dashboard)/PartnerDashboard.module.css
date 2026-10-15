@@ -420,7 +420,7 @@
 .slotNowTag {
   font-size: 9px;
   font-weight: 900;
-  background: #10b981;
+  background: #047857;
   color: #ffffff;
   padding: 1px 5px;
   border-radius: 4px;
@@ -714,7 +714,7 @@
 }
 
 .chartDayLabelToday {
-  color: #059669;
+  color: #047857;
   font-weight: 800;
 }
 

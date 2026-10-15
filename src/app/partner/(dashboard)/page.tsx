@@ -221,10 +221,10 @@ export default async function PartnerDashboard() {
                   </>
                 ) : (
                   <>
-                    <span className={styles.slotPlayerName} style={{ color: '#9ca3af', fontWeight: 500 }}>
+                    <span className={styles.slotPlayerName} style={{ color: '#6b7280', fontWeight: 500 }}>
                       Available
                     </span>
-                    <span className={styles.slotStatusText} style={{ color: '#10b981' }}>
+                    <span className={styles.slotStatusText} style={{ color: '#047857' }}>
                       Open for play
                     </span>
                     {ctx.can('bookings') && (
