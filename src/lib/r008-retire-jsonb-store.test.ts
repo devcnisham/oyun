@@ -4,6 +4,7 @@ import { createBookings } from './booking-actions';
 import * as v2Slots from './v2-slots';
 import * as adminUtil from '@/utils/supabase/admin';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { addDays, istNow } from './time';
 
 vi.mock('./device-holder', () => ({
   deviceHolder: vi.fn().mockResolvedValue('test_holder_token_hash'),
@@ -69,7 +70,7 @@ describe('R008: Retire jsonb store for bookings, holds, blocks, pricing', () => 
 
     const res = await createBookings({
       turfId: 'turf_kankanady',
-      date: '2026-10-15',
+      date: addDays(istNow().date, 3), // always in the future, so the slot is never "past"
       name: 'Rohan Kumar',
       phone: '9876543210',
       hours: [18],
