@@ -50,6 +50,14 @@ export default async function AdminTurfEdit({ params }: { params: Promise<{ id: 
               <span className={dash.label}>Rating (0–5)</span>
               <input name="rating" type="number" min={0} max={5} step={0.1} defaultValue={turf.rating} className={dash.input} />
             </label>
+            <label className={dash.field}>
+              <span className={dash.label}>Map latitude (blank = look up from address)</span>
+              <input name="lat" type="number" min={-90} max={90} step="any" defaultValue={turf.lat ?? ''} className={dash.input} placeholder="12.9141" />
+            </label>
+            <label className={dash.field}>
+              <span className={dash.label}>Map longitude</span>
+              <input name="lng" type="number" min={-180} max={180} step="any" defaultValue={turf.lng ?? ''} className={dash.input} placeholder="74.8560" />
+            </label>
           </div>
           <div className={dash.inline}>
             <label className={dash.check}><input type="checkbox" name="isVerified" defaultChecked={turf.isVerified} /> Verified</label>
