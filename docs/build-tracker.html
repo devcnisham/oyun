@@ -2252,30 +2252,9 @@ function initControls(){
 }
 function refresh(){ renderOverview(); renderPhases(); renderTracker(); renderLists(); }
 
-async function connect(){
-  const c = window.claude; if(!c || !c.use){ $('#ls-sub').textContent='Ticks are saved in this browser only.'; $('#trk-sub').textContent='Read-only here: task changes are not saved from this page.'; return; }
-  try{ userNs = await c.use('user'); }catch(e){}
-  try{ dbNs = await c.use('db'); }catch(e){}
-  if(!dbNs){ $('#ls-sub').textContent='Ticks are saved in this browser only.'; $('#trk-sub').textContent='Sign in to see and change shared task status. Showing default statuses.'; return; }
-  try{ myId = userNs ? await userNs.id() : null; }catch(e){}
-  let cw = null; try{ cw = userNs ? await userNs.can('data.write') : null; }catch(e){}
-  canWrite = cw !== false;
-  if(!canWrite) $('#trk-sub').textContent='You have view-only access. Ask the owner for Contributor access to change task status.';
-  dbNs.collection('tasks').onSnapshot(async snap=>{
-    const o={}; snap.docs.forEach(d=>{ const v=d.data(); if(v && v.status) o[d.id]=v; });
-    overrides=o; dbReady=true;
-    const ids=[...new Set(Object.values(o).map(v=>v.by).filter(Boolean))];
-    if(userNs && ids.length){ try{ const ps=await userNs.profiles(ids); ids.forEach(i=>{whoNames[i]=ps[i]&&ps[i].name||''}); }catch(e){} }
-    refresh();
-  }, err=>{ if(err && err.code==='revoked'){ canWrite=false; renderTracker(); } });
-  checks = {}; renderLists();
-  dbNs.collection('checks').onSnapshot(async snap=>{
-    const o={}; snap.docs.forEach(d=>{ const v=d.data(); if(v && typeof v.done==='boolean') o[d.id]=v; });
-    checks=o;
-    const ids=[...new Set(Object.values(o).map(v=>v.by).filter(Boolean))].filter(i=>!(i in whoNames));
-    if(userNs && ids.length){ try{ const ps=await userNs.profiles(ids); ids.forEach(i=>{whoNames[i]=ps[i]&&ps[i].name||''}); }catch(e){} }
-    renderLists();
-  }, err=>{ if(err && err.code==='revoked'){ canWrite=false; renderLists(); } });
+function connect(){
+  $('#ls-sub').textContent='Ticks are saved in this browser only.';
+  $('#trk-sub').textContent='Task changes are not saved from this page.';
 }
 
 renderStatic(); renderNew(); initControls(); initLists(); initTabs(); refresh(); connect();
