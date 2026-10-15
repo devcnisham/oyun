@@ -205,7 +205,7 @@ export default async function PartnerDashboard() {
                         Check in
                       </Link>
                     ) : (
-                      <span style={{ fontSize: 11, color: '#9ca3af', fontStyle: 'italic' }}>
+                      <span style={{ fontSize: 11, color: '#4b5563', fontStyle: 'italic' }}>
                         {booking.status.replace(/_/g, ' ')}
                       </span>
                     )}
