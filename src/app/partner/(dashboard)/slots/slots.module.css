@@ -216,6 +216,7 @@
 }
 
 @media (max-width: 600px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
   .month { gap: 4px; }
   .tiles { gap: 6px; }
   .tileNum { font-size: 18px; }

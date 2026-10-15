@@ -6,6 +6,7 @@ import SidebarToggle from '@/components/dash/SidebarToggle';
 import { ROLE_LABELS, requirePartner } from '@/lib/partner-auth';
 import { switchTurf } from '@/lib/partner-actions';
 import NavLinks, { type NavItem } from './NavLinks';
+import MobileTabBar from './MobileTabBar';
 import MobileDrawerClose, { DrawerButton } from './MobileDrawerClose';
 import styles from './layout.module.css';
 
@@ -27,6 +28,12 @@ export default async function PartnerLayout({ children }: { children: React.Reac
     ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Turf', icon: 'turf' }] : []),
     ...(ctx.can('turf') ? [{ href: '/partner/courts', label: 'Courts & Pitches', icon: 'courts' }] : []),
   ];
+
+  // Phone tab bar: the most used pages this role can open
+  const tabs = ['/partner', '/partner/bookings', '/partner/calendar', '/partner/slots', '/partner/check-in', '/partner/reviews']
+    .map((href) => nav.find((n) => n.href === href))
+    .filter((n): n is NavItem => Boolean(n))
+    .slice(0, 4);
 
   return (
     <div className={styles.layout}>
@@ -116,6 +123,8 @@ export default async function PartnerLayout({ children }: { children: React.Reac
         </header>
         <div className={styles.content}>{children}</div>
       </main>
+
+      <MobileTabBar items={tabs} />
     </div>
   );
 }
