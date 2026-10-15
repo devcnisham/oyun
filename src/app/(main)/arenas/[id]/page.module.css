@@ -59,8 +59,42 @@
 
 .topNavRight {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
+
+.carouselBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.carouselBtn:hover {
+  background: rgba(0, 0, 0, 0.75);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.carouselPrev {
+  left: 14px;
+}
+
+.carouselNext {
+  right: 14px;
+}
+
 
 .imageCounter {
   position: absolute;

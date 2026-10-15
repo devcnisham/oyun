@@ -82,6 +82,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
         refereeReward: db.settings.refereeReward,
       }}
       reviews={turfReviews(db, turf.id, { limit: 10 })}
+      addOns={db.addOns.filter((a) => a.turfId === turf.id && a.active)}
       initialReferral={(ref ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12)}
     />
     </>

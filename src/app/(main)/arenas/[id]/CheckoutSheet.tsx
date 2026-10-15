@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import type { SelectionQuote } from '@/lib/booking-types';
-import type { PitchSize, PublicTurf, Slot } from '@/lib/types';
+import type { AddOn, PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { rupees, shortHour } from '@/lib/format';
 import { describeHours } from './booking-format';
 import styles from './BookingFlow.module.css';
@@ -18,6 +18,7 @@ interface CheckoutSheetProps {
   signedIn: boolean;
   cashback: number;
   form: CheckoutForm;
+  addOns?: AddOn[];
   onClose: () => void;
   onPay: () => void;
 }
@@ -33,8 +34,8 @@ function advanceSummary(quote: SelectionQuote | null) {
 }
 
 /** Bottom sheet shown while the player's slots are held: details, offers, bill and confirm. */
-export default function CheckoutSheet({ turf, size, bookableName, dateLabel, selected, selectedSlots, secondsLeft, paying, signedIn, cashback, form, onClose, onPay }: CheckoutSheetProps) {
-  const { quote, error, name, phone, code, codeError, codeApplied, promo, referral, useWallet } = form;
+export default function CheckoutSheet({ turf, size, bookableName, dateLabel, selected, selectedSlots, secondsLeft, paying, signedIn, cashback, form, addOns, onClose, onPay }: CheckoutSheetProps) {
+  const { quote, error, name, phone, code, codeError, codeApplied, promo, referral, useWallet, selectedAddOns, setAddOnQty } = form;
   const chips = quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }));
 
   return createPortal(
@@ -99,6 +100,46 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
             )}
           </section>
 
+          {/* Add-ons & Equipment Selection (P13-09) */}
+          {addOns && addOns.length > 0 && (
+            <section>
+              <h3>Add-ons & Equipment</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, margin: '8px 0' }}>
+                {addOns.map((addon) => {
+                  const qty = selectedAddOns?.find((a) => a.id === addon.id)?.qty ?? 0;
+                  return (
+                    <div key={addon.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'var(--bg-muted, #f8f9fa)', borderRadius: 10 }}>
+                      <div>
+                        <b style={{ fontSize: 14 }}>{addon.name}</b>
+                        <span style={{ display: 'block', fontSize: 12, color: 'var(--text-muted, #666)' }}>{rupees(addon.price)}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <button
+                          type="button"
+                          onClick={() => setAddOnQty(addon.id, Math.max(0, qty - 1))}
+                          disabled={qty === 0}
+                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                          aria-label={`Decrease ${addon.name}`}
+                        >
+                          −
+                        </button>
+                        <span style={{ minWidth: 16, textAlign: 'center', fontWeight: 700, fontSize: 14 }}>{qty}</span>
+                        <button
+                          type="button"
+                          onClick={() => setAddOnQty(addon.id, qty + 1)}
+                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                          aria-label={`Increase ${addon.name}`}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
           <section className={styles.venueNote}>
             <h3>Payment</h3>
             <p>💵 Nothing is charged online. You pay at the turf by cash or UPI: {advanceSummary(quote)} when you arrive, and the balance after you play.</p>
@@ -107,6 +148,12 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           {quote && (
             <section className={styles.bill}>
               <div><span>Slots ({quote.slots.length})</span><span>{rupees(quote.slotTotal)}</span></div>
+              {quote.addOnTotal > 0 && (
+                <div style={{ color: 'var(--text-accent, #047857)' }}>
+                  <span>Add-ons ({quote.addOns.reduce((s, a) => s + a.qty, 0)})</span>
+                  <span>+{rupees(quote.addOnTotal)}</span>
+                </div>
+              )}
               {quote.adjustments.map((a) => (
                 <div key={a.label} className={styles.discount}><span>{a.label}</span><span>−{rupees(-a.amount)}</span></div>
               ))}
