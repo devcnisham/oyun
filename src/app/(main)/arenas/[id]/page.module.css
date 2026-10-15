@@ -1017,3 +1017,41 @@
 @media (min-width: 769px) {
   .backIcon { display: none; }
 }
+
+/* Each block is its own card instead of one long white sheet */
+.content.layout {
+  background: transparent;
+  box-shadow: none;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.info,
+.mapSection,
+.detailsSection,
+.amenitiesSection,
+.reviewsSection {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+}
+.more { display: flex; flex-direction: column; gap: 20px; }
+.more .divider { display: none; }
+.bookingPanel { margin: 0 0 20px; }
+@media (min-width: 769px) {
+  .content.layout { padding: 0; margin-top: -60px; margin-bottom: 40px; }
+  .info { margin-bottom: 20px; }
+}
+@media (min-width: 1024px) {
+  .bookingPanel { margin: 0; }
+}
+@media (max-width: 768px) {
+  .info,
+  .mapSection,
+  .detailsSection,
+  .amenitiesSection,
+  .reviewsSection { padding: 18px; border-radius: 16px; }
+  .info { margin-bottom: 16px; }
+  .bookingPanel { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: #fff; border-radius: 16px; padding: 18px; margin: 0 0 16px; }
+}
