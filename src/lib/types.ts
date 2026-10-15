@@ -17,6 +17,9 @@ export interface Turf {
   openTime: string; // "HH:MM"
   closeTime: string; // "HH:MM"
   images: string[];
+  // Map position, looked up from the address the first time the map is opened
+  lat?: number;
+  lng?: number;
   isVerified: boolean;
   isFeatured: boolean;
   description: string;
