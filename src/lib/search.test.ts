@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSuggestions, matchesExtras, matchesQuery, type SearchEntry } from './search';
+import { buildSuggestions, filtersToParams, matchesExtras, matchesQuery, parseMaxPrice, type ArenaFilters, type SearchEntry } from './search';
 
 const entries: SearchEntry[] = [
   { id: 't1', name: 'Perfect Pass', area: 'Kodialbail', location: 'Kodialbail, Mangalore', sports: ['Football'] },
@@ -45,5 +45,32 @@ describe('matchesExtras', () => {
   it('needs every chosen amenity', () => {
     expect(matchesExtras(turf, { maxPrice: 0, amenities: ['Parking', 'Floodlights'] })).toBe(true);
     expect(matchesExtras(turf, { maxPrice: 0, amenities: ['Parking', 'Showers'] })).toBe(false);
+  });
+});
+
+describe('filtersToParams', () => {
+  const none: ArenaFilters = { q: '', area: 'All Areas', sport: 'All Sports', sort: 'featured', maxPrice: 0, amenities: [], view: 'grid' };
+  it('leaves defaults out and keeps unrelated parameters', () => {
+    expect(filtersToParams(new URLSearchParams('city=Mangalore&date=2026-10-20'), none).toString()).toBe('city=Mangalore&date=2026-10-20');
+  });
+  it('writes every active filter, one amenity parameter each', () => {
+    const f = { ...none, q: ' pass ', area: 'Kadri', sport: 'Football', sort: 'rating', maxPrice: 800, amenities: ['Parking', 'Floodlights'], view: 'map' as const };
+    const p = filtersToParams(new URLSearchParams(), f);
+    expect(p.get('q')).toBe('pass');
+    expect(p.get('area')).toBe('Kadri');
+    expect(p.get('maxPrice')).toBe('800');
+    expect(p.getAll('amenity')).toEqual(['Parking', 'Floodlights']);
+    expect(p.get('view')).toBe('map');
+  });
+  it('removes parameters for filters that were cleared', () => {
+    expect(filtersToParams(new URLSearchParams('q=x&maxPrice=800&amenity=Parking'), none).toString()).toBe('');
+  });
+});
+
+describe('parseMaxPrice', () => {
+  it('accepts only the offered steps', () => {
+    expect(parseMaxPrice('800')).toBe(800);
+    expect(parseMaxPrice('750')).toBe(0);
+    expect(parseMaxPrice(null)).toBe(0);
   });
 });
