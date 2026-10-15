@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #239 (main at 9a0cfba, 14 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #294 (main at 17652a7, 15 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1385,7 +1385,9 @@ featureGroups:[
   ["Accessibility checks","partial","axe runs on the main pages and fails on serious findings; a keyboard-only booking test; scrollable tables reachable by keyboard (PR #118, #119). Automated only, no full manual audit (P8-20)","e2e/a11y.spec.ts"],
   ["Backups and restore","planned","Depends on the Supabase plan; none in the repo","–"],
   ["Custom 404 and error pages","built","Yes","not-found.tsx, global-error.tsx"],
-  ["Double-booking monitor and paging","built","Live endpoint for double bookings; alert thresholds in src/lib/alerts.ts; on-call paging through PagerDuty, OpsGenie or a webhook (PR #224)","api/monitoring/double-bookings, lib/alerts.ts"]
+  ["Double-booking monitor and paging","built","Live endpoint for double bookings; alert thresholds in src/lib/alerts.ts; on-call paging through PagerDuty, OpsGenie or a webhook (PR #224)","api/monitoring/double-bookings, lib/alerts.ts"],
+  ["Lighthouse CI gate","built","Blocking CI job for home, arenas and turf pages. Performance floor 0.55; accessibility, best practices and SEO at 90. Full JSON reports kept as the lighthouse-reports artifact. Home scores 60 to 80 on the shared CI runner",".github/workflows/ci.yml"],
+  ["Production database location","built","Supabase project in Tokyo (ap-northeast-1). A move to Mumbai is deferred: the free plan allows 2 projects","–"]
  ]},
  {g:"Community: find players and tournaments",a:"Player",subs:[
   ["Find players (open matches)","built","/matches: a player hosts a local game (sport, date, hour, players needed) or joins one. Host name and phone are required (PR #232)","(main)/matches, lib/community.ts"],
@@ -1808,7 +1810,7 @@ D2.lists = [
   ["DATA-02","Plain-language notice before personal data is collected","P1",0],
   ["DATA-03","Players can get and delete their data on request","P1",1,"Built /api/privacy/export and /api/privacy/delete with self-service UI on settings and privacy pages."],
   ["DATA-04","No personal data in logs, URLs or analytics events","P1",0],
-  ["DATA-05","Analytics load only after cookie consent","P1",0],
+  ["DATA-05","Analytics load only after cookie consent","P1",1,"PR #266."],
   ["DATA-06","Retention rule: old bookings deleted or anonymised after a set time","P2",1,"Retention purge implemented for expired holds and old booking anonymization."],
   ["DATA-07","List of processors: Supabase, Clerk, Vercel, Google Analytics, Razorpay","P2",0]
  ]},
@@ -2220,6 +2222,21 @@ DATA.tasks.push(
  {id:"P8-69",p:"P8",t:"CI green again: knip findings fixed, Gitleaks job can read pull requests, main e2e suite passes",s:"done",pr:"P3",n:"Commit 81cf8a1 (knip.json and recurring.ts; ci.yml gets pull-requests: read for the Gitleaks job) and commit 6619b5d (welcome ticker contrast, e2e workflow fixes), merged through 1ab94e9 and a33a3cc. No PR number in the git history."},
  {id:"P8-70",p:"P8",t:"Home page images: webp only, popup ad loaded lazily, high fetch priority on the first home promo",s:"done",pr:"P2",n:"PR #239. P8-64 stays open until the Lighthouse scores reach 90."},
  {id:"P8-71",p:"P8",t:"Lighthouse mobile performance 90+ on home, arenas and turf page: Clerk and Supabase code kept out of pages that do not use them, rupee-only font, high fetch priority on the LCP image",s:"done",pr:"P2",n:"Commit 6ad4f50 (rebased on #263, which added inlineCss and AVIF). Local median of 3, mobile preset: home 87 to 93, arenas 82 to 91, turf 84 to 93; accessibility, best practices, SEO stay 100. Clerk loads only when the key is set (AuthProvider, use-account-clerk). Not yet confirmed on CI; P8-64 stays open until the CI Lighthouse job is made blocking and passes."},
+ {id:"P8-72",p:"P8",t:"Lighthouse CI: per-category minimums, image warm-up, Chrome start retry, full reports kept as an artifact",s:"done",pr:"P2",n:"Minimums are set with LH_MIN_PERFORMANCE and the other LH_MIN_ settings. Images are warmed up before measuring. A run is retried when Chrome fails to start. Full JSON reports are uploaded as the lighthouse-reports artifact. PRs #206, #266, #271."},
+ {id:"P8-73",p:"P8",t:"Lighthouse CI gate is blocking, with a performance floor of 0.55",s:"done",pr:"P1",n:"Performance floor 0.55 for home, arenas and turf pages. Accessibility, best practices and SEO stay at 90. PR #266. P8-64 stays open because home performance is still below 90 on CI."},
+ {id:"P8-74",p:"P8",t:"Page speed follow-up: inline CSS, lazy popup ad, deferred checkout, sign-in and map on the turf page",s:"done",pr:"P2",n:"Inline CSS stops four stylesheet requests blocking first paint. AVIF images kept: PR #263 reverted the webp-only change (see P8-70). The popup ad loads lazily. Checkout, sign-in and map on the turf page load later. PRs #206, #263."},
+ {id:"P8-75",p:"P8",t:"Home page Lighthouse performance is 60 to 80 on CI, not 90",s:"todo",pr:"P2",n:"The CI gate floor is 0.55, so home can pass while still below the 90 goal in P8-64. Local runs score 87 to 93 (P8-71). Open: find why the shared CI runner scores lower."},
+ {id:"P8-76",p:"P8",t:"Knip findings fixed so the unused-code check passes",s:"done",pr:"P3",n:"Unused v2ExpireHolds export removed; revokeAllAdminSessions marked as public API. PR #288."},
+ {id:"P8-77",p:"P8",t:"Release pipeline uploads the .next build artifact with hidden files included",s:"done",pr:"P2",n:"Fix in the release workflow. PR #293."},
+ {id:"P8-78",p:"P8",t:"Sport unit tests restored",s:"done",pr:"P2",n:"Commit 9c92215, no PR number. Same commit as the login timing fix in P9-26."},
+ {id:"P8-79",p:"P8",t:"Project handoff notes with status, task inventory, gates and the deferred Mumbai move",s:"done",pr:"P2",n:"Handoff file added in commit 3276f44. Section 5 (PR #294) covers the deferred Mumbai database move and the pre-launch key rotation."},
+ {id:"P8-80",p:"P8",t:"One real booking on a phone, checked from a second device",s:"todo",pr:"P0",n:"Still open. Related to PRE-10 on the launch checklist. Not done by any merged PR."},
+ {id:"P9-31",p:"P9",t:"Rotate SESSION_SECRET, ADMIN_PASSWORD and the Supabase secret key before public launch",s:"todo",pr:"P0",n:"Rotating SESSION_SECRET logs out all admin and partner sessions. Steps are in handoff section 5 (PR #294). Values are not recorded here."},
+ {id:"P9-32",p:"P9",t:"RPC wrapper functions callable by the service role only",s:"done",pr:"P1",n:"Grants tightened to service_role. Migration 20261015000000. PR #291."},
+ {id:"P9-33",p:"P9",t:"Oyun database functions pin their search_path (Supabase linter 0011)",s:"done",pr:"P2",n:"Migration 20261015010000. PR #292."},
+ {id:"P9-34",p:"P9",t:"Optional: set PARTNER_EMAIL and PARTNER_PASSWORD in the deployed environment",s:"todo",pr:"P3",n:"Listed as optional in handoff section 5 (PR #294). See P9-20 for why the seed default password matters."},
+ {id:"P10-21",p:"P10",t:"Move the database from Tokyo to Mumbai (ap-south-1), next to the Vercel functions",s:"blocked",pr:"P1",n:"Deferred. Blocked by the free plan limit of 2 projects; pause the Tokyo oyun project first. Steps in handoff section 5 (PR #294). DEP-09 covers the region choice."},
+ {id:"P10-22",p:"P10",t:"Production database moved to the new Supabase project in Tokyo (ap-northeast-1); old project deleted",s:"done",pr:"P1",n:"New project ref duwkypegndkkgfzjgiok. 10 migrations applied to it. PR #291 points the docs at the new project."}
 );
 
 /* ===================== BOOT ===================== */
