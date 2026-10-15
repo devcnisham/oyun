@@ -9,7 +9,6 @@ import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
 import { clerkEnabled } from '@/lib/clerk';
 import dynamic from 'next/dynamic';
-import { primarySport } from '@/lib/sports';
 import type { AddOn, Bookable, PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import { MAX_SLOTS } from '@/lib/booking-types';
@@ -269,20 +268,6 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       <div className={styles.stepHead}>
         <h3>Pick your slots</h3>
         <span className={styles.muted}>{loadingSlots ? 'Updating…' : `${availableCount} open`}</span>
-      </div>
-
-      <div className={styles.pitch} aria-hidden>
-        <span>
-          {primarySport(turf).icon}{' '}
-          {selectedBookable
-            ? selectedBookable.name
-            : size === 'half'
-              ? 'Half pitch'
-              : primarySport(turf).place === 'court'
-                ? turf.size
-                : `${turf.size} pitch`}{' '}
-          · {dateInfo?.label}
-        </span>
       </div>
 
       <SlotMap slots={slots} selected={selected} loading={loadingSlots} onToggle={toggleSlot} />
