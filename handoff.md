@@ -168,5 +168,42 @@ All automated verification gates are passing with 100% success on `main`:
 
 ---
 
+## 5. Deferred: move the database to Mumbai, and pre-launch rotation
+
+Status on 15 October 2026. Nothing here is started; do it when the owner says so.
+
+**Current database:** Supabase project `oyun` (`duwkypegndkkgfzjgiok`), org `tuenx-labs`, region `ap-northeast-1` (Tokyo).
+All 10 migrations in `supabase/migrations/` are applied (store, delta sync, half pitch, check constraints, rate limits,
+slot booking v2, map turfs to venues, pg_cron expire holds, tightened RPC grants, oyun function search_path).
+The live site `slot-arena-lilac.vercel.app` runs on it and `/api/health` reports `ready: true`.
+The old project `nimfjwxzolkwiyqmnaat` has been deleted.
+
+**Why Mumbai:** about 100 to 130 ms less per database round trip from Mangalore. Supabase cannot change a project's region
+in place, so it means a new project.
+
+**Blocker:** the free plan allows 2 active projects and the org already has `oyun` and `vespor`. `vespor` is in use and
+stays. Decision taken: pause (then later delete) the Tokyo `oyun` to make room. Pausing takes the live site's database
+down until Vercel points at Mumbai, so do it in one sitting, before public launch.
+
+**Steps (owner, then assistant):**
+1. Owner: Supabase, project `oyun`, Project Settings, General, Pause project.
+2. Assistant: create `oyun-mumbai` in `ap-south-1` under `tuenx-labs` (Supabase connector `create_project`), apply every file in
+   `supabase/migrations/` in order with `apply_migration`, then run the security and performance advisors.
+3. Owner: copy the new `sb_secret_...` key (the assistant cannot read it): Project Settings, API Keys.
+4. Owner: in Vercel, project `slot-arena`, Production and Preview, set `NEXT_PUBLIC_SUPABASE_URL`,
+   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (from the assistant) and `SUPABASE_SECRET_KEY` (Sensitive). Redeploy.
+5. Assistant: check `/api/health`, then `/arenas`. The first page load re-seeds the 11 launch turfs.
+6. Owner: once Mumbai works, delete the paused Tokyo project. Update `.env.local`, `.env.example`, `docs/GO-LIVE.md`,
+   `scripts/verify-supabase-key.mjs` and the guardrail docs with the new project ref.
+
+**Rotate before public launch** (these values appeared in chat or logs): `SESSION_SECRET` (rotating signs everyone out),
+`ADMIN_PASSWORD`, and the Supabase secret key of whichever project is live. Do it together with step 4 above.
+
+**Also open:** do one real booking click-through on a phone and a second device; set `PARTNER_EMAIL` and
+`PARTNER_PASSWORD` (12+ characters) if the operations login is wanted. Lighthouse home is 60 to 80 on CI against a 0.55
+floor (about 85 to 94 locally); see the CI job's `lighthouse-reports` artifact for the trace.
+
+---
+
 *Handoff tasks fully resolved, verified, and audited across the OYUN Arena codebase.*
 
