@@ -216,7 +216,16 @@ floor (about 85 to 94 locally); see the CI job's `lighthouse-reports` artifact f
 - **Go-live gate still failing** (`/api/health`): set in Vercel `NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a
   `SESSION_SECRET` of at least 32 characters, then redeploy. See `docs/GO-LIVE.md`.
-- **To finish:** open the PR from `security-hardening` to `main`, merge after review, then run step 15 in Supabase.
+- **Merge status:** the assistant could not merge into `main` (permission classifier blocked a merge without review) and
+  the `gh` CLI is not installed. Branch `security-hardening` (head after this commit) is pushed and up to date with
+  `main` as of `9f9a184`.
+- **Next session, in order:**
+  1. Open the PR: https://github.com/devcnisham/oyun/pull/new/security-hardening, check CI, merge.
+  2. Run `supabase/setup/15-payment-events.sql` in the Supabase SQL editor, then `check-applied.sql` (step 15 should be true).
+  3. Set the Vercel env vars listed above, redeploy, confirm `/api/health` is green.
+  4. Rotate `SESSION_SECRET`, `ADMIN_PASSWORD` and the Supabase secret key (section 5).
+  5. `npm install` locally if `/`, `/admin`, `/partner` or `/welcome` return 500.
+- **Open question:** whether the 5 high-severity `npm audit` warnings matter; not investigated.
 
 ---
 
