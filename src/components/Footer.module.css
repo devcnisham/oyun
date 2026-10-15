@@ -122,7 +122,7 @@
 .bottom {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding-top: 32px;
   border-top: 1px solid rgba(255,255,255,0.2);
 }

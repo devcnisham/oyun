@@ -85,9 +85,8 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
         </div>
 
         <div className={styles.bottom}>
-          <p className={styles.copyright}>
-            © {new Date().getFullYear()} OYUN. All rights reserved.
-          </p>
+          <p className={styles.copyright}>© {new Date().getFullYear()} OYUN</p>
+          <p className={styles.copyright}>All rights reserved.</p>
         </div>
       </div>
     </footer>
