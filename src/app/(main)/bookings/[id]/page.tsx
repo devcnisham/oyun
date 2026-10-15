@@ -58,7 +58,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
         </div>
         <h1 className={styles.turf}>{turf.name}</h1>
         <p className={styles.when}>
-          {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}{halfNote(booking.pitch)}
+          {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}{halfNote(booking.pitch, turf.halfNames)}
         </p>
         <p className={styles.where}>{turf.location}</p>
 

@@ -120,7 +120,7 @@ export default async function PartnerDashboard() {
                 <span className={styles.nextUpCode}>{nextBooking.code}</span>
               </div>
               <div className={styles.nextUpSub}>
-                {nextBooking.timeLabel}{halfNote(nextBooking.pitch)} • {nextBooking.customerPhone} • {nextBooking.source === 'walk_in' ? 'Walk-in' : 'Online Booking'}
+                {nextBooking.timeLabel}{halfNote(nextBooking.pitch, ctx.turf.halfNames)} • {nextBooking.customerPhone} • {nextBooking.source === 'walk_in' ? 'Walk-in' : 'Online Booking'}
               </div>
             </div>
           </div>
@@ -479,7 +479,7 @@ export default async function PartnerDashboard() {
                         <strong>{formatDate(b.date, { month: 'short', day: 'numeric' })}</strong>
                       </div>
                       <div style={{ fontSize: 12, color: '#6b7280' }}>
-                        {b.timeLabel}{halfNote(b.pitch)}
+                        {b.timeLabel}{halfNote(b.pitch, ctx.turf.halfNames)}
                       </div>
                     </td>
                     <td>

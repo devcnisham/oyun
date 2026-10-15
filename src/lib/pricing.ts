@@ -12,8 +12,7 @@ import type {
   PromoCode,
   Slot,
   PublicTurf,
-  Turf,
-} from './types';
+  Turf, HalfNames } from './types';
 import { formatSlotRange, isSlotInPast, isWeekend, parseHour, type IstNow } from './time';
 
 export const DEFAULT_PRICING: PricingRules = {
@@ -67,10 +66,13 @@ const HALVES: Record<PitchPart, ('A' | 'B')[]> = { full: ['A', 'B'], A: ['A'], B
 const halvesOf = (part: PitchPart | undefined) => HALVES[part ?? 'full'];
 
 // " · Half pitch (A)" for half-pitch bookings, nothing for the whole pitch
-export const halfNote = (part: PitchPart | undefined) => (part === 'A' || part === 'B' ? ` · ${pitchLabel(part)}` : '');
+// A turf that names its halves ("5-a-side (Right)") shows those names instead
+export const halfNote = (part: PitchPart | undefined, names?: HalfNames) => (part === 'A' || part === 'B' ? ` · ${pitchLabel(part, names)}` : '');
 
-function pitchLabel(part: PitchPart | undefined) {
-  return part === 'A' ? 'Half pitch (A)' : part === 'B' ? 'Half pitch (B)' : 'Full pitch';
+function pitchLabel(part: PitchPart | undefined, names?: HalfNames) {
+  if (part === 'A') return names?.A || 'Half pitch (A)';
+  if (part === 'B') return names?.B || 'Half pitch (B)';
+  return 'Full pitch';
 }
 
 // Dynamic price of one slot: peak / weekend markups, then last-minute discount

@@ -61,7 +61,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
             <tbody>
               {shown.map((b) => (
                 <tr key={b.id}>
-                  <td className={dash.strong}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</td>
+                  <td className={dash.strong}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch, db.turfs.find((t) => t.id === b.turfId)?.halfNames)}</td>
                   <td>{turfName(b.turfId)}</td>
                   <td>{b.customerName}<div className={dash.muted}>{b.customerPhone}</div></td>
                   <td className={dash.muted}>{b.code}</td>

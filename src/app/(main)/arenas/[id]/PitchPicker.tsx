@@ -1,7 +1,7 @@
 import { hourlyRate } from '@/lib/pricing';
 import type { Bookable, PitchSize, PublicTurf } from '@/lib/types';
 import { rupees } from '@/lib/format';
-import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
+import { isHalfBookable, mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
 import styles from './BookingFlow.module.css';
 
 interface PitchPickerProps {
@@ -33,7 +33,7 @@ export default function PitchPicker({
           {bookables.map((b) => {
             const isSelected = selectedBookableId
               ? selectedBookableId === b.id
-              : b.name.toLowerCase().includes('half')
+              : isHalfBookable(turf, b)
                 ? size === 'half'
                 : size === 'full';
             const sportIcon =
@@ -54,7 +54,7 @@ export default function PitchPicker({
                 aria-checked={isSelected}
                 className={`${styles.pitchOption} ${isSelected ? styles.pitchOptionOn : ''}`}
                 onClick={() => {
-                  const newSize: PitchSize = b.name.toLowerCase().includes('half') ? 'half' : 'full';
+                  const newSize: PitchSize = isHalfBookable(turf, b) ? 'half' : 'full';
                   onChange(newSize);
                   onBookableChange?.(b);
                 }}
@@ -88,7 +88,7 @@ export default function PitchPicker({
             onClick={() => {
               onChange(option);
               const matching = bookables.find((b) =>
-                option === 'half' ? b.name.toLowerCase().includes('half') : !b.name.toLowerCase().includes('half')
+                option === 'half' ? isHalfBookable(turf, b) : !isHalfBookable(turf, b)
               );
               if (matching) onBookableChange?.(matching);
             }}

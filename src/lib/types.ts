@@ -1,3 +1,9 @@
+// Names of the two halves of a split pitch as players see them, e.g. { A: '5-a-side (Right)', B: '5-a-side (Left)' }
+export interface HalfNames {
+  A: string;
+  B: string;
+}
+
 export type TurfStatus = 'active' | 'pending' | 'maintenance' | 'suspended';
 
 export interface Turf {
@@ -30,6 +36,7 @@ export interface Turf {
   commissionPercent: number | null; // null = platform default
   // Pitch can be split down the middle into two halves (A and B) that are booked separately
   halfPitch?: boolean;
+  halfNames?: HalfNames; // missing means "Half pitch (A)" and "Half pitch (B)"
   halfPricePercent?: number; // price of one half as a % of the full pitch; default 50
   // Relational multi-court and bookables mapping (Database v2)
   resources?: VenueResource[];
