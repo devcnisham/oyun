@@ -1,7 +1,7 @@
 // Booking request/quote shapes, the slot limit and request cleaning. Nothing here touches the store,
 // so client components (the booking screen), server actions and tests can all import it.
 import { ValidationError } from './errors';
-import type { BookingAddOn, PitchSize, PriceLine } from './types';
+import type { BookingAddOn, PitchSide, PitchSize, PriceLine } from './types';
 
 /** Most slots a player can hold or book in one go. */
 export const MAX_SLOTS = 6;
@@ -15,6 +15,7 @@ export function cleanHours(hours: unknown): number[] {
 }
 
 export const cleanSize = (size: unknown): PitchSize => (size === 'half' ? 'half' : 'full');
+export const cleanSide = (side: unknown): PitchSide | undefined => (side === 'A' || side === 'B' ? side : undefined);
 
 export interface SelectionRequest {
   turfId: string;
@@ -25,6 +26,7 @@ export interface SelectionRequest {
   useWallet: boolean;
   phone: string;
   size?: PitchSize; // full pitch (default) or one half
+  side?: PitchSide; // which half, when the player chose one
 }
 
 export interface BookingRequest extends SelectionRequest {

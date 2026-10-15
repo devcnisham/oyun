@@ -155,6 +155,20 @@ describe('slot availability', () => {
     db.bookings.push(makeBooking({ hour: 19 }));
     expect(freePart(db, turf, MONDAY, 19, 'half', null)).toBeNull();
   });
+
+  test('half pitch: a player who asks for Right or Left only gets that side', () => {
+    const { db, turf } = makeDb({ halfPitch: true });
+    expect(freePart(db, turf, MONDAY, 18, 'half', null, 'B')).toBe('B');
+    db.bookings.push(makeBooking({ hour: 18, pitch: 'B' }));
+    expect(freePart(db, turf, MONDAY, 18, 'half', null, 'B')).toBeNull();
+    expect(freePart(db, turf, MONDAY, 18, 'half', null, 'A')).toBe('A');
+    const slot = (side: 'A' | 'B') => getSlots(db, turf, MONDAY, EARLY, null, false, 'half', side).find((s) => s.hour === 18);
+    expect(slot('B')?.available).toBe(false);
+    expect(slot('B')?.reason).toBe('booked');
+    expect(slot('A')?.available).toBe(true);
+    // Without a side, any free half will do
+    expect(getSlots(db, turf, MONDAY, EARLY, null, false, 'half').find((s) => s.hour === 18)?.available).toBe(true);
+  });
 });
 
 describe('buildQuote', () => {

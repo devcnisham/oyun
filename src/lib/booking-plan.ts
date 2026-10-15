@@ -2,7 +2,7 @@
 // database copy. It imports the store and wallet, so only server code (booking-actions, tests) may use it.
 // Client-safe request types, limits and cleaners live in booking-types.ts.
 import { ValidationError } from './errors';
-import { cleanHours, cleanSize, type BookingRequest, type SelectionQuote } from './booking-types';
+import { cleanHours, cleanSide, cleanSize, type BookingRequest, type SelectionQuote } from './booking-types';
 import { buildQuote, freePart, normalizePhone } from './pricing';
 import { newBookingCode, newId } from './store';
 import { formatSlotRange, istNow } from './time';
@@ -24,6 +24,7 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
   if (!turf) throw new ValidationError('This turf is not taking bookings right now');
   const hours = cleanHours(req.hours);
   const size = turf.halfPitch ? cleanSize(req.size) : 'full';
+  const side = size === 'half' ? cleanSide(req.side) : undefined;
   const phone = normalizePhone(req.phone);
   const name = req.name.trim().slice(0, 80) || 'Player';
   const now = istNow();
@@ -75,7 +76,7 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
   hours.forEach((hour, i) => {
     const quote = buildQuote(
       db,
-      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, accountId, source: 'online', holder, size },
+      { turfId: turf.id, date: req.date, hour, promoCode: req.promoCode, addOns: i === 0 ? req.addOns : [], useWallet: req.useWallet, phone, accountId, source: 'online', holder, size, side },
       now
     );
     if (!quote) throw new ValidationError('Turf not found');
@@ -88,8 +89,8 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
 
     // Land on the half this device is holding, else the first free one (the quote skips this check)
     const held = db.holds.find((h) => h.holder === holder && h.turfId === turf.id && h.date === req.date && h.hour === hour);
-    const heldPart = held && ((held.pitch ?? 'full') === 'full') === (size === 'full') ? (held.pitch ?? 'full') : null;
-    const pitch = heldPart ?? freePart(db, turf, req.date, hour, size, holder) ?? (size === 'half' ? 'A' : 'full');
+    const heldPart = held && ((held.pitch ?? 'full') === 'full') === (size === 'full') && (!side || held.pitch === side) ? (held.pitch ?? 'full') : null;
+    const pitch = heldPart ?? freePart(db, turf, req.date, hour, size, holder, side) ?? side ?? (size === 'half' ? 'A' : 'full');
 
     const item: BookingItem = {
       id: newId('item'),

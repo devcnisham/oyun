@@ -82,6 +82,8 @@ export type SlotUnavailableReason = 'booked' | 'blocked' | 'past' | 'held';
 export type PitchSize = 'full' | 'half';
 // What a booking or hold occupies: the whole pitch, or half A or half B
 export type PitchPart = 'full' | 'A' | 'B';
+/** The half a player asks for on a split pitch; none means the first free half */
+export type PitchSide = 'A' | 'B';
 
 export interface Slot {
   date: string; // YYYY-MM-DD (IST)

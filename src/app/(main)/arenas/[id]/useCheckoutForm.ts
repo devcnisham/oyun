@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { checkReferralCode, quoteSelection, type ReferralCheck } from '@/lib/booking-actions';
 import type { SelectionQuote } from '@/lib/booking-types';
 import { getProfile } from '@/lib/client/device';
-import type { AddOn, PitchSize } from '@/lib/types';
+import type { AddOn, PitchSide, PitchSize } from '@/lib/types';
 
 interface CheckoutFormOptions {
   turfId: string;
   date: string;
   hours: number[];
   size: PitchSize;
+  side?: PitchSide;
   /** Quote the selection only while the checkout sheet is open. */
   active: boolean;
   referralEnabled: boolean;
@@ -22,7 +23,7 @@ interface CheckoutFormOptions {
  * The server prices the exact booking whenever these inputs change, so the bill never drifts
  * from what booking charges.
  */
-export function useCheckoutForm({ turfId, date, hours, size, active, referralEnabled, initialCode, account }: CheckoutFormOptions) {
+export function useCheckoutForm({ turfId, date, hours, size, side, active, referralEnabled, initialCode, account }: CheckoutFormOptions) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [code, setCodeValue] = useState(initialCode);
@@ -39,8 +40,8 @@ export function useCheckoutForm({ turfId, date, hours, size, active, referralEna
 
   // What the server needs to price or book the current selection
   const base = useMemo(
-    () => ({ turfId, date, hours, addOns: selectedAddOns, useWallet, size }),
-    [turfId, date, hours, selectedAddOns, useWallet, size]
+    () => ({ turfId, date, hours, addOns: selectedAddOns, useWallet, size, side }),
+    [turfId, date, hours, selectedAddOns, useWallet, size, side]
   );
 
   // Fill in the signed-in player's name and number

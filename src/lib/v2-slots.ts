@@ -40,6 +40,14 @@ export async function resolveBookable(
   size: PitchSize = 'full',
   courtId?: string
 ): Promise<V2BookableInfo | null> {
+  // A turf that splits into halves is booked through the main store, which tracks Right and Left;
+  // the relational model has one court for it, so a half there would lock the whole pitch
+  try {
+    if ((await getDb()).turfs.find((t) => t.id === turfId)?.halfPitch) return null;
+  } catch {
+    // fall through to the relational lookup
+  }
+
   // 1. Look up venue by slug
   const { data: venue } = await client
     .schema('oyun')

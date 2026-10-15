@@ -13,7 +13,7 @@ import type {
   PromoCode,
   Slot,
   PublicTurf,
-  Turf, HalfNames } from './types';
+  Turf, HalfNames, PitchSide } from './types';
 import { formatSlotRange, isSlotInPast, isWeekend, parseHour, type IstNow } from './time';
 
 export const DEFAULT_PRICING: PricingRules = {
@@ -135,18 +135,19 @@ function takenHalves(db: Database, turf: PublicTurf, date: string, holder: strin
 }
 
 // The part of the pitch a new booking takes: the whole pitch, or the first free half. Null when none is free.
-export function freePart(db: Database, turf: PublicTurf, date: string, hour: number, size: PitchSize, holder: string | null): PitchPart | null {
+export function freePart(db: Database, turf: PublicTurf, date: string, hour: number, size: PitchSize, holder: string | null, side?: PitchSide): PitchPart | null {
   const { booked, held, blocked } = takenHalves(db, turf, date, holder);
   if (blocked.has(hour)) return null;
   const taken = new Set([...(booked.get(hour) ?? []), ...(held.get(hour) ?? [])]);
   if (size === 'full' || !turf.halfPitch) return taken.size === 0 ? 'full' : null;
+  if (side) return taken.has(side) ? null : side;
   return !taken.has('A') ? 'A' : !taken.has('B') ? 'B' : null;
 }
 
 // `holder` is the device checking out: its own holds count as available
 // walkIn: the owner can still seat someone at the desk during the hour that has just started
 // size: full pitch, or one half (any free half) on turfs that split
-export function getSlots(db: Database, turf: PublicTurf, date: string, now: IstNow, holder: string | null = null, walkIn = false, size: PitchSize = 'full'): Slot[] {
+export function getSlots(db: Database, turf: PublicTurf, date: string, now: IstNow, holder: string | null = null, walkIn = false, size: PitchSize = 'full', side?: PitchSide): Slot[] {
   const rules = rulesFor(db, turf.id);
   const nowIso = new Date().toISOString();
   const half = size === 'half' && turf.halfPitch;
@@ -162,8 +163,9 @@ export function getSlots(db: Database, turf: PublicTurf, date: string, now: IstN
     const b = booked.get(hour) ?? new Set<string>();
     const h = held.get(hour) ?? new Set<string>();
     // Full pitch needs both halves free; a half needs one half that is neither booked nor held
-    const free = (['A', 'B'] as const).filter((x) => !b.has(x) && !h.has(x));
-    const fullyBooked = half ? b.size === 2 : b.size > 0;
+    const sides = half && side ? [side] : (['A', 'B'] as const);
+    const free = sides.filter((x) => !b.has(x) && !h.has(x));
+    const fullyBooked = half ? sides.every((x) => b.has(x)) : b.size > 0;
     const reason = past ? 'past' : fullyBooked ? 'booked' : blocked.has(hour) ? 'blocked' : free.length >= (half ? 1 : 2) ? null : 'held';
     const heldByYou = ownHolds.has(hour);
     const happy = happyHours.find((o) => hour >= o.startHour && hour < o.endHour);
@@ -228,6 +230,7 @@ export interface QuoteInput {
   source?: 'online' | 'walk_in';
   holder?: string | null;
   size?: PitchSize;
+  side?: PitchSide;
 }
 
 export interface Quote {
@@ -245,7 +248,7 @@ export function buildQuote(db: Database, input: QuoteInput, now: IstNow): Quote 
   if (!turf) return null;
 
   const size = input.size === 'half' && turf.halfPitch ? 'half' : 'full';
-  const slot = getSlots(db, turf, input.date, now, input.holder ?? null, input.source === 'walk_in', size).find((s) => s.hour === input.hour);
+  const slot = getSlots(db, turf, input.date, now, input.holder ?? null, input.source === 'walk_in', size, size === 'half' ? input.side : undefined).find((s) => s.hour === input.hour);
   const slotError = !slot ? 'This slot does not exist' : slot.available ? null : slot.reason === 'held' ? 'Someone else is checking out this slot right now' : `This slot is ${slot.reason === 'past' ? 'over' : 'not available'}`;
 
   const { basePrice, adjustments, price: slotPriceValue } = slotPrice(turf, rulesFor(db, turf.id), input.date, input.hour, now, size);

@@ -9,6 +9,7 @@ interface PitchPickerProps {
   size: PitchSize;
   onChange: (size: PitchSize) => void;
   selectedBookableId?: string;
+  /** Fires with the chosen court; on a split pitch its Right or Left half decides the side */
   onBookableChange?: (bookable: Bookable) => void;
 }
 
@@ -54,8 +55,6 @@ export default function PitchPicker({
                 aria-checked={isSelected}
                 className={`${styles.pitchOption} ${isSelected ? styles.pitchOptionOn : ''}`}
                 onClick={() => {
-                  const newSize: PitchSize = isHalfBookable(turf, b) ? 'half' : 'full';
-                  onChange(newSize);
                   onBookableChange?.(b);
                 }}
               >
