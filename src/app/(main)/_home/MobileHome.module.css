@@ -182,5 +182,8 @@ button.sportIcon { background: none; border: 0; padding: 0; font: inherit; curso
 
 /* Book button on turf rows and rail cards */
 .bookBtn { background: var(--primary-700, #b3161f); color: #fff !important; font-size: 13px !important; font-weight: 700; padding: 6px 16px; border-radius: 8px; }
-.railCard .bookBtn { align-self: flex-start; margin-top: 8px; }
+.railFoot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.railText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.railText b { margin-top: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.railCard .bookBtn { flex-shrink: 0; }
 .rowMeta { gap: 8px; }

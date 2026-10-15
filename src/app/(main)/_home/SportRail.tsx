@@ -68,9 +68,13 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
                     <Image src={t.image} alt={`${t.name} turf in ${t.area}`} fill sizes="220px" loading={i < 2 ? 'eager' : 'lazy'} unoptimized={!canOptimize(t.image)} />
                     <span className={styles.badge}>{t.availableToday} slots left</span>
                   </div>
-                  <b>{t.name}</b>
-                  <span>{t.area} · {rupees(t.pricePerHour)}/hr</span>
-                  <span className={styles.bookBtn}>Book</span>
+                  <div className={styles.railFoot}>
+                    <div className={styles.railText}>
+                      <b>{t.name}</b>
+                      <span>{t.area} · {rupees(t.pricePerHour)}/hr</span>
+                    </div>
+                    <span className={styles.bookBtn}>Book</span>
+                  </div>
                 </Link>
               ))}
             </div>
