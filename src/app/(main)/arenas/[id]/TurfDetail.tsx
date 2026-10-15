@@ -123,7 +123,13 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             {offers.map((o) => (
               <div key={o.id} className={styles.offerChip}>
                 🏷️ <strong>{o.title}</strong> · {o.percentOff}% off{' '}
-                {o.type === 'first_time' ? 'your first booking' : `${shortHour(o.startHour)}–${shortHour(o.endHour)}`}
+                {o.type === 'first_time'
+                  ? 'your first booking'
+                  : o.type === 'regular'
+                    ? 'every booking'
+                    : o.type === 'student'
+                      ? 'for students: send your ID at checkout'
+                      : `${shortHour(o.startHour)}–${shortHour(o.endHour)}`}
               </div>
             ))}
           </div>

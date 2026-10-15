@@ -1,3 +1,4 @@
+import StudentIdBox from './StudentIdBox';
 import { createPortal } from 'react-dom';
 import type { SelectionQuote } from '@/lib/booking-types';
 import type { AddOn, PitchSize, PublicTurf, Slot } from '@/lib/types';
@@ -58,6 +59,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
               <input className={styles.input} placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => form.setPhone(e.target.value)} autoComplete="tel" />
             </div>
           </section>
+          <StudentIdBox name={name} phone={phone} />
 
           <section>
             <h3>Offers</h3>

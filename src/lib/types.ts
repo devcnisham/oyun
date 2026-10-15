@@ -109,7 +109,8 @@ export interface PricingRules {
   lastMinutePercent: number;
 }
 
-export type OfferType = 'happy_hour' | 'first_time';
+// 'regular' and 'student' are the platform-wide offers an admin switches on in Settings; turf owners create the other two
+export type OfferType = 'happy_hour' | 'first_time' | 'regular' | 'student';
 
 export interface Offer {
   id: string;
@@ -196,6 +197,18 @@ export interface Player {
   referralRewarded: boolean; // referral credit paid out after their first game
   createdAt: string;
   accountId?: string | null; // Clerk user id (P9-03)
+  student?: StudentVerification; // set once the player has sent a student ID
+}
+
+// Where a player's student ID check stands. The photo is kept only while the check is pending.
+export type StudentStatus = 'pending' | 'approved' | 'rejected';
+
+export interface StudentVerification {
+  status: StudentStatus;
+  submittedAt: string;
+  reviewedAt?: string;
+  note?: string; // why it was rejected, shown to the player
+  idPath?: string; // private storage path of the photo; removed as soon as the admin decides
 }
 
 export type WalletTxnType = 'cashback' | 'referral' | 'referral_bonus' | 'refund' | 'booking_payment' | 'admin_adjust';
@@ -309,7 +322,15 @@ export interface PromoCode {
   redeemedBy?: Record<string, number>; // phone -> checkouts; not given back on cancel, so cancel and rebook cannot reuse a code
 }
 
+// One of the two platform-wide offers: it applies to every turf while it is switched on
+export interface PlatformOffer {
+  active: boolean;
+  title: string;
+  percentOff: number;
+}
+
 export interface PlatformSettings {
+  platformOffers?: { regular: PlatformOffer; student: PlatformOffer }; // missing means both off
   rainDays?: string[]; // city-wide rain days declared by the admin, YYYY-MM-DD; missing means none
   commissionPercent: number;
   advancePercent: number;
