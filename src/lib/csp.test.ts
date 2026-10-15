@@ -25,4 +25,9 @@ describe('Content Security Policy (CSP)', () => {
     const cspProd = buildCsp('prod-nonce', false);
     expect(cspProd).not.toContain("'unsafe-eval'");
   });
+
+  test('allows no frames without Clerk, since maps are drawn on the page and not embedded', () => {
+    const frameSrc = buildCsp('abc', false).split(';').find((d) => d.trim().startsWith('frame-src')) ?? '';
+    expect(frameSrc.trim()).toBe("frame-src 'none'");
+  });
 });
