@@ -29,7 +29,7 @@ This runbook guides setting up and operating the OYUN staging environment using 
 
 ## 2. Supabase Database Branching Setup
 
-1. Open [Supabase Dashboard](https://supabase.com/dashboard) → Project `nimfjwxzolkwiyqmnaat` → **Database** → **Branching**.
+1. Open [Supabase Dashboard](https://supabase.com/dashboard) → Project `duwkypegndkkgfzjgiok` → **Database** → **Branching**.
 2. Click **Enable Branching**.
 3. Create a branch named `staging` (or link to your GitHub repository for automatic PR branches).
 4. Note the dedicated Branch connection string and API keys:

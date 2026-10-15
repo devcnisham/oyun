@@ -27,7 +27,7 @@ You are the lead engineer finishing **OYUN**, a multi-sport turf and court booki
 - After each merged PR, record it the same way this repo already does: a `Tracker: record PR #N` change to `docs/build-tracker.html`, and tick the box in `FEATURE_LIST.md`.
 - If you have the `ArtifactData` tool, also tick the matching check in the online tracker https://claude.ai/artifact/35wzPaptoBWJYiq3fncuTQ. Use `set` on collection `ticks`, doc id = the check id (e.g. `R001`, `B020`), with data `{ "done": true, "at": "<ISO time>", "by": "claude-code" }`.
 - **Stop and ask me** before you:
-  - run anything against the production Supabase project (`nimfjwxzolkwiyqmnaat`)
+  - run anything against the production Supabase project (`duwkypegndkkgfzjgiok`)
   - delete data, or run `supabase/reset-before-launch.sql`
   - change Vercel or Clerk settings, or rotate keys
   - add a paid service, or choose between product options
