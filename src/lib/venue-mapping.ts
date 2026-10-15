@@ -53,12 +53,18 @@ export function mapTurfToResourcesAndBookables(turf: PublicTurf): {
 
     const halfPrice = Math.round((turf.pricePerHour * (turf.halfPricePercent ?? 50)) / 100);
 
+    // A turf that names its halves (and its full size) shows those names; others keep the generic ones
+    const names = turf.halfNames;
+    const fullName = names ? turf.size : 'Full Pitch (7-a-side)';
+    const halfAName = names?.A || 'Half Pitch A (5-a-side)';
+    const halfBName = names?.B || 'Half Pitch B (5-a-side)';
+
     const bookables: Bookable[] = [
       {
         id: `${turf.id}_full`,
         venueId: turf.id,
         sport: primarySport,
-        name: 'Full Pitch (7-a-side)',
+        name: fullName,
         slotMinutes: 60,
         maxSlots: 6,
         basePrice: turf.pricePerHour,
@@ -70,7 +76,7 @@ export function mapTurfToResourcesAndBookables(turf: PublicTurf): {
         id: `${turf.id}_half_a`,
         venueId: turf.id,
         sport: primarySport,
-        name: 'Half Pitch A (5-a-side)',
+        name: halfAName,
         slotMinutes: 60,
         maxSlots: 6,
         basePrice: halfPrice,
@@ -82,7 +88,7 @@ export function mapTurfToResourcesAndBookables(turf: PublicTurf): {
         id: `${turf.id}_half_b`,
         venueId: turf.id,
         sport: primarySport,
-        name: 'Half Pitch B (5-a-side)',
+        name: halfBName,
         slotMinutes: 60,
         maxSlots: 6,
         basePrice: halfPrice,
@@ -153,4 +159,9 @@ export function mapTurfToRelationalVenue(turf: Turf): RelationalVenueMapping {
     resources,
     bookables,
   };
+}
+
+/** On a split pitch, a bookable that covers one physical half rather than the whole pitch. */
+export function isHalfBookable(turf: { halfPitch?: boolean }, bookable: { resourceIds: string[] }): boolean {
+  return Boolean(turf.halfPitch) && bookable.resourceIds.length === 1;
 }

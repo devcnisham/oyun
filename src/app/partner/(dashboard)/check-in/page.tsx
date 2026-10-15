@@ -61,7 +61,7 @@ export default async function CheckInPage({ searchParams }: { searchParams?: Pro
                   const started = isSlotInPast(b.date, b.hour, now, openHour, false, b.startMinute, b.durationMinutes);
                   return (
                     <tr key={b.id}>
-                      <td className={dash.strong}>{b.timeLabel || formatSlotRange(b.hour, b.durationMinutes, b.startMinute)}{halfNote(b.pitch)}</td>
+                      <td className={dash.strong}>{b.timeLabel || formatSlotRange(b.hour, b.durationMinutes, b.startMinute)}{halfNote(b.pitch, ctx.turf.halfNames)}</td>
                       <td>{b.customerName}<div className={dash.muted}>{b.customerPhone}</div></td>
                       <td className={dash.muted}>{b.code}</td>
                       <td>
@@ -115,7 +115,7 @@ export default async function CheckInPage({ searchParams }: { searchParams?: Pro
                 <div key={b.id} className={dash.listItem}>
                   <div>
                     <div className={dash.strong}>{b.customerName}</div>
-                    <div className={dash.muted}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</div>
+                    <div className={dash.muted}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch, ctx.turf.halfNames)}</div>
                   </div>
                   <ActionForm action={markNoShow} inline>
                     <input type="hidden" name="bookingId" value={b.id} />

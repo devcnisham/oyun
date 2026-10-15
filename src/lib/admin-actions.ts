@@ -137,6 +137,9 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
     } catch (err) {
       throw new ValidationError((err as Error).message);
     }
+    const halfA = str(fd, 'halfNameA', 60);
+    const halfB = str(fd, 'halfNameB', 60);
+    if (Boolean(halfA) !== Boolean(halfB)) throw new ValidationError('Name both halves, or leave both blank');
     const partnerId = str(fd, 'partnerId') || null;
     const halfPitch = bool(fd, 'halfPitch');
     const halfPricePercent = halfPitch ? int(fd, 'halfPricePercent', { min: 30, max: 80, label: 'Half pitch price' }) : undefined;
@@ -155,6 +158,8 @@ export async function updateTurfAdmin(_prev: ActionResult, fd: FormData): Promis
         halfPitch,
         halfPricePercent: halfPricePercent ?? turf.halfPricePercent,
       });
+      if (halfA && halfB) turf.halfNames = { A: halfA, B: halfB };
+      else delete turf.halfNames;
       if (coords) {
         turf.lat = coords.lat;
         turf.lng = coords.lng;

@@ -17,7 +17,7 @@ import { bookableTurf, planBooking } from './booking-plan';
 import { cleanHours, cleanSize, type BookingRequest, type SelectionQuote, type SelectionRequest } from './booking-types';
 import { getDb, mutate, newId, storageInfo } from './store';
 import { BOOKING_DAYS, addDays, formatHour, formatSlotRange, isValidDate, istNow } from './time';
-import type { Booking, Database, PitchSize, Slot } from './types';
+import type { Booking, Database, HalfNames, PitchSize, Slot } from './types';
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
 import { notifyWaitlistWhenSlotFreed } from './waitlist';
 import { sendBookingConfirmation, sendOwnerAlert } from './notifications';
@@ -439,6 +439,7 @@ async function currentAccountId(): Promise<string | null> {
 }
 
 export interface BookingSummary {
+  halfNames?: HalfNames; // the turf's names for its halves, if it has them
   id: string;
   code: string;
   turfId: string;
@@ -477,6 +478,7 @@ export async function getBookingSummaries(ids: string[]): Promise<BookingSummary
         hour: b.hour,
         timeLabel: b.timeLabel,
         pitch: b.pitch,
+        halfNames: turf?.halfNames,
         status: b.status,
         total: b.pricing.total,
         due: b.pricing.total - b.amountPaid,

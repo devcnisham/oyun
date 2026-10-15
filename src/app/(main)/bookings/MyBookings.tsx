@@ -81,7 +81,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
                 </div>
                 <div className={styles.info}>
                   <b>{b.turfName}</b>
-                  <span>{prettyDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</span>
+                  <span>{prettyDate(b.date)} · {b.timeLabel}{halfNote(b.pitch, b.halfNames)}</span>
                   <span className={styles.meta}>
                     <em className={b.status === 'confirmed' || b.status === 'checked_in' ? styles.ok : styles.off}>{STATUS[b.status]}</em>
                     {b.due > 0 && b.status === 'confirmed' && <> · ₹{b.due} at venue</>}

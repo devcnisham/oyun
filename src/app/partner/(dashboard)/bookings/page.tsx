@@ -77,7 +77,7 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
               <tbody>
                 {shown.map((b) => (
                   <tr key={b.id}>
-                    <td className={dash.strong}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch)}</td>
+                    <td className={dash.strong}>{formatDate(b.date)} · {b.timeLabel}{halfNote(b.pitch, ctx.turf.halfNames)}</td>
                     <td>{b.customerName}<div className={dash.muted}>{b.customerPhone}</div></td>
                     <td className={dash.muted}>{b.code}</td>
                     <td>{b.source === 'walk_in' ? `Walk-in (${b.paymentMode})` : b.paymentMode === 'venue' ? 'Online · pay at venue' : `Online (${b.paymentMode})`}</td>

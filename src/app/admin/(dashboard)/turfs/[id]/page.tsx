@@ -67,6 +67,14 @@ export default async function AdminTurfEdit({ params }: { params: Promise<{ id: 
               <span className={dash.label}>Half pitch price (% of full)</span>
               <input name="halfPricePercent" type="number" min={30} max={80} defaultValue={turf.halfPricePercent ?? 50} className={dash.input} />
             </label>
+            <label className={dash.field} style={{ maxWidth: 220 }}>
+              <span className={dash.label}>Half A name (e.g. 5-a-side (Right))</span>
+              <input name="halfNameA" maxLength={60} defaultValue={turf.halfNames?.A ?? ''} className={dash.input} />
+            </label>
+            <label className={dash.field} style={{ maxWidth: 220 }}>
+              <span className={dash.label}>Half B name (e.g. 5-a-side (Left))</span>
+              <input name="halfNameB" maxLength={60} defaultValue={turf.halfNames?.B ?? ''} className={dash.input} />
+            </label>
           </div>
 
           <h2 className={dash.cardTitle} style={{ marginTop: 8 }}>Turf details</h2>
