@@ -48,7 +48,12 @@ export default function SlotMap({ slots, selected, loading, onToggle }: SlotMapP
                       {slot.tags.includes('Peak') && slot.available && <span className={styles.peak} title="Peak hours" />}
                       <span className={styles.seatTime}>{slot.minute ? formatTime(slot.hour, slot.minute) : shortHour(slot.hour)}</span>
                       <span className={styles.seatSub}>
-                        {slot.available ? rupees(slot.price) : unavailableInfo(slot).sub}
+                        {slot.available ? (
+                          <>
+                            {slot.basePrice > slot.price && <s className={styles.wasPrice}>{rupees(slot.basePrice)}</s>}
+                            {rupees(slot.price)}
+                          </>
+                        ) : unavailableInfo(slot).sub}
                       </span>
                     </button>
                   );

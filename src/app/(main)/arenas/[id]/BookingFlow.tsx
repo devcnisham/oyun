@@ -70,6 +70,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const secondsLeft = holdUntil ? Math.max(0, Math.ceil((holdUntil - now) / 1000)) : 0;
   const selectedSlots = slots.filter((s) => selected.includes(s.hour));
   const estimate = selectedSlots.reduce((sum, s) => sum + s.price, 0);
+  const listTotal = selectedSlots.reduce((sum, s) => sum + Math.max(s.basePrice, s.price), 0);
   const dateInfo = dates.find((d) => d.date === date);
 
   const flash = useCallback((message: string) => {
@@ -289,7 +290,10 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         </dl>
         <div className={styles.summaryTotal}>
           <span>Total</span>
-          <b>{selected.length > 0 ? rupees(estimate) : '₹0'}</b>
+          <b>
+            {selected.length > 0 && listTotal > estimate && <s className={styles.wasPrice}>{rupees(listTotal)}</s>}
+            {selected.length > 0 ? rupees(estimate) : '₹0'}
+          </b>
         </div>
         <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
           {holding ? 'Holding…' : 'Reserve these slots'}
