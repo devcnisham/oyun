@@ -60,6 +60,16 @@ export default async function PartnerLayout({ children }: { children: React.Reac
             <div className={styles.navTitle}>Menu</div>
             <NavLinks items={nav} linkClass={styles.navLink} activeClass={styles.active} iconClass={styles.navIcon} />
           </div>
+
+          <div className={styles.navGroup}>
+            <div className={styles.navTitle}>Switch to</div>
+            <Link href="/" className={styles.navLink}>
+              <span className={styles.navIcon}>🌐</span> Main site
+            </Link>
+            <Link href="/admin" className={styles.navLink}>
+              <span className={styles.navIcon}>🛡️</span> Admin dashboard
+            </Link>
+          </div>
         </nav>
 
         <div className={styles.sidebarBottom}>

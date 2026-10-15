@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { refreshAll } from '@/lib/action-utils';
 import { calculateTPlus2SettlementPeriod, createSettlementBatch, executePayoutTransfer } from '@/lib/payouts';
 import { requireCronSecret } from '@/lib/cron-auth';
 import { istNow } from '@/lib/time';
@@ -19,6 +20,9 @@ export async function GET(request: Request) {
       const result = await executePayoutTransfer(payout.id);
       executionResults.push(result);
     }
+
+    // New payouts show on partner and admin pages
+    refreshAll();
 
     return NextResponse.json({
       ok: true,

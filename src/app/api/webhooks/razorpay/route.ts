@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { clientIpFrom } from '@/lib/client-ip';
 import { processPaymentWebhook, razorpayWebhookSecret, verifyRazorpaySignature } from '@/lib/payments';
+import { refreshAll } from '@/lib/action-utils';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
 
 export async function POST(req: Request) {
@@ -28,6 +29,9 @@ export async function POST(req: Request) {
   if (!result.ok) {
     return NextResponse.json({ error: result.error || 'Webhook processing failed' }, { status: 400 });
   }
+
+  // A confirmed or refunded payment changes bookings: update player, partner and admin pages
+  refreshAll();
 
   return NextResponse.json({
     received: true,

@@ -1,3 +1,4 @@
+import { refreshAll } from '@/lib/action-utils';
 import { deviceHolder } from '@/lib/device-holder';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
 import { mutate } from '@/lib/store';
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
       await mutate((db) => {
         db.holds = db.holds.filter((h) => h.holder !== holder);
       });
+      refreshAll();
     } catch (err) {
       console.warn('[holds/release] release failed:', err);
     }

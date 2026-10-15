@@ -1,6 +1,7 @@
 import 'server-only';
 import { randomBytes } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
+import { refreshAll } from '@/lib/action-utils';
 import { currentAccountId } from '@/lib/current-account';
 import { isApprovedStudent, platformOffersOf } from '@/lib/platform-offers';
 import { normalizePhone } from '@/lib/pricing';
@@ -69,5 +70,7 @@ export async function POST(req: NextRequest) {
     return fail(err instanceof Error ? err.message : 'Could not save your ID. Please try again.', 409);
   }
   await removeStudentIds([replaced]);
+  // The upload joins the admin Student IDs queue
+  refreshAll();
   return NextResponse.json({ ok: true, status: 'pending' });
 }
