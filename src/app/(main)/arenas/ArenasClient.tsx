@@ -8,7 +8,7 @@ import type { TurfSummary } from '@/lib/types';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
 import { SPORTS } from '@/lib/sports';
-import { PRICE_STEPS, matchesExtras, matchesQuery } from '@/lib/search';
+import { PRICE_STEPS, filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/lib/search';
 import { locateTurfs } from '@/lib/map-actions';
 import type { Coords } from '@/lib/geocode';
 
@@ -38,11 +38,26 @@ export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[
   const [selectedArea, setSelectedArea] = useState(defaultArea);
   const [selectedSport, setSelectedSport] = useState(urlSport || 'All Sports');
   const [sortBy, setSortBy] = useState(sortOptions.some((o) => o.value === urlSort) ? urlSort! : 'featured');
-  const [maxPrice, setMaxPrice] = useState(0);
-  const [amenities, setAmenities] = useState<string[]>([]);
+  const [maxPrice, setMaxPrice] = useState(() => parseMaxPrice(searchParams.get('maxPrice')));
   const amenityOptions = useMemo(() => [...new Set(turfs.flatMap((t) => t.amenities))].sort(), [turfs]);
+  const [amenities, setAmenities] = useState<string[]>(() => searchParams.getAll('amenity').filter((a) => amenityOptions.includes(a)));
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(searchParams.get('view') === 'map' ? 'map' : 'grid');
+
+  // Keep the filters in the address bar so a refresh keeps them and the link can be shared
+  useEffect(() => {
+    const next = filtersToParams(new URLSearchParams(window.location.search), {
+      q: searchQuery,
+      area: selectedArea,
+      sport: selectedSport,
+      sort: sortBy,
+      maxPrice,
+      amenities,
+      view: viewMode,
+    });
+    const qs = next.toString();
+    window.history.replaceState(null, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+  }, [searchQuery, selectedArea, selectedSport, sortBy, maxPrice, amenities, viewMode]);
 
   // Map positions are looked up the first time the map opens, a few turfs at a time
   const [located, setLocated] = useState<Record<string, Coords>>({});

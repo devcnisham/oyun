@@ -54,3 +54,34 @@ export function matchesExtras(
   if (maxPrice > 0 && turf.pricePerHour > maxPrice) return false;
   return amenities.every((a) => turf.amenities.includes(a));
 }
+
+export type ArenaFilters = {
+  q: string;
+  area: string;
+  sport: string;
+  sort: string;
+  maxPrice: number;
+  amenities: string[];
+  view: 'grid' | 'map';
+};
+
+// The arenas URL for the current filters: defaults are left out and unrelated parameters (city, date) are kept
+export function filtersToParams(current: URLSearchParams, f: ArenaFilters): URLSearchParams {
+  const next = new URLSearchParams(current);
+  const set = (key: string, value: string, isDefault: boolean) => (value && !isDefault ? next.set(key, value) : next.delete(key));
+  set('q', f.q.trim(), false);
+  set('area', f.area, f.area === 'All Areas');
+  set('sport', f.sport, f.sport === 'All Sports');
+  set('sort', f.sort, f.sort === 'featured');
+  set('maxPrice', String(f.maxPrice), f.maxPrice === 0);
+  set('view', f.view, f.view === 'grid');
+  next.delete('amenity');
+  f.amenities.forEach((a) => next.append('amenity', a));
+  return next;
+}
+
+// A price cap from the URL; anything that is not one of the offered steps means no cap
+export function parseMaxPrice(raw: string | null): number {
+  const n = Number(raw);
+  return (PRICE_STEPS as readonly number[]).includes(n) ? n : 0;
+}
