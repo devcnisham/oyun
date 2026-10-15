@@ -62,6 +62,8 @@
 .nav {
   padding: 24px 16px;
   flex: 1;
+  min-height: 0; /* the links scroll on short screens instead of pushing the profile out of the sidebar */
+  overflow-y: auto;
 }
 
 .navGroup {
@@ -109,6 +111,7 @@
 }
 
 .sidebarBottom {
+  flex-shrink: 0;
   padding: 24px;
   border-top: 1px solid rgba(255,255,255,0.1);
 }
