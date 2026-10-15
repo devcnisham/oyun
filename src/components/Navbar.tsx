@@ -8,6 +8,7 @@ import { DEVICE_EVENT, getMyBookingIds, getProfile } from '@/lib/client/device';
 import { clerkEnabled } from '@/lib/clerk';
 import { useTranslation } from '@/lib/client/use-translation';
 import dynamic from 'next/dynamic';
+import SearchSuggestions, { useSuggestions } from './SearchSuggestions';
 
 // Own chunk: without Clerk keys the branch below is dropped at build time and the Clerk hooks are never shipped
 const ClerkAccount = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? dynamic(() => import('./ClerkAccount')) : null;
@@ -18,6 +19,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [q, setQ] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const suggestions = useSuggestions(q, searchFocused);
   const [pastHero, setPastHero] = useState(false);
   const isHome = pathname === '/';
   const isArenaDetail = pathname?.startsWith('/arenas/') && pathname !== '/arenas';
@@ -131,8 +134,17 @@ export default function Navbar() {
                 <circle cx="11" cy="11" r="7" />
                 <path d="m20 20-3.5-3.5" />
               </svg>
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search turfs or areas" aria-label="Search turfs or areas" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                placeholder="Search turfs or areas"
+                aria-label="Search turfs or areas"
+                autoComplete="off"
+              />
               <button type="submit">Search</button>
+              {searchFocused && <SearchSuggestions query={q} suggestions={suggestions} onPick={() => setSearchFocused(false)} className={styles.navSuggest} />}
             </form>
             </>
           )}
