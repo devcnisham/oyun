@@ -11,6 +11,6 @@ export function logActivity(
   detail: string,
 ) {
   const list = (db.activity ??= []);
-  list.push({ id: newId('act'), partnerId: ctx.partner.id, turfId: ctx.turf.id, at: new Date().toISOString(), by: ctx.userName, action, detail: detail.slice(0, 200) });
+  list.push({ id: newId('act'), partnerId: ctx.partner?.id ?? '', turfId: ctx.turf?.id ?? '', at: new Date().toISOString(), by: ctx.userName, action, detail: detail.slice(0, 200) });
   if (list.length > KEEP) list.splice(0, list.length - KEEP);
 }
