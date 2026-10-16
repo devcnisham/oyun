@@ -23,7 +23,8 @@ export default function Navbar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const suggestions = useSuggestions(q, searchFocused);
   const [pastHero, setPastHero] = useState(false);
-  const isHome = pathname === '/';
+  // Phones get the home page prebuilt at /m but the address bar says /: both count as home
+  const isHome = pathname === '/' || pathname === '/m';
   const isArenaDetail = pathname?.startsWith('/arenas/') && pathname !== '/arenas';
   
   const [firstName, setFirstName] = useState('');
