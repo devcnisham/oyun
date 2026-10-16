@@ -1,9 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["sin1"],
+  "regions": [
+    "sin1"
+  ],
   "crons": [
-    { "path": "/api/cron/retention-purge", "schedule": "30 21 * * *" },
-    { "path": "/api/cron/payouts/settle", "schedule": "0 6 * * *" }
-  ]
+    {
+      "path": "/api/cron/retention-purge",
+      "schedule": "30 21 * * *"
+    },
+    {
+      "path": "/api/cron/payouts/settle",
+      "schedule": "0 6 * * *"
+    }
+  ],
+  "git": {
+    "deploymentEnabled": false
+  }
 }
-
