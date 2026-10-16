@@ -443,8 +443,8 @@
 }
 
 .sportGrid {
-  --ear: 22px; /* radius of the scoop where two tabs meet */
-  --space: 14px; /* flat open gap between the two scoops */
+  --ear: 0px; /* no scoops and no gap: the tabs touch like cards stacked side by side */
+  --space: 0px;
   --tab: #f7f8fa;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -471,6 +471,7 @@
   padding: 0 16px 16px;
   border-radius: 38px 38px 0 0;
   background: var(--tab);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.06); /* hairline where two tabs meet */
   text-decoration: none;
   transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); /* no colour transition: the scoops would lag behind the tab */
 }
@@ -733,7 +734,7 @@
     max-width: 280px;
     scroll-snap-align: start;
   }
-  .sportGrid { --ear: 14px; --space: 10px; align-items: flex-end; min-height: 0; margin: 0; padding: 22px 16px 0; }
+  .sportGrid { --ear: 0px; --space: 0px; align-items: flex-end; min-height: 0; margin: 0; padding: 22px 16px 0; }
   .sportCard {
     flex: 0 0 38vw;
     max-width: 160px;
