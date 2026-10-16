@@ -72,6 +72,7 @@ export function migrate(data: Database): Database {
   data.payouts ??= [];
   data.openMatches ??= [];
   data.tournaments ??= [];
+  data.activity ??= [];
   if (data.site) data.site.ads ??= [];
   // The old football-only default headline becomes the multi-sport one; a headline the admin wrote is kept
   if (data.site?.heroTitle === OLD_HERO_TITLE) data.site.heroTitle = NEW_HERO_TITLE;
