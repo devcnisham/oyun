@@ -15,6 +15,12 @@
   --primary-gradient: linear-gradient(135deg, #180000 0%, #d31027 100%);
   --primary-gradient-hover: linear-gradient(135deg, #2a0000 0%, #ee2e24 100%);
 
+  /* Brand logo colours: the OYUN mark and wordmark use this deep red, never the bright Nike Red.
+     Use --logo-gradient for the wordmark on light surfaces (see .brand-wordmark). */
+  --logo-from: #9e0a0a;
+  --logo-to: #4a0000;
+  --logo-gradient: linear-gradient(135deg, var(--logo-from) 0%, var(--logo-to) 100%);
+
   --bg-primary: #f3f5f7; /* Light gray background */
   --bg-secondary: #ffffff;
   --bg-card: #ffffff;
@@ -286,4 +292,13 @@ html {
 /* Desktop: the top bar carries the back arrow, so the in-page floating one is redundant */
 @media (min-width: 769px) {
   .floatingBackSpot { display: none; }
+}
+
+/* OYUN text logo in the brand colour (light backgrounds only; on red it stays white) */
+.brand-wordmark {
+  background: var(--logo-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }

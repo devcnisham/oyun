@@ -19,13 +19,13 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
                 <path d="M 10 23 Q 16 26 22 21" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                 <defs>
                   <linearGradient id="footerShieldGrad" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#9E0A0A"/>
-                    <stop offset="1" stopColor="#4A0000"/>
+                    <stop style={{ stopColor: 'var(--logo-from)' }}/>
+                    <stop offset="1" style={{ stopColor: 'var(--logo-to)' }}/>
                   </linearGradient>
                 </defs>
               </svg>
               <div>
-                <div className={styles.logoName}>OYUN</div>
+                <div className={`${styles.logoName} brand-wordmark`}>OYUN</div>
                 <div className={styles.logoTag}>Premium Turf Booking Platform</div>
               </div>
             </div>

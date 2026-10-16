@@ -418,12 +418,20 @@
     box-shadow: 0 14px 36px rgba(24, 24, 24, 0.16), 0 2px 6px rgba(24, 24, 24, 0.08);
   }
 
-  .floating .logoName,
   .floating .navTitle,
   .floating .navIcon,
   .floating .account,
   .floating .bookings {
     color: #1f1f1f;
+  }
+
+  /* the OYUN wordmark takes the logo colour (tokens in globals.css) once the bar floats on off-white */
+  .floating .logoName {
+    background: var(--logo-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
   /* the logo's red drop shadow looks muddy on off-white; the inline style needs !important to override */
