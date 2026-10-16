@@ -29,7 +29,15 @@ const sortOptions = [
   { value: 'availability', label: 'Most Available' },
 ];
 
-export default function ArenasClient({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: string[] }) {
+// The list reads its filters from the address bar in the browser, so the page itself can be prebuilt and cached.
+// Re-keying on the filters that come from other pages (home search, top bar) restarts the list state when they change.
+export default function ArenasClient(props: { turfs: TurfSummary[]; areaNames: string[] }) {
+  const sp = useSearchParams();
+  const key = ['q', 'area', 'sport', 'date'].map((k) => sp.get(k) ?? '').join('|');
+  return <ArenasList key={key} {...props} />;
+}
+
+function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: string[] }) {
   const searchParams = useSearchParams();
   const areas = ['All Areas', ...areaNames];
 
