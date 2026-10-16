@@ -14,7 +14,7 @@ export function clerkFrontendApi(): string {
  * Builds Content-Security-Policy header.
  * When a nonce is provided:
  * - Drops 'unsafe-inline'
- * - Uses 'nonce-${nonce}' and 'strict-dynamic' for modern browsers
+ * - Uses 'nonce-${nonce}' and for modern browsers
  */
 export function buildCsp(nonce?: string, isDev = process.env.NODE_ENV !== 'production'): string {
   const clerk = clerkFrontendApi();
@@ -23,7 +23,7 @@ export function buildCsp(nonce?: string, isDev = process.env.NODE_ENV !== 'produ
   const clerkFrame = clerk ? ` https://challenges.cloudflare.com` : '';
 
   const scriptSrc = nonce
-    ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''} https://cdnjs.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com${clerkScript}`
+    ? `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ''} https://cdnjs.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com${clerkScript}`
     : `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://cdnjs.cloudflare.com https://www.googletagmanager.com https://va.vercel-scripts.com${clerkScript}`;
 
   return [
