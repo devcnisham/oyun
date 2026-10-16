@@ -1,6 +1,6 @@
 # Going live
 
-Everything the site needs before launch day. **Launch day: Monday 19 October 2026.** Do the steps in order; each takes a few minutes.
+Everything the site needs before launch day. **Launch day: Saturday 31 October 2026.** Do the steps in order; each takes a few minutes.
 
 ## 1. Database (Supabase project `duwkypegndkkgfzjgiok`)
 

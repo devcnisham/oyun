@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import styles from './Countdown.module.css';
 
-// 17 October 2026, 12:00 am India time
-const LAUNCH_AT = new Date('2026-10-17T00:00:00+05:30').getTime();
+// 31 October 2026, 12:00 am India time
+const LAUNCH_AT = new Date('2026-10-31T00:00:00+05:30').getTime();
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -46,7 +46,7 @@ export default function Countdown() {
 
   return (
     <div className={styles.wrap}>
-      <p className={styles.date}>Launching 17 October 2026</p>
+      <p className={styles.date}>Launching 31 October 2026</p>
       <div
         className={styles.grid}
         role="timer"
