@@ -117,15 +117,18 @@ export default async function Home() {
           <h2 className={styles.sectionTitle}>Browse by Sport</h2>
         </div>
         <div className={styles.sportGrid}>
-          {SPORTS.map((sport) => (
-            <Link href={sportHref(sport.value)} key={sport.value} className={styles.sportCard}>
-              <Image src={sport.image} alt={sport.label} fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
-              <div className={styles.sportInfo}>
+          {SPORTS.map((sport) => {
+            const venues = turfs.filter((t) => t.sports.some((x) => x.trim().toLowerCase() === sport.value.toLowerCase())).length;
+            return (
+              <Link href={sportHref(sport.value)} key={sport.value} className={styles.sportCard} aria-label={`${sport.label}: ${venues} venue${venues === 1 ? '' : 's'}`}>
+                <Image src={sport.image} alt="" fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
+                <span className={styles.sportGlow} aria-hidden />
+                <span className={styles.sportIcon} aria-hidden>{sport.icon}</span>
+                <span className={styles.sportBadge}>{venues} {venues === 1 ? 'venue' : 'venues'}</span>
                 <h3 className={styles.sportName}>{sport.label}</h3>
-                <div className={styles.sportAction}>Explore venues <span>→</span></div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
