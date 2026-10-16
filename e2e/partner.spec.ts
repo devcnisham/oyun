@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { asPlayer, confirmBooking, holdFirstSlot } from './helpers';
+import { PARTNER_TURF, asPlayer, confirmBooking, holdFirstSlot } from './helpers';
 
 test('partner checks in a booking for today by its code', async ({ page }) => {
   // Between 00:00 and 05:30 IST the runner's date (UTC) is a day behind the server's (IST), so "today" in the browser is already past
@@ -8,7 +8,8 @@ test('partner checks in a booking for today by its code', async ({ page }) => {
   test.skip(istDate !== runnerDate, 'Runner and venue are on different calendar days');
 
   await asPlayer(page, 'Walk Up', '9876500004');
-  const hasSlotToday = await holdFirstSlot(page, 0);
+  // The dev partner login owns Oyun Club only, so the booking has to be there for the desk to find it
+  const hasSlotToday = await holdFirstSlot(page, 0, PARTNER_TURF);
   test.skip(!hasSlotToday, 'No open slot left today (late-night run)');
   const code = await confirmBooking(page);
 
