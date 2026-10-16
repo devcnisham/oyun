@@ -4,8 +4,7 @@ import { notFound } from 'next/navigation';
 import { getSlots } from '@/lib/pricing';
 import { getPublicTurf } from '@/lib/queries';
 import { getDb } from '@/lib/store';
-import { BOOKING_DAYS, addDays, formatDate, isValidDate, istNow } from '@/lib/time';
-import { deviceHolder } from '@/lib/device-holder';
+import { BOOKING_DAYS, addDays, formatDate, istNow } from '@/lib/time';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbSchema, turfSchema } from '@/lib/schema';
 import { areaSlug } from '@/lib/site';
@@ -15,7 +14,16 @@ import { primarySport } from '@/lib/sports';
 
 interface PageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ date?: string; ref?: string }>;
+}
+
+// Prebuilt on first visit and rebuilt in the background every 30 seconds, so the CDN serves the page.
+// The date and referral code in the address bar, and the slots themselves, are read in the browser (BookingFlow),
+// so availability on screen is always fetched live.
+export const revalidate = 30;
+
+// No pages are built ahead of time; each turf page is built on its first visit, then kept and refreshed
+export function generateStaticParams() {
+  return [];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -35,9 +43,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function TurfDetailPage({ params, searchParams }: PageProps) {
+export default async function TurfDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const { date: requestedDate, ref } = await searchParams;
   const turf = await getPublicTurf(id);
   if (!turf) notFound();
 
@@ -53,7 +60,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
       num: d.toLocaleDateString('en-IN', { day: 'numeric', timeZone: 'Asia/Kolkata' }),
     };
   });
-  const initialDate = requestedDate && isValidDate(requestedDate) && dates.some((d) => d.date === requestedDate) ? requestedDate : now.date;
+  const initialDate = now.date;
 
   return (
     <>
@@ -72,7 +79,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
       turf={turf}
       dates={dates}
       initialDate={initialDate}
-      initialSlots={getSlots(db, turf, initialDate, now, await deviceHolder(false))}
+      initialSlots={getSlots(db, turf, initialDate, now)}
       offers={[...db.offers.filter((o) => o.turfId === turf.id && o.active), ...platformOffersFor(db.settings, turf.id, true).filter((o) => o.active)]}
       bookable={turf.status === 'active'}
       rewards={{
@@ -84,7 +91,7 @@ export default async function TurfDetailPage({ params, searchParams }: PageProps
       }}
       reviews={turfReviews(db, turf.id, { limit: 10 })}
       addOns={db.addOns.filter((a) => a.turfId === turf.id && a.active)}
-      initialReferral={(ref ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12)}
+      initialReferral=""
     />
     </>
   );

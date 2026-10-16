@@ -1,5 +1,5 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, type NextFetchEvent } from 'next/server';
 import { clerkEnabled } from '@/lib/clerk';
 import { buildCsp } from '@/lib/csp';
 import { devLoginSkipped, sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
@@ -36,9 +36,22 @@ function forceHttps(req: NextRequest) {
   return NextResponse.redirect(`https://${host}${req.nextUrl.pathname}${req.nextUrl.search}`, 308);
 }
 
+// Pages prerendered at build (the ○ rows of `next build`). A per-request nonce on the request makes Next render them again
+// for every visitor (private, no-store), so these skip it and let the CDN serve the prebuilt HTML. They hold no per-player
+// data and no forms with user input, so the build-time policy (inline scripts allowed, hosts still allow-listed) is used.
+const PRERENDERED = new Set(['/', '/m', '/about', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/terms', '/tournaments']);
+
 async function handle(req: NextRequest) {
   const redirect = forceHttps(req) ?? dashboardGuard(req);
   if (redirect) return redirect;
+
+  if (req.method === 'GET' && PRERENDERED.has(req.nextUrl.pathname)) {
+    // Phones get the app-style home page, prebuilt at /m (the address bar still shows /)
+    const phone = req.nextUrl.pathname === '/' && /Mobi|Android|iPhone|iPod/i.test(req.headers.get('user-agent') ?? '');
+    const res = phone ? NextResponse.rewrite(new URL('/m', req.url)) : NextResponse.next();
+    res.headers.set('Content-Security-Policy', buildCsp(undefined));
+    return res;
+  }
 
   // Generate a cryptographically random nonce per request (P9-13)
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
@@ -54,7 +67,11 @@ async function handle(req: NextRequest) {
 }
 
 // With Clerk keys set, Clerk's middleware runs first so player sessions are available everywhere
-export const proxy = clerkEnabled ? clerkMiddleware((_auth, req) => handle(req)) : handle;
+// Prerendered pages skip it: Clerk's middleware marks every response it touches as uncacheable
+const withClerk = clerkMiddleware((_auth, req) => handle(req));
+export const proxy = clerkEnabled
+  ? (req: NextRequest, event: NextFetchEvent) => (req.method === 'GET' && PRERENDERED.has(req.nextUrl.pathname) ? handle(req) : withClerk(req, event))
+  : handle;
 
 export const config = {
   // Everything except static files and image optimisation

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { createBookings, getSlotsForDate, holdSlots, releaseHolds } from '@/lib/booking-actions';
@@ -95,6 +95,22 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     },
     [turf.id, size, side, flash]
   );
+
+  // The page is served from the CDN, so the date and referral code in the address bar and the live slots are read here
+  const urlRead = useRef(false);
+  useEffect(() => {
+    if (urlRead.current) return;
+    urlRead.current = true;
+    const params = new URLSearchParams(window.location.search);
+    const wanted = params.get('date');
+    const next = wanted && dates.some((d) => d.date === wanted) ? wanted : date;
+    const ref = (params.get('ref') ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+    queueMicrotask(() => {
+      if (next !== date) setDate(next);
+      refreshSlots(next).catch(() => {});
+      if (ref) form.setCode(ref);
+    });
+  }, [dates, date, refreshSlots, form]);
 
   // Live seat map: other players' holds and bookings show up within a second
   const refreshCurrent = useCallback(() => {

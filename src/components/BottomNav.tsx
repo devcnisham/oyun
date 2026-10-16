@@ -28,7 +28,9 @@ const TABS = [
 
 // App-style tab bar on phones, on every player-facing page. The admin and partner dashboards have their own menus.
 export default function BottomNav() {
-  const path = usePathname() ?? '/';
+  // The phone home page is prebuilt at /m while the address bar says /
+  const raw = usePathname() ?? '/';
+  const path = raw === '/m' ? '/' : raw;
   if (path.startsWith('/admin') || path.startsWith('/partner') || path === '/welcome' || path === '/about') return null;
 
   return (
