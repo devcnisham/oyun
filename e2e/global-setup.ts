@@ -1,10 +1,10 @@
 import { chromium, type FullConfig } from '@playwright/test';
-import { TURF } from './helpers';
+import { PARTNER_TURF, TURF } from './helpers';
 
 // `next dev` compiles each route the first time it is opened, and a slow first compile makes the first
 // test's navigation abort (net::ERR_ABORTED). Open every route the tests use once, in a real browser,
 // before the first test starts. Best effort: a page that still fails here is left for its own test to report.
-const ROUTES = ['/', '/arenas', `/arenas/${TURF}`, '/bookings', '/list-turf', '/admin', '/partner', '/partner/bookings', '/partner/check-in'];
+const ROUTES = ['/', '/arenas', `/arenas/${TURF}`, `/arenas/${PARTNER_TURF}`, '/bookings', '/list-turf', '/admin', '/partner', '/partner/bookings', '/partner/check-in'];
 
 export default async function globalSetup(config: FullConfig) {
   const baseURL = config.projects[0].use.baseURL ?? 'http://localhost:3210';
