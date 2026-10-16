@@ -396,14 +396,62 @@
     z-index: 90;
   }
 
-  .header { 
-    padding: 12px 16px;
+  /* app-style top bar: turf name left, Log Out right; the bottom tab bar replaces the old menu header */
+  .mobileHeader { display: none; }
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
     height: auto;
-    position: static;
-    flex-wrap: wrap;
+    min-height: 56px;
+    padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+    flex-wrap: nowrap;
     gap: 12px;
+    border-radius: 0;
+    box-shadow: 0 1px 0 var(--border);
   }
-  .headerTitle { font-size: 16px; width: 100%; }
-  
-  .content { padding: 16px; }
+  .headerTitle { font-size: 16px; min-width: 0; flex: 1; }
+  .headerSearch { display: none; }
+  .headerActions { flex-shrink: 0; gap: 8px; }
+
+  /* leave room for the fixed bottom tab bar and the home indicator */
+  .content { padding: 16px 16px calc(88px + env(safe-area-inset-bottom)); }
+}
+
+/* the page name lives in the top bar, so hide the duplicate big title inside the page (descriptions stay) */
+.pageName {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.turfName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content h1[class*='pageTitle'] {
+  /* visually hidden but still in the accessibility tree (the top bar shows the page name) */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 768px) {
+  .headerTitle { gap: 8px; }
+  .pageName { font-size: 16px; }
+  .turfName { min-width: 0; padding-left: 8px; font-size: 13px; }
 }

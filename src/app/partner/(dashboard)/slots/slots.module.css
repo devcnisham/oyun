@@ -216,6 +216,7 @@
 }
 
 @media (max-width: 600px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
   .month { gap: 4px; }
   .tiles { gap: 6px; }
   .tileNum { font-size: 18px; }
@@ -795,4 +796,24 @@ a.slotNote:hover {
 
 .tileActions .blockBox[open] {
   flex-basis: 100%;
+}
+
+/* phones: keep the date field readable and let the week grid scroll sideways under a pinned time column */
+@media (max-width: 600px) {
+  .dateRow { flex-wrap: wrap; min-width: 0; max-width: none; justify-content: stretch; }
+  .dateInput { flex: 1 1 140px; min-width: 130px; padding: 0 10px; font-size: 14px; }
+  .todayBtn { flex: 1 1 100%; justify-content: center; }
+  .week { min-width: 560px; border-spacing: 4px; }
+  .week tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 78px;
+    padding: 0 6px 0 0;
+    background: var(--bg-card);
+    font-size: 11px;
+    line-height: 1.25;
+    white-space: normal;
+  }
+  .cell { height: 34px; font-size: 10px; }
 }

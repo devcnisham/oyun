@@ -1,0 +1,132 @@
+/* Promo and sponsor cards: preview on top, fields underneath, actions at the bottom */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.card:hover {
+  border-color: #cfd4dc;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+}
+
+.preview {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  background: var(--bg-muted);
+}
+
+.preview img {
+  object-fit: cover;
+}
+
+.previewShade {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 12px 14px;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0) 70%);
+}
+
+.previewBrand {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.previewTitle {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fields label span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.fields input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.footer form {
+  display: flex;
+  gap: 8px;
+}
+
+.footer button {
+  min-height: 36px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.sectionTitle {
+  margin: 24px 0 12px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.addCard {
+  max-width: 560px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+}
+
+@media (max-width: 600px) {
+  .cards { grid-template-columns: minmax(0, 1fr); }
+  .row2 { grid-template-columns: minmax(0, 1fr); }
+}

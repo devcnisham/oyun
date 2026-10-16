@@ -4,8 +4,23 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/auth-actions';
 import NavIcon from '@/components/dash/NavIcon';
+import HeaderPageTitle from '@/components/dash/HeaderPageTitle';
 import SidebarToggle from '@/components/dash/SidebarToggle';
+import AdminTabBar from './AdminTabBar';
 import styles from './layout.module.css';
+
+const ADMIN_PAGES = [
+  { href: '/admin', label: 'Overview & approvals', tab: 'Overview', icon: 'shield' },
+  { href: '/admin/turfs', label: 'Turfs', icon: 'turfs' },
+  { href: '/admin/partners', label: 'Partners', icon: 'partners' },
+  { href: '/admin/transactions', label: 'Bookings & refunds', tab: 'Bookings', icon: 'transactions' },
+  { href: '/admin/users', label: 'Players', icon: 'players' },
+  { href: '/admin/students', label: 'Student IDs', icon: 'students' },
+  { href: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
+  { href: '/admin/reviews', label: 'Reviews', icon: 'reviews' },
+  { href: '/admin/settings', label: 'Settings & promo codes', icon: 'settings' },
+  { href: '/admin/customization', label: 'Homepage content', icon: 'homepage' },
+];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -24,7 +39,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       <aside className={`${styles.sidebar} noPrint`}>
         <div className={styles.brand}>
           <Link href="/" className={styles.logo}>
-            <span className={styles.logoIcon}>⚽</span>
+            <span className={styles.logoIcon}><NavIcon name="ball" size={18} /></span>
             <div className={styles.logoText}>
               <span className={styles.logoName}>OYUN</span>
               <span className={styles.logoTag}>Super Admin</span>
@@ -79,10 +94,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <header className={`${styles.header} noPrint`}>
           <div className={styles.headerTitle}>
             <SidebarToggle className={styles.toggleBtn} />
-            <span>Admin Control Center</span>
+            <HeaderPageTitle items={ADMIN_PAGES} fallback="Admin" className={styles.pageName} />
+            <span className={styles.turfName}>Admin Control Center</span>
           </div>
           <div className={styles.headerActions}>
-            <Link href="/" className="btn btn--secondary btn--sm" target="_blank">View site</Link>
+            <Link href="/" className="btn btn--secondary btn--sm">View site</Link>
             <form action={logout.bind(null, 'admin')}>
               <button type="submit" className="btn btn--secondary btn--sm">Log Out</button>
             </form>
@@ -92,6 +108,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           {children}
         </div>
       </main>
+
+      <AdminTabBar pages={ADMIN_PAGES} />
     </div>
   );
 }

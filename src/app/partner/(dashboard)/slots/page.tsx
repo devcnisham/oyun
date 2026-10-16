@@ -1,3 +1,4 @@
+import NavIcon from '@/components/dash/NavIcon';
 import Link from 'next/link';
 import ActionForm from '@/components/dash/ActionForm';
 import { PageHeader, dash } from '@/components/dash/ui';
@@ -65,9 +66,9 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
       <div className={dash.card}>
         <div className={styles.datePanel}>
           <div className={styles.toolbar}>
-            <div className={styles.segment} role="tablist" aria-label="Calendar view">
+            <div className={styles.segment} aria-label="Calendar view">
               {(['day', 'week', 'month'] as const).map((v) => (
-                <Link key={v} href={href(date, v)} role="tab" aria-selected={view === v} className={`${styles.segBtn} ${view === v ? styles.segActive : ''}`}>
+                <Link key={v} href={href(date, v)} aria-current={view === v ? 'page' : undefined} className={`${styles.segBtn} ${view === v ? styles.segActive : ''}`}>
                   {v === 'day' ? 'Day' : v === 'week' ? 'Week' : 'Month'}
                 </Link>
               ))}
@@ -254,7 +255,7 @@ export default async function SlotsPage({ searchParams }: { searchParams: Promis
                 {booking ? (
                   hourBookings.map((b) => (
                     <Link key={b.id} href={`/partner/bookings?q=${encodeURIComponent(b.code)}`} className={styles.slotNote} title="Open this booking">
-                      {b.customerName}{b.source === 'walk_in' ? ' (walk-in)' : ''}{b.pitch && b.pitch !== 'full' ? ` · half ${b.pitch}` : ''} ↗
+                      {b.customerName}{b.source === 'walk_in' ? ' (walk-in)' : ''}{b.pitch && b.pitch !== 'full' ? ` · half ${b.pitch}` : ''} <NavIcon name="external" size={12} />
                     </Link>
                   ))
                 ) : block ? (

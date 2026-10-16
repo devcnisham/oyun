@@ -11,7 +11,7 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
           {/* Brand */}
           <div className={styles.brand}>
             <div className={styles.logoRow}>
-              <svg width="48" height="48" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))' }}>
+              <svg width="48" height="48" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.12))' }}>
                 <circle cx="20" cy="20" r="18" fill="url(#footerShieldGrad)"/>
                 <path d="M 12 12 L 18 22 L 27 16 L 31 19" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 <circle cx="32" cy="12" r="2.5" fill="white"/>
@@ -19,13 +19,13 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
                 <path d="M 10 23 Q 16 26 22 21" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                 <defs>
                   <linearGradient id="footerShieldGrad" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#fff" stopOpacity="0.2"/>
-                    <stop offset="1" stopColor="#fff" stopOpacity="0.05"/>
+                    <stop style={{ stopColor: 'var(--logo-from)' }}/>
+                    <stop offset="1" style={{ stopColor: 'var(--logo-to)' }}/>
                   </linearGradient>
                 </defs>
               </svg>
               <div>
-                <div className={styles.logoName}>OYUN</div>
+                <div className={`${styles.logoName} brand-wordmark`}>OYUN</div>
                 <div className={styles.logoTag}>Premium Turf Booking Platform</div>
               </div>
             </div>

@@ -1,5 +1,19 @@
 // Line icons for the dashboard sidebars (24px grid, 1.75 stroke, inherits the link colour).
 const PATHS: Record<string, React.ReactNode> = {
+  lock: <><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
+  camera: <><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></>,
+  phone: <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />,
+  rain: <><path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8.5 3.5 3.5 0 0 1 17.5 15z" /><path d="M9 18l-1 2M13 18l-1 2M17 18l-1 2" /></>,
+  tool: <path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.500-5.500a4 4 0 0 0 5-5L15 12l-3-3z" />,
+  trophy: <path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M9 20h6" />,
+  bolt: <path d="M13 3L5 14h6l-1 7 8-11h-6z" />,
+  close: <path d="M6 6l12 12M18 6L6 18" />,
+  arrowLeft: <path d="M19 12H5M11 6l-6 6 6 6" />,
+  arrowRight: <path d="M5 12h14M13 6l6 6-6 6" />,
+  external: <path d="M7 17L17 7M9 7h8v8" />,
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  target: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></>,
+  ball: <><circle cx="12" cy="12" r="9" /><path d="M12 7.500l3.500 2.500-1.300 4.200H9.800L8.500 10z" /><path d="M12 7.500V3M15.500 10l4.200-1.500M14.200 14.200l2.500 3.500M9.800 14.200l-2.500 3.500M8.500 10L4.300 8.500" /></>,
   dashboard: <><rect x="3" y="3" width="7" height="9" rx="1.5" /><rect x="14" y="3" width="7" height="5" rx="1.5" /><rect x="14" y="12" width="7" height="9" rx="1.5" /><rect x="3" y="16" width="7" height="5" rx="1.5" /></>,
   bookings: <><rect x="3" y="4.5" width="18" height="16" rx="2.5" /><path d="M3 9.5h18M8 3v3M16 3v3" /></>,
   calendar: <><rect x="3" y="4.5" width="18" height="16" rx="2.5" /><path d="M3 9.5h18M8 3v3M16 3v3M8 14h2M14 14h2M8 17.5h2" /></>,
@@ -25,11 +39,9 @@ const PATHS: Record<string, React.ReactNode> = {
   homepage: <><rect x="3" y="4" width="18" height="16" rx="2.500" /><path d="M3 9h18M7 14h6" /></>,
 };
 
-export type NavIconName = keyof typeof PATHS;
-
-export default function NavIcon({ name, className }: { name: string; className?: string }) {
+export default function NavIcon({ name, className, size = 20 }: { name: string; className?: string; size?: number }) {
   return (
-    <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       {PATHS[name] ?? PATHS.dashboard}
     </svg>
   );

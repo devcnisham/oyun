@@ -1,5 +1,6 @@
 'use client';
 
+import NavIcon from '@/components/dash/NavIcon';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { dash } from '@/components/dash/ui';
 import { checkInBooking } from '@/lib/partner-actions';
@@ -105,7 +106,7 @@ export default function CheckInDesk({ initialCode = '' }: { initialCode?: string
         {scanning ? (
           <button type="button" className={`${dash.btn} ${dash.btnSecondary}`} onClick={stopCamera}>Stop camera</button>
         ) : (
-          <button type="button" className={`${dash.btn} ${dash.btnSecondary}`} onClick={startCamera}>📷 Scan QR</button>
+          <button type="button" className={`${dash.btn} ${dash.btnSecondary}`} onClick={startCamera}><NavIcon name="camera" size={16} /> Scan QR</button>
         )}
       </form>
 

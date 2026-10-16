@@ -122,36 +122,41 @@
 .trust { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; }
 .trust div { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 12px; background: var(--bg-muted); font-size: 13px; }
 
-/* Sport icons: a round photo with the name underneath. Four across; they scroll sideways if the screen is too narrow. */
-.sports { display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px 6px; margin: -6px 0 -4px; overflow-x: auto; scrollbar-width: none; }
-.sports::-webkit-scrollbar { display: none; }
-.sportIcon {
-  flex: 1 0 64px; max-width: 110px; display: flex; flex-direction: column; align-items: center; gap: 8px;
-  text-decoration: none; color: var(--text-primary); -webkit-tap-highlight-color: transparent;
+/* Sport tabs: four photo tabs joined along the bottom by small concave scoops, one contour. The chosen sport rises. */
+.sports {
+  --ear: 0px; /* tabs touch, no scoops */
+  --tab: #f7f8fa;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: end;
+  gap: 0; min-height: 150px; padding: 10px 16px 0; margin: -6px 0 -4px;
+  border-bottom: 1px solid var(--border); filter: drop-shadow(0 -2px 5px rgba(0, 0, 0, 0.07));
 }
-.sportIcon:active { transform: scale(0.95); }
-button.sportIcon { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
-.sportIconOn .sportIconImg { box-shadow: 0 0 0 3px var(--primary-700), var(--shadow-md); }
-.sportIconOn b { color: var(--primary-700); }
+.sportIcon {
+  position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  height: 118px; padding: 0 4px 10px; border-radius: 22px 22px 0 0; background: var(--tab); box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.06);
+  color: var(--text-primary); text-decoration: none; -webkit-tap-highlight-color: transparent;
+  transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+button.sportIcon { border: 0; font: inherit; cursor: pointer; }
+.sportIcon::before, .sportIcon::after { content: ''; position: absolute; bottom: 0; width: var(--ear); height: var(--ear); pointer-events: none; }
+.sportIcon::before { left: calc(var(--ear) * -1); background: radial-gradient(circle at 0 0, transparent var(--ear), var(--tab) calc(var(--ear) + 0.5px)); }
+.sportIcon::after { right: calc(var(--ear) * -1); background: radial-gradient(circle at 100% 0, transparent var(--ear), var(--tab) calc(var(--ear) + 0.5px)); }
+.sportIcon:first-child::before, .sportIcon:last-child::after { display: none; }
+.sportIconOn { --tab: #fff0ee; height: 138px; }
+.sportIcon:active { filter: brightness(0.97); }
+.sportPhoto { position: absolute; top: 0; left: 0; right: 0; height: calc(100% - 34px); z-index: -1; overflow: hidden; border-radius: 22px 22px 0 0; }
+.sportPhoto img { object-fit: cover; }
+.sportPhoto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 45%, var(--tab) 100%); }
+.sportIcon b { font-size: clamp(10px, 2.9vw, 12px); font-weight: 800; line-height: 1.15; text-align: center; white-space: nowrap; color: #6b7280; transition: color 0.2s ease; }
+.sportIconOn b { color: #1a1a1a; }
 .railEmpty { margin: 0 16px; padding: 18px 16px; border-radius: 14px; background: #fff; border: 1px solid var(--border); font-size: 14px; color: var(--text-secondary); }
 .railEmpty a { display: inline-block; margin-top: 6px; font-weight: 700; color: var(--primary-700); }
-.sportIconImg {
-  position: relative; display: block; width: clamp(60px, 18vw, 88px); aspect-ratio: 1; border-radius: 50%; overflow: hidden;
-  background: #000; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--primary-200), var(--shadow-md);
-}
-.sportIconImg img { object-fit: cover; }
-.sportIcon b { font-size: clamp(12px, 3.4vw, 14px); font-weight: 700; line-height: 1.2; text-align: center; }
 
 /* Motion. All of it is off for people who ask their device to reduce motion. */
-.sportIconImg, .sportIcon b { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease, color 0.2s ease; }
-.sportIconOn .sportIconImg { transform: scale(1.1); }
-@media (hover: hover) { .sportIcon:hover .sportIconImg { transform: scale(1.07); } .sportIconOn:hover .sportIconImg { transform: scale(1.1); } }
 @media (prefers-reduced-motion: no-preference) {
   .sportIcon { animation: sportIn 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards; }
   .sportIcon:nth-child(2) { animation-delay: 70ms; }
   .sportIcon:nth-child(3) { animation-delay: 140ms; }
   .sportIcon:nth-child(4) { animation-delay: 210ms; }
-  .sportIconOn .sportIconImg { animation: sportPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   .swap { animation: swapIn 0.3s ease-out backwards; }
   .railAnimated .railCard { animation: cardIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards; }
   .railAnimated .railCard:nth-child(2) { animation-delay: 60ms; }
@@ -161,7 +166,6 @@ button.sportIcon { background: none; border: 0; padding: 0; font: inherit; curso
   .railEmpty { animation: swapIn 0.35s ease-out backwards; }
 }
 @keyframes sportIn { from { opacity: 0; transform: translateY(14px) scale(0.85); } to { opacity: 1; transform: none; } }
-@keyframes sportPop { 0% { transform: scale(0.92); } 55% { transform: scale(1.18); } 100% { transform: scale(1.1); } }
 @keyframes swapIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes cardIn { from { opacity: 0; transform: translateX(26px) scale(0.96); } to { opacity: 1; transform: none; } }
 

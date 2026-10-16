@@ -31,7 +31,7 @@ export default function PendingApplications({ applications }: { applications: Ap
       ))}
 
       {applications.length === 0 ? (
-        <p className={dash.empty}>No applications waiting. 🎉</p>
+        <p className={dash.empty}>No applications waiting.</p>
       ) : (
         <div className={dash.list}>
           {applications.map((a) => (

@@ -15,6 +15,7 @@ import HeroSearchBar from './HeroSearchBar';
 import { SPORTS, sportHref } from '@/lib/sports';
 import PopupAd from '@/components/PopupAdLazy';
 import MobileHome from './_home/MobileHome';
+import HeroScroll from './HeroScroll';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
@@ -68,6 +69,7 @@ export default async function Home() {
 
       {/* OYO Style Hero Search */}
       <section className={styles.hero}>
+        <HeroScroll />
         <div className={styles.videoWrapper}>
           <Image
             src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2000&auto=format&fit=crop"
@@ -110,18 +112,15 @@ export default async function Home() {
         )}
       </section>
       {/* Browse by Sport */}
-      <section className={`container ${styles.section}`}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Browse by Sport</h2>
-        </div>
+      <section className={`container ${styles.section} ${styles.sportSection}`}>
+        <h2 className="sr-only">Browse by sport</h2>
         <div className={styles.sportGrid}>
           {SPORTS.map((sport) => (
             <Link href={sportHref(sport.value)} key={sport.value} className={styles.sportCard}>
-              <Image src={sport.image} alt={sport.label} fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
-              <div className={styles.sportInfo}>
-                <h3 className={styles.sportName}>{sport.label}</h3>
-                <div className={styles.sportAction}>Explore venues <span>→</span></div>
-              </div>
+              <span className={styles.sportPhoto} aria-hidden>
+                <Image src={sport.image.replace('w=600', 'w=1000')} alt="" fill sizes="(max-width: 768px) 70vw, 28vw" className={styles.sportImg} />
+              </span>
+              <h3 className={styles.sportName}>{sport.label}</h3>
             </Link>
           ))}
         </div>

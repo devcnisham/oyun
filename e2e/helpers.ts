@@ -1,6 +1,8 @@
 import { expect, type Page } from '@playwright/test';
 
 export const TURF = 'perfect-pass-kodialbail';
+// The turf owned by the dev partner login (the OYUN operations account): partner dashboard tests must book here
+export const PARTNER_TURF = 'oyun-club-test';
 
 // Skip the cookie banner and sign in with the device profile (no Clerk in tests)
 export async function asPlayer(page: Page, name = 'E2E Player', phone = '9876500001') {
@@ -35,8 +37,8 @@ export const seatAt = (page: Page, label: string) => seats(page).and(page.locato
 
 // Picks a date tab, selects the first open slot and holds it. Returns the slot's time label (e.g. "06:00 AM"),
 // or null if that day has none left.
-export async function holdSlot(page: Page, dayIndex: number) {
-  await page.goto(`/arenas/${TURF}`);
+export async function holdSlot(page: Page, dayIndex: number, turf: string = TURF) {
+  await page.goto(`/arenas/${turf}`);
   await selectDay(page, dayIndex);
   const open = seats(page).and(page.locator('[aria-disabled="false"][aria-pressed="false"]'));
   if ((await open.count()) === 0) return null;
@@ -48,8 +50,8 @@ export async function holdSlot(page: Page, dayIndex: number) {
 }
 
 // Same, for callers that only need to know whether a slot was held. Returns false if that day has none left.
-export async function holdFirstSlot(page: Page, dayIndex: number) {
-  return (await holdSlot(page, dayIndex)) !== null;
+export async function holdFirstSlot(page: Page, dayIndex: number, turf: string = TURF) {
+  return (await holdSlot(page, dayIndex, turf)) !== null;
 }
 
 export async function confirmBooking(page: Page) {
