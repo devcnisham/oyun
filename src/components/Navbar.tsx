@@ -88,7 +88,7 @@ export default function Navbar() {
 
   return (
     <>
-    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''}`}>
+    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''} ${scrolled ? styles.floating : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner} ${compactBar ? styles.searchOnly : ''}`}>
           <div className={styles.left}>

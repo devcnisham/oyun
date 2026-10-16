@@ -396,3 +396,62 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
   }
 }
+
+/* Desktop: once the page is scrolled the top bar detaches and floats as a rounded card.
+   The negative bottom margin cancels the added padding so the page below does not jump. */
+@media (min-width: 769px) {
+  .transparentWrapper,
+  .stickyWrapper {
+    transition: transform 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+  }
+
+  .floating {
+    padding: 10px 24px 0;
+    margin-bottom: -10px;
+  }
+
+  /* floating card is off-white with dark text instead of the red gradient */
+  .floating .navbar {
+    background: #faf7f2;
+    border-radius: 22px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 14px 36px rgba(24, 24, 24, 0.16), 0 2px 6px rgba(24, 24, 24, 0.08);
+  }
+
+  .floating .logoName,
+  .floating .navTitle,
+  .floating .navIcon,
+  .floating .account,
+  .floating .bookings {
+    color: #1f1f1f;
+  }
+
+  /* the logo's red drop shadow looks muddy on off-white; the inline style needs !important to override */
+  .floating .logo svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12)) !important;
+  }
+
+  .floating .tagline,
+  .floating .navSub {
+    color: rgba(31, 31, 31, 0.6);
+  }
+
+  .floating .navSearch {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
+
+  .floating .badge {
+    background: var(--primary-700, #b3161f);
+    color: #fff;
+  }
+
+  .navbar {
+    transition: background 0.3s, box-shadow 0.3s, border-radius 0.25s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transparentWrapper, .stickyWrapper { transition: none; }
+}
