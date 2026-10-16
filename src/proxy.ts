@@ -39,14 +39,16 @@ function forceHttps(req: NextRequest) {
 // Pages prerendered at build (the ○ rows of `next build`). A per-request nonce on the request makes Next render them again
 // for every visitor (private, no-store), so these skip it and let the CDN serve the prebuilt HTML. They hold no per-player
 // data and no forms with user input, so the build-time policy (inline scripts allowed, hosts still allow-listed) is used.
-const PRERENDERED = new Set(['/about', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/terms', '/tournaments']);
+const PRERENDERED = new Set(['/', '/m', '/about', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/terms', '/tournaments']);
 
 async function handle(req: NextRequest) {
   const redirect = forceHttps(req) ?? dashboardGuard(req);
   if (redirect) return redirect;
 
   if (req.method === 'GET' && PRERENDERED.has(req.nextUrl.pathname)) {
-    const res = NextResponse.next();
+    // Phones get the app-style home page, prebuilt at /m (the address bar still shows /)
+    const phone = req.nextUrl.pathname === '/' && /Mobi|Android|iPhone|iPod/i.test(req.headers.get('user-agent') ?? '');
+    const res = phone ? NextResponse.rewrite(new URL('/m', req.url)) : NextResponse.next();
     res.headers.set('Content-Security-Policy', buildCsp(undefined));
     return res;
   }
