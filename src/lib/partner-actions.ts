@@ -24,6 +24,7 @@ import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
 import { isV2SlotsActive, v2BlockSlot } from './v2-slots';
 import { sharedRateLimit } from './shared-rate-limit';
+import { logActivity } from './activity';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
   const booking = db.bookings.find((b) => b.id === bookingId);
@@ -139,6 +140,7 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
         createdAt: new Date().toISOString(),
       };
       db.bookings.push(booking);
+      logActivity(db, ctx, 'Walk-in booking', `${name} · ${date} ${booking.timeLabel} · ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}`);
       return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booking.code}` };
     });
   });
@@ -156,9 +158,11 @@ export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<
         const player = db.players.find((p) => p.id === booking.playerId);
         if (player) walletTxn(db, player, refund, 'refund', `Booking ${booking.code} cancelled by the turf`, booking.id);
         booking.status = 'refunded';
+        logActivity(db, ctx, 'Cancelled and refunded', `${booking.customerName} · ${booking.date} ${booking.timeLabel} · ₹${refund} to wallet`);
         return { ok: `Cancelled. ₹${refund} refunded to ${booking.customerName}'s wallet.` };
       }
       booking.status = 'cancelled';
+      logActivity(db, ctx, 'Cancelled booking', `${booking.customerName} · ${booking.date} ${booking.timeLabel}`);
       return { ok: 'Booking cancelled' };
     });
   });
@@ -210,6 +214,7 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
       booking.status = 'checked_in';
       booking.checkedInAt = new Date().toISOString();
       if (due > 0) booking.cashCollected = { amount: due, at: booking.checkedInAt, by: ctx.userName };
+      logActivity(db, ctx, 'Checked in', `${booking.customerName} · ${booking.date} ${booking.timeLabel}${due > 0 ? ` · ₹${due} collected` : ''}`);
       const rewards = rewardCheckIn(db, booking);
       // Pay-at-venue bookings are settled at the desk on check-in
       if (booking.paymentMode === 'venue') booking.amountPaid = booking.pricing.total;
@@ -231,6 +236,7 @@ export async function markNoShow(_prev: ActionResult, fd: FormData): Promise<Act
         throw new ValidationError('You can mark a no-show once the slot has started');
       }
       booking.status = 'no_show';
+      logActivity(db, ctx, 'Marked no-show', `${booking.customerName} · ${booking.date} ${booking.timeLabel}`);
       return { ok: 'Marked as no-show' };
     });
   });
@@ -271,6 +277,7 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
         throw new ValidationError('This slot is already blocked');
       }
       db.blocks.push({ id: newId('block'), turfId: ctx.turf.id, date, hour, reason, createdBy: ctx.userName, createdAt: new Date().toISOString() });
+      logActivity(db, ctx, 'Blocked a slot', `${date} ${formatHour(hour)} · ${reason}`);
       return { ok: `Blocked ${formatHour(hour)} on ${date}` };
     });
   });
@@ -333,6 +340,7 @@ export async function blockRange(_prev: ActionResult, fd: FormData): Promise<Act
         }
       }
       if (blocked === 0) throw new ValidationError(`Nothing blocked: all ${skipped} slots were already booked or blocked`);
+      logActivity(db, ctx, 'Bulk blocked slots', `${blocked} slot${blocked === 1 ? '' : 's'} · ${from} to ${to} · ${reason}`);
       return { ok: `Blocked ${blocked} slot${blocked === 1 ? '' : 's'}${skipped ? ` (${skipped} skipped: already booked or blocked)` : ''}` };
     });
   });
@@ -344,8 +352,10 @@ export async function unblockSlot(_prev: ActionResult, fd: FormData): Promise<Ac
     const id = str(fd, 'blockId');
     return await mutate((db) => {
       const before = db.blocks.length;
+      const gone = db.blocks.find((b) => b.id === id && b.turfId === ctx.turf.id);
       db.blocks = db.blocks.filter((b) => !(b.id === id && b.turfId === ctx.turf.id));
       if (db.blocks.length === before) throw new ValidationError('Block not found');
+      if (gone) logActivity(db, ctx, 'Reopened a slot', `${gone.date} ${formatHour(gone.hour)}`);
       return { ok: 'Slot reopened' };
     });
   });
@@ -398,6 +408,7 @@ export async function savePricing(_prev: ActionResult, fd: FormData): Promise<Ac
       db.pricing[ctx.turf.id] = rules;
       const turf = db.turfs.find((t) => t.id === ctx.turf.id);
       if (turf) turf.pricePerHour = pricePerHour;
+      logActivity(db, ctx, 'Changed pricing', `Base ₹${pricePerHour}/hr`);
     });
     return { ok: 'Pricing saved. New prices apply to bookings from now on.' };
   });
@@ -509,6 +520,7 @@ export async function createStaff(_prev: ActionResult, fd: FormData): Promise<Ac
     await mutate((db) => {
       if (emailTaken(db, email)) throw new ValidationError('This email is already in use');
       db.staff.push({ id: newId('staff'), partnerId: ctx.partner.id, name, email, phone, role, passwordHash: hashPassword(password), createdAt: new Date().toISOString() });
+      logActivity(db, ctx, 'Added staff', `${name} · ${role === 'manager' ? 'Manager' : 'Front desk'}`);
     });
     return { ok: `${name} can now log in at /partner/login with ${email} and temporary password: ${password}` };
   });
@@ -531,7 +543,9 @@ export async function deleteStaff(_prev: ActionResult, fd: FormData): Promise<Ac
   return run(async () => {
     const ctx = await requirePartnerAction('staff');
     await mutate((db) => {
+      const removed = db.staff.find((s) => s.id === str(fd, 'staffId') && s.partnerId === ctx.partner.id);
       db.staff = db.staff.filter((s) => !(s.id === str(fd, 'staffId') && s.partnerId === ctx.partner.id));
+      if (removed) logActivity(db, ctx, 'Removed staff', removed.name);
     });
     return { ok: 'Staff access removed' };
   });
