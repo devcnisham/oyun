@@ -1,0 +1,61 @@
+name: Weekly routine (Monday 06:30 IST)
+
+# Housekeeping that would otherwise be forgotten. Results go into one open issue, updated each week.
+
+on:
+  schedule:
+    - cron: '0 1 * * 1' # 01:00 UTC Monday = 06:30 IST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  routine:
+    name: Dependencies, unused code, merged branches
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Build the weekly report
+        run: |
+          {
+            echo "## Weekly routine, $(date -u +%F)"
+            echo
+            echo "### npm audit (production dependencies)"
+            echo '```'
+            npm audit --omit=dev 2>&1 | tail -15 || true
+            echo '```'
+            echo
+            echo "### Unused code (knip)"
+            echo '```'
+            npx knip 2>&1 | tail -15 || true
+            echo '```'
+            echo
+            echo "### Merged branches that can be deleted from GitHub"
+            echo '```'
+            git branch -r --merged origin/main | grep -v -E 'origin/(main|HEAD)' | sed 's# *origin/##' | head -40 || true
+            echo '```'
+            echo
+            echo "### Open pull requests older than 7 days"
+            echo '```'
+            gh pr list --state open --json number,title,createdAt -q '.[] | select((now - (.createdAt | fromdateiso8601)) > 604800) | "#\(.number) \(.title)"' || true
+            echo '```'
+          } > report.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Post the report as one open issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Weekly routine report"
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json number -q '.[0].number')
+          if [ -n "$existing" ]; then gh issue comment "$existing" --body-file report.md; else gh issue create --title "$title" --body-file report.md; fi
