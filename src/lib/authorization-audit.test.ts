@@ -116,6 +116,7 @@ describe('dashboard pages', () => {
     'reviews': null,
     'payouts': 'payouts',
     'analytics': 'payouts',
+    'profile': null,
     'invoices/[id]': 'bookings',
     'staff': 'staff',
     'turf': 'turf',
