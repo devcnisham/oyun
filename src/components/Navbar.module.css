@@ -12,18 +12,9 @@
   z-index: 1000;
 }
 
-/* Hide-on-scroll: slides up out of view while reading down, returns on scroll up */
+/* The bar stays in place while scrolling */
 .transparentWrapper, .stickyWrapper {
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-}
-/* tucks up behind the top edge of the page, fading as it goes */
-.headerHidden {
-  transform: translateY(-110%);
-  opacity: 0;
-  pointer-events: none;
-  /* once tucked away it also leaves the tab order and the accessibility tree */
-  visibility: hidden;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0s linear 0.35s;
 }
 @media (prefers-reduced-motion: reduce) {
   .transparentWrapper, .stickyWrapper { transition: none; }
