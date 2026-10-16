@@ -55,11 +55,12 @@
 }
 
 .logoName {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 24px;
-  font-weight: 900;
+  font-family: var(--font-wordmark-family);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
   color: #fff;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -377,7 +378,7 @@
   .searchOnly .left { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); }
   .searchOnly .logo svg,
   .searchOnly .tagline { display: none; }
-  .searchOnly .navSearch { flex: 0 1 640px; }
+  .searchOnly .navSearch { flex: 0 1 700px; }
 }
 
 .navBack { display: none; }
@@ -394,5 +395,203 @@
     border: none;
     cursor: pointer;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* Desktop: once the page is scrolled the top bar detaches and floats as a rounded card.
+   The negative bottom margin cancels the added padding so the page below does not jump. */
+@media (min-width: 769px) {
+  .transparentWrapper,
+  .stickyWrapper {
+    transition: transform 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+  }
+
+  .floating {
+    padding: 10px 24px 0;
+    margin-bottom: -10px;
+  }
+
+  /* floating card is off-white with dark text instead of the red gradient */
+  .floating .navbar {
+    /* slightly see-through, with the page softly blurred behind it */
+    background: rgba(250, 247, 242, 0.82);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-radius: 22px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 14px 36px rgba(24, 24, 24, 0.16), 0 2px 6px rgba(24, 24, 24, 0.08);
+  }
+
+  .floating .navTitle,
+  .floating .navIcon,
+  .floating .account,
+  .floating .bookings {
+    color: #1f1f1f;
+  }
+
+  /* the OYUN wordmark takes the logo colour (tokens in globals.css) once the bar floats on off-white */
+  .floating .logoName {
+    background: var(--logo-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* the logo's red drop shadow looks muddy on off-white; the inline style needs !important to override */
+  .floating .logo svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12)) !important;
+  }
+
+  .floating .tagline,
+  .floating .navSub {
+    color: rgba(31, 31, 31, 0.6);
+  }
+
+  .floating .navSearch {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
+
+  .floating .badge {
+    background: var(--primary-700, #b3161f);
+    color: #fff;
+  }
+
+  .navbar {
+    transition: background 0.3s, box-shadow 0.3s, border-radius 0.25s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transparentWrapper, .stickyWrapper { transition: none; }
+}
+
+/* The compact search slides up into the bar from where the hero search was, as it scrolls out of view */
+@keyframes navSearchIn {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 769px) {
+  .navSearch {
+    animation: navSearchIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: 50% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navSearch { animation: none; }
+}
+
+/* Same search as the hero: place, date and Search in the bar, with the map button beside it */
+.navDivider {
+  width: 1px;
+  height: 22px;
+  flex: none;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.navDate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  width: 168px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.navSearch .navDate input {
+  flex: 1;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.navMap {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .navMap {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 42px;
+    height: 42px;
+    margin-left: 12px;
+    border-radius: 12px;
+    background: #fff;
+    color: #1a1a1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .navMap:hover {
+    background: #f3f3f3;
+  }
+
+  /* on the floating off-white bar the map button gets a hairline instead of a shadow */
+  .floating .navMap {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
+}
+
+/* Phones: once the page is scrolled the top bar detaches and floats as a rounded, slightly see-through off-white card,
+   with the wordmark in the logo colour. The negative margin cancels the padding so the page below does not jump. */
+@media (max-width: 768px) {
+  .transparentWrapper,
+  .stickyWrapper {
+    transition: transform 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+  }
+
+  .floating {
+    padding: calc(8px + env(safe-area-inset-top)) 12px 0;
+    margin-bottom: -8px;
+  }
+
+  .floating .navbar {
+    padding-top: 0;
+    background: rgba(250, 247, 242, 0.84);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 10px 28px rgba(24, 24, 24, 0.18), 0 2px 6px rgba(24, 24, 24, 0.08);
+  }
+
+  .floating .navbar::before {
+    display: none;
+  }
+
+  .floating .logoName {
+    background: var(--logo-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .floating .logo svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12)) !important;
+  }
+
+  .floating .cityChip {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1f1f1f;
   }
 }

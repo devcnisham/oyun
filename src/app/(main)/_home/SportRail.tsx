@@ -45,8 +45,8 @@ export default function SportRail({ turfs }: { turfs: RailTurf[] }) {
             aria-pressed={sport === s.value}
             onClick={() => setSport(sport === s.value ? null : s.value)}
           >
-            <span className={styles.sportIconImg}>
-              <Image src={s.image} alt="" fill sizes="88px" />
+            <span className={styles.sportPhoto} aria-hidden>
+              <Image src={s.image.replace('w=600', 'w=800')} alt="" fill sizes="30vw" />
             </span>
             <b>{s.label}</b>
           </button>

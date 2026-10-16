@@ -19,6 +19,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [q, setQ] = useState('');
+  const [date, setDate] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const suggestions = useSuggestions(q, searchFocused);
   const [pastHero, setPastHero] = useState(false);
@@ -88,7 +89,7 @@ export default function Navbar() {
 
   return (
     <>
-    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''}`}>
+    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''} ${scrolled ? styles.floating : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner} ${compactBar ? styles.searchOnly : ''}`}>
           <div className={styles.left}>
@@ -126,26 +127,43 @@ export default function Navbar() {
               role="search"
               onSubmit={(e) => {
                 e.preventDefault();
-                const term = q.trim();
-                router.push(term ? `/arenas?q=${encodeURIComponent(term)}` : '/arenas');
+                const params = new URLSearchParams();
+                if (q.trim()) params.set('q', q.trim());
+                if (date) params.set('date', date);
+                const qs = params.toString();
+                router.push(qs ? `/arenas?${qs}` : '/arenas');
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3.5-3.5" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
+                <circle cx="12" cy="10" r="2.5" />
               </svg>
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                placeholder="Search turfs or areas"
-                aria-label="Search turfs or areas"
+                placeholder="Search by city, location or arena name"
+                aria-label="Search by city, location or arena name"
                 autoComplete="off"
               />
+              <span className={styles.navDivider} aria-hidden />
+              <label className={styles.navDate}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+                <input type="date" aria-label="Date" value={date} onChange={(e) => setDate(e.target.value)} />
+              </label>
               <button type="submit">Search</button>
               {searchFocused && <SearchSuggestions query={q} suggestions={suggestions} onPick={() => setSearchFocused(false)} className={styles.navSuggest} />}
             </form>
+            <Link href="/arenas?view=map" className={styles.navMap} aria-label="Map view" title="Map view">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z" />
+                <path d="M9 4v13M15 7v13" />
+              </svg>
+            </Link>
             </>
           )}
 

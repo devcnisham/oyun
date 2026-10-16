@@ -11,8 +11,8 @@ import {
   run,
   str,
 } from './action-utils';
-import { generateTempPassword, hashPassword } from './password';
-import { TURF_COOKIE, getPartnerContext, requirePartnerAction, type PartnerContext } from './partner-auth';
+import { generateTempPassword, hashPassword, verifyPassword } from './password';
+import { AccessError, TURF_COOKIE, getPartnerContext, requirePartnerAction, type PartnerContext } from './partner-auth';
 import { buildQuote, getSlots, turfHours } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
 import { addDays, formatHour, formatSlotRange, isValidDate, istNow, parseHour } from './time';
@@ -23,6 +23,7 @@ import { withDate, withoutDate } from './rain';
 import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
 import { isV2SlotsActive, v2BlockSlot } from './v2-slots';
+import { sharedRateLimit } from './shared-rate-limit';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
   const booking = db.bookings.find((b) => b.id === bookingId);
@@ -42,6 +43,54 @@ export async function switchTurf(_prev: ActionResult, fd: FormData): Promise<Act
   if (!ctx || !ctx.turfs.some((t) => t.id === turfId)) return { error: 'Turf not found' };
   (await cookies()).set(TURF_COOKIE, turfId, { httpOnly: true, sameSite: 'lax', path: '/partner' });
   return run(() => ({ ok: 'Switched turf' }));
+}
+
+/* ---------- own profile & password ---------- */
+
+const MIN_PASSWORD_LENGTH = 12;
+
+// Any signed-in partner or staff member edits their own name and phone (email is the login and is changed by OYUN support)
+export async function updateAccount(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await getPartnerContext();
+    if (!ctx) throw new AccessError('Your session has expired. Please log in again.');
+    const name = required(fd, 'name', 'Name', 80);
+    const phone = phone10(fd, 'phone');
+    await mutate((db) => {
+      const record = ctx.staff ? db.staff.find((x) => x.id === ctx.staff!.id) : db.partners.find((x) => x.id === ctx.partner.id);
+      if (!record) throw new ValidationError('Account not found');
+      record.name = name;
+      record.phone = phone;
+    });
+    return { ok: 'Profile saved' };
+  });
+}
+
+// Changes the signed-in user's own password: the current one must be right, and guessing is rate limited
+export async function changePassword(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await getPartnerContext();
+    if (!ctx) throw new AccessError('Your session has expired. Please log in again.');
+    const subject = ctx.staff ? `s:${ctx.staff.id}` : `p:${ctx.partner.id}`;
+    // The OYUN operations login is checked against PARTNER_PASSWORD in the hosting settings, not a stored password
+    if (!ctx.staff && ctx.partner.id === 'partner_oyun' && process.env.PARTNER_PASSWORD) {
+      throw new ValidationError('This account signs in with PARTNER_PASSWORD from the hosting settings. Change it there.');
+    }
+    if (!(await sharedRateLimit(`partner-pwd:${subject}`, 5, 15 * 60_000))) throw new ValidationError('Too many attempts. Please try again in 15 minutes.');
+
+    const current = str(fd, 'current', 200);
+    const next = str(fd, 'next', 200);
+    if (next.length < MIN_PASSWORD_LENGTH) throw new ValidationError(`The new password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+    if (next !== str(fd, 'confirm', 200)) throw new ValidationError('The two new passwords do not match');
+    if (next === current) throw new ValidationError('Choose a password you have not used here');
+
+    return await mutate((db) => {
+      const record = ctx.staff ? db.staff.find((x) => x.id === ctx.staff!.id) : db.partners.find((x) => x.id === ctx.partner.id);
+      if (!record || !verifyPassword(current, record.passwordHash)) throw new ValidationError('Your current password is not right');
+      record.passwordHash = hashPassword(next);
+      return { ok: 'Password changed. Use it the next time you sign in.' };
+    });
+  });
 }
 
 /* ---------- bookings ---------- */

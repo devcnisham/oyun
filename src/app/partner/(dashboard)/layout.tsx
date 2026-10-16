@@ -29,6 +29,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
     ...(ctx.can('staff') ? [{ href: '/partner/staff', label: 'Staff', icon: 'staff' }] : []),
     ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Turf', icon: 'turf' }] : []),
     ...(ctx.can('turf') ? [{ href: '/partner/courts', label: 'Courts & Pitches', icon: 'courts' }] : []),
+    { href: '/partner/profile', label: 'Profile & settings', icon: 'settings' },
   ];
 
   // Phone tab bar: the most used pages this role can open
