@@ -14,11 +14,14 @@
 
 /* Hide-on-scroll: slides up out of view while reading down, returns on scroll up */
 .transparentWrapper, .stickyWrapper {
-  transition: transform 0.25s ease;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
   will-change: transform;
 }
+/* tucks up behind the top edge of the page, fading as it goes */
 .headerHidden {
-  transform: translateY(-100%);
+  transform: translateY(-110%);
+  opacity: 0;
+  pointer-events: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .transparentWrapper, .stickyWrapper { transition: none; }
@@ -378,7 +381,7 @@
   .searchOnly .left { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); }
   .searchOnly .logo svg,
   .searchOnly .tagline { display: none; }
-  .searchOnly .navSearch { flex: 0 1 700px; }
+  .searchOnly .navSearch { flex: 0 1 700px; max-width: calc(100% - 400px); min-width: 460px; }
 }
 
 .navBack { display: none; }
@@ -403,7 +406,7 @@
 @media (min-width: 769px) {
   .transparentWrapper,
   .stickyWrapper {
-    transition: transform 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.25s ease, margin 0.25s ease;
   }
 
   .floating {
@@ -555,7 +558,7 @@
 @media (max-width: 768px) {
   .transparentWrapper,
   .stickyWrapper {
-    transition: transform 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.25s ease, margin 0.25s ease;
   }
 
   .floating {

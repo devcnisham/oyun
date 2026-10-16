@@ -696,6 +696,8 @@
 @media (min-width: 768px) {
   .page {
     background: var(--bg-primary);
+    /* the floating top bar sits above the photo, not on it */
+    padding-top: 16px;
   }
 
   .imageHeader {
