@@ -463,3 +463,29 @@
 @media (prefers-reduced-motion: reduce) {
   .transparentWrapper, .stickyWrapper { transition: none; }
 }
+
+/* The compact search slides up into the bar from where the hero search was, as it scrolls out of view */
+@keyframes navSearchIn {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 769px) {
+  .navSearch {
+    animation: navSearchIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: 50% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navSearch { animation: none; }
+}
