@@ -39,13 +39,16 @@ function forceHttps(req: NextRequest) {
 // Pages prerendered at build (the ○ rows of `next build`). A per-request nonce on the request makes Next render them again
 // for every visitor (private, no-store), so these skip it and let the CDN serve the prebuilt HTML. They hold no per-player
 // data and no forms with user input, so the build-time policy (inline scripts allowed, hosts still allow-listed) is used.
-const PRERENDERED = new Set(['/', '/m', '/about', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/terms', '/tournaments']);
+const PRERENDERED_PAGES = new Set(['/', '/m', '/about', '/arenas', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/profile', '/saved', '/settings', '/terms', '/tournaments', '/welcome']);
+// Also cached by the CDN: the turf, sport and area pages (one segment under these folders)
+const PRERENDERED_FOLDERS = /^\/(arenas|sports|turfs)\/[^/]+$/;
+const isPrerendered = (pathname: string) => PRERENDERED_PAGES.has(pathname) || PRERENDERED_FOLDERS.test(pathname);
 
 async function handle(req: NextRequest) {
   const redirect = forceHttps(req) ?? dashboardGuard(req);
   if (redirect) return redirect;
 
-  if (req.method === 'GET' && PRERENDERED.has(req.nextUrl.pathname)) {
+  if (req.method === 'GET' && isPrerendered(req.nextUrl.pathname)) {
     // Phones get the app-style home page, prebuilt at /m (the address bar still shows /)
     const phone = req.nextUrl.pathname === '/' && /Mobi|Android|iPhone|iPod/i.test(req.headers.get('user-agent') ?? '');
     const res = phone ? NextResponse.rewrite(new URL('/m', req.url)) : NextResponse.next();
@@ -70,7 +73,7 @@ async function handle(req: NextRequest) {
 // Prerendered pages skip it: Clerk's middleware marks every response it touches as uncacheable
 const withClerk = clerkMiddleware((_auth, req) => handle(req));
 export const proxy = clerkEnabled
-  ? (req: NextRequest, event: NextFetchEvent) => (req.method === 'GET' && PRERENDERED.has(req.nextUrl.pathname) ? handle(req) : withClerk(req, event))
+  ? (req: NextRequest, event: NextFetchEvent) => (req.method === 'GET' && isPrerendered(req.nextUrl.pathname) ? handle(req) : withClerk(req, event))
   : handle;
 
 export const config = {
