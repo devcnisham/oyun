@@ -1,0 +1,51 @@
+name: Post-deploy check (13:00 IST)
+
+# An hour after the noon deploy, confirm the live site is healthy and being served from the CDN cache.
+# On failure it opens one GitHub issue (or comments on the open one), so a bad deploy is noticed the same afternoon.
+
+on:
+  schedule:
+    - cron: '30 7 * * *' # 07:30 UTC = 13:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  SITE: https://slot-arena-lilac.vercel.app
+
+jobs:
+  check:
+    name: Smoke test and cache check on the live site
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Smoke test (health, home, arenas, double bookings)
+        id: smoke
+        run: node scripts/smoke-test.mjs "$SITE"
+      - name: Cached pages are served from the CDN
+        id: cache
+        run: |
+          fail=0
+          for path in / /arenas /faq; do
+            # the first request after a deploy can be a MISS, so ask twice
+            curl -s -o /dev/null "$SITE$path"
+            header=$(curl -s -o /dev/null -D - "$SITE$path" | tr -d '\r' | grep -i '^x-vercel-cache' || true)
+            echo "$path -> ${header:-no x-vercel-cache header}"
+            case "$header" in *HIT*|*PRERENDER*|*STALE*) ;; *) fail=1 ;; esac
+          done
+          exit $fail
+      - name: Open an issue when the live site is unhealthy
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Live site check failed after the noon deploy"
+          body="The 13:00 IST check failed: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Look at the failing step, then redeploy (Actions -> Scheduled deploy -> Run workflow) or roll back in Vercel."
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json number -q '.[0].number')
+          if [ -n "$existing" ]; then gh issue comment "$existing" --body "$body"; else gh issue create --title "$title" --body "$body"; fi
