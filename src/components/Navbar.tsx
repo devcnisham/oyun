@@ -47,7 +47,7 @@ export default function Navbar() {
         setOverscrolled(y < 0);
         // Slide the header away while reading down the page; bring it back on any scroll back up
         if (y < 80) setHidden(false);
-        else if (y > lastY + 6) setHidden(true);
+        else if (y > lastY + 6) setHidden(!document.activeElement?.closest('[data-app-header]'));
         else if (y < lastY - 6) setHidden(false);
         if (Math.abs(y - lastY) > 6) lastY = y;
       });

@@ -16,7 +16,7 @@ vi.mock('./partner-auth', () => {
     AccessError,
     TURF_COOKIE: 'sa_partner_turf',
     getPartnerContext: async () => null,
-    requirePartnerAction: async () => ({ turf: { id: 'turf_test' }, userName: 'Front Desk Ravi', can: () => true }),
+    requirePartnerAction: async () => ({ partner: { id: 'p_test' }, turf: { id: 'turf_test' }, userName: 'Front Desk Ravi', can: () => true }),
   };
 });
 vi.mock('./store', () => ({
