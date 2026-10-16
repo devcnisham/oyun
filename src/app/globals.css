@@ -20,6 +20,8 @@
   --logo-from: #9e0a0a;
   --logo-to: #4a0000;
   --logo-gradient: linear-gradient(135deg, var(--logo-from) 0%, var(--logo-to) 100%);
+  /* Wordmark typeface (Baloo 2, loaded in layout.tsx): rounded letter ends, used only for the OYUN text logo */
+  --font-wordmark-family: var(--font-wordmark), 'Baloo 2', 'Inter', system-ui, sans-serif;
 
   --bg-primary: #f3f5f7; /* Light gray background */
   --bg-secondary: #ffffff;

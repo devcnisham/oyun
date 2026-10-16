@@ -55,11 +55,12 @@
 }
 
 .logoName {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 24px;
-  font-weight: 900;
+  font-family: var(--font-wordmark-family);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
   color: #fff;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 

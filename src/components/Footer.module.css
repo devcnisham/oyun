@@ -37,11 +37,12 @@
 }
 
 .logoName {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 22px;
+  font-family: var(--font-wordmark-family);
+  font-size: 26px;
   font-weight: 800;
+  line-height: 1.1;
   color: #1f1f1f;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 .logoTag {
