@@ -8,7 +8,7 @@ import styles from './page.module.css';
 
 export const metadata: Metadata = {
   title: 'Launching soon',
-  description: `OYUN launches in ${SITE_CITY} on 17 October 2026. Everything will be revealed at launch.`,
+  description: `OYUN launches in ${SITE_CITY} on 31 October 2026. Everything will be revealed at launch.`,
   alternates: { canonical: '/welcome' },
 };
 
