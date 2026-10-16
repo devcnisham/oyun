@@ -127,12 +127,12 @@
   --ear: 0px; /* tabs touch, no scoops */
   --tab: #f7f8fa;
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: end;
-  gap: 0; min-height: 124px; padding: 10px 16px 0; margin: -6px 0 -4px;
+  gap: 0; min-height: 150px; padding: 10px 16px 0; margin: -6px 0 -4px;
   border-bottom: 1px solid var(--border); filter: drop-shadow(0 -2px 5px rgba(0, 0, 0, 0.07));
 }
 .sportIcon {
   position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-  height: 96px; padding: 0 4px 9px; border-radius: 22px 22px 0 0; background: var(--tab); box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.06);
+  height: 118px; padding: 0 4px 10px; border-radius: 22px 22px 0 0; background: var(--tab); box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.06);
   color: var(--text-primary); text-decoration: none; -webkit-tap-highlight-color: transparent;
   transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -141,9 +141,9 @@ button.sportIcon { border: 0; font: inherit; cursor: pointer; }
 .sportIcon::before { left: calc(var(--ear) * -1); background: radial-gradient(circle at 0 0, transparent var(--ear), var(--tab) calc(var(--ear) + 0.5px)); }
 .sportIcon::after { right: calc(var(--ear) * -1); background: radial-gradient(circle at 100% 0, transparent var(--ear), var(--tab) calc(var(--ear) + 0.5px)); }
 .sportIcon:first-child::before, .sportIcon:last-child::after { display: none; }
-.sportIconOn { --tab: #fff0ee; height: 112px; }
+.sportIconOn { --tab: #fff0ee; height: 138px; }
 .sportIcon:active { filter: brightness(0.97); }
-.sportPhoto { position: absolute; top: 0; left: 0; right: 0; height: calc(100% - 30px); z-index: -1; overflow: hidden; border-radius: 22px 22px 0 0; }
+.sportPhoto { position: absolute; top: 0; left: 0; right: 0; height: calc(100% - 34px); z-index: -1; overflow: hidden; border-radius: 22px 22px 0 0; }
 .sportPhoto img { object-fit: cover; }
 .sportPhoto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 45%, var(--tab) 100%); }
 .sportIcon b { font-size: clamp(10px, 2.9vw, 12px); font-weight: 800; line-height: 1.15; text-align: center; white-space: nowrap; color: #6b7280; transition: color 0.2s ease; }

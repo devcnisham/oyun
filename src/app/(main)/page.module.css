@@ -450,8 +450,8 @@
   grid-template-columns: repeat(4, 1fr);
   gap: calc(var(--ear) * 2 + var(--space)); /* both scoops plus a little open space between tabs */
   align-items: end;
-  min-height: 196px; /* room for the raised tab so the page never shifts */
-  padding-top: 12px;
+  min-height: 262px; /* room for the raised tab so the page never shifts */
+  padding-top: 16px;
   /* no panel of its own: the tabs blend into the page and stand on a hairline */
   border-bottom: 1px solid var(--border);
   /* one soft outline around the whole joined silhouette, scoops included */
@@ -467,8 +467,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  height: 164px;
-  padding: 0 16px 16px;
+  height: 214px;
+  padding: 0 16px 20px;
   border-radius: 38px 38px 0 0;
   background: var(--tab);
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.06); /* hairline where two tabs meet */
@@ -507,7 +507,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: calc(100% - 52px);
+  height: calc(100% - 60px);
   z-index: -1;
   overflow: hidden;
   border-radius: 38px 38px 0 0;
@@ -529,7 +529,7 @@
 
 .sportName {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 1.2;
   color: #6b7280;
@@ -541,7 +541,7 @@
 .sportCard:focus-visible,
 .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child {
   --tab: #fff0ee;
-  height: 184px;
+  height: 246px;
 }
 
 .sportCard:hover .sportImg,
