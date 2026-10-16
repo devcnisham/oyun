@@ -437,17 +437,21 @@
 }
 
 .sportGrid {
+  --ear: 22px; /* radius of the scoop where two tabs meet */
+  --tab: #f7f8fa;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: calc(var(--ear) * 2);
   align-items: end;
-  min-height: 262px; /* room for the raised tile so the page never shifts */
-  padding: 30px 0 0;
-  /* no panel of its own: the tabs stand on a hairline and blend into the page background */
+  min-height: 262px; /* room for the raised tab so the page never shifts */
+  padding-top: 30px;
+  /* no panel of its own: the tabs blend into the page and stand on a hairline */
   border-bottom: 1px solid var(--border);
+  /* one soft outline around the whole joined silhouette, scoops included */
+  filter: drop-shadow(0 -2px 6px rgba(0, 0, 0, 0.07));
 }
 
-/* Category tiles: dark tab-shaped cards with a floating icon; hover or focus lights one up */
+/* Tabs are joined along the bottom by concave scoops (the ears), like one continuous contour with a raised hump per tab */
 .sportCard {
   position: relative;
   isolation: isolate;
@@ -458,24 +462,46 @@
   gap: 6px;
   height: 204px;
   padding: 0 16px 22px;
-  overflow: hidden;
   border-radius: 38px 38px 0 0;
-  background: linear-gradient(180deg, #ffffff 0%, #f6f7f9 100%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-bottom: none;
+  background: var(--tab);
   text-decoration: none;
-  transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s, background 0.3s;
+  transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); /* no colour transition: the scoops would lag behind the tab */
+}
+
+.sportCard::before,
+.sportCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: var(--ear);
+  height: var(--ear);
+  pointer-events: none;
+}
+
+.sportCard::before {
+  left: calc(var(--ear) * -1);
+  background: radial-gradient(circle at 0 0, transparent var(--ear), var(--tab) calc(var(--ear) + 0.5px));
+}
+
+.sportCard::after {
+  right: calc(var(--ear) * -1);
+  background: radial-gradient(circle at 100% 0, transparent var(--ear), var(--tab) calc(var(--ear) + 0.5px));
+}
+
+.sportCard:first-child::before,
+.sportCard:last-child::after {
+  display: none;
 }
 
 /* soft spotlight cone above the icon */
 .sportGlow {
   position: absolute;
-  top: -30px;
-  left: 50%;
+  top: 0;
+  left: 0;
   z-index: -1;
-  width: 190px;
-  height: 150px;
-  transform: translateX(-50%);
+  width: 100%;
+  height: 140px;
+  border-radius: 38px 38px 0 0;
   background: radial-gradient(ellipse at 50% 0%, rgba(211, 16, 39, 0.16), rgba(211, 16, 39, 0) 70%);
   opacity: 0.35;
   transition: opacity 0.3s;
@@ -513,10 +539,8 @@
 .sportCard:hover,
 .sportCard:focus-visible,
 .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child {
+  --tab: #fff0ee;
   height: 232px;
-  border-color: rgba(211, 16, 39, 0.4);
-  background: linear-gradient(180deg, #ffeceb 0%, #ffffff 100%);
-  box-shadow: 0 -10px 28px rgba(211, 16, 39, 0.1);
 }
 
 .sportCard:hover .sportGlow,
@@ -714,7 +738,7 @@
     max-width: 280px;
     scroll-snap-align: start;
   }
-  .sportGrid { align-items: flex-end; min-height: 0; margin: 0; padding: 22px 16px 0; }
+  .sportGrid { --ear: 14px; align-items: flex-end; min-height: 0; margin: 0; padding: 22px 16px 0; }
   .sportCard {
     flex: 0 0 38vw;
     max-width: 160px;
@@ -724,6 +748,7 @@
   .sportCard:hover,
   .sportCard:focus-visible,
   .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child { height: 190px; }
+  .sportCard { flex-shrink: 0; }
   .sportIcon { width: 70px; height: 70px; margin-top: 18px; }
 
   /* Features */
