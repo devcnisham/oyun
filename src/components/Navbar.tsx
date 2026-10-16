@@ -32,11 +32,8 @@ export default function Navbar() {
   const [upcoming, setUpcoming] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [overscrolled, setOverscrolled] = useState(false);
-  
-  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    let lastY = window.scrollY;
     let frame = 0;
     const handleScroll = () => {
       if (frame) return;
@@ -46,11 +43,6 @@ export default function Navbar() {
         setScrolled(y > 20);
         setPastHero(y > 420);
         setOverscrolled(y < 0);
-        // Slide the header away while reading down the page; bring it back on any scroll back up
-        if (y < 80) setHidden(false);
-        else if (y > lastY + 6) setHidden(!document.activeElement?.closest('[data-app-header]'));
-        else if (y < lastY - 6) setHidden(false);
-        if (Math.abs(y - lastY) > 6) lastY = y;
       });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -60,7 +52,6 @@ export default function Navbar() {
     };
   }, []);
 
-  const headerHidden = hidden;
   // Desktop: home shows just the search once the hero is scrolled past; every other page shows just back + search
   const compactBar = !isHome || pastHero;
 
@@ -89,7 +80,7 @@ export default function Navbar() {
 
   return (
     <>
-    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''} ${scrolled || !isHome ? styles.floating : ''}`}>
+    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${scrolled || !isHome ? styles.floating : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner} ${compactBar ? styles.searchOnly : ''}`}>
           <div className={styles.left}>
