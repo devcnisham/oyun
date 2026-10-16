@@ -304,3 +304,11 @@ html {
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+
+/* Native date picker popup: the browser draws it dark over dark surfaces (the hero). Keep it light and use the brand colour for the selected day. */
+input[type='date'],
+input[type='time'],
+input[type='month'] {
+  color-scheme: light;
+  accent-color: var(--primary-700);
+}
