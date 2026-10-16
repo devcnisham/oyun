@@ -46,8 +46,7 @@ export default function Navbar() {
         setPastHero(y > 420);
         setOverscrolled(y < 0);
         // Slide the header away while reading down the page; bring it back on any scroll back up
-        // Desktop keeps the header pinned; only phones slide it away
-        if (y < 80 || window.innerWidth > 768) setHidden(false);
+        if (y < 80) setHidden(false);
         else if (y > lastY + 6) setHidden(true);
         else if (y < lastY - 6) setHidden(false);
         if (Math.abs(y - lastY) > 6) lastY = y;
@@ -89,7 +88,7 @@ export default function Navbar() {
 
   return (
     <>
-    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''} ${scrolled ? styles.floating : ''}`}>
+    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''} ${scrolled || !isHome ? styles.floating : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner} ${compactBar ? styles.searchOnly : ''}`}>
           <div className={styles.left}>
@@ -143,7 +142,7 @@ export default function Navbar() {
                 onChange={(e) => setQ(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                placeholder="Search by city, location or arena name"
+                placeholder={compactBar ? "Search city or arena" : "Search by city, location or arena name"}
                 aria-label="Search by city, location or arena name"
                 autoComplete="off"
               />
