@@ -15,6 +15,7 @@ import HeroSearchBar from './HeroSearchBar';
 import { SPORTS, sportHref } from '@/lib/sports';
 import PopupAd from '@/components/PopupAdLazy';
 import MobileHome from './_home/MobileHome';
+import HeroScroll from './HeroScroll';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
@@ -68,6 +69,7 @@ export default async function Home() {
 
       {/* OYO Style Hero Search */}
       <section className={styles.hero}>
+        <HeroScroll />
         <div className={styles.videoWrapper}>
           <Image
             src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2000&auto=format&fit=crop"

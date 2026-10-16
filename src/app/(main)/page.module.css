@@ -740,3 +740,32 @@ a.tagBtn {
 }
 /* Phones are served only the feed, whatever the screen width (landscape) */
 .mobileForced { display: block; }
+
+/* Scroll-linked hero (see HeroScroll.tsx, which sets --hero-p from 0 to 1): the photo drifts slower than the page and
+   zooms slightly so it recedes, a dark veil grows over it, and the headline and search lift away and fade. */
+@media (min-width: 769px) {
+  .videoWrapper {
+    transform: translate3d(0, calc(var(--hero-p, 0) * 22%), 0) scale(calc(1 + var(--hero-p, 0) * 0.14));
+    will-change: transform;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: rgba(0, 0, 0, calc(var(--hero-p, 0) * 0.6));
+  }
+
+  .heroContainer {
+    transform: translate3d(0, calc(var(--hero-p, 0) * -56px), 0);
+    opacity: calc(1 - var(--hero-p, 0) * 1.5);
+    will-change: transform, opacity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .videoWrapper, .heroContainer { transform: none; opacity: 1; will-change: auto; }
+  .hero::after { display: none; }
+}
