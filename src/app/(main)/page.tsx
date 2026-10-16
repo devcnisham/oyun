@@ -12,7 +12,6 @@ import { shortHour } from '@/lib/format';
 import { homeStats } from '@/lib/home-stats';
 import { getDb } from '@/lib/store';
 import HeroSearchBar from './HeroSearchBar';
-import SportArt from '@/components/SportArt';
 import { SPORTS, sportHref } from '@/lib/sports';
 import PopupAd from '@/components/PopupAdLazy';
 import MobileHome from './_home/MobileHome';
@@ -113,22 +112,17 @@ export default async function Home() {
         )}
       </section>
       {/* Browse by Sport */}
-      <section className={`container ${styles.section}`}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Browse by Sport</h2>
-        </div>
+      <section className={`container ${styles.section} ${styles.sportSection}`}>
+        <h2 className="sr-only">Browse by sport</h2>
         <div className={styles.sportGrid}>
-          {SPORTS.map((sport) => {
-            const venues = turfs.filter((t) => t.sports.some((x) => x.trim().toLowerCase() === sport.value.toLowerCase())).length;
-            return (
-              <Link href={sportHref(sport.value)} key={sport.value} className={styles.sportCard} aria-label={`${sport.label}: ${venues} venue${venues === 1 ? '' : 's'}`}>
-                <span className={styles.sportGlow} aria-hidden />
-                <SportArt sport={sport.value} className={styles.sportIcon} />
-                <span className={styles.sportBadge}>{venues} {venues === 1 ? 'venue' : 'venues'}</span>
-                <h3 className={styles.sportName}>{sport.label}</h3>
-              </Link>
-            );
-          })}
+          {SPORTS.map((sport) => (
+            <Link href={sportHref(sport.value)} key={sport.value} className={styles.sportCard}>
+              <span className={styles.sportPhoto} aria-hidden>
+                <Image src={sport.image.replace('w=600', 'w=1000')} alt="" fill sizes="(max-width: 768px) 70vw, 28vw" className={styles.sportImg} />
+              </span>
+              <h3 className={styles.sportName}>{sport.label}</h3>
+            </Link>
+          ))}
         </div>
       </section>
 

@@ -374,6 +374,12 @@
   padding: 48px 24px;
 }
 
+/* the sport tabs sit close under the hero and the next row, no big empty bands */
+.sportSection {
+  padding-top: 20px;
+  padding-bottom: 8px;
+}
+
 .sectionTitle {
   font-size: 24px;
   margin-bottom: 24px;
@@ -438,13 +444,14 @@
 
 .sportGrid {
   --ear: 22px; /* radius of the scoop where two tabs meet */
+  --space: 14px; /* flat open gap between the two scoops */
   --tab: #f7f8fa;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: calc(var(--ear) * 2);
+  gap: calc(var(--ear) * 2 + var(--space)); /* both scoops plus a little open space between tabs */
   align-items: end;
-  min-height: 262px; /* room for the raised tab so the page never shifts */
-  padding-top: 30px;
+  min-height: 196px; /* room for the raised tab so the page never shifts */
+  padding-top: 12px;
   /* no panel of its own: the tabs blend into the page and stand on a hairline */
   border-bottom: 1px solid var(--border);
   /* one soft outline around the whole joined silhouette, scoops included */
@@ -460,8 +467,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  height: 204px;
-  padding: 0 16px 22px;
+  height: 164px;
+  padding: 0 16px 16px;
   border-radius: 38px 38px 0 0;
   background: var(--tab);
   text-decoration: none;
@@ -493,37 +500,30 @@
   display: none;
 }
 
-/* soft spotlight cone above the icon */
-.sportGlow {
+/* real photo fills the top of the tab and fades into the tab colour */
+.sportPhoto {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  height: calc(100% - 52px);
   z-index: -1;
-  width: 100%;
-  height: 140px;
+  overflow: hidden;
   border-radius: 38px 38px 0 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(211, 16, 39, 0.16), rgba(211, 16, 39, 0) 70%);
-  opacity: 0.35;
-  transition: opacity 0.3s;
 }
 
-.sportIcon {
-  width: 92px;
-  height: 92px;
-  margin-bottom: auto;
-  margin-top: 24px;
-  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.22));
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+.sportImg {
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(0.92);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s;
 }
 
-.sportBadge {
-  padding: 3px 12px;
-  border-radius: 8px;
-  background: var(--primary-700);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: 0 4px 10px rgba(211, 16, 39, 0.4);
+.sportPhoto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 45%, var(--tab) 100%);
 }
 
 .sportName {
@@ -540,19 +540,14 @@
 .sportCard:focus-visible,
 .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child {
   --tab: #fff0ee;
-  height: 232px;
+  height: 184px;
 }
 
-.sportCard:hover .sportGlow,
-.sportCard:focus-visible .sportGlow,
-.sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child .sportGlow {
-  opacity: 1;
-}
-
-.sportCard:hover .sportIcon,
-.sportCard:focus-visible .sportIcon,
-.sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child .sportIcon {
-  transform: translateY(-4px) scale(1.1);
+.sportCard:hover .sportImg,
+.sportCard:focus-visible .sportImg,
+.sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child .sportImg {
+  transform: scale(1.1);
+  filter: saturate(1.05);
 }
 
 .sportCard:hover .sportName,
@@ -562,7 +557,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sportCard, .sportIcon { transition: none; }
+  .sportCard, .sportImg { transition: none; }
 }
 
 .featureGrid {
@@ -738,18 +733,17 @@
     max-width: 280px;
     scroll-snap-align: start;
   }
-  .sportGrid { --ear: 14px; align-items: flex-end; min-height: 0; margin: 0; padding: 22px 16px 0; }
+  .sportGrid { --ear: 14px; --space: 10px; align-items: flex-end; min-height: 0; margin: 0; padding: 22px 16px 0; }
   .sportCard {
     flex: 0 0 38vw;
     max-width: 160px;
-    height: 170px;
+    height: 140px;
     scroll-snap-align: start;
   }
   .sportCard:hover,
   .sportCard:focus-visible,
-  .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child { height: 190px; }
+  .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child { height: 156px; }
   .sportCard { flex-shrink: 0; }
-  .sportIcon { width: 70px; height: 70px; margin-top: 18px; }
 
   /* Features */
   .featureGrid { 
