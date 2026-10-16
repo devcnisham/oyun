@@ -378,7 +378,7 @@
   .searchOnly .left { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); }
   .searchOnly .logo svg,
   .searchOnly .tagline { display: none; }
-  .searchOnly .navSearch { flex: 0 1 640px; }
+  .searchOnly .navSearch { flex: 0 1 700px; }
 }
 
 .navBack { display: none; }
@@ -492,4 +492,60 @@
 
 @media (prefers-reduced-motion: reduce) {
   .navSearch { animation: none; }
+}
+
+/* Same search as the hero: place, date and Search in the bar, with the map button beside it */
+.navDivider {
+  width: 1px;
+  height: 22px;
+  flex: none;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.navDate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  width: 168px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.navSearch .navDate input {
+  flex: 1;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.navMap {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .navMap {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 42px;
+    height: 42px;
+    margin-left: 12px;
+    border-radius: 12px;
+    background: #fff;
+    color: #1a1a1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .navMap:hover {
+    background: #f3f3f3;
+  }
+
+  /* on the floating off-white bar the map button gets a hairline instead of a shadow */
+  .floating .navMap {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
 }
