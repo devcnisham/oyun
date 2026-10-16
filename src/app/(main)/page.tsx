@@ -12,6 +12,7 @@ import { shortHour } from '@/lib/format';
 import { homeStats } from '@/lib/home-stats';
 import { getDb } from '@/lib/store';
 import HeroSearchBar from './HeroSearchBar';
+import SportArt from '@/components/SportArt';
 import { SPORTS, sportHref } from '@/lib/sports';
 import PopupAd from '@/components/PopupAdLazy';
 import MobileHome from './_home/MobileHome';
@@ -121,9 +122,8 @@ export default async function Home() {
             const venues = turfs.filter((t) => t.sports.some((x) => x.trim().toLowerCase() === sport.value.toLowerCase())).length;
             return (
               <Link href={sportHref(sport.value)} key={sport.value} className={styles.sportCard} aria-label={`${sport.label}: ${venues} venue${venues === 1 ? '' : 's'}`}>
-                <Image src={sport.image} alt="" fill className={styles.sportImg} sizes="(max-width: 768px) 50vw, 25vw" />
                 <span className={styles.sportGlow} aria-hidden />
-                <span className={styles.sportIcon} aria-hidden>{sport.icon}</span>
+                <SportArt sport={sport.value} className={styles.sportIcon} />
                 <span className={styles.sportBadge}>{venues} {venues === 1 ? 'venue' : 'venues'}</span>
                 <h3 className={styles.sportName}>{sport.label}</h3>
               </Link>

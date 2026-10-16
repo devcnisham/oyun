@@ -462,18 +462,6 @@
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
 }
 
-.sportImg {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.22;
-  filter: saturate(0.8);
-  transition: opacity 0.4s, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
 /* soft spotlight cone above the icon */
 .sportGlow {
   position: absolute;
@@ -489,11 +477,11 @@
 }
 
 .sportIcon {
-  font-size: 68px;
-  line-height: 1;
+  width: 92px;
+  height: 92px;
   margin-bottom: auto;
-  margin-top: 30px;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+  margin-top: 22px;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45));
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -523,12 +511,6 @@
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(211, 16, 39, 0.35);
 }
 
-.sportCard:hover .sportImg,
-.sportCard:focus-visible .sportImg {
-  opacity: 0.4;
-  transform: scale(1.06);
-}
-
 .sportCard:hover .sportGlow,
 .sportCard:focus-visible .sportGlow {
   opacity: 1;
@@ -545,7 +527,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sportCard, .sportImg, .sportIcon { transition: none; }
+  .sportCard, .sportIcon { transition: none; }
 }
 
 .featureGrid {
@@ -727,7 +709,7 @@
     height: 180px;
     scroll-snap-align: start;
   }
-  .sportIcon { font-size: 54px; margin-top: 24px; }
+  .sportIcon { width: 72px; height: 72px; margin-top: 18px; }
 
   /* Features */
   .featureGrid { 
