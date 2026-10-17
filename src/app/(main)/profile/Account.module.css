@@ -1,35 +1,54 @@
 .page {
-  max-width: 560px;
-  padding-top: 24px;
-  padding-bottom: 48px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  max-width: 1000px;
+  padding-top: 28px;
+  padding-bottom: 64px;
 }
 
 .pageTitle {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+/* Phone: one column. Desktop: the account card stays in view on the left, the menus scroll on the right */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .side {
+    position: sticky;
+    top: 96px;
+  }
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
 }
 
 .card {
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 20px;
+  padding: 24px;
 }
 
 .card h2 {
   font-size: 18px;
   font-weight: 800;
   margin-bottom: 4px;
-}
-
-.hint {
-  display: block;
-  font-size: 14px;
-  color: var(--text-muted);
 }
 
 /* Signed in */
@@ -39,11 +58,15 @@
   gap: 14px;
 }
 
-.avatar {
-  width: 52px;
-  height: 52px;
+.avatar,
+.photo {
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
   border-radius: 50%;
+}
+
+.avatar {
   display: grid;
   place-items: center;
   background: var(--primary-gradient);
@@ -53,10 +76,6 @@
 }
 
 .photo {
-  width: 52px;
-  height: 52px;
-  flex-shrink: 0;
-  border-radius: 50%;
   object-fit: cover;
 }
 
@@ -65,6 +84,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .whoText b {
@@ -77,24 +97,25 @@
 .whoText span {
   font-size: 14px;
   color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.linkBtn {
-  background: none;
-  border: none;
-  color: var(--primary-700);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 8px;
+.cardActions {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
 }
 
 .editForm {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 20px;
+  padding-top: 20px;
   border-top: 1px solid var(--border);
 }
 
@@ -107,7 +128,7 @@
   height: 46px;
   padding: 0 14px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 16px;
 }
 
@@ -133,18 +154,23 @@
 /* Signed out */
 .signInCard {
   text-align: center;
-  padding: 28px 20px;
+  padding: 32px 24px;
 }
 
 .signInIcon {
   width: 56px;
   height: 56px;
-  margin: 0 auto 12px;
-  border-radius: 50%;
+  margin: 0 auto 14px;
+  border-radius: 16px;
   display: grid;
   place-items: center;
   background: var(--primary-50);
   color: var(--primary-700);
+}
+
+.signInIcon svg {
+  width: 26px;
+  height: 26px;
 }
 
 .signInCard p {
@@ -154,9 +180,8 @@
 
 .authRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 
 .primaryBtn,
@@ -164,11 +189,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   height: 46px;
   padding: 0 18px;
   border-radius: 12px;
+  font: inherit;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
 }
@@ -193,84 +220,104 @@
   background: var(--bg-muted);
 }
 
-/* Menu */
-.menu {
+.ghostBtn svg {
+  color: var(--text-muted);
+}
+
+/* Menus */
+.groupTitle {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 4px 10px;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
 }
 
-.menu a,
-.menu button {
+.rows li + li {
+  border-top: 1px solid var(--border);
+}
+
+.row {
   display: flex;
   align-items: center;
+  gap: 14px;
   width: 100%;
-  min-height: 54px;
-  padding: 0 20px;
+  min-height: 68px;
+  padding: 12px 18px;
   background: none;
   border: none;
-  border-bottom: 1px solid var(--border);
   font: inherit;
-  font-size: 15px;
-  font-weight: 600;
   color: var(--text-primary);
   text-decoration: none;
   text-align: left;
   cursor: pointer;
 }
 
-.menu > :last-child {
-  border-bottom: none;
-}
-
-.menu a:hover,
-.menu button:hover {
+.row:hover {
   background: var(--bg-muted);
 }
 
-.menuTitle {
+.tile {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+.rowText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rowText b {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.rowText small {
   font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--text-muted);
-  margin: 8px 4px -6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.menu span {
-  width: 28px;
-  margin-right: 10px;
-  font-size: 18px;
-  text-align: center;
+.chev {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.15s;
 }
 
-.menu i {
-  margin-left: auto;
-  font-style: normal;
-  font-size: 20px;
-  color: var(--text-muted);
+.row:hover .chev {
+  transform: translateX(2px);
 }
 
 .legal {
   display: flex;
-  justify-content: center;
   gap: 10px;
   font-size: 13px;
   color: var(--text-muted);
+  margin: 0 4px;
 }
 
 .legal a {
   color: var(--text-muted);
-}
-
-.signOut {
-  align-self: center;
-  background: none;
-  border: none;
-  padding: 10px 16px;
-  color: var(--primary-700);
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
 }

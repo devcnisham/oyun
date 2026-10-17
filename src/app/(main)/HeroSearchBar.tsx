@@ -7,16 +7,12 @@ import styles from './page.module.css';
 export default function HeroSearchBar() {
   const router = useRouter();
   const [location, setLocation] = useState('');
-  const [dateStr, setDateStr] = useState('');
 
   const handleSearch = () => {
     // Free text matches turf name, area or location on the arenas page
     const query = new URLSearchParams();
     if (location.trim()) {
       query.set('q', location.trim());
-    }
-    if (dateStr) {
-      query.set('date', dateStr);
     }
     router.push(`/arenas?${query.toString()}`);
   };
@@ -33,19 +29,6 @@ export default function HeroSearchBar() {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          />
-        </div>
-        <div className={styles.searchDivider}></div>
-        <div className={styles.searchField} style={{ flex: '0 0 auto', width: '190px' }}>
-          <svg className={styles.searchIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-          <input 
-            type="date" 
-            aria-label="Date"
-            className={styles.searchInput} 
-            value={dateStr}
-            onChange={(e) => setDateStr(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            style={{ cursor: 'pointer' }}
           />
         </div>
       </div>
