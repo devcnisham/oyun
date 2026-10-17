@@ -27,6 +27,91 @@ Hotfix that cannot wait for noon: Actions -> **Scheduled deploy** -> **Run workf
 - Anything that touches security, payments or the database has been read by a person.
 - You know the change goes live at the next noon.
 
+## Coding session checklist
+
+Run through this in order each session. Each stage is also a checklist in the build tracker (Checklists, `CS1` to `CS9`).
+
+### Plan
+
+- [ ] Review the backlog
+- [ ] Select today's tasks
+- [ ] Estimate time
+- [ ] Update the kanban board / Jira
+- [ ] Review roadmap and prioritise the next set of work
+- [ ] Plan the feature or idea before coding
+
+### Develop
+
+- [ ] Build frontend
+- [ ] Build backend
+- [ ] Database changes (migration plus SQL test)
+- [ ] API implementation
+- [ ] Authentication
+- [ ] File storage
+- [ ] Payments
+- [ ] Notifications
+- [ ] Background jobs
+
+### Debug
+
+- [ ] Fix reported bugs (log in docs/BUGS.md)
+- [ ] Fix console errors
+- [ ] Fix API issues
+- [ ] Fix UI issues
+- [ ] Fix responsive layouts
+- [ ] Fix performance bottlenecks
+
+### Code quality
+
+- [ ] Refactor code
+- [ ] Remove duplicate code
+- [ ] Rename unclear variables
+- [ ] Improve folder structure
+- [ ] Add comments where needed
+- [ ] Improve architecture
+
+### Test
+
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] End-to-end tests
+- [ ] Manual testing
+- [ ] Edge-case testing
+- [ ] Mobile testing
+- [ ] Desktop testing
+
+### Git
+
+- [ ] Commit changes
+- [ ] Push to GitHub
+- [ ] Write meaningful commit messages
+- [ ] Tag releases when needed
+- [ ] Code review the diff before merge
+
+### Deploy
+
+- [ ] Build production version
+- [ ] Run the CI pipeline
+- [ ] Deploy (noon workflow)
+- [ ] Verify deployment
+- [ ] Check logs
+- [ ] Roll back if needed
+
+### Monitor
+
+- [ ] Check server logs
+- [ ] Check analytics
+- [ ] Monitor uptime
+- [ ] Monitor errors
+- [ ] Monitor database
+
+### Docs
+
+- [ ] Update README
+- [ ] Update API docs
+- [ ] Update changelog
+- [ ] Update feature list
+
 ## Where things are
 
 - Phases and where each stands: [PHASES.md](PHASES.md).
