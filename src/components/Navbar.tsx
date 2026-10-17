@@ -19,7 +19,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [q, setQ] = useState('');
-  const [date, setDate] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const suggestions = useSuggestions(q, searchFocused);
   const [pastHero, setPastHero] = useState(false);
@@ -120,7 +119,6 @@ export default function Navbar() {
                 e.preventDefault();
                 const params = new URLSearchParams();
                 if (q.trim()) params.set('q', q.trim());
-                if (date) params.set('date', date);
                 const qs = params.toString();
                 router.push(qs ? `/arenas?${qs}` : '/arenas');
               }}
@@ -138,14 +136,6 @@ export default function Navbar() {
                 aria-label="Search by city, location or arena name"
                 autoComplete="off"
               />
-              <span className={styles.navDivider} aria-hidden />
-              <label className={styles.navDate}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <rect x="3" y="5" width="18" height="16" rx="2" />
-                  <path d="M3 10h18M8 3v4M16 3v4" />
-                </svg>
-                <input type="date" aria-label="Date" value={date} onChange={(e) => setDate(e.target.value)} />
-              </label>
               <button type="submit">Search</button>
               {searchFocused && <SearchSuggestions query={q} suggestions={suggestions} onPick={() => setSearchFocused(false)} className={styles.navSuggest} />}
             </form>
