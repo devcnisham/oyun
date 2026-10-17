@@ -29,5 +29,6 @@ Hotfix that cannot wait for noon: Actions -> **Scheduled deploy** -> **Run workf
 
 ## Where things are
 
+- Phases and where each stands: [PHASES.md](PHASES.md).
 - Workflows: `.github/workflows/` (`ci.yml`, `release-pipeline.yml`, `scheduled-deploy.yml`, `post-deploy-check.yml`, `weekly-routine.yml`, `database-backup.yml`).
 - Runbooks for incidents: [RUNBOOKS.md](RUNBOOKS.md). Environments: [ENVIRONMENTS.md](ENVIRONMENTS.md).
