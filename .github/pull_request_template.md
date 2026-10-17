@@ -13,6 +13,7 @@
 ## Follow-ups and things the owner must do
 <!-- env vars, SQL to run on production, dashboards -->
 
+- [ ] Followed [docs/FEATURE-WORKFLOW.md](../docs/FEATURE-WORKFLOW.md): steps 01 to 05 settled first, test written before the code, any defect logged in `docs/BUGS.md`
 - [ ] `npm run typecheck`, `npm run lint`, `npm test`, `npm run build` pass
 - [ ] Tests added for new rules (and for any new server action: `src/lib/authorization.test.ts`)
 - [ ] `docs/build-tracker.html` updated and `node scripts/check-tracker.mjs` passes
