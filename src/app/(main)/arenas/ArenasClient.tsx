@@ -321,7 +321,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
       <div className={`container ${styles.body}`}>
         {/* Grid */}
-        <main className={styles.main}>
+        <div className={styles.main}>
           {filtered.length === 0 ? (
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>🏟️</div>
@@ -349,7 +349,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
             </div>
             </>
           )}
-        </main>
+        </div>
       </div>
     </div>
   );

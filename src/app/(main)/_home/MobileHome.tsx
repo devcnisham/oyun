@@ -27,7 +27,7 @@ export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
     <div className={styles.home}>
       <header className={styles.head}>
         <NextGame />
-        <h2 className={styles.title}>What do you want to play?</h2>
+        <h1 className={styles.title}>What do you want to play?</h1>
       </header>
 
       <SportRail turfs={railTurfs} />

@@ -1,5 +1,6 @@
 import StudentIdBox from './StudentIdBox';
 import { createPortal } from 'react-dom';
+import { useDialogFocus } from '@/lib/client/use-dialog-focus';
 import type { SelectionQuote } from '@/lib/booking-types';
 import type { AddOn, PitchSize, PublicTurf, Slot } from '@/lib/types';
 import { rupees, shortHour } from '@/lib/format';
@@ -37,11 +38,12 @@ function advanceSummary(quote: SelectionQuote | null) {
 /** Bottom sheet shown while the player's slots are held: details, offers, bill and confirm. */
 export default function CheckoutSheet({ turf, size, bookableName, dateLabel, selected, selectedSlots, secondsLeft, paying, signedIn, cashback, form, addOns, onClose, onPay }: CheckoutSheetProps) {
   const { quote, error, name, phone, code, codeError, codeApplied, promo, referral, useWallet, selectedAddOns, setAddOnQty } = form;
+  const dialogRef = useDialogFocus<HTMLDivElement>(onClose, !paying);
   const chips = quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }));
 
   return createPortal(
     <div className={`${styles.flow} ${styles.overlay}`} onClick={(e) => e.target === e.currentTarget && !paying && onClose()}>
-      <div className={styles.sheet} role="dialog" aria-modal="true" aria-label="Checkout">
+      <div ref={dialogRef} className={styles.sheet} role="dialog" aria-modal="true" aria-label="Checkout">
         <div className={styles.sheetHead}>
           <button className={styles.back} onClick={onClose} disabled={paying} aria-label="Back to slots">←</button>
           <h2>Checkout</h2>
