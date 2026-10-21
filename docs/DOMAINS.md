@@ -19,3 +19,11 @@ Redirects are 307 while the setup is new; switch to 308 once it has been stable.
 4. Clerk: the production instance must allow `book.oyun.co.in` (same root domain as the instance).
 
 At launch the landing page `/` can stop rewriting to `/welcome`: change `landing` in `routeForHost`.
+
+## Launch gate
+Until **31 October 2026, 12:00 am India time** the booking site is closed to the public, on `book.oyun.co.in` and on the `*.vercel.app` address. Visitors to a closed page go to `www.oyun.co.in` (the landing page). Dashboards (`partner.`, `admin.`, and `/partner` `/admin` on any host) and `/api/*` stay reachable.
+
+- **Opens by itself** at the launch time. After it, `www.oyun.co.in` also serves the real site (the landing page stops showing).
+- **Open early:** set `LAUNCH_OPEN=true` in Vercel.
+- **Team preview before launch:** set `LAUNCH_PREVIEW_KEY` (16+ random characters) in Vercel, then open any page once with `?preview=<key>` (e.g. `https://book.oyun.co.in/?preview=<key>`). That sets a 30-day cookie on that host; `www` still shows the landing page. The key is dropped from the URL after it is read.
+- Code: `isLaunched`, `previewAllowed` and `routeForHost` in `src/lib/hosts.ts`; the cookie is set in `src/proxy.ts`.
