@@ -37,7 +37,7 @@ It already has every migration in `supabase/migrations/` applied (through `20261
 2. Expose the schema, once: `alter role authenticator set pgrst.db_schemas = 'public, graphql_public, oyun'; notify pgrst, 'reload config';`
 3. Check: `select public.parity_report();` returns `"ok": true`.
 
-**Production is not set up this way yet**: before `OYUN_V2_SLOTS=1` goes live there, run step 2 on the production project (or add `oyun` under Project Settings -> API -> Exposed schemas).
+Production has the same setting (applied 21 Oct 2026, with its 13 turfs synced into venues). A request with the browser key is answered `permission denied for schema oyun`, which is correct: only the server key reads it.
 
 ### Run the app against it locally
 
