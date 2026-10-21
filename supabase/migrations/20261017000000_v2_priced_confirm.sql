@@ -12,7 +12,8 @@ create unique index if not exists bookings_legacy_id_uniq on oyun.bookings (lega
 alter table oyun.players add column if not exists legacy_id text;
 create unique index if not exists players_legacy_id_uniq on oyun.players (legacy_id) where legacy_id is not null;
 
--- p_quote: { subtotal, discount, walletUsed, total, advanceDue, amountPaid, priceBreakdown, meta, legacyId }
+-- total is what is left to pay after the wallet, so wallet_used may exceed it (a booking paid fully from the wallet has total 0).
+-- p_quote: { subtotal, discount, walletUsed, total, advanceDue, amountPaid, priceBreakdown, meta, legacyId, source }
 create or replace function oyun.confirm_hold_priced(
   p_booking uuid, p_holder text, p_name text, p_phone text, p_quote jsonb,
   p_player uuid default null, p_pay_online boolean default false,
@@ -29,7 +30,7 @@ declare
 begin
   if p_quote is null or jsonb_typeof(p_quote) <> 'object'
      or least(v_subtotal, v_discount, v_wallet, v_total, v_advance, v_paid) < 0
-     or v_paid > v_total or v_wallet > v_total then
+     or v_paid > v_total then
     raise exception 'invalid_quote' using errcode = 'P0001';
   end if;
   select * into bk from oyun.bookings where id = p_booking for update;
@@ -47,6 +48,7 @@ begin
          price_breakdown = coalesce(p_quote->'priceBreakdown', '{}'::jsonb),
          meta = coalesce(p_quote->'meta', '{}'::jsonb),
          legacy_id = coalesce(p_quote->>'legacyId', legacy_id),
+         source = coalesce(p_quote->>'source', source),
          status = case when p_pay_online then 'pending_payment' else 'confirmed' end::oyun.booking_status,
          hold_expires_at = case when p_pay_online then now() + p_payment_window else null end
    where id = p_booking

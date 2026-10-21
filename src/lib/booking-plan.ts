@@ -19,7 +19,15 @@ export function bookableTurf(db: Database, turfId: string) {
  * The quote runs this on a throwaway copy, so the price shown is exactly what booking charges.
  * Add-ons are attached to the first hour only.
  */
-export function planBooking(db: Database, req: BookingRequest, holder: string | null, strict: boolean, accountId: string | null = null) {
+export function planBooking(
+  db: Database,
+  req: BookingRequest,
+  holder: string | null,
+  strict: boolean,
+  accountId: string | null = null,
+  // The id and code the booking already has when its record was made elsewhere (the v2 checkout)
+  fixed?: { id: string; code: string }
+) {
   const turf = bookableTurf(db, req.turfId);
   if (!turf) throw new ValidationError('This turf is not taking bookings right now');
   const hours = cleanHours(req.hours);
@@ -138,8 +146,8 @@ export function planBooking(db: Database, req: BookingRequest, holder: string | 
     advance: totalAdvance,
   };
 
-  const bookingId = newId('bk');
-  const code = newBookingCode(db);
+  const bookingId = fixed?.id ?? newId('bk');
+  const code = fixed?.code ?? newBookingCode(db);
 
   const singleBooking: Booking = {
     id: bookingId,

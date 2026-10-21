@@ -22,7 +22,9 @@ import { mapTurfToResourcesAndBookables } from './venue-mapping';
 import { withDate, withoutDate } from './rain';
 import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
-import { isV2SlotsActive, v2BlockSlot } from './v2-slots';
+import { isV2SlotsActive, v2BlockSlot, v2CancelBooking, v2ConfirmHoldPriced, v2HoldSlots, v2UnblockSlot } from './v2-slots';
+import { v2QuoteOf } from './v2-bookings';
+import { randomUUID } from 'node:crypto';
 import { sharedRateLimit } from './shared-rate-limit';
 import { logActivity } from './activity';
 
@@ -109,6 +111,13 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       .filter((k) => k.startsWith('addon_'))
       .map((k) => ({ id: k.slice(6), qty: Number(fd.get(k)) || 0 }));
 
+    if (isV2SlotsActive()) {
+      if ((Number(fd.get('minute')) || 0) !== 0 || (Number(fd.get('durationMinutes')) || 60) !== 60) {
+        throw new ValidationError('Custom start minutes and durations are not supported with v2 slots yet. Use a whole-hour slot.');
+      }
+      return await v2WalkIn(ctx, { name, phone, date, hour, paymentMode, addOns });
+    }
+
     return await mutate((db) => {
       const quote = buildQuote(db, { turfId: ctx.turf.id, date, hour, addOns, phone, source: 'walk_in' }, istNow());
       if (!quote) throw new ValidationError('Turf not found');
@@ -144,6 +153,55 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booking.code}` };
     });
   });
+}
+
+// A walk-in with v2 slots: price it, hold the slot in oyun (the guard against double bookings), confirm the
+// hold with the price already paid at the desk, then record the player and the activity.
+async function v2WalkIn(
+  ctx: PartnerContext,
+  input: { name: string; phone: string; date: string; hour: number; paymentMode: 'cash' | 'upi'; addOns: { id: string; qty: number }[] }
+): Promise<ActionResult> {
+  const { name, phone, date, hour, paymentMode } = input;
+  const quote = buildQuote(await getDb(), { turfId: ctx.turf.id, date, hour, addOns: input.addOns, phone, source: 'walk_in' }, istNow());
+  if (!quote) throw new ValidationError('Turf not found');
+  if (quote.slotError) throw new ValidationError(quote.slotError);
+
+  const holder = `walkin:${randomUUID()}`;
+  const held = await v2HoldSlots(ctx.turf.id, date, [hour], holder);
+  if (!held) throw new Error('[walk-in] could not reach the booking service');
+  if (!held.ok) throw new ValidationError(held.error);
+
+  const player = await mutate((db) => upsertPlayer(db, name, phone).id);
+  const booking: Booking = {
+    id: newId('bk'),
+    code: '',
+    turfId: ctx.turf.id,
+    date,
+    hour,
+    timeLabel: formatSlotRange(hour, 60, 0),
+    customerName: name,
+    customerPhone: phone,
+    playerId: player,
+    source: 'walk_in',
+    createdBy: ctx.userName,
+    addOns: quote.addOns,
+    pricing: quote.breakdown,
+    paymentMode,
+    amountPaid: quote.breakdown.total,
+    status: 'confirmed',
+    checkedInAt: null,
+    createdAt: new Date().toISOString(),
+  };
+  const confirmed = await v2ConfirmHoldPriced(held.bookingId, holder, name, phone, v2QuoteOf(booking), { turfId: ctx.turf.id, date });
+  if (!confirmed || !confirmed.ok) {
+    await v2CancelBooking(held.bookingId, 'walk-in could not be confirmed', ctx.turf.id, date);
+    throw new ValidationError(confirmed ? confirmed.error : 'Could not save the walk-in. Please try again.');
+  }
+  const code = (confirmed.booking as { code?: string } | null)?.code ?? '';
+  await mutate((db) => {
+    logActivity(db, ctx, 'Walk-in booking', `${name} · ${date} ${booking.timeLabel} · ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}`);
+  });
+  return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${code}` };
 }
 
 export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
@@ -263,9 +321,12 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
 
     if (isV2SlotsActive()) {
       const v2Res = await v2BlockSlot(ctx.turf.id, date, hour, reason);
-      if (v2Res && !v2Res.ok) {
-        throw new ValidationError(v2Res.error);
-      }
+      if (!v2Res) throw new Error('[block] could not reach the booking service');
+      if (!v2Res.ok) throw new ValidationError(v2Res.error);
+      return await mutate((db) => {
+        logActivity(db, ctx, 'Blocked a slot', `${date} ${formatHour(hour)} · ${reason}`);
+        return { ok: `Blocked ${formatHour(hour)} on ${date}` };
+      });
     }
 
     return await mutate((db) => {
@@ -316,9 +377,20 @@ export async function blockRange(_prev: ActionResult, fd: FormData): Promise<Act
       for (const d of dates) {
         for (const h of open) {
           const res = await v2BlockSlot(ctx.turf.id, d, h, reason);
-          if (res && !res.ok) v2Rejected.add(`${d}|${h}`);
+          if (!res || !res.ok) v2Rejected.add(`${d}|${h}`);
         }
       }
+    }
+
+    if (isV2SlotsActive()) {
+      const total = dates.length * open.length;
+      const skipped = v2Rejected.size;
+      const blocked = total - skipped;
+      if (blocked === 0) throw new ValidationError(`Nothing blocked: all ${skipped} slots were already booked or blocked`);
+      return await mutate((db) => {
+        logActivity(db, ctx, 'Bulk blocked slots', `${blocked} slot${blocked === 1 ? '' : 's'} · ${from} to ${to} · ${reason}`);
+        return { ok: `Blocked ${blocked} slot${blocked === 1 ? '' : 's'}${skipped ? ` (${skipped} skipped: already booked or blocked)` : ''}` };
+      });
     }
 
     return await mutate((db) => {
@@ -350,6 +422,14 @@ export async function unblockSlot(_prev: ActionResult, fd: FormData): Promise<Ac
   return run(async () => {
     const ctx = await requirePartnerAction('slots');
     const id = str(fd, 'blockId');
+    if (isV2SlotsActive()) {
+      const removed = await v2UnblockSlot(id, ctx.turf.id);
+      if (!removed.ok) throw new ValidationError(removed.error);
+      return await mutate((db) => {
+        logActivity(db, ctx, 'Reopened a slot', `${removed.date} ${formatHour(removed.hour)}`);
+        return { ok: 'Slot reopened' };
+      });
+    }
     return await mutate((db) => {
       const before = db.blocks.length;
       const gone = db.blocks.find((b) => b.id === id && b.turfId === ctx.turf.id);

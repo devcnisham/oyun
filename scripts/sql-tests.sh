@@ -42,6 +42,9 @@ echo "== Data mapping from turfs to venues, resources, bookables (#134)"
 echo "== Priced confirm_hold (v2 integration phase 1)"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_priced_confirm_test.sql
 
+echo "== Booking updates (v2 integration phase 3)"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_booking_updates_test.sql
+
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 

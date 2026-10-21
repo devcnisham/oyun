@@ -34,3 +34,13 @@ Nothing in phases 2 to 5 can be verified without a staging Supabase; use a throw
 - Window: bookings created in the last 90 days and live holds. Older history needs a ranged query (reports, payouts: phase 4).
 - Not covered yet: `pricing` is still excluded from the store when the flag is on, so price rules must move to `oyun.price_rules` reads in phase 3 before the flag can be switched on.
 - Bookings made by the legacy path while the flag is on are not saved (phase 3 routes them to `confirm_hold_priced`). Do not enable the flag in production before phase 3.
+
+## Phase 3 notes (writes)
+
+Done: checkout (`v2-checkout.ts`: price, confirm the hold with the quote, then wallet/promo/player), edits to existing bookings written back
+through `apply_booking_updates` (check-in, no-show, cash collected, cancel, refund, review, cashback), walk-ins (whole-hour slots), block, bulk block, unblock.
+Pricing rules stay in the main store (only bookings, holds and blocks move).
+
+Refused loudly while the flag is on (nothing is silently lost): recurring bookings (`recurring.ts` adds bookings), rescheduling (moving a
+booking to another slot), walk-ins with custom minutes or lengths, waitlist auto-booking. Each needs a slot-changing RPC; do them before enabling the flag.
+Also open: DPDP erase of bookings, payouts and invoices from `oyun.payments` (phase 4), parity check on staging (phase 5).
