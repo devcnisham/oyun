@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { connection } from 'next/server';
 import type { Role } from '@/lib/session';
@@ -21,9 +22,11 @@ const copy = {
   },
 };
 
-export default async function LoginScreen({ role }: { role: Role }) {
+// `social` is the Google / Apple block (Clerk), shown above the password form; `mode="signup"` shows only that block
+export default async function LoginScreen({ role, social, mode = 'login' }: { role: Role; social?: ReactNode; mode?: 'login' | 'signup' }) {
   await connection(); // render per request (reads login settings at runtime)
   const c = copy[role];
+  const signup = mode === 'signup';
 
   return (
     <div className={styles.loginContainer}>
@@ -50,15 +53,17 @@ export default async function LoginScreen({ role }: { role: Role }) {
       <div className={styles.rightPane}>
         <div className={styles.loginCard}>
           <div className={styles.loginHeader}>
-            <h2>Welcome Back</h2>
-            <p>{c.subtitle}</p>
+            <h2>{signup ? 'Create your partner account' : 'Welcome Back'}</h2>
+            <p>{signup ? 'Sign up with Google or Apple. Your turf goes live once we approve your application.' : c.subtitle}</p>
           </div>
 
-          <LoginForm role={role} />
+          {social}
+          {social && !signup && <p className={styles.orLine}>or sign in with your email</p>}
+          {!signup && <LoginForm role={role} />}
 
           <div className={styles.partnerPrompt}>
-            <p>{c.prompt}</p>
-            <Link href={c.altHref} className={styles.partnerLink}>{c.altLabel}</Link>
+            <p>{signup ? 'Already approved?' : c.prompt}</p>
+            <Link href={signup ? `/${role}/login` : c.altHref} className={styles.partnerLink}>{signup ? 'Sign in' : c.altLabel}</Link>
           </div>
         </div>
       </div>
