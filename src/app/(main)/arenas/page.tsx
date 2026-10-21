@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ogBase } from '@/lib/seo';
 import { Suspense } from 'react';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
 import JsonLd from '@/components/JsonLd';
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   description:
     'Football and box cricket turfs and badminton and pickleball courts in Mangalore in one place. Compare by sport, area, price and rating, check today\'s open slots and book online instantly.',
   alternates: { canonical: '/arenas' },
-  openGraph: { url: '/arenas' },
+  openGraph: ogBase('/arenas'),
 };
 
 // Open-slot counts are rebuilt in the background every 30 seconds and served from the CDN in between;

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { SITE_CITY } from '@/lib/site';
 import BrandMark from '@/components/BrandMark';
-import { APP_URL, HELP_URL } from './links';
+import { BROWSE_URL, HELP_URL } from './links';
 import styles from './site.module.css';
 
 export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
@@ -16,7 +16,7 @@ export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
           <nav className={styles.footCol} aria-label="Explore">
             <h2>Explore</h2>
             <ul>
-              <li><a href={APP_URL}>Browse &amp; book</a></li>
+              <li><a href={BROWSE_URL}>Browse &amp; book</a></li>
               <li><Link href="/#sports">Sports</Link></li>
               <li><Link href="/#how">How it works</Link></li>
               <li><Link href="/countdown">Launch countdown</Link></li>

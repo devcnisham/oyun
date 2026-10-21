@@ -4,7 +4,7 @@ import { SITE_CITY } from '@/lib/site';
 import { SPORTS } from '@/lib/sports';
 import { getSettings } from '@/lib/queries';
 import { IconArrow } from '../_ui/icons';
-import { APP_URL } from '../_ui/links';
+import { BROWSE_URL } from '../_ui/links';
 import SiteFooter from '../_ui/SiteFooter';
 import SiteHeader from '../_ui/SiteHeader';
 import Countdown from './Countdown';
@@ -46,7 +46,7 @@ export default async function CountdownPage() {
           </h1>
           <Countdown />
           <div className={styles.actions}>
-            <a className={styles.cta} href={APP_URL}>Browse &amp; book <IconArrow /></a>
+            <a className={styles.cta} href={BROWSE_URL}>Browse &amp; book <IconArrow /></a>
             <Link className={styles.back} href="/">Back to home</Link>
           </div>
         </section>

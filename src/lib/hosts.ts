@@ -1,8 +1,6 @@
 // Which part of OYUN each hostname serves (oyun.co.in is the public landing page, each audience has its own subdomain):
-//   www.oyun.co.in (and oyun.co.in)  landing page
-//   app.oyun.co.in                   main customer application (home, turfs, profile, saved, bookings)
-//   book.oyun.co.in                  booking interface (a turf's slot picker and checkout, tickets)
-//   help.oyun.co.in                  booking guides and FAQs
+//   www.oyun.co.in (and oyun.co.in)  the whole public site (landing page before launch, everything after): the one SEO host
+//   app., book., help.               old subdomains, permanent redirects to the same path on www
 //   partner.oyun.co.in               turf owner dashboard
 //   admin.oyun.co.in                 OYUN admin dashboard
 // Any other host (localhost, the *.vercel.app address, previews) is left alone, so development and testing behave as before.
@@ -43,11 +41,11 @@ export function roleForHost(hostHeader: string | null | undefined): HostRole | n
   return ROLE_BY_HOST[host] ?? null;
 }
 
-export type HostRoute = { kind: 'next' } | { kind: 'rewrite'; path: string } | { kind: 'redirect'; host: string; path: string };
+export type HostRoute = { kind: 'next' } | { kind: 'rewrite'; path: string } | { kind: 'redirect'; host: string; path: string; permanent?: boolean };
 
-// Pages the landing host serves itself. Everything else belongs to another host and is sent there.
+// Pages the landing host serves before launch. After launch it serves the whole public site (one canonical host for SEO).
 const LANDING_PAGES = new Set(['/countdown', '/welcome', '/about', '/privacy', '/terms', '/faq']);
-// help.: booking guides and FAQs, plus the legal pages
+// Help content: booking guides, FAQs and legal pages. Public even before launch, on www.
 const HELP_AREAS = ['/help', '/faq', '/guides', '/privacy', '/terms'];
 // Files and endpoints every host serves (search engines, the install manifest, health checks, share images)
 const SHARED = /^\/(api|_next|__clerk)(\/|$)|^\/(robots\.txt|sitemap\.xml|manifest\.webmanifest|opengraph-image|twitter-image|icon|apple-icon)(\/|$)/;
@@ -55,52 +53,44 @@ const SHARED = /^\/(api|_next|__clerk)(\/|$)|^\/(robots\.txt|sitemap\.xml|manife
 const inArea = (path: string, area: string) => path === area || path.startsWith(`${area}/`);
 
 export interface Access {
-  // Past launch, or LAUNCH_OPEN=true: the player site is public and the landing host hands over to it
+  // Past launch, or LAUNCH_OPEN=true: the player site is public
   launched: boolean;
-  // A team member with the preview cookie: sees the player site before launch (the landing host still shows the landing page)
+  // A team member with the preview cookie: sees the player site before launch (the landing page still shows at /)
   preview: boolean;
 }
 
 const isHelp = (p: string) => HELP_AREAS.some((a) => inArea(p, a));
-// A turf's own page (slot picker and checkout) and a ticket: the booking interface lives on book.
-const isBooking = (p: string) => /^\/arenas\/[^/]+(\/|$)/.test(p) || /^\/bookings\/[^/]+(\/|$)/.test(p);
-// Player sign-in pages, which the booking interface needs when someone must sign in before paying
-const isPlayerAuth = (p: string) => /^\/(login|signup|sso-callback)(\/|$)/.test(p);
 
-const to = (role: HostRole, path: string): HostRoute => ({ kind: 'redirect', host: hostFor(role), path });
+const to = (role: HostRole, path: string, permanent = false): HostRoute => ({ kind: 'redirect', host: hostFor(role), path, ...(permanent ? { permanent } : {}) });
 
+// SEO: every public page lives on www.oyun.co.in so ranking signals are not split across subdomains.
+// app., book. and help. are kept only as permanent redirects to the same path on www.
 export function routeForHost(role: HostRole | null, pathname: string, access: Access = { launched: false, preview: false }): HostRoute {
   if (!role || SHARED.test(pathname)) return { kind: 'next' };
   const playerSiteOpen = access.launched || access.preview;
   const dashboard = (): HostRoute | null => (inArea(pathname, '/partner') ? to('partner', pathname) : inArea(pathname, '/admin') ? to('admin', pathname) : null);
-    // Before launch app. and book. send visitors to the countdown page, so Browse & book always lands somewhere that explains why
-  const toLanding = (): HostRoute => to('landing', LANDING_PAGES.has(pathname) ? pathname : '/countdown');
-  // Where a page that does not belong on this host goes
-  const elsewhere = (): HostRoute => (isHelp(pathname) ? to('help', pathname) : isBooking(pathname) ? to('book', pathname) : to('app', pathname));
+  // Before launch the closed player pages send visitors to the countdown page, so Browse & book always lands somewhere that explains why
+  const toLanding = (): HostRoute => to('landing', LANDING_PAGES.has(pathname) || isHelp(pathname) ? pathname : '/countdown');
 
   switch (role) {
     case 'landing':
       if (dashboard()) return dashboard()!;
-      // After launch the landing host hands over to the app
-      if (access.launched) return elsewhere();
+      if (access.launched) {
+        // The countdown has no purpose after launch
+        if (pathname === '/countdown' || pathname === '/welcome') return to('landing', '/', true);
+        return { kind: 'next' };
+      }
       if (pathname === '/') return { kind: 'rewrite', path: '/landing' };
-      if (LANDING_PAGES.has(pathname)) return { kind: 'next' };
-      if (isHelp(pathname)) return to('help', pathname);
-      return playerSiteOpen ? elsewhere() : toLanding();
+      if (LANDING_PAGES.has(pathname) || isHelp(pathname)) return { kind: 'next' };
+      return playerSiteOpen ? { kind: 'next' } : toLanding();
     case 'app':
-      if (dashboard()) return dashboard()!;
-      if (!playerSiteOpen) return toLanding();
-      return isHelp(pathname) ? to('help', pathname) : isBooking(pathname) ? to('book', pathname) : { kind: 'next' };
     case 'book':
-      if (dashboard()) return dashboard()!;
-      if (!playerSiteOpen) return toLanding();
-      if (isBooking(pathname) || isPlayerAuth(pathname)) return { kind: 'next' };
-      return isHelp(pathname) ? to('help', pathname) : to('app', pathname);
     case 'help':
-      // Guides and FAQs are public content: not behind the launch gate
-      if (pathname === '/') return to('help', '/help');
-      if (isHelp(pathname)) return { kind: 'next' };
-      return playerSiteOpen ? elsewhere() : toLanding();
+      if (dashboard()) return dashboard()!;
+      if (role === 'help' && pathname === '/') return to('landing', '/help', true);
+      // Old subdomains: permanent redirect to the same page on www (once the page is public)
+      if (isHelp(pathname) || playerSiteOpen) return to('landing', pathname, true);
+      return toLanding();
     case 'preview':
       // The *.vercel.app address serves the whole site: dashboards stay reachable, player pages follow the launch gate
       if (inArea(pathname, '/partner') || inArea(pathname, '/admin')) return { kind: 'next' };
@@ -112,7 +102,7 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
       if (pathname === '/') return to(role, area);
       if (inArea(pathname, area)) return { kind: 'next' };
       if (dashboard()) return dashboard()!; // the other dashboard
-      return playerSiteOpen ? elsewhere() : toLanding();
+      return playerSiteOpen ? to('landing', pathname, true) : toLanding();
     }
   }
 }

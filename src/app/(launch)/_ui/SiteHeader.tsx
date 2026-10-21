@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { IconArrow, IconClose, IconMenu } from './icons';
 import BrandMark from '@/components/BrandMark';
-import { APP_URL } from './links';
+import { BROWSE_URL } from './links';
 import styles from './site.module.css';
 
 const SECTIONS = [
@@ -15,7 +15,7 @@ const SECTIONS = [
 ];
 
 // Header shared by the landing, countdown and about pages. Frosted bar, a menu panel on phones, and the one primary
-// action everywhere: Browse & book (app.oyun.co.in).
+// action everywhere: Browse & book (/arenas on www).
 export default function SiteHeader({ current }: { current?: 'about' | 'countdown' }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -53,7 +53,7 @@ export default function SiteHeader({ current }: { current?: 'about' | 'countdown
 
         <div className={styles.actions}>
           <Link href="/countdown" className={styles.ghost} aria-current={current === 'countdown' ? 'page' : undefined}>Launch countdown</Link>
-          <a href={APP_URL} className={styles.primary}>Browse &amp; book <IconArrow size={16} /></a>
+          <a href={BROWSE_URL} className={styles.primary}>Browse &amp; book <IconArrow size={16} /></a>
           <button type="button" className={styles.menuBtn} aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen((v) => !v)}>
             {open ? <IconClose /> : <IconMenu />}
             <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -67,7 +67,7 @@ export default function SiteHeader({ current }: { current?: 'about' | 'countdown
         ))}
         <Link href="/about" className={styles.panelLink} onClick={() => setOpen(false)}>About</Link>
         <Link href="/countdown" className={styles.panelLink} onClick={() => setOpen(false)}>Launch countdown</Link>
-        <a href={APP_URL} className={`${styles.primary} ${styles.panelCta}`}>Browse &amp; book <IconArrow size={16} /></a>
+        <a href={BROWSE_URL} className={`${styles.primary} ${styles.panelCta}`}>Browse &amp; book <IconArrow size={16} /></a>
       </div>
     </header>
   );

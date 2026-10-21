@@ -18,7 +18,7 @@ export default function Faq() {
         <Reveal>
           <p className={`${styles.eyebrow} ${styles.eyebrowDark}`}>Questions</p>
           <h2 id="faq-title" className={`${styles.display} ${styles.displayDark}`}>Quick<br />answers.</h2>
-          <p className={styles.ledeDark}>More guides and rules live in the <a className={styles.inlineLink} href="https://help.oyun.co.in/help">help centre</a>.</p>
+          <p className={styles.ledeDark}>More guides and rules live in the <a className={styles.inlineLink} href="/help">help centre</a>.</p>
         </Reveal>
         <div className={styles.faqList}>
           {FAQ.map((f, i) => (

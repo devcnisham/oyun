@@ -1,5 +1,5 @@
 import { IconArrow } from '../_ui/icons';
-import { APP_URL } from '../_ui/links';
+import { BROWSE_URL } from '../_ui/links';
 import { BadmintonArt, CricketArt, FootballArt, PickleballArt } from './CourtArt';
 import styles from './sections.module.css';
 import TiltCard from './TiltCard';
@@ -23,7 +23,7 @@ export default function Sports() {
           {GAMES.map(({ name, sport, place, line, Art }, i) => (
             <li key={name} className={styles.game} style={{ '--i': i } as React.CSSProperties}>
               <TiltCard>
-                <a href={`${APP_URL}arenas?sport=${encodeURIComponent(sport)}`} className={styles.gameLink}>
+                <a href={`${BROWSE_URL}?sport=${encodeURIComponent(sport)}`} className={styles.gameLink}>
                   <span className={`${styles.gameArt} ${styles.depthFar}`}><Art /></span>
                   <span className={`${styles.gameMeta} ${styles.depthNear}`}>
                     <span className={styles.gamePlace}>{place}</span>
