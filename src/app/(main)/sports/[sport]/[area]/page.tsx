@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/JsonLd';
-import TurfCard from '@/components/TurfCard';
 import { rupees } from '@/lib/format';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
 import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
 import { SITE_CITY, areaSlug } from '@/lib/site';
 import { getSportFaqs } from '@/lib/sport-faqs';
 import { SPORTS, sportFromSlug, sportSlug } from '@/lib/sports';
+import { ChipLinks, FaqSection, TurfGridSection } from '../../../turfs/[area]/SeoSections';
 import styles from '../../../turfs/[area]/page.module.css';
 
 export const revalidate = 60;
@@ -145,16 +145,7 @@ export default async function SportAreaPage({ params }: Props) {
       </p>
 
       {turfs.length > 0 ? (
-        <section aria-labelledby="venues-heading">
-          <h2 id="venues-heading" className={styles.h2}>
-            {sport.label} venues in {area}
-          </h2>
-          <div className={styles.grid}>
-            {turfs.map((t) => (
-              <TurfCard key={t.id} turf={t} />
-            ))}
-          </div>
-        </section>
+        <TurfGridSection id="venues-heading" title={`${sport.label} venues in ${area}`} turfs={turfs} />
       ) : (
         <div className={styles.emptyState}>
           <h2 className={styles.emptyTitle}>No {sport.label} venues directly in {area} yet</h2>
@@ -164,51 +155,31 @@ export default async function SportAreaPage({ params }: Props) {
         </div>
       )}
 
-      {otherAreasWithSport.length > 0 && (
-        <section aria-labelledby="other-areas-heading">
-          <h2 id="other-areas-heading" className={styles.h2}>
-            {sport.label} in nearby areas
-          </h2>
-          <div className={styles.areas}>
-            {otherAreasWithSport.map((a) => (
-              <Link key={a} href={`/sports/${sportParam}/${areaSlug(a)}`} className={styles.areaLink}>
-                {sport.label} in {a}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <ChipLinks
+        id="other-areas-heading"
+        title={`${sport.label} in nearby areas`}
+        links={otherAreasWithSport.map((a) => ({
+          key: a,
+          href: `/sports/${sportParam}/${areaSlug(a)}`,
+          label: `${sport.label} in ${a}`,
+        }))}
+      />
 
-      {otherSportsInArea.length > 0 && (
-        <section aria-labelledby="other-sports-heading">
-          <h2 id="other-sports-heading" className={styles.h2}>
-            Other sports in {area}
-          </h2>
-          <div className={styles.areas}>
-            {otherSportsInArea.map((s) => (
-              <Link key={s.value} href={`/sports/${sportSlug(s.value)}/${areaParam}`} className={styles.areaLink}>
-                {s.label} in {area}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <ChipLinks
+        id="other-sports-heading"
+        title={`Other sports in ${area}`}
+        links={otherSportsInArea.map((s) => ({
+          key: s.value,
+          href: `/sports/${sportSlug(s.value)}/${areaParam}`,
+          label: `${s.label} in ${area}`,
+        }))}
+      />
 
-      {faqs.length > 0 && (
-        <section aria-labelledby="faqs-heading">
-          <h2 id="faqs-heading" className={styles.h2}>
-            Frequently asked questions about {sport.label.toLowerCase()} in {SITE_CITY}
-          </h2>
-          <div className={styles.faqList}>
-            {faqs.map((faq, i) => (
-              <details key={i} className={styles.faqItem} open={i === 0}>
-                <summary>{faq.q}</summary>
-                <p>{faq.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
+      <FaqSection
+        id="faqs-heading"
+        title={`Frequently asked questions about ${sport.label.toLowerCase()} in ${SITE_CITY}`}
+        faqs={faqs}
+      />
     </div>
   );
 }

@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/JsonLd';
-import TurfCard from '@/components/TurfCard';
 import { CURATED_COLLECTIONS, getCuratedCollection } from '@/lib/curated-collections';
 import { listPublicTurfs } from '@/lib/queries';
 import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
 import { SITE_CITY } from '@/lib/site';
+import { ChipLinks, FaqSection, TurfGridSection } from '../../turfs/[area]/SeoSections';
 import styles from '../../turfs/[area]/page.module.css';
 
 export const revalidate = 60;
@@ -82,16 +82,7 @@ export default async function CuratedCollectionPage({ params }: Props) {
       <p className={styles.lead}>{collection.lead}</p>
 
       {turfs.length > 0 ? (
-        <section aria-labelledby="curated-list">
-          <h2 id="curated-list" className={styles.h2}>
-            Recommended Venues ({turfs.length})
-          </h2>
-          <div className={styles.grid}>
-            {turfs.map((t) => (
-              <TurfCard key={t.id} turf={t} />
-            ))}
-          </div>
-        </section>
+        <TurfGridSection id="curated-list" title={`Recommended Venues (${turfs.length})`} turfs={turfs} />
       ) : (
         <div className={styles.emptyState}>
           <h2 className={styles.emptyTitle}>New Venues Joining Soon</h2>
@@ -115,32 +106,13 @@ export default async function CuratedCollectionPage({ params }: Props) {
         </section>
       )}
 
-      {collection.faqs.length > 0 && (
-        <section aria-labelledby="faqs-heading">
-          <h2 id="faqs-heading" className={styles.h2}>Frequently Asked Questions</h2>
-          <div className={styles.faqList}>
-            {collection.faqs.map((faq, i) => (
-              <details key={i} className={styles.faqItem} open={i === 0}>
-                <summary>{faq.q}</summary>
-                <p>{faq.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
+      <FaqSection id="faqs-heading" title="Frequently Asked Questions" faqs={collection.faqs} />
 
-      {otherCollections.length > 0 && (
-        <section aria-labelledby="other-curated">
-          <h2 id="other-curated" className={styles.h2}>Explore More Collections</h2>
-          <div className={styles.areas}>
-            {otherCollections.map((c) => (
-              <Link key={c.slug} href={`/curated/${c.slug}`} className={styles.areaLink}>
-                {c.icon} {c.title}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <ChipLinks
+        id="other-curated"
+        title="Explore More Collections"
+        links={otherCollections.map((c) => ({ key: c.slug, href: `/curated/${c.slug}`, label: `${c.icon} ${c.title}` }))}
+      />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { GUIDES, getGuide } from '@/lib/guides-content';
 import { articleSchema, breadcrumbSchema, faqSchema } from '@/lib/schema';
 import { SITE_CITY } from '@/lib/site';
 import { sportFromSlug } from '@/lib/sports';
+import { ChipLinks, FaqSection } from '../../turfs/[area]/SeoSections';
 import styles from '../../turfs/[area]/page.module.css';
 
 export const revalidate = 60;
@@ -139,34 +140,19 @@ export default async function GuideDetailPage({ params }: Props) {
         </div>
       )}
 
-      {guide.faqs.length > 0 && (
-        <section aria-labelledby="faqs-heading" style={{ maxWidth: '820px', marginTop: '12px' }}>
-          <h2 id="faqs-heading" className={styles.h2}>
-            Frequently Asked Questions
-          </h2>
-          <div className={styles.faqList}>
-            {guide.faqs.map((faq, i) => (
-              <details key={i} className={styles.faqItem} open={i === 0}>
-                <summary>{faq.q}</summary>
-                <p>{faq.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
+      <FaqSection
+        id="faqs-heading"
+        title="Frequently Asked Questions"
+        faqs={guide.faqs}
+        style={{ maxWidth: '820px', marginTop: '12px' }}
+      />
 
-      {others.length > 0 && (
-        <section aria-labelledby="other-guides" style={{ marginTop: '20px' }}>
-          <h2 id="other-guides" className={styles.h2}>More Sports Guides in {SITE_CITY}</h2>
-          <div className={styles.areas}>
-            {others.map((g) => (
-              <Link key={g.slug} href={`/guides/${g.slug}`} className={styles.areaLink}>
-                📖 {g.title}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <ChipLinks
+        id="other-guides"
+        title={`More Sports Guides in ${SITE_CITY}`}
+        links={others.map((g) => ({ key: g.slug, href: `/guides/${g.slug}`, label: `📖 ${g.title}` }))}
+        style={{ marginTop: '20px' }}
+      />
     </div>
   );
 }
