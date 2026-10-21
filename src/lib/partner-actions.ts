@@ -586,20 +586,25 @@ export async function updateBusiness(_prev: ActionResult, fd: FormData): Promise
 
 /* ---------- courts, pitches & bookables (v2) ---------- */
 
+// The turf with its courts and offerings, created from the single-pitch layout the first time they are edited
+function courtModelOf(db: Database, turfId: string) {
+  const turf = db.turfs.find((t) => t.id === turfId);
+  if (!turf) throw new ValidationError('Turf not found');
+  if (!turf.resources || turf.resources.length === 0) {
+    const initial = mapTurfToResourcesAndBookables(turf);
+    turf.resources = initial.resources;
+    turf.bookables = initial.bookables;
+  }
+  return turf as typeof turf & { resources: NonNullable<typeof turf.resources> };
+}
+
 export async function addCourtResource(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('turf');
     const name = required(fd, 'name', 'Court / Resource name', 60);
 
     await mutate((db) => {
-      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
-      if (!turf) throw new ValidationError('Turf not found');
-
-      if (!turf.resources || turf.resources.length === 0) {
-        const initial = mapTurfToResourcesAndBookables(turf);
-        turf.resources = initial.resources;
-        turf.bookables = initial.bookables;
-      }
+      const turf = courtModelOf(db, ctx.turf.id);
 
       const resourceId = `${turf.id}_res_${Date.now()}`;
       turf.resources.push({
@@ -621,14 +626,7 @@ export async function deleteCourtResource(_prev: ActionResult, fd: FormData): Pr
     const resourceId = required(fd, 'resourceId', 'Resource ID', 100);
 
     await mutate((db) => {
-      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
-      if (!turf) throw new ValidationError('Turf not found');
-
-      if (!turf.resources || turf.resources.length === 0) {
-        const initial = mapTurfToResourcesAndBookables(turf);
-        turf.resources = initial.resources;
-        turf.bookables = initial.bookables;
-      }
+      const turf = courtModelOf(db, ctx.turf.id);
 
       if (turf.resources.length <= 1) {
         throw new ValidationError('A venue must retain at least one physical court or pitch');
@@ -657,14 +655,7 @@ export async function addBookableOffering(_prev: ActionResult, fd: FormData): Pr
     const resourceIds = fd.getAll('resourceIds').map(String).filter(Boolean);
 
     await mutate((db) => {
-      const turf = db.turfs.find((t) => t.id === ctx.turf.id);
-      if (!turf) throw new ValidationError('Turf not found');
-
-      if (!turf.resources || turf.resources.length === 0) {
-        const initial = mapTurfToResourcesAndBookables(turf);
-        turf.resources = initial.resources;
-        turf.bookables = initial.bookables;
-      }
+      const turf = courtModelOf(db, ctx.turf.id);
 
       const assignedResources = resourceIds.length > 0 ? resourceIds : turf.resources.map((r) => r.id);
 

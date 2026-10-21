@@ -136,6 +136,7 @@ export async function releaseHolds(): Promise<void> {
   if (!holder) return;
   if (isV2SlotsActive()) {
     await v2ReleaseHolds(holder);
+    return;
   }
   try {
     await mutate((db) => {

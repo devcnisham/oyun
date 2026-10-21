@@ -11,21 +11,14 @@ import { StudentIdStorageError, putStudentId, removeStudentIds } from '@/lib/stu
 import { getDb, mutate } from '@/lib/store';
 import { createPlayer } from '@/lib/wallet';
 import { clientIpFrom } from '@/lib/client-ip';
+import { isSameOrigin } from '@/lib/same-origin';
 
 const fail = (error: string, status: number) => NextResponse.json({ error }, { status });
 
 // A player sends a photo of their student ID at checkout. It waits for an admin to approve it.
 export async function POST(req: NextRequest) {
   // Only our own pages may send IDs
-  const origin = req.headers.get('origin');
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host');
-  let originHost: string | null = null;
-  try {
-    originHost = origin ? new URL(origin).host : null;
-  } catch {
-    originHost = null;
-  }
-  if (!originHost || !host || originHost !== host) return fail('Forbidden', 403);
+  if (!isSameOrigin(req.headers)) return fail('Forbidden', 403);
 
   const ip = clientIpFrom(req.headers);
   if (!(await sharedRateLimit(`student-id:ip:${ip}`, 10, 60 * 60_000))) return fail('Too many tries. Please wait a while and try again.', 429);

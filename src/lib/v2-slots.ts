@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { broadcastSlotChanges } from './realtime';
 import { formatSlotRange, istNow, slotTimestamp } from './time';
 import type { PitchSize, Slot, SlotUnavailableReason } from './types';
-import { getDb, storageInfo } from './store';
+import { getDb, storageInfo, v2SlotsEnabled } from './store';
 
 export interface V2BookableInfo {
   id: string;
@@ -25,7 +25,7 @@ export interface V2AvailableSlotRow {
 
 export function isV2SlotsActive(): boolean {
   try {
-    return supabaseConfigured() && storageInfo().backend === 'supabase';
+    return v2SlotsEnabled() && supabaseConfigured() && storageInfo().backend === 'supabase';
   } catch {
     return false;
   }
