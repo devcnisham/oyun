@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { describe, expect, test } from 'vitest';
 import { SPORTS, SPORTS_PHRASE, primarySport, sportFromSlug, sportInfo, sportSlug } from './sports.ts';
 
-test('Padel is not a listed sport, and the site offers four sports', () => {
-  assert.ok(!SPORTS.some((s) => (s.value as string) === 'Padel'));
-  assert.deepEqual(SPORTS.map((s) => s.value), ['Football', 'Box Cricket', 'Badminton', 'Pickleball']);
+test('Padel is a listed sport, and the site offers five sports', () => {
+  assert.ok(SPORTS.some((s) => (s.value as string) === 'Padel'));
+  assert.deepEqual(SPORTS.map((s) => s.value), ['Football', 'Box Cricket', 'Badminton', 'Pickleball', 'Padel']);
 });
 
 test('every sport has an icon, an image and a place word', () => {
@@ -15,7 +15,7 @@ test('every sport has an icon, an image and a place word', () => {
 });
 
 test('sport phrase names every sport, not just football', () => {
-  assert.equal(SPORTS_PHRASE, 'football, box cricket, badminton and pickleball');
+  assert.equal(SPORTS_PHRASE, 'football, box cricket, badminton, pickleball and padel');
 });
 
 test('turf pages pick the right sport name and icon', () => {

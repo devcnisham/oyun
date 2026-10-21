@@ -95,3 +95,32 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
     mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
   };
 }
+
+export function articleSchema(article: {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  datePublished: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.description,
+    url: absoluteUrl(article.path),
+    image: article.image || undefined,
+    datePublished: article.datePublished,
+    author: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      logo: absoluteUrl('/oyun-icon-512.png'),
+    },
+  };
+}
+
