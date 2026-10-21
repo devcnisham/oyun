@@ -70,7 +70,7 @@
   gap: 8px;
   min-height: 44px;
   padding: 0 18px;
-  border-radius: 999px;
+  border-radius: 4px;
   font-size: 15px;
   font-weight: 700;
   text-decoration: none;
@@ -80,9 +80,8 @@
 }
 .primary {
   display: inline-flex;
-  background: #d31027;
+  background: #c8102e;
   color: #fff;
-  box-shadow: 0 8px 24px rgba(211, 16, 39, 0.4);
 }
 .primary:hover { background: #e3263a; transform: translateY(-1px); }
 .primary:active { transform: scale(0.97); }
@@ -96,7 +95,7 @@
   width: 44px;
   height: 44px;
   border: 1px solid rgba(244, 241, 236, 0.35);
-  border-radius: 999px;
+  border-radius: 4px;
   background: transparent;
   color: inherit;
   cursor: pointer;
