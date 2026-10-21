@@ -367,6 +367,91 @@ export async function v2ConfirmHold(
   }
 }
 
+/** Maps the booking functions' error text to something a player or desk can act on. */
+function bookingErrorText(message: string | undefined): string {
+  const text = message ?? '';
+  if (text.includes('slot_taken') || text.includes('23P01')) return 'That slot was just taken. Please pick another time.';
+  if (text.includes('slot_in_past')) return 'That slot has already passed';
+  if (text.includes('outside_booking_window')) return 'Pick a date within the next week';
+  if (text.includes('venue_closed')) return 'The venue is closed at that time';
+  if (text.includes('not_movable')) return 'Only confirmed bookings can be rescheduled';
+  if (text.includes('invalid_quote')) return 'The price changed. Please review your booking and try again.';
+  return text || 'Could not complete the booking';
+}
+
+/** A time range from a local date, hour and minute, in the form Postgres reads: [start,end) */
+export function v2Range(date: string, hour: number, minute: number, minutes: number, openHour: number): string {
+  const start = slotTimestamp(date, hour, openHour, minute);
+  const end = new Date(new Date(start).getTime() + minutes * 60_000).toISOString();
+  return `[${start},${end})`;
+}
+
+/**
+ * Books arbitrary time ranges in one step (walk-ins of any length, recurring weeks) and stores the quote.
+ */
+export async function v2BookRanges(args: {
+  turfId: string;
+  size?: PitchSize;
+  courtId?: string;
+  ranges: string[];
+  name: string;
+  phone: string;
+  quote: V2Quote;
+  playerId?: string;
+  allowPast?: boolean;
+  date?: string;
+  clientOverride?: SupabaseClient;
+}): Promise<{ ok: true; id: string; code: string } | { ok: false; error: string } | null> {
+  if (!isV2SlotsActive() && !args.clientOverride) return null;
+  const client = args.clientOverride ?? createAdminClient();
+  try {
+    const bookable = await resolveBookable(client, args.turfId, args.size ?? 'full', args.courtId);
+    if (!bookable) return null;
+    const { data, error } = await client.rpc('book_ranges', {
+      p_bookable: bookable.id,
+      p_ranges: args.ranges,
+      p_name: args.name,
+      p_phone: args.phone,
+      p_quote: args.quote,
+      p_player: args.playerId ?? null,
+      p_allow_past: args.allowPast ?? false,
+    });
+    if (error) return { ok: false, error: bookingErrorText(error.message) };
+    invalidateV2Snapshot();
+    if (args.date) await broadcastSlotChanges([{ turfId: args.turfId, date: args.date }]);
+    const row = data as { id?: string; code?: string } | null;
+    return { ok: true, id: String(row?.id ?? ''), code: String(row?.code ?? '') };
+  } catch (err) {
+    console.warn('[v2-slots] v2BookRanges error:', err);
+    return null;
+  }
+}
+
+/**
+ * Moves a confirmed booking to a new start time, keeping each slot's length. Refused (and left where it
+ * was) when the new time is taken, closed or outside the booking window.
+ */
+export async function v2MoveBooking(
+  bookingId: string,
+  start: string,
+  turfId: string,
+  dates: string[],
+  clientOverride?: SupabaseClient
+): Promise<{ ok: true } | { ok: false; error: string } | null> {
+  if (!isV2SlotsActive() && !clientOverride) return null;
+  const client = clientOverride ?? createAdminClient();
+  try {
+    const { error } = await client.rpc('move_booking', { p_booking: bookingId, p_start: start });
+    if (error) return { ok: false, error: bookingErrorText(error.message) };
+    invalidateV2Snapshot();
+    await broadcastSlotChanges(dates.map((date) => ({ turfId, date })));
+    return { ok: true };
+  } catch (err) {
+    console.warn('[v2-slots] v2MoveBooking error:', err);
+    return null;
+  }
+}
+
 /**
  * Removes an owner block (its slot claims go with it) after checking it belongs to this venue.
  */
