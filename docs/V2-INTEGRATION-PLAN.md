@@ -44,3 +44,14 @@ Pricing rules stay in the main store (only bookings, holds and blocks move).
 Refused loudly while the flag is on (nothing is silently lost): recurring bookings (`recurring.ts` adds bookings), rescheduling (moving a
 booking to another slot), walk-ins with custom minutes or lengths, waitlist auto-booking. Each needs a slot-changing RPC; do them before enabling the flag.
 Also open: DPDP erase of bookings, payouts and invoices from `oyun.payments` (phase 4), parity check on staging (phase 5).
+
+## Refused list: closed
+
+Migration `20261019` adds `book_ranges()` (confirmed, priced booking for any time ranges) and `move_booking()` (atomic reschedule: a taken slot leaves the booking where it was).
+- Walk-ins now take any start minute and length.
+- Recurring bookings book each week in oyun; if one week fails, the weeks already booked are cancelled.
+- Rescheduling moves the claims first, then records `originalSlot` and `rescheduledAt`.
+- Waitlist never created bookings (it only notifies), so it needed nothing.
+- DPDP erase anonymises bookings in place, which the write-back covers.
+
+Known limits before enabling the flag: the read window is 90 days, so a data export or erase request only sees that window; the `oyun.players` row (name, phone) is not erased by the DPDP flow; a multi-hour order moves as a block (all slots keep their offsets); half-pitch reschedule keeps the same half (it does not swap to the other half if only that is free).

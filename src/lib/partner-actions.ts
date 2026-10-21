@@ -22,9 +22,8 @@ import { mapTurfToResourcesAndBookables } from './venue-mapping';
 import { withDate, withoutDate } from './rain';
 import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
-import { isV2SlotsActive, v2BlockSlot, v2CancelBooking, v2ConfirmHoldPriced, v2HoldSlots, v2UnblockSlot } from './v2-slots';
+import { isV2SlotsActive, v2BlockSlot, v2BookRanges, v2Range, v2UnblockSlot } from './v2-slots';
 import { v2QuoteOf } from './v2-bookings';
-import { randomUUID } from 'node:crypto';
 import { sharedRateLimit } from './shared-rate-limit';
 import { logActivity } from './activity';
 
@@ -112,10 +111,9 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       .map((k) => ({ id: k.slice(6), qty: Number(fd.get(k)) || 0 }));
 
     if (isV2SlotsActive()) {
-      if ((Number(fd.get('minute')) || 0) !== 0 || (Number(fd.get('durationMinutes')) || 60) !== 60) {
-        throw new ValidationError('Custom start minutes and durations are not supported with v2 slots yet. Use a whole-hour slot.');
-      }
-      return await v2WalkIn(ctx, { name, phone, date, hour, paymentMode, addOns });
+      const durationMinutes = Math.max(15, Math.min(240, Number(fd.get('durationMinutes')) || 60));
+      const startMinute = Math.max(0, Math.min(45, Number(fd.get('minute')) || 0));
+      return await v2WalkIn(ctx, { name, phone, date, hour, paymentMode, addOns, durationMinutes, startMinute });
     }
 
     return await mutate((db) => {
@@ -155,21 +153,25 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
   });
 }
 
-// A walk-in with v2 slots: price it, hold the slot in oyun (the guard against double bookings), confirm the
-// hold with the price already paid at the desk, then record the player and the activity.
+// A walk-in with v2 slots: price it, then book the range in oyun (the guard against double bookings) with
+// the price already paid at the desk, and record the player and the activity.
 async function v2WalkIn(
   ctx: PartnerContext,
-  input: { name: string; phone: string; date: string; hour: number; paymentMode: 'cash' | 'upi'; addOns: { id: string; qty: number }[] }
+  input: {
+    name: string;
+    phone: string;
+    date: string;
+    hour: number;
+    paymentMode: 'cash' | 'upi';
+    addOns: { id: string; qty: number }[];
+    durationMinutes: number;
+    startMinute: number;
+  }
 ): Promise<ActionResult> {
-  const { name, phone, date, hour, paymentMode } = input;
+  const { name, phone, date, hour, paymentMode, durationMinutes, startMinute } = input;
   const quote = buildQuote(await getDb(), { turfId: ctx.turf.id, date, hour, addOns: input.addOns, phone, source: 'walk_in' }, istNow());
   if (!quote) throw new ValidationError('Turf not found');
   if (quote.slotError) throw new ValidationError(quote.slotError);
-
-  const holder = `walkin:${randomUUID()}`;
-  const held = await v2HoldSlots(ctx.turf.id, date, [hour], holder);
-  if (!held) throw new Error('[walk-in] could not reach the booking service');
-  if (!held.ok) throw new ValidationError(held.error);
 
   const player = await mutate((db) => upsertPlayer(db, name, phone).id);
   const booking: Booking = {
@@ -178,7 +180,9 @@ async function v2WalkIn(
     turfId: ctx.turf.id,
     date,
     hour,
-    timeLabel: formatSlotRange(hour, 60, 0),
+    timeLabel: formatSlotRange(hour, durationMinutes, startMinute),
+    durationMinutes,
+    startMinute,
     customerName: name,
     customerPhone: phone,
     playerId: player,
@@ -192,16 +196,22 @@ async function v2WalkIn(
     checkedInAt: null,
     createdAt: new Date().toISOString(),
   };
-  const confirmed = await v2ConfirmHoldPriced(held.bookingId, holder, name, phone, v2QuoteOf(booking), { turfId: ctx.turf.id, date });
-  if (!confirmed || !confirmed.ok) {
-    await v2CancelBooking(held.bookingId, 'walk-in could not be confirmed', ctx.turf.id, date);
-    throw new ValidationError(confirmed ? confirmed.error : 'Could not save the walk-in. Please try again.');
-  }
-  const code = (confirmed.booking as { code?: string } | null)?.code ?? '';
+  const openHour = parseHour(ctx.turf.openTime);
+  const booked = await v2BookRanges({
+    turfId: ctx.turf.id,
+    ranges: [v2Range(date, hour, startMinute, durationMinutes, openHour)],
+    name,
+    phone,
+    quote: v2QuoteOf(booking),
+    allowPast: true,
+    date,
+  });
+  if (!booked) throw new Error('[walk-in] could not reach the booking service');
+  if (!booked.ok) throw new ValidationError(booked.error);
   await mutate((db) => {
     logActivity(db, ctx, 'Walk-in booking', `${name} · ${date} ${booking.timeLabel} · ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}`);
   });
-  return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${code}` };
+  return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booked.code}` };
 }
 
 export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<ActionResult> {

@@ -45,6 +45,9 @@ echo "== Priced confirm_hold (v2 integration phase 1)"
 echo "== Booking updates (v2 integration phase 3)"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_booking_updates_test.sql
 
+echo "== Book ranges and move booking"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_book_and_move_test.sql
+
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 

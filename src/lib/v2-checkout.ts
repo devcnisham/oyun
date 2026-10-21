@@ -20,6 +20,21 @@ import { createAdminClient } from '@/utils/supabase/admin';
 
 const HELD = 'id, venue_id, venues(slug)';
 
+/** The oyun player row a booking points at. A number v2 rejects leaves the booking unlinked rather than failing it. */
+export async function ensureV2Player(playerId: string | null, name: string, phone: string, accountId: string | null): Promise<string | undefined> {
+  if (!playerId) return undefined;
+  const id = legacyToUuid('player', playerId);
+  const { error } = await createAdminClient()
+    .schema('oyun')
+    .from('players')
+    .upsert({ id, legacy_id: playerId, clerk_user_id: accountId, name, phone }, { onConflict: 'id' });
+  if (error) {
+    console.warn('[v2-checkout] could not link the player:', error.message);
+    return undefined;
+  }
+  return id;
+}
+
 export async function v2Checkout(req: BookingRequest, holder: string | null, accountId: string | null): Promise<{ ids: string[] }> {
   if (!holder) throw new ValidationError('Your hold expired. Please pick your slots again.');
   const client = createAdminClient();
@@ -42,17 +57,7 @@ export async function v2Checkout(req: BookingRequest, holder: string | null, acc
   if (planned.quote.promoError) throw new ValidationError(planned.quote.promoError);
   const booking = planned.bookings[0];
 
-  // The player row the booking points at; a number v2 rejects leaves the booking unlinked rather than failing
-  let playerUuid: string | undefined;
-  if (booking.playerId) {
-    const id = legacyToUuid('player', booking.playerId);
-    const { error } = await client
-      .schema('oyun')
-      .from('players')
-      .upsert({ id, legacy_id: booking.playerId, clerk_user_id: accountId, name: booking.customerName, phone: booking.customerPhone }, { onConflict: 'id' });
-    if (error) console.warn('[v2-checkout] could not link the player:', error.message);
-    else playerUuid = id;
-  }
+  const playerUuid = await ensureV2Player(booking.playerId, booking.customerName, booking.customerPhone, accountId);
 
   // 2. Confirm the hold with the price
   const confirmed = await v2ConfirmHoldPriced(held.id, holder, booking.customerName, booking.customerPhone, v2QuoteOf(booking), {
