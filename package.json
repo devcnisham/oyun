@@ -7,8 +7,6 @@
     "dev": "next dev",
     "predev:lan": "node scripts/check-dev.mjs",
     "dev:lan": "next dev -H 0.0.0.0",
-    "dev:staging": "node scripts/dev-staging.mjs",
-    "staging:sync": "node scripts/staging-sync.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
