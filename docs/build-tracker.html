@@ -196,7 +196,7 @@ footer.foot{border-top:1px solid var(--line);padding-block:18px;color:var(--mute
     <h1>Build Tracker</h1>
     <p class="sub">Everything a new developer needs: what the product is, how it is built, where it runs, what it costs for the first 1,000 users, what is done, what is risky and what to do next. Statuses in the Tracker tab are shared and saved.</p>
     <div class="chips" id="stackchips"></div>
-    <div class="eyebrow" style="margin-top:12px">Updated after PR #294 (main at 17652a7, 15 Oct 2026) · web app launch Monday 19 Oct 2026 · prices checked 7 Oct 2026</div>
+    <div class="eyebrow" style="margin-top:12px">Updated after PR #294 (main at 17652a7, 15 Oct 2026) · web app launch Saturday 31 Oct 2026 · prices checked 7 Oct 2026</div>
   </div>
 </header>
 
@@ -1292,7 +1292,7 @@ featureGroups:[
  {g:"SEO, legal and analytics",a:"Platform",subs:[
   ["Sitemap and robots","built","Dynamic sitemap with images; private areas disallowed","sitemap.ts, robots.ts"],
   ["Welcome landing page","removed","Removed on purpose in 6a36f88. It was a static marketing page with hero, sports, three-step flow, feature cards and an owner band. Replaced by the pre-launch welcome page below. Listed in the sitemap before; home page unchanged. PR #125 and #121 added the booking section and FAQ.","(main)/welcome/page.tsx, (main)/welcome/page.module.css"],
-  ["Pre-launch welcome page","built","/welcome shows Launching soon with a live countdown to 17 Oct 2026, 00:00 India time, a sports ticker and a support email footer (6a36f88)","(launch)/welcome/page.tsx, Countdown.tsx"],
+  ["Pre-launch welcome page","built","/welcome shows Launching soon with a live countdown to 31 Oct 2026, 00:00 India time, a sports ticker and a support email footer (6a36f88)","(launch)/welcome/page.tsx, Countdown.tsx"],
   ["About page","built","/about, reached from About us in the launch header; listed in the sitemap (6a36f88)","(launch)/about/page.tsx"],
   ["Launch header","built","Shared header for the launch pages. Hides while scrolling down and comes back on any scroll up. Bottom tab bar hidden on these pages (6a36f88)","(launch)/LaunchHeader.tsx"],
   ["Sport landing pages","built","/sports/[sport] for each city, area and sport, with structured data; listed in the sitemap (PR #191)","(main)/sports/[sport]"],
@@ -1871,6 +1871,849 @@ D2.lists = [
   ["NEXT-06","Split the payment among team members","P3",1,"Per-player calculation with ceiling rounding, customizable player count, UPI deep-links, and one-tap WhatsApp share."],
   ["NEXT-07","Coaching and academy slots","P3",0],
   ["NEXT-08","Rain alerts for open turfs in the monsoon","P3",1,"Rain policy with 100% wallet refund and monsoon protection active on outdoor turfs."]
+ ]},
+ {id:"BPDEC",st:"plan",name:"Decide first (Blueprint)",goal:"Answers that change the data model or the payment design. Settle before more building.",items:[
+  ["BPDEC-01", "Who collects the money: the platform and pays venues later, or venues collect directly (drives KYC, settlement, tax)", "P0", 0, "Blueprint suggests gateway split (model A) for the pilot. Confirm with the gateway and a CA."],
+  ["BPDEC-02", "How OYUN earns: a percentage per booking, a monthly fee per venue, or both", "P0", 0, "Venue software at 0% commission is already advertised by others. Test options with pilot venues."],
+  ["BPDEC-03", "Is online payment required always, or can some venues take pay at venue (needs no-show rules)", "P0", 0, "Today the advance is recorded, not collected (P11)."],
+  ["BPDEC-04", "Hold length (Blueprint starts at 10 minutes; OYUN uses 8)", "P2", 1, "Hold is 8 minutes today."],
+  ["BPDEC-05", "Who sets cancellation rules: one policy for all, or each venue picks from templates", "P1", 0],
+  ["BPDEC-06", "Which sports and which area first, where pilot venues have the most idle hours", "P1", 1, "Mangalore, football/cricket/badminton/pickleball first."],
+  ["BPDEC-07", "Mobile site first, app later (settled)", "P2", 1],
+  ["BPDEC-08", "Confirm money flow, tax and invoicing with a CA, and DPDP with a lawyer, before launch", "P0", 0, "Draft pack in docs/legal/ (OYUN-122)."]
+ ]},
+ {id:"LKPILOT",st:"plan",name:"Pilot playbook (Launch Kit)",goal:"3 to 5 venues, 100 real bookings and zero double bookings in the first 6 weeks after launch.",items:[
+  ["LKPILOT-01", "Pick venues with empty weekday hours to sell", "P1", 0],
+  ["LKPILOT-02", "Pick venues that take bookings by phone, WhatsApp or a notebook", "P1", 0],
+  ["LKPILOT-03", "Pick venues with 2 to 6 units, large enough to matter, small enough to set up in one visit", "P2", 0],
+  ["LKPILOT-04", "Pick venues whose manager will enter walk-ins straight away (late walk-ins cause double bookings)", "P0", 0],
+  ["LKPILOT-05", "Mix venue types: one turf, one badminton hall, one padel or pickleball venue, to test every unit type", "P2", 0],
+  ["LKPILOT-06", "Keep pilot venues in the same neighbourhood so players see several of them", "P2", 0],
+  ["LKPILOT-07", "3 weeks before launch: list 15 venues, visit 10, shortlist 5", "P1", 0],
+  ["LKPILOT-08", "2 weeks before: sign a one-page pilot note with 3 to 5 venues; collect documents and photos", "P0", 0],
+  ["LKPILOT-09", "1 week before: set up each venue with its owner; run a test booking and a test refund", "P0", 0],
+  ["LKPILOT-10", "Launch week: train staff on site for 20 minutes; be present on the first weekend", "P1", 0],
+  ["LKPILOT-11", "Weeks 1 to 6: short call every Monday; fix the biggest complaint each week", "P1", 0],
+  ["LKPILOT-12", "Week 6: go through the numbers with each owner and decide what comes next", "P1", 0],
+  ["LKPILOT-13", "Decide the pilot offer: no fee for the first 90 days, then commission or plan; venue keeps its customers and sets prices", "P0", 0, "Settle the fee model before saying this to anyone."],
+  ["LKPILOT-14", "Prepare answers to owner questions: WhatsApp bookings, commission, staff skills, internet down, customer ownership, payout timing", "P1", 0],
+  ["LKPILOT-15", "Track weekly: bookings through the platform", "P1", 0],
+  ["LKPILOT-16", "Track weekly: share of the venue's total bookings (does the owner trust it)", "P1", 0],
+  ["LKPILOT-17", "Track weekly: new and repeat players", "P1", 0],
+  ["LKPILOT-18", "Track weekly: empty hours filled", "P1", 0],
+  ["LKPILOT-19", "Track weekly: cancellations and refunds", "P2", 0],
+  ["LKPILOT-20", "Track weekly: double bookings and disputes (must be zero)", "P0", 0],
+  ["LKPILOT-21", "Track weekly: payout accuracy against the venue's own records", "P1", 0],
+  ["LKPILOT-22", "Track weekly: owner score out of 10 and the top complaint", "P2", 0]
+ ]},
+ {id:"LKSCRIPT",st:"plan",name:"Outreach scripts (Launch Kit)",goal:"Short, plain and honest. Say only what the product does today.",items:[
+  ["LKSCRIPT-01", "Replace every [placeholder] in the scripts (name, brand, area, fee, days)", "P1", 0],
+  ["LKSCRIPT-02", "First WhatsApp message to a venue: 3 to 5 venues, free at first, 15-minute visit", "P1", 0],
+  ["LKSCRIPT-03", "Phone call opener: two minutes, a live calendar and a page where players see free slots", "P2", 0],
+  ["LKSCRIPT-04", "30-second in-person pitch, ending with a demo on your phone", "P1", 0],
+  ["LKSCRIPT-05", "After-demo message: what was agreed, pilot length, notice period, what you need from the owner (PAN, bank details, 8 photos, price list)", "P1", 0],
+  ["LKSCRIPT-06", "One-page pilot note: parties and dates; fee during and after; what the venue provides; what you provide; how either side can stop", "P0", 0]
+ ]},
+ {id:"LKNAME",st:"plan",name:"Brand name check (Launch Kit)",goal:"Only needed if the name changes. OYUN is the name in use today.",items:[
+  ["LKNAME-01", "Shortlist names (ideas: Slotly, SlotKick, PlaySlot, Turfly, Courtly, Groundly, PitchPass, PlayPass, HourPlay, GameHour, Kickin, BookNPlay)", "P3", 0, "Ideas only; none checked for availability."],
+  ["LKNAME-02", "Check the .in and .com domains and the Instagram and WhatsApp handles", "P3", 0],
+  ["LKNAME-03", "Check app stores and existing sports booking brands for a close match", "P3", 0],
+  ["LKNAME-04", "Trademark search before committing (see BIZ-05)", "P2", 0],
+  ["LKNAME-05", "Name works for any sport, is easy to say on a call, and reads well in the first cities' languages", "P3", 0]
+ ]},
+ {id:"BPSYS",st:"build",name:"System design and architecture (Blueprint)",goal:"Booking model, rules, module borders and the way the system splits later.",items:[
+  ["BPSYS-01", "Decisions list answered", "P0", 0],
+  ["BPSYS-02", "Data model diagram kept current", "P2", 0],
+  ["BPSYS-03", "Booking state machine written down (HELD, PAYMENT_PENDING, CONFIRMED, CHECKED_IN, COMPLETED, NO_SHOW, CANCELLED, REFUNDED, EXPIRED)", "P1", 0, "Today's statuses: confirmed, checked_in, no_show, cancelled, refunded."],
+  ["BPSYS-04", "Cancellation and refund rules written down", "P0", 0, "See docs/legal/REFUND-AND-COMMISSION-POLICY.md."],
+  ["BPSYS-05", "Clear module borders in the code", "P2", 0],
+  ["BPSYS-06", "Architecture diagram kept up to date", "P2", 0],
+  ["BPSYS-07", "Extraction order agreed for later: notifications, then search, then payments; keep booking and availability together", "P3", 0]
+ ]},
+ {id:"BPDB",st:"build",name:"Database and booking engine (Blueprint)",goal:"The part that cannot be wrong: two people never hold the same court at the same time.",items:[
+  ["BPDB-01", "Overlap exclusion constraint (btree_gist) on unit and time range, with a parallel-insert test", "P0", 0, "OYUN uses partial unique indexes and a revision check instead."],
+  ["BPDB-02", "Leaf-unit reservation: a full pitch books both halves, a half pitch conflicts with the full pitch", "P0", 0, "Half pitches are in the code; production SQL step P10-16 still to run."],
+  ["BPDB-03", "Sport-mode blocking on shared courts (badminton blocks pickleball in the same hour)", "P1", 0],
+  ["BPDB-04", "Expired holds released in the same transaction as the new hold", "P1", 0],
+  ["BPDB-05", "Idempotency key on every create and confirm call, unique in the table", "P1", 0],
+  ["BPDB-06", "Unique gateway event id stored for every webhook so repeats change nothing", "P0", 0],
+  ["BPDB-07", "Times stored in UTC, venue time zone on the venue, half-open slot ranges", "P2", 0],
+  ["BPDB-08", "Money stored as integer paise, never floating point", "P1", 0],
+  ["BPDB-09", "Price, tax rate and commission copied onto the booking at creation; old bookings never recalculated", "P1", 0],
+  ["BPDB-10", "Double-entry ledger with balanced rows (deferred trigger checks debits equal credits)", "P1", 0],
+  ["BPDB-11", "Indexes on unit and time range, user, status; partial index on active holds for the expiry job", "P2", 0],
+  ["BPDB-12", "Soft-delete venues and units so old bookings and invoices still resolve", "P2", 0],
+  ["BPDB-13", "Audit table for every admin and owner action that changes prices, bookings or money", "P1", 0],
+  ["BPDB-14", "Point-in-time backups and a restore drill", "P0", 0]
+ ]},
+ {id:"BPAPI",st:"build",name:"APIs and backend (Blueprint)",goal:"Typed API, one place for the rules, safe writes.",items:[
+  ["BPAPI-01", "Idempotency keys on all writes that create bookings or payments", "P1", 0],
+  ["BPAPI-02", "Signed webhook handler for payments and for messages", "P0", 0],
+  ["BPAPI-03", "Versioned endpoints the later app can reuse", "P3", 0],
+  ["BPAPI-04", "Consistent error codes: 409 SLOT_TAKEN, 410 HOLD_EXPIRED, 402 PAYMENT_REQUIRED, 403 FORBIDDEN, 422 INVALID_INPUT, 429 RATE_LIMITED", "P2", 0],
+  ["BPAPI-05", "Background jobs: expire holds every minute", "P1", 0],
+  ["BPAPI-06", "Background jobs: reminders 2 hours before", "P1", 0],
+  ["BPAPI-07", "Background jobs: poll the gateway for pending orders and reconcile daily", "P0", 0],
+  ["BPAPI-08", "Background jobs: settle and create payout batches", "P1", 0, "Settlement runs daily at 06:00 (cron)."],
+  ["BPAPI-09", "Background jobs: ask for reviews after the slot; mark no-shows when the slot ends", "P2", 0],
+  ["BPAPI-10", "Background jobs: nightly audit for overlapping bookings", "P1", 0, "/api/monitoring/double-bookings exists."]
+ ]},
+ {id:"BPFE",st:"build",name:"Frontend and pages (Blueprint)",goal:"Player site, owner dashboard, admin console and marketing pages, about 55 pages in all.",items:[
+  ["BPFE-01", "360 px phone layouts for every player screen", "P0", 1],
+  ["BPFE-02", "Installable manifest and offline shell (PWA)", "P2", 1],
+  ["BPFE-03", "Accessible forms", "P1", 0, "Axe checks and a keyboard test exist; findings not all fixed (P8-20)."],
+  ["BPFE-04", "Shared types between site and API", "P3", 0],
+  ["BPFE-05", "Player pages (MVP): home, search, venue page with slot grid, checkout with hold timer, confirmation and QR ticket, login, my bookings, booking detail, account, help, for-venues, about and contact, legal, 404/error/offline", "P0", 0],
+  ["BPFE-06", "Player pages (Phase 2): city and sport pages, write a review, notification settings", "P2", 0],
+  ["BPFE-07", "Player pages (Phase 3): wallet and credits, open play, teams and split payment, membership", "P3", 0],
+  ["BPFE-08", "Owner pages (MVP): sign up and login, onboarding, overview, calendar, bookings, venues, units, pricing, hours and policies, check-in, staff, settings", "P0", 0],
+  ["BPFE-09", "Owner pages (Phase 2): earnings and payouts, coupons, reviews, reports", "P2", 0],
+  ["BPFE-10", "Admin pages (MVP): dashboard, venue approvals, bookings, users, payments and refunds, catalog, settings, audit log, team and roles", "P0", 0],
+  ["BPFE-11", "Admin pages (Phase 2): payouts, support tickets, moderation, promotions", "P2", 0],
+  ["BPFE-12", "Key screens designed: search results, venue page, checkout, confirmation, owner calendar", "P1", 0]
+ ]},
+ {id:"BPSEC",st:"build",name:"Auth, security and limits (Blueprint)",goal:"Accounts, money and personal data; stop abuse on logins, search and holds.",items:[
+  ["BPSEC-01", "Roles: player, owner, manager, staff, support, finance, super admin", "P1", 0],
+  ["BPSEC-02", "Access limited to the user's own venues", "P0", 1],
+  ["BPSEC-03", "Two-factor sign-in for admins", "P1", 0],
+  ["BPSEC-04", "Session expiry", "P1", 0],
+  ["BPSEC-05", "No card data stored by OYUN (gateway-hosted payment forms)", "P0", 1, "No card data is held today."],
+  ["BPSEC-06", "Input validation at every boundary", "P1", 0],
+  ["BPSEC-07", "OTP limits per phone and per IP", "P1", 0],
+  ["BPSEC-08", "Cap on active holds per player", "P2", 0],
+  ["BPSEC-09", "Lockout after repeated failures", "P1", 0],
+  ["BPSEC-10", "Alerts on traffic spikes", "P2", 0],
+  ["BPSEC-11", "WAF rules and dependency scanning at the edge", "P2", 0],
+  ["BPSEC-12", "Consent and deletion flows", "P0", 1, "/api/privacy/consent, export and delete exist."]
+ ]},
+ {id:"BPTEST",st:"build",name:"Testing the risky parts (Blueprint)",goal:"Proof that the risky parts work before real money moves.",items:[
+  ["BPTEST-01", "50 parallel holds on one slot give exactly one booking", "P0", 0, "A parallel createBookings test exists (P8-04)."],
+  ["BPTEST-02", "A duplicate webhook changes nothing", "P0", 0],
+  ["BPTEST-03", "Full pitch and half pitch conflict both ways", "P0", 0],
+  ["BPTEST-04", "Evening peak load test (k6)", "P1", 0, "See P10-12."],
+  ["BPTEST-05", "End-to-end booking flow in payment test mode: search, hold, pay", "P1", 0, "E2E covers browse, hold, book, ticket, cancel; no payment step yet."],
+  ["BPTEST-06", "Written scale triggers for each stage, a sizing estimate with assumptions, and a plan for each dependency failing", "P2", 0]
+ ]},
+ {id:"BPPAY",st:"build",name:"Pricing, payments and notifications (Blueprint)",goal:"Rules, add-ons, coupons, tax, gateway, ledger, settlement and messages.",items:[
+  ["BPPAY-01", "Tax-inclusive price shown before payment", "P1", 0],
+  ["BPPAY-02", "Coupon limits and expiry", "P2", 0],
+  ["BPPAY-03", "Venue-funded and platform-funded offers kept separate", "P2", 1],
+  ["BPPAY-04", "Never cache the price at checkout", "P1", 1],
+  ["BPPAY-05", "Late payment after the hold expired: confirm if the slot is still free, otherwise refund automatically", "P0", 0],
+  ["BPPAY-06", "Refund rules by policy", "P0", 0],
+  ["BPPAY-07", "Bank verification before payouts", "P1", 0],
+  ["BPPAY-08", "Daily reconciliation against the gateway", "P0", 0],
+  ["BPPAY-09", "Approved WhatsApp templates and SMS DLT registration (start in week 1, long lead time)", "P0", 0],
+  ["BPPAY-10", "Fallback order across channels, opt-ins and quiet hours, delivery status stored, retry queue", "P1", 0]
+ ]},
+ {id:"BPDISC",st:"build",name:"Search, marketing and analytics (Blueprint)",goal:"Findability, source tracking and the numbers.",items:[
+  ["BPDISC-01", "Distance search with filters for sport, surface, price, lights, indoor; sort by next free slot; map and list views", "P2", 0],
+  ["BPDISC-02", "Source (UTM) saved on every booking and enquiry", "P1", 0],
+  ["BPDISC-03", "Unique title, text and structured data on every page; sitemap", "P1", 1],
+  ["BPDISC-04", "Consent banner before ad pixels", "P0", 1],
+  ["BPDISC-05", "Owner enquiries go to a shared list with a status and alert the team", "P1", 0],
+  ["BPDISC-06", "Real reviews and numbers only; show none until they exist", "P1", 1],
+  ["BPDISC-07", "Funnel events from landing to paid booking (landing, search, venue view, hold, paid)", "P2", 0],
+  ["BPDISC-08", "Admin actions limited by role, with a read-only view as a user and age shown on refund and dispute queues", "P2", 0],
+  ["BPDISC-09", "Feature flags and settings: change history, per-city overrides, safe defaults, kill switch", "P2", 0],
+  ["BPDISC-10", "Marketing pages: player landing, venue-owner landing, campaign landing, sport pages, city pages, offers, refer a friend, corporate, owner pricing, blog", "P2", 0]
+ ]},
+ {id:"BPSPRINT",st:"ship",name:"Build plan and long-lead items (Blueprint)",goal:"Five sprints to a safe pilot. The slow items are not code: start them in week 1.",items:[
+  ["BPSPRINT-01", "Start payment gateway activation and KYC", "P0", 0],
+  ["BPSPRINT-02", "Start WhatsApp business verification and template approval", "P0", 0],
+  ["BPSPRINT-03", "Start SMS DLT registration (company, sender ID, templates)", "P0", 0],
+  ["BPSPRINT-04", "Start pilot venue conversations", "P0", 0],
+  ["BPSPRINT-05", "Get legal pages reviewed by a lawyer", "P0", 0],
+  ["BPSPRINT-06", "Sprint 0 done when: a parallel-insert test proves one winner per slot, and a preview deploy opens on a phone", "P1", 0],
+  ["BPSPRINT-07", "Sprint 1 done when: a pilot owner sets up a real venue in under 30 minutes and an admin approves it", "P1", 0],
+  ["BPSPRINT-08", "Sprint 2 done when: a test booking runs from search to a confirmed ticket, and a late or repeated webhook changes nothing", "P1", 0],
+  ["BPSPRINT-09", "Sprint 3 done when: a venue runs a full day from the app and the calendar matches reality", "P1", 0],
+  ["BPSPRINT-10", "Sprint 4 done when: every launch-gate item is ticked and the first real bookings succeed", "P0", 0]
+ ]},
+ {id:"LKONB",st:"ship",name:"Venue onboarding guide (Launch Kit)",goal:"One visit per venue if the owner has the items ready.",items:[
+  ["LKONB-01", "Collect PAN of the owner or business, and GST number if registered", "P0", 0],
+  ["LKONB-02", "Collect bank account details for payouts", "P0", 0],
+  ["LKONB-03", "Collect 8 to 10 photos: entrance and signboard, whole turf or hall, each court, surface, floodlights at night, changing room and washroom, parking, equipment", "P1", 0],
+  ["LKONB-04", "List the units: name, sport, size, indoor or outdoor, whether a unit splits", "P1", 0],
+  ["LKONB-05", "Opening hours for each day and slot length", "P1", 0],
+  ["LKONB-06", "Price list: peak and off-peak, weekday and weekend, add-ons (use the price worksheet)", "P0", 0],
+  ["LKONB-07", "Rules and cancellation preference", "P2", 0],
+  ["LKONB-08", "Names and phone numbers of staff who will use the calendar", "P1", 0],
+  ["LKONB-09", "Owner dashboard steps: sign up, business and bank details, add venue, add units, hours, prices, cancellation policy, invite staff", "P0", 0],
+  ["LKONB-10", "Make a test booking and a test refund with the owner's team; go live once review approves", "P0", 0]
+ ]},
+ {id:"LKSTAFF",st:"ship",name:"Staff routine (Launch Kit)",goal:"What the venue's staff do every day.",items:[
+  ["LKSTAFF-01", "Open the calendar at the start of the shift and check today's bookings", "P1", 0],
+  ["LKSTAFF-02", "Scan the player's QR code on arrival", "P1", 0],
+  ["LKSTAFF-03", "Enter every walk-in and phone booking straight away, before the player leaves", "P0", 0],
+  ["LKSTAFF-04", "Block a unit before maintenance starts, not after", "P1", 0],
+  ["LKSTAFF-05", "Call the support number for any problem with a booking or payment", "P2", 0]
+ ]},
+ {id:"LKMSG",st:"ship",name:"Message templates (Launch Kit)",goal:"WhatsApp and SMS texts to submit for approval. Keep promotions out of utility templates.",items:[
+  ["LKMSG-01", "WhatsApp player: booking_confirmed", "P0", 0],
+  ["LKMSG-02", "WhatsApp player: reminder_2h", "P1", 0],
+  ["LKMSG-03", "WhatsApp player: payment_pending", "P1", 0],
+  ["LKMSG-04", "WhatsApp player: cancelled_by_player and cancelled_by_venue", "P1", 0],
+  ["LKMSG-05", "WhatsApp player: refund_processed", "P1", 0],
+  ["LKMSG-06", "WhatsApp player: review_request (may be classed as marketing)", "P3", 0],
+  ["LKMSG-07", "WhatsApp owner: owner_new_booking, owner_cancellation, payout_sent", "P1", 0],
+  ["LKMSG-08", "Use the built-in authentication template for login codes", "P2", 0],
+  ["LKMSG-09", "SMS (DLT): login code, booking confirmed, reminder, cancelled; sent text must match the approved template", "P1", 0]
+ ]},
+ {id:"LKLEGAL",st:"ship",name:"Draft legal documents (Launch Kit)",goal:"Drafts for a lawyer to review. Not legal advice and not ready to publish.",items:[
+  ["LKLEGAL-01", "Terms of use for players: replace placeholders, lawyer review of safety, liability and 18+ wording", "P0", 0, "Live Terms page exists; see docs/legal/."],
+  ["LKLEGAL-02", "Privacy policy: data fiduciary role, consent, retention years, storage region, grievance officer", "P0", 0, "See docs/legal/DPDP-REVIEW-BRIEF.md."],
+  ["LKLEGAL-03", "Cancellation and refund policy: decide the windows (for example 24 h and 6 h) and refund to source", "P0", 0, "See docs/legal/REFUND-AND-COMMISSION-POLICY.md."],
+  ["LKLEGAL-04", "Venue partner agreement, key terms: fees, payouts, taxes, player data use, exit, liability", "P0", 0, "Draft in docs/legal/PARTNER-AGREEMENT-DRAFT.md."],
+  ["LKLEGAL-05", "Add an acceptance step in partner onboarding that records the agreement version and time", "P1", 0]
+ ]},
+ {id:"BPMON",st:"run",name:"Monitoring signals (Blueprint)",goal:"Watch the booking path first. Starting targets, tune after a few weeks of traffic.",items:[
+  ["BPMON-01", "Availability API latency p95 under 300 ms; alert above 500 ms for 5 minutes", "P1", 0],
+  ["BPMON-02", "API error rate under 1 percent 5xx; alert above 2 percent for 5 minutes", "P1", 0],
+  ["BPMON-03", "Overlapping active bookings zero; the nightly audit finds none", "P0", 1, "/api/monitoring/double-bookings."],
+  ["BPMON-04", "Holds past their deadline: zero older than 2 minutes after expiry", "P1", 0],
+  ["BPMON-05", "Webhook delay under 1 minute; alert over 5 minutes or a spike in bad signatures", "P1", 0],
+  ["BPMON-06", "Hold-to-paid conversion baseline; alert on a 20 percent drop against the same hour last week", "P2", 0],
+  ["BPMON-07", "Refunds waiting: none older than 24 hours", "P1", 0],
+  ["BPMON-08", "Queue age: oldest job under 1 minute; alert over 5 minutes", "P2", 0],
+  ["BPMON-09", "Notification failures: confirmations arrive within a minute; alert when failure rate climbs", "P2", 0],
+  ["BPMON-10", "Database: replica lag within seconds, connections below the pool limit", "P2", 0],
+  ["BPMON-11", "Runbook link in each alert, an on-call phone, a public status page", "P1", 0],
+  ["BPMON-12", "Request id and booking id on every log line; no phone numbers or payment details in logs; release tags and source maps", "P1", 0]
+ ]},
+ {id:"BPBIZ",st:"run",name:"Business numbers to chart (Blueprint)",goal:"Chart these from day one.",items:[
+  ["BPBIZ-01", "Gross booking value", "P1", 0],
+  ["BPBIZ-02", "Bookings by sport and city", "P2", 0],
+  ["BPBIZ-03", "Utilization by venue and hour", "P1", 0],
+  ["BPBIZ-04", "Peak-hour fill rate", "P2", 0],
+  ["BPBIZ-05", "Cancellation rate", "P1", 0],
+  ["BPBIZ-06", "No-show rate", "P1", 0],
+  ["BPBIZ-07", "Repeat booking rate", "P1", 0],
+  ["BPBIZ-08", "Days to first booking for a new venue", "P2", 0],
+  ["BPBIZ-09", "Refund rate", "P2", 0],
+  ["BPBIZ-10", "Payout accuracy", "P0", 0]
+ ]},
+ {id:"BPFAIL",st:"run",name:"If a dependency fails (Blueprint)",goal:"What the player sees and what the system does.",items:[
+  ["BPFAIL-01", "Redis down: slots load slower, read straight from Postgres, tighten rate limits", "P2", 0],
+  ["BPFAIL-02", "Payment gateway slow or down: clear retry message while the hold keeps running; alert on error rate", "P1", 0],
+  ["BPFAIL-03", "Webhook never arrives: a reconcile job polls the gateway for pending orders and confirms them", "P0", 0],
+  ["BPFAIL-04", "Worker stopped: holds still release because expiry runs inside the booking transaction; alert pages you", "P1", 0],
+  ["BPFAIL-05", "WhatsApp provider down: confirmation shows in the app, fall back to SMS, retry in a queue", "P1", 0],
+  ["BPFAIL-06", "Database primary fails: failover to the standby, reads from cache and replica continue", "P2", 0],
+  ["BPFAIL-07", "Written recovery steps, a target time to recover, alerts when a backup fails", "P0", 0]
+ ]},
+ {id:"BPREL",st:"run",name:"Release path and cost control (Blueprint)",goal:"How code reaches production safely, and what it costs.",items:[
+  ["BPREL-01", "Pull request: lint, types, unit tests", "P0", 1],
+  ["BPREL-02", "Database tests for the overlap rule on every pull request", "P1", 1, "SQL tests run in CI."],
+  ["BPREL-03", "End-to-end tests run on every pull request", "P1", 1],
+  ["BPREL-04", "Staging deploy, then production at 10 percent of traffic", "P2", 0],
+  ["BPREL-05", "Automatic rollback when the error rate is not normal", "P2", 0],
+  ["BPREL-06", "Migrations that touch bookings or the ledger ship alone, with a written way back", "P1", 0],
+  ["BPREL-07", "Cost: monthly review, cost per booking estimate, usage limits on maps and messaging, budgets and alerts per provider", "P2", 0],
+  ["BPREL-08", "Docs: decision log, current architecture diagram, runbook for each alert, venue onboarding guide, API reference", "P2", 0]
+ ]},
+ {id:"BPMONEY",st:"grow",name:"Money flow and earning model (Blueprint)",goal:"Choose how money moves first, then check each booking earns more than it costs.",items:[
+  ["BPMONEY-01", "Choose the money flow: A gateway splits the payment, B platform collects and pays later, or C venue collects", "P0", 0, "Blueprint default for the pilot: A. Needs gateway and CA confirmation."],
+  ["BPMONEY-02", "Test earning options with pilot venues: commission (8 to 12 percent example), player convenience fee, venue subscription, free bookings with paid extras", "P1", 0],
+  ["BPMONEY-03", "Confirm gateway fees on the official pricing page (about 2% plus 18% GST on the fee)", "P1", 0],
+  ["BPMONEY-04", "Confirm WhatsApp and SMS prices with the provider (utility about 0.145 rupees, marketing about 1.09 rupees, example figures)", "P2", 0],
+  ["BPMONEY-05", "Launch running cost estimate: Supabase Pro 25 USD and Vercel Pro 20 USD a month, plus usage", "P1", 0],
+  ["BPMONEY-06", "Check unit economics: revenue per booking minus gateway and message cost; break-even bookings a month", "P1", 0]
+ ]},
+ {id:"BPSCALE",st:"grow",name:"Scale and roadmap (Blueprint)",goal:"Add each piece only when a number tells you to.",items:[
+  ["BPSCALE-01", "Stage 0 pilot, 5 to 20 venues: one deploy, one Postgres, managed Redis; reconcile payments by hand each week", "P1", 0],
+  ["BPSCALE-02", "Stage 1 one city, 20 to 200 venues: separate worker, read replica for dashboards, CDN for photos, point-in-time backups", "P2", 0],
+  ["BPSCALE-03", "Stage 2 several cities, 200 to 2,000 venues: containers with autoscaling, search index, event bus, warehouse, per-city settings", "P3", 0],
+  ["BPSCALE-04", "Stage 3 national, 2,000 or more venues: multi-zone failover, monthly partitions, payments as a service, archival", "P3", 0],
+  ["BPSCALE-05", "Roadmap phase 1 MVP exit: 100 real bookings, zero double bookings, ledger matches the gateway", "P0", 0],
+  ["BPSCALE-06", "Roadmap phase 2 exit: payouts run for a month with no manual fixes", "P1", 0],
+  ["BPSCALE-07", "Roadmap phase 3: native app, open play, split payment, recurring slots, memberships, a second city", "P3", 0],
+  ["BPSCALE-08", "Market check: padel and pickleball venues grow fast; win one area first", "P2", 0],
+  ["BPSCALE-09", "Recurring weekly slots (Phase 2), open play and coaching batches (Phase 3), tournaments and memberships (Phase 3)", "P3", 0]
+ ]},
+ {id:"SEC01",st:"build",name:"Security: Planning and threat model",goal:"Know what needs protecting and who might attack it, before more code is written.",items:[
+  ["SEC01-01", "Classify the data held: public, internal, confidential, highly sensitive (names, phones, bank details, wallet)", "P1", 0, "Data inventory is in docs/legal/DPDP-REVIEW-BRIEF.md."],
+  ["SEC01-02", "List every account type and privileged account: player, owner, staff, admin", "P1", 1],
+  ["SEC01-03", "Identify payment, refund and payout workflows as the highest-risk features", "P0", 1],
+  ["SEC01-04", "List every external service: Clerk, Supabase, Vercel, Razorpay (planned), WhatsApp and SMS (planned)", "P1", 0],
+  ["SEC01-05", "Define who can access each feature (permission matrix)", "P0", 1, "Partner permission matrix exists in the code."],
+  ["SEC01-06", "STRIDE model written with mitigations for high-risk threats", "P1", 1, "See the STRIDE table below."],
+  ["SEC01-07", "Write down what happens if an API key, an admin account, or the database is exposed", "P1", 0],
+  ["SEC01-08", "Write down acceptable residual risks and who signed them off", "P2", 0]
+ ]},
+ {id:"SEC02",st:"build",name:"Security: Authentication",goal:"Who are you? Logins, sessions, recovery.",items:[
+  ["SEC02-01", "Use a reputable auth provider or library for players", "P0", 1, "Clerk for players; signed cookies for partners and admin."],
+  ["SEC02-02", "Passwords hashed with a strong algorithm (Argon2id, scrypt or bcrypt); never plaintext, never logged", "P0", 1, "scrypt with constant-time compare."],
+  ["SEC02-03", "Rate limit and lock out repeated login failures; stop credential stuffing", "P0", 0, "In-memory per instance today. Shared limiter needs SQL step P9-22."],
+  ["SEC02-04", "Do not reveal whether an email is registered", "P1", 0],
+  ["SEC02-05", "Password reset: single-use, expiring, unguessable token that never appears in logs or URLs", "P1", 0],
+  ["SEC02-06", "Session cookies: HttpOnly, Secure, SameSite, expiry and inactivity limit", "P0", 1, "HMAC-signed, httpOnly, sameSite=lax, 8-hour life."],
+  ["SEC02-07", "Rotate the session id after login and privilege change; invalidate on logout and password change", "P1", 0],
+  ["SEC02-08", "MFA for admins; consider it for owners; protect recovery", "P1", 0],
+  ["SEC02-09", "Never treat frontend login state as proof of authentication", "P0", 1],
+  ["SEC02-10", "OAuth: validate state, PKCE, redirect URIs, token issuer and audience", "P1", 0, "Handled by Clerk; check provider settings when Google and Apple go live."],
+  ["SEC02-11", "Hard-coded admin and partner credentials removed from the login form", "P0", 1, "Fixed under P9-18."]
+ ]},
+ {id:"SEC03",st:"build",name:"Security: Authorization and access control",goal:"What is each user allowed to do? The most important area to test in AI-written code.",items:[
+  ["SEC03-01", "Enforce permissions on the server, deny by default", "P0", 1, "Every admin action calls requireAdmin; partner actions are permission-checked."],
+  ["SEC03-02", "Object-level checks: a user cannot read or change another user's booking, invoice or ticket by changing the id", "P0", 0, "Ticket links expose name and phone to anyone holding the link (R-06)."],
+  ["SEC03-03", "Owners can only see and change their own turf; staff only what their role allows", "P0", 1],
+  ["SEC03-04", "Users cannot change their own role, ownership or wallet balance", "P0", 1],
+  ["SEC03-05", "Authorization sweep test: every server action rejects without a session", "P0", 1, "src/lib/authorization.test.ts classifies every exported action."],
+  ["SEC03-06", "Every partner page is covered by the page audit test", "P1", 1, "src/lib/authorization-audit.test.ts."],
+  ["SEC03-07", "Test horizontal escalation (user to user) and vertical escalation (user to admin) with two real accounts", "P0", 0],
+  ["SEC03-08", "Exports, CSV downloads and reports respect the same permissions", "P1", 0],
+  ["SEC03-09", "A hidden button is never the control: the backend refuses the call", "P0", 1]
+ ]},
+ {id:"SEC04",st:"build",name:"Security: Frontend security",goal:"Anything delivered to a browser can be read by anyone.",items:[
+  ["SEC04-01", "No private keys, service-role keys or database credentials in the browser bundle", "P0", 1, "Secret key is server-side only; not NEXT_PUBLIC_."],
+  ["SEC04-02", "Review the production JavaScript bundle and source maps for leaked secrets", "P1", 0],
+  ["SEC04-03", "Avoid unsafe HTML: no untrusted dangerouslySetInnerHTML", "P0", 1, "Two uses, both server-generated (QR code, JSON-LD with < escaped)."],
+  ["SEC04-04", "Content Security Policy configured", "P0", 1, "Nonce policy on dynamic pages, build-time policy on cached pages."],
+  ["SEC04-05", "Security headers: HSTS, X-Frame-Options, nosniff, Referrer-Policy", "P0", 1],
+  ["SEC04-06", "CORS is not overly permissive; no sensitive data in URLs", "P1", 0],
+  ["SEC04-07", "Third-party scripts reviewed; Subresource Integrity for external static files where possible", "P2", 0],
+  ["SEC04-08", "Never trust a price, balance, role or subscription flag sent by the browser", "P0", 1, "One quote function for display and charge."],
+  ["SEC04-09", "Open redirects blocked", "P1", 1]
+ ]},
+ {id:"SEC05",st:"build",name:"Security: Backend and API security",goal:"The backend enforces the rules. Validate everything.",items:[
+  ["SEC05-01", "Validate every request with a schema: types, lengths, formats, allowed values", "P0", 0, "Length caps and phone/time validation exist; no schema library."],
+  ["SEC05-02", "Reject unexpected fields on sensitive operations; stop mass assignment", "P0", 0],
+  ["SEC05-03", "Request body size limits; malformed JSON handled safely", "P1", 0],
+  ["SEC05-04", "Rate limit login, registration, holds, search and exports; return 429", "P0", 0, "Per-instance limiter only (R-03, R-04). Fix: P9-06 and SQL step P9-22."],
+  ["SEC05-05", "Prevent injection: SQL, NoSQL, command, path traversal", "P0", 1, "No raw SQL built from strings in app code."],
+  ["SEC05-06", "Prevent SSRF; validate outbound requests and set timeouts", "P1", 0],
+  ["SEC05-07", "CSRF protection for cookie-based writes", "P0", 1, "Next server-action origin checks; same-origin check on the hold-release beacon."],
+  ["SEC05-08", "Errors never leak stack traces or internal details", "P1", 0],
+  ["SEC05-09", "Cron and webhook routes authenticate: cron secret fails closed; webhooks verify signatures", "P0", 1, "requireCronSecret fails closed when CRON_SECRET is missing."],
+  ["SEC05-10", "Do not trust arbitrary X-Forwarded-* headers", "P2", 0],
+  ["SEC05-11", "Protect health and diagnostics endpoints", "P2", 0, "/api/monitoring/double-bookings is public by design and rate limited."]
+ ]},
+ {id:"SEC06",st:"build",name:"Security: Database security",goal:"Where the data lives. Least privilege, isolation, recoverability.",items:[
+  ["SEC06-01", "Database credentials stay server-side and out of Git; separate per environment", "P0", 1],
+  ["SEC06-02", "Least-privilege database roles; remove unused accounts and extensions", "P1", 0],
+  ["SEC06-03", "Row-Level Security enabled on tables reachable through a client API", "P0", 1, "RLS on with no policies (deny all for anon); server uses the service role."],
+  ["SEC06-04", "Policies tested with an anonymous user, a normal user and a cross-user attempt", "P0", 0, "Only matters if a public database client is ever added."],
+  ["SEC06-05", "Privileged RPC functions granted to service_role only", "P0", 1],
+  ["SEC06-06", "Parameterised queries only; allowlist any dynamic column or sort", "P0", 1],
+  ["SEC06-07", "CHECK constraints on money and counts; run supabase/setup/7-check-constraints.sql on production", "P1", 0, "P9-21."],
+  ["SEC06-08", "Encrypted connections; restrict network access to the database", "P1", 0],
+  ["SEC06-09", "Automated backups, encrypted, and a restore drill", "P0", 0, "Nightly backup workflow exists; restore not yet rehearsed."],
+  ["SEC06-10", "Safe migrations: tested before production, with a way back", "P1", 0]
+ ]},
+ {id:"SEC07",st:"build",name:"Security: Secrets and keys",goal:"Secret leakage is the most common AI-coding mistake.",items:[
+  ["SEC07-01", "No credentials in source; .env files are ignored by Git", "P0", 1],
+  ["SEC07-02", "Secret scanning on every pull request", "P0", 1, "Gitleaks runs in CI."],
+  ["SEC07-03", "Scan Git history once for old keys", "P1", 1, "Done under R006."],
+  ["SEC07-04", "Separate credentials for development and production, least privilege", "P0", 0],
+  ["SEC07-05", "Rotate SESSION_SECRET, ADMIN_PASSWORD and the Supabase secret key before launch", "P0", 0, "P9-31. Admin and partner passwords should differ."],
+  ["SEC07-06", "API keys scoped, restricted by domain or IP where supported, with usage quotas", "P1", 0],
+  ["SEC07-07", "No secrets pasted into AI prompts, screenshots, logs or bug reports", "P0", 0],
+  ["SEC07-08", "Review CI and application logs for accidental secrets", "P2", 0]
+ ]},
+ {id:"SEC08",st:"build",name:"Security: File uploads and storage",goal:"OYUN has few uploads today; this matters when owner photo upload and student IDs grow.",items:[
+  ["SEC08-01", "Validate file size, type and signature, not just the extension", "P0", 0, "Applies to /api/partner/upload and student ID uploads."],
+  ["SEC08-02", "Server-generated filenames; prevent path traversal", "P0", 0],
+  ["SEC08-03", "Private files (student IDs) stay private; downloads are authorised", "P0", 0],
+  ["SEC08-04", "Short-lived signed URLs for temporary access", "P1", 0],
+  ["SEC08-05", "Storage quotas; users cannot enumerate other users' files", "P1", 0],
+  ["SEC08-06", "Deleted files follow the retention policy", "P2", 0]
+ ]},
+ {id:"SEC09",st:"build",name:"Security: Payments and wallet",goal:"Needed before Razorpay (P11) and for the wallet that already exists.",items:[
+  ["SEC09-01", "Use a reputable processor; never store card numbers or CVV", "P0", 1, "No card data is held."],
+  ["SEC09-02", "Calculate prices on the server; verify payment status on the server", "P0", 1],
+  ["SEC09-03", "Verify webhook signatures and reject forged events", "P0", 0, "A Razorpay webhook route exists."],
+  ["SEC09-04", "Webhook idempotency: a repeated event changes nothing", "P0", 0],
+  ["SEC09-05", "Wallet spend tied to a verified account, not a typed phone number", "P0", 0, "R-01, P9-03."],
+  ["SEC09-06", "Single-use promo and referral codes cannot be redeemed twice or by parallel requests", "P1", 1, "Redemptions are not given back on cancel."],
+  ["SEC09-07", "Refunds and payouts are authorised, logged and reconciled", "P0", 0],
+  ["SEC09-08", "Log high-risk billing actions; watch for suspicious patterns", "P1", 0]
+ ]},
+ {id:"SEC10",st:"build",name:"Security: Business logic and abuse",goal:"Attacks that need no exploit: just using the rules in ways nobody expected.",items:[
+  ["SEC10-01", "Two people cannot hold or book the same slot, even in parallel", "P0", 1, "Unique indexes and a revision check; parallel test exists."],
+  ["SEC10-02", "Slot hoarding by cookie reset is limited", "P1", 0, "R-04."],
+  ["SEC10-03", "Users cannot award themselves credits or bypass limits with parallel requests", "P0", 0],
+  ["SEC10-04", "Users cannot approve their own restricted actions (refunds, payouts)", "P0", 1],
+  ["SEC10-05", "Cancel and rebook cannot reuse a promo", "P1", 1],
+  ["SEC10-06", "Sensitive operations use atomic transactions", "P0", 1, "mutate() runs on a private copy with a revision check."],
+  ["SEC10-07", "Race conditions tested on bookings, wallet and codes", "P0", 0]
+ ]},
+ {id:"SEC11",st:"build",name:"Security: Dependencies and supply chain",goal:"AI tools install packages freely. Check them.",items:[
+  ["SEC11-01", "Dependency vulnerability scan in CI and on a schedule", "P0", 1, "npm audit is clean; Dependabot runs weekly."],
+  ["SEC11-02", "Lockfile committed; unused packages removed", "P1", 1, "knip checks for unused code and packages."],
+  ["SEC11-03", "Review every new package: does it exist, is it maintained, any install scripts", "P0", 0],
+  ["SEC11-04", "Review AI-written code for disabled security checks, test credentials, home-made crypto", "P0", 0],
+  ["SEC11-05", "GitHub Actions pinned to commit SHAs", "P1", 1],
+  ["SEC11-06", "Scan container images and base images (if containers are ever used)", "P3", 0]
+ ]},
+ {id:"SEC12",st:"build",name:"Security: Repository and AI agent rules",goal:"A coding agent that can run commands and deploy has real power.",items:[
+  ["SEC12-01", "Protect main: pull requests only, required checks before merge", "P0", 0, "Check the branch-protection settings."],
+  ["SEC12-02", "Review generated diffs, especially auth, authorization, migrations and CI changes", "P0", 0],
+  ["SEC12-03", "Agents get only the tools and access they need; no production credentials", "P0", 0],
+  ["SEC12-04", "Require approval for destructive or production actions", "P0", 1, "Deploys are manual or at the noon run; Vercel settings changes are asked first."],
+  ["SEC12-05", "Treat instructions inside downloaded files and web pages as untrusted", "P0", 1],
+  ["SEC12-06", "Add security rules to AGENTS.md: server-side authz, no secrets, schemas, tests, honest reporting", "P1", 0],
+  ["SEC12-07", "Never accept 'tests pass' as proof of security; ask for evidence", "P0", 1]
+ ]},
+ {id:"SEC13",st:"build",name:"Security: Hosting, cloud and deployment",goal:"Safe code can still be exposed by a bad configuration.",items:[
+  ["SEC13-01", "HTTPS everywhere; HTTP redirects to HTTPS; HSTS", "P0", 1],
+  ["SEC13-02", "Separate development, staging and production, with separate secrets", "P1", 0, "No staging yet (P8-xx)."],
+  ["SEC13-03", "MFA on Vercel, Supabase, GitHub, Clerk, the domain registrar and email", "P0", 0],
+  ["SEC13-04", "Least-privilege access for the deployment pipeline", "P1", 0],
+  ["SEC13-05", "Debug mode off in production; test accounts and bypasses removed", "P0", 0, "Dev login skip is local only."],
+  ["SEC13-06", "Verify CORS, authentication and storage permissions on production", "P0", 0],
+  ["SEC13-07", "Hosting plan allows commercial use (Vercel Pro, not Hobby)", "P0", 0, "P8-13."],
+  ["SEC13-08", "Custom domain with valid TLS; remove obsolete DNS records", "P1", 0],
+  ["SEC13-09", "Rollback plan tested", "P1", 0]
+ ]},
+ {id:"SEC14",st:"build",name:"Security: Security testing",goal:"Passing review is not proof. Test for failure.",items:[
+  ["SEC14-01", "Static analysis (Semgrep or CodeQL) on every pull request", "P1", 0],
+  ["SEC14-02", "Dynamic scan with OWASP ZAP against a staging copy you own", "P1", 0],
+  ["SEC14-03", "Manual test as anonymous, as user A, as user B and as admin", "P0", 0],
+  ["SEC14-04", "Change resource ids to test object-level access; test expired and revoked sessions", "P0", 0],
+  ["SEC14-05", "Concurrency tests: duplicate payment and webhook events, parallel holds, parallel wallet spends", "P0", 0],
+  ["SEC14-06", "Fuzz inputs: malformed JSON, long strings, wrong types, bad uploads", "P2", 0],
+  ["SEC14-07", "Accessibility and security headers checked after each release", "P2", 0],
+  ["SEC14-08", "Independent security review before taking real money", "P0", 0]
+ ]},
+ {id:"SEC15",st:"build",name:"Security: Privacy and data protection",goal:"DPDP Act 2023 duties. Pairs with docs/legal/.",items:[
+  ["SEC15-01", "Collect only the data you need; record the purpose for each kind", "P0", 1],
+  ["SEC15-02", "Privacy policy, terms and refund policy published", "P0", 1, "Pages exist; lawyer review pending (P8-16)."],
+  ["SEC15-03", "Consent before analytics cookies; withdraw any time", "P0", 1],
+  ["SEC15-04", "Access, export and erasure requests work end to end", "P0", 1, "/api/privacy/export and /delete exist."],
+  ["SEC15-05", "Retention periods defined and enforced by a job", "P1", 1, "Daily retention purge."],
+  ["SEC15-06", "No personal data in logs or error messages", "P1", 0],
+  ["SEC15-07", "Encrypt sensitive data in transit and at rest; protect backups", "P1", 0],
+  ["SEC15-08", "Grievance officer named; breach notification steps written", "P0", 0]
+ ]},
+ {id:"SEC16",st:"build",name:"Security: Logging, monitoring and incident response",goal:"Security does not end at launch.",items:[
+  ["SEC16-01", "Log authentication failures, role changes, admin actions and payments, with correlation ids", "P1", 0],
+  ["SEC16-02", "No passwords, tokens, keys or card data in logs", "P0", 0],
+  ["SEC16-03", "Alert on repeated failed logins, odd admin activity and cost spikes", "P1", 0],
+  ["SEC16-04", "Error tracking and an alert that reaches a person", "P0", 1, "Client errors go to /api/client-error and an alert webhook."],
+  ["SEC16-05", "Post-deploy health check", "P1", 1, "Runs daily at 13:00 IST."],
+  ["SEC16-06", "Incident plan: who disables an account, rotates a secret, revokes sessions", "P0", 0, "See docs/RUNBOOKS.md."],
+  ["SEC16-07", "Preserve logs for investigation; do a post-incident review", "P2", 0]
+ ]},
+ {id:"SEC17",st:"build",name:"Security: Mobile app security (for the later app)",goal:"Not needed until the Expo app exists; listed so it is not forgotten.",items:[
+  ["SEC17-01", "Tokens in Keychain or Keystore-backed storage, never plain preferences", "P0", 0],
+  ["SEC17-02", "No privileged server credentials inside the app", "P0", 0],
+  ["SEC17-03", "Standard TLS validation; secure deep links", "P1", 0],
+  ["SEC17-04", "Protect signing keys; remove debug endpoints from release builds", "P1", 0],
+  ["SEC17-05", "Authorization stays on the backend; do not rely on app-side checks", "P0", 0]
+ ]},
+ {id:"SEO01",st:"ship",name:"SEO: Strategy and keyword planning",goal:"Decide which pages exist, what each is for, and how it is measured.",items:[
+  ["SEO01-01", "Primary SEO goal: players searching 'turf booking Mangalore' and 'book football turf near me'", "P0", 1, "Set in site metadata and the home page."],
+  ["SEO01-02", "Target market: Mangalore first; languages English now, Kannada later", "P1", 1],
+  ["SEO01-03", "Keyword research for football, box cricket, badminton, pickleball and padel in Mangalore, with long-tail questions", "P1", 0],
+  ["SEO01-04", "Map one primary search intent to each page (home, arenas, sport pages, area pages, turf pages, FAQ)", "P1", 0],
+  ["SEO01-05", "Competitor review: Playo, Hudle and local WhatsApp groups", "P2", 0, "Market check is in the Blueprint."],
+  ["SEO01-06", "Measurable SEO KPIs: impressions, clicks, indexed pages, booking conversion from organic", "P1", 0],
+  ["SEO01-07", "SEO roadmap and a page-to-keyword sheet", "P2", 0]
+ ]},
+ {id:"SEO02",st:"ship",name:"SEO: Crawling and indexing",goal:"Search engines can find, fetch and index every public page.",items:[
+  ["SEO02-01", "Public pages return 200; removed pages return a real 404", "P0", 1, "notFound() on unknown turf, area and sport."],
+  ["SEO02-02", "XML sitemap generated automatically", "P0", 1, "src/app/sitemap.ts, built from the live database."],
+  ["SEO02-03", "Sitemap holds only canonical, indexable URLs: home, arenas, info pages, area pages, sport pages, turf pages", "P0", 1],
+  ["SEO02-04", "Private pages are not in the sitemap (admin, partner, bookings, profile, settings)", "P0", 1],
+  ["SEO02-05", "robots.txt configured, allows public content, points to the sitemap", "P0", 1, "src/app/robots.ts."],
+  ["SEO02-06", "Private pages are protected by login, not only by robots.txt", "P0", 1],
+  ["SEO02-07", "noindex on the account page", "P1", 1, "Profile metadata has robots noindex."],
+  ["SEO02-08", "No accidental noindex on public pages in production; staging is not indexed", "P0", 0, "Check after the custom domain goes live."],
+  ["SEO02-09", "Fix broken internal links and redirect chains", "P1", 0],
+  ["SEO02-10", "Important content works without clicking (no hidden-behind-interaction text)", "P1", 1],
+  ["SEO02-11", "Public pages reachable through plain HTML links", "P1", 1]
+ ]},
+ {id:"SEO03",st:"ship",name:"SEO: URLs and canonicals",goal:"One clean address for each page.",items:[
+  ["SEO03-01", "Readable URLs: /arenas/<turf>, /turfs/<area>, /sports/<sport>", "P1", 1],
+  ["SEO03-02", "Canonical tag on every indexable page, with the right protocol and host", "P0", 1, "Needs NEXT_PUBLIC_SITE_URL set to the real domain before the build."],
+  ["SEO03-03", "Set NEXT_PUBLIC_SITE_URL to the final domain (not the Vercel address)", "P0", 0, "docs/LAUNCH-SEO.md section 1."],
+  ["SEO03-04", "Resolve http/https and www/non-www duplicates with redirects", "P1", 0],
+  ["SEO03-05", "Query parameters (date, ref) do not create indexable duplicates", "P0", 1, "Turf pages ignore ?date and ?ref for the cached page; robots blocks ?ref=."],
+  ["SEO03-06", "Sitemap URLs match the canonical URLs", "P1", 1],
+  ["SEO03-07", "Phone home page at /m is a rewrite target; its canonical points to /", "P1", 1, "Added with the CDN caching work."]
+ ]},
+ {id:"SEO04",st:"ship",name:"SEO: On-page SEO",goal:"Titles, descriptions, headings, content and images.",items:[
+  ["SEO04-01", "Unique title on every important page", "P0", 1, "Metadata per route; turf titles include sport, area and price."],
+  ["SEO04-02", "Useful meta description on every important page", "P0", 1],
+  ["SEO04-03", "One clear main heading per page; headings describe their sections", "P1", 1],
+  ["SEO04-04", "Content matches the search intent of each page; no placeholder text", "P1", 0],
+  ["SEO04-05", "Original, accurate content on sport and area pages (not near-identical templates)", "P1", 0],
+  ["SEO04-06", "Descriptive internal links between turf, area and sport pages", "P1", 1],
+  ["SEO04-07", "Meaningful alt text on turf photos; empty alt on decoration", "P1", 1],
+  ["SEO04-08", "Images compressed, responsive, with reserved dimensions", "P1", 1, "next/image with AVIF and WebP."],
+  ["SEO04-09", "Open Graph and social-share image for the home page and turfs", "P2", 1]
+ ]},
+ {id:"SEO05",st:"ship",name:"SEO: Programmatic pages",goal:"Turf, area and sport pages are generated from data. Keep them useful.",items:[
+  ["SEO05-01", "Only active turfs are indexed; drafts and suspended turfs return 404", "P0", 1],
+  ["SEO05-02", "Each turf page has its own title, description, heading and schema", "P0", 1],
+  ["SEO05-03", "No empty area or sport pages in the sitemap", "P1", 1, "Sport pages are listed only when a turf offers the sport."],
+  ["SEO05-04", "Deleted or unpublished turfs return 404 and leave the sitemap", "P1", 1],
+  ["SEO05-05", "No private fields (owner, commission) appear in public pages or schema", "P0", 1, "PublicTurf type omits them."],
+  ["SEO05-06", "Monitor for URL growth in Search Console (parameters, duplicates)", "P2", 0]
+ ]},
+ {id:"SEO06",st:"ship",name:"SEO: Core Web Vitals and speed",goal:"LCP at most 2.5 s, INP at most 200 ms, CLS at most 0.1, at the 75th percentile.",items:[
+  ["SEO06-01", "Lighthouse performance and SEO checked on home, arenas and a turf page in CI", "P0", 1, "scripts/lighthouse-check.mjs; SEO 100 on arenas and turf."],
+  ["SEO06-02", "Public pages served from the CDN cache", "P0", 1, "Home, arenas, turf and info pages come back in about 0.1 s."],
+  ["SEO06-03", "Main above-the-fold image preloaded and not lazy-loaded", "P1", 1],
+  ["SEO06-04", "Reduce unused JavaScript; Clerk loaded only when needed", "P1", 1],
+  ["SEO06-05", "Measure real-user LCP, INP and CLS (Vercel Speed Insights, Search Console)", "P0", 0, "Collected only after cookie consent."],
+  ["SEO06-06", "Home page performance above 90 on CI", "P2", 0, "Tracker P8-75."],
+  ["SEO06-07", "Third-party scripts reviewed (analytics, maps)", "P2", 0],
+  ["SEO06-08", "Slow-database pages tuned; cold start under control", "P1", 0]
+ ]},
+ {id:"SEO07",st:"ship",name:"SEO: Mobile SEO",goal:"Google indexes the mobile version first.",items:[
+  ["SEO07-01", "Responsive layouts at 360 px", "P0", 1],
+  ["SEO07-02", "Mobile page has the same important content, titles and structured data as desktop", "P0", 1],
+  ["SEO07-03", "Readable fonts and usable tap targets", "P1", 1],
+  ["SEO07-04", "No horizontal overflow; no intrusive pop-ups blocking content", "P1", 0, "The offer pop-up appears after 4 seconds; review on phones."],
+  ["SEO07-05", "Test the booking flow on a real phone", "P0", 0, "Tracker P8-80."]
+ ]},
+ {id:"SEO08",st:"ship",name:"SEO: Structured data",goal:"Helps search engines understand pages. Never guarantees a rich result.",items:[
+  ["SEO08-01", "Organization and WebSite schema on the home page", "P1", 1],
+  ["SEO08-02", "BreadcrumbList on turf pages", "P1", 1],
+  ["SEO08-03", "SportsActivityLocation with opening hours, amenities and offer on turf pages", "P1", 1],
+  ["SEO08-04", "AggregateRating only from real reviews", "P0", 1, "Added only when review count is above zero."],
+  ["SEO08-05", "ItemList on the arenas page", "P2", 1],
+  ["SEO08-06", "FAQPage markup that matches the visible FAQ", "P2", 0, "Check eligibility rules before relying on it."],
+  ["SEO08-07", "Validate with the Rich Results Test and the Schema Markup Validator after each template change", "P1", 0],
+  ["SEO08-08", "No fabricated ratings, prices or business details", "P0", 1]
+ ]},
+ {id:"SEO09",st:"ship",name:"SEO: Sitemap and robots (production)",goal:"Verify on the live domain.",items:[
+  ["SEO09-01", "sitemap.xml loads on production and every URL returns 200", "P0", 0],
+  ["SEO09-02", "robots.txt does not block CSS or JavaScript needed to render", "P1", 1],
+  ["SEO09-03", "Submit the sitemap in Google Search Console", "P0", 0],
+  ["SEO09-04", "Also submit to Bing Webmaster Tools (import from Search Console)", "P2", 0]
+ ]},
+ {id:"SEO10",st:"ship",name:"SEO: JavaScript rendering (Next.js)",goal:"Content must be in the HTML, metadata per route.",items:[
+  ["SEO10-01", "Use the Metadata API with a template and metadataBase", "P0", 1],
+  ["SEO10-02", "Generate metadata per dynamic route, not one static copy", "P0", 1],
+  ["SEO10-03", "Static or cached rendering for public pages; dynamic only where needed", "P1", 1],
+  ["SEO10-04", "Public pages do not require login", "P0", 1],
+  ["SEO10-05", "Return proper 404 for missing routes", "P0", 1],
+  ["SEO10-06", "Test metadata in the rendered HTML on representative routes", "P1", 0],
+  ["SEO10-07", "Check key pages with Search Console URL Inspection", "P1", 0],
+  ["SEO10-08", "Avoid hydration errors on public pages", "P1", 1, "The /m hydration error was found and fixed."]
+ ]},
+ {id:"SEO11",st:"ship",name:"SEO: Local SEO (Mangalore)",goal:"Most booking searches are 'near me' and are won on Maps.",items:[
+  ["SEO11-01", "Create and verify a Google Business Profile for OYUN", "P0", 0, "docs/LAUNCH-SEO.md section 3."],
+  ["SEO11-02", "Each partner turf claims its profile and links its OYUN page", "P0", 0],
+  ["SEO11-03", "Same name, address and phone on every listing", "P1", 0],
+  ["SEO11-04", "Listings: Justdial, Sulekha, Bing Places, Apple Maps, Facebook, Instagram, LinkedIn", "P1", 0],
+  ["SEO11-05", "Ask real players for Google reviews after check-in; never buy reviews", "P1", 0],
+  ["SEO11-06", "Area pages with real local content, not just a list", "P1", 0],
+  ["SEO11-07", "Track calls, directions and bookings from local search", "P2", 0]
+ ]},
+ {id:"SEO12",st:"ship",name:"SEO: Content and blog",goal:"Useful content that answers players' questions.",items:[
+  ["SEO12-01", "Content calendar and topic clusters (football, cricket, badminton, padel, pickleball)", "P2", 0],
+  ["SEO12-02", "Guides: how to pick a turf, beginner padel, game rules, best turfs by area", "P2", 0],
+  ["SEO12-03", "FAQ page answers booking, cancellation and payment questions", "P1", 1],
+  ["SEO12-04", "Review every article for accuracy, links and originality before publishing", "P1", 0],
+  ["SEO12-05", "Do not publish unchecked AI-written pages; no thin near-duplicate pages", "P0", 0],
+  ["SEO12-06", "Update or merge outdated pages; redirect retired URLs", "P2", 0]
+ ]},
+ {id:"SEO13",st:"ship",name:"SEO: Trust (E-E-A-T)",goal:"Build real trust. It is not a score to game.",items:[
+  ["SEO13-01", "About page and contact details", "P1", 1],
+  ["SEO13-02", "Privacy policy, terms and refund policy published and accurate", "P0", 1, "Lawyer review pending (OYUN-122)."],
+  ["SEO13-03", "HTTPS everywhere", "P0", 1],
+  ["SEO13-04", "No fake testimonials or reviews", "P0", 1],
+  ["SEO13-05", "Clear support channel and response promise", "P1", 1],
+  ["SEO13-06", "Real owner and venue details; correct opening hours and prices", "P0", 0, "Placeholders still exist for some turfs (P7-26)."]
+ ]},
+ {id:"SEO14",st:"ship",name:"SEO: Backlinks and reputation",goal:"Relevant references, no link schemes.",items:[
+  ["SEO14-01", "Partner turfs link to their OYUN page (badge, link in bio, WhatsApp Business)", "P1", 0],
+  ["SEO14-02", "Local sports clubs, colleges and communities share OYUN", "P2", 0],
+  ["SEO14-03", "Local press and sports blogs", "P2", 0],
+  ["SEO14-04", "Do not buy links or use automated link spam", "P0", 1],
+  ["SEO14-05", "Monitor backlinks; use rel=sponsored or nofollow where warranted", "P3", 0]
+ ]},
+ {id:"SEO15",st:"ship",name:"SEO: Search Console and analytics",goal:"You cannot improve what you do not measure.",items:[
+  ["SEO15-01", "Verify the domain in Google Search Console", "P0", 0, "Set GOOGLE_SITE_VERIFICATION and redeploy."],
+  ["SEO15-02", "Monitor indexed pages, not-indexed pages, queries, clicks, CTR and position", "P0", 0],
+  ["SEO15-03", "Review Core Web Vitals and security reports weekly", "P1", 0],
+  ["SEO15-04", "Google Analytics 4 with key events: search, venue view, hold, paid booking", "P1", 0, "GA4 loads after consent when NEXT_PUBLIC_GA_ID is set."],
+  ["SEO15-05", "Save first-visit source (UTM) on every booking and enquiry", "P1", 0],
+  ["SEO15-06", "Keep personal data out of analytics; consent before pixels", "P0", 1],
+  ["SEO15-07", "Test that events fire once, not twice", "P2", 0]
+ ]},
+ {id:"SEO16",st:"ship",name:"SEO: Conversion and accessibility",goal:"SEO brings visitors; this turns them into bookings.",items:[
+  ["SEO16-01", "One clear action on each landing page (search, book, list your turf)", "P1", 1],
+  ["SEO16-02", "Headline matches the search that brought the visitor", "P1", 0],
+  ["SEO16-03", "Transparent price and advance shown before the player commits", "P0", 1],
+  ["SEO16-04", "Mobile checkout tested end to end", "P0", 0],
+  ["SEO16-05", "Semantic HTML, labelled forms, keyboard use, visible focus, contrast", "P1", 0, "Axe checks pass; manual audit not done (P8-20)."],
+  ["SEO16-06", "Language declared; reduced motion respected", "P2", 1]
+ ]},
+ {id:"SEO17",st:"ship",name:"SEO: Next.js specifics",goal:"Use what Next.js already provides. Add a package only for a real need.",items:[
+  ["SEO17-01", "Metadata API with titles, descriptions, canonical and Open Graph", "P0", 1],
+  ["SEO17-02", "sitemap.ts and robots.ts", "P0", 1],
+  ["SEO17-03", "Redirects configured for changed URLs", "P1", 1, "/list-your-turf redirects to /list-turf."],
+  ["SEO17-04", "Image optimisation with next/image and fixed dimensions", "P1", 1],
+  ["SEO17-05", "Private dashboard routes stay out of the sitemap", "P0", 1],
+  ["SEO17-06", "Verify the production domain and canonical URLs after deploy", "P0", 0],
+  ["SEO17-07", "Test representative routes after each deploy", "P1", 1, "The 13:00 post-deploy check covers health and cache headers."]
+ ]},
+ {id:"SEO18",st:"ship",name:"SEO: Rules for AI coding agents (SEO)",goal:"Put these in AGENTS.md so agents keep SEO intact.",items:[
+  ["SEO18-01", "Every public page gets a real title, description and canonical", "P0", 0],
+  ["SEO18-02", "Keep the sitemap and robots current when routes change; no private routes in public sitemaps", "P0", 0],
+  ["SEO18-03", "Never use robots.txt or noindex instead of authentication", "P0", 0],
+  ["SEO18-04", "Use semantic HTML, real headings and crawlable links; no placeholder or fabricated content", "P1", 0],
+  ["SEO18-05", "Structured data must match visible content; never fabricate reviews, ratings or prices", "P0", 0],
+  ["SEO18-06", "Do not expose private data in metadata or schema; keep sensitive responses out of public caches", "P0", 0],
+  ["SEO18-07", "Test metadata, sitemap, robots, status codes and canonicals; never claim a check passed unless run", "P1", 0],
+  ["SEO18-08", "Update SEO notes when route structure changes", "P2", 0]
+ ]},
+ {id:"WF01",st:"plan",name:"Workflow: Phase 1: Idea and discovery",goal:"Understand what is being built and why.",items:[
+  ["WF01-01", "Problem, audience and pain points defined", "P0", 1, "docs/BRIEF-PLAN.md; pilot playbook in the tracker."],
+  ["WF01-02", "Competitors and unique value researched", "P1", 0, "Market check is in the Blueprint, not in the repo."],
+  ["WF01-03", "Business goals, revenue model and platforms (web now, app later)", "P0", 1],
+  ["WF01-04", "Legal, privacy and regulatory requirements identified", "P0", 1, "docs/legal/ review pack; DPDP brief."],
+  ["WF01-05", "Measurable success criteria", "P1", 1, "Pilot: 100 bookings, zero double bookings in 6 weeks."],
+  ["WF01-06", "First version scope and explicit out-of-scope list", "P0", 1, "Phases P0 to P13; launch boundary P0 to P10."]
+ ]},
+ {id:"WF02",st:"plan",name:"Workflow: Phase 2: Requirements and specifications",goal:"Turn the idea into testable requirements.",items:[
+  ["WF02-01", "PRD written", "P1", 0, "FEATURE_LIST.md and the tracker Features view stand in for it."],
+  ["WF02-02", "User roles and permissions", "P0", 1, "docs/AUTHORIZATION.md."],
+  ["WF02-03", "User journeys, pages and screens listed", "P1", 1, "docs/FLOWCHARTS.md."],
+  ["WF02-04", "Business rules, validation, error, loading and empty states", "P1", 1],
+  ["WF02-05", "Non-functional requirements: performance, accessibility, security, privacy", "P1", 0],
+  ["WF02-06", "Acceptance criteria for every feature", "P0", 0, "Phase exit gates exist; per-feature criteria do not."],
+  ["WF02-07", "Features prioritised with dependencies", "P1", 1, "Priorities P0 to P3 in the tracker."]
+ ]},
+ {id:"WF03",st:"plan",name:"Workflow: Phase 3: Planning",goal:"How the work will be executed.",items:[
+  ["WF03-01", "Product broken into modules, features and tasks", "P0", 1, "Build tracker and Jira OYUN project."],
+  ["WF03-02", "Dependencies, estimates and milestones", "P1", 1, "docs/PHASES.md."],
+  ["WF03-03", "Parallel versus sequential work identified", "P2", 0],
+  ["WF03-04", "Ownership assigned to people or agents", "P2", 0],
+  ["WF03-05", "Definition of done written", "P0", 1, "docs/FEATURE-WORKFLOW.md."],
+  ["WF03-06", "Task tracker and release plan", "P0", 1, "Tracker, Jira, noon deploy schedule."]
+ ]},
+ {id:"WF04",st:"plan",name:"Workflow: Phase 4: UX and UI design",goal:"Decide how it works and looks before building.",items:[
+  ["WF04-01", "Information architecture and navigation", "P1", 1],
+  ["WF04-02", "Wireframes and high-fidelity designs", "P2", 0, "Designed in code; no design files kept."],
+  ["WF04-03", "Design tokens: colours, type, spacing", "P1", 1, "src/app/globals.css."],
+  ["WF04-04", "Responsive layouts for phone, tablet and desktop", "P0", 1],
+  ["WF04-05", "Loading, empty, error, success and disabled states", "P1", 1],
+  ["WF04-06", "Keyboard navigation and colour contrast reviewed", "P1", 0, "Tracker P8-20."]
+ ]},
+ {id:"WF05",st:"plan",name:"Workflow: Phase 5: Architecture and technical planning",goal:"The technical foundation.",items:[
+  ["WF05-01", "Stack chosen: Next.js, Supabase, Clerk, Vercel", "P0", 1],
+  ["WF05-02", "System architecture and module boundaries", "P0", 1, "docs/ARCHITECTURE.md."],
+  ["WF05-03", "Data model and API contracts", "P0", 1, "docs/SLOT-BOOKING-DB.md; OpenAPI file missing."],
+  ["WF05-04", "Authorization boundaries", "P0", 1],
+  ["WF05-05", "Caching, scalability and backup strategy", "P1", 1, "ADR 0007 and 0008; docs/LOAD-TEST.md."],
+  ["WF05-06", "Deployment architecture and monitoring plan", "P1", 1],
+  ["WF05-07", "Major decisions recorded as ADRs", "P1", 1, "docs/adr/ (8)."],
+  ["WF05-08", "Threat model", "P1", 1, "STRIDE in the tracker Security view."]
+ ]},
+ {id:"WF06",st:"build",name:"Workflow: Phase 6: Development environment and foundations",goal:"Make the repo safe for people and agents.",items:[
+  ["WF06-01", "Repository, runtime, package manager, TypeScript", "P0", 1],
+  ["WF06-02", "Linting, formatting, pre-commit hooks", "P0", 1, ".githooks, eslint, knip."],
+  ["WF06-03", "Environment variables documented", "P0", 1, ".env.example, docs/ENVIRONMENTS.md."],
+  ["WF06-04", "Database, migrations and test frameworks configured", "P0", 1],
+  ["WF06-05", "CI configured", "P0", 1, "Lint, types, tests, build, e2e, Lighthouse, SQL, secret scan."],
+  ["WF06-06", "Secrets management and .gitignore", "P0", 1],
+  ["WF06-07", "AGENTS.md", "P1", 1],
+  ["WF06-08", "CLAUDE.md and Cursor rules", "P2", 0, "Not present."],
+  ["WF06-09", "A clean checkout runs the project", "P0", 1]
+ ]},
+ {id:"WF07",st:"build",name:"Workflow: Phase 7: Feature implementation",goal:"Each feature follows the feature workflow below.",items:[
+  ["WF07-01", "Understand the requirement and inspect the existing code first", "P0", 1, "Rule in docs/FEATURE-WORKFLOW.md."],
+  ["WF07-02", "Plan, then review security and architecture effects", "P0", 1],
+  ["WF07-03", "Backend, frontend and data flow", "P0", 1],
+  ["WF07-04", "Validation and error handling", "P0", 1],
+  ["WF07-05", "Tests written before the code and seen failing", "P0", 0, "The rule exists; earlier features were built before it."],
+  ["WF07-06", "Quality checks, diff review, documentation, merge", "P0", 1, "PR template checklist."]
+ ]},
+ {id:"WF08",st:"build",name:"Workflow: Phase 8: Integration and system testing",goal:"The whole system works together.",items:[
+  ["WF08-01", "Frontend, backend and database contracts verified", "P0", 1],
+  ["WF08-02", "Authentication and authorization tested", "P0", 1, "Authorization sweep tests."],
+  ["WF08-03", "Complete user journeys tested", "P0", 1, "Playwright desktop and phone."],
+  ["WF08-04", "Concurrent operations tested", "P0", 1, "Parallel booking test."],
+  ["WF08-05", "Responsive and accessibility tests", "P1", 1, "axe checks in e2e."],
+  ["WF08-06", "Performance tested", "P1", 1, "Lighthouse in CI; k6 scripts."],
+  ["WF08-07", "Existing features still work (regression)", "P0", 1]
+ ]},
+ {id:"WF09",st:"ship",name:"Workflow: Phase 9: Release preparation",goal:"Safe to launch.",items:[
+  ["WF09-01", "Full test suite and dependency scans", "P0", 1],
+  ["WF09-02", "Database migrations reviewed", "P0", 0, "Production SQL steps P9-21, P9-22, P10-13, P10-16."],
+  ["WF09-03", "Production configuration and domain verified", "P0", 0, "Custom domain not set yet."],
+  ["WF09-04", "Backups verified and a restore rehearsed", "P0", 0],
+  ["WF09-05", "Monitoring and alerts verified", "P1", 1, "Health check and post-deploy check."],
+  ["WF09-06", "Analytics, consent, SEO and legal pages verified", "P1", 0, "Legal review pending (OYUN-122)."],
+  ["WF09-07", "Rollback procedure and release notes", "P1", 0],
+  ["WF09-08", "Required approvals", "P0", 0]
+ ]},
+ {id:"WF10",st:"ship",name:"Workflow: Phase 10: Deployment",goal:"Get it live and prove it is healthy.",items:[
+  ["WF10-01", "Build the release artifact", "P0", 1, "Release Pipeline builds main once."],
+  ["WF10-02", "Deploy to staging and run smoke tests", "P1", 0, "docs/STAGING.md describes it; confirm it exists."],
+  ["WF10-03", "Run migrations safely", "P0", 1, "Idempotent migration scripts."],
+  ["WF10-04", "Deploy to production at the noon run", "P0", 1, "Scheduled deploy 12:00 IST."],
+  ["WF10-05", "Verify health checks, logs and error rates", "P0", 1, "Post-deploy check 13:00 IST."],
+  ["WF10-06", "Verify authentication and payments", "P0", 0, "Payments not live yet."],
+  ["WF10-07", "Roll back if needed", "P1", 0, "Redeploy a previous build in Vercel."]
+ ]},
+ {id:"WF11",st:"run",name:"Workflow: Phase 11: Operations and maintenance",goal:"Keep it healthy after launch.",items:[
+  ["WF11-01", "Monitor health, errors and performance", "P0", 1],
+  ["WF11-02", "Review security alerts and update dependencies", "P0", 1, "Dependabot weekly; weekly routine report."],
+  ["WF11-03", "Rotate credentials", "P0", 0, "P9-31 before launch."],
+  ["WF11-04", "Verify backups and test recovery", "P0", 0],
+  ["WF11-05", "Manage incidents", "P1", 1, "docs/RUNBOOKS.md; post-deploy issue."],
+  ["WF11-06", "Collect feedback and analyse usage", "P1", 0],
+  ["WF11-07", "Maintain documentation; review technical debt", "P2", 1, "docs/BUGS.md; tracker Tech debt view."]
+ ]},
+ {id:"WFDOD",st:"run",name:"Workflow: Definition of done for the whole product",goal:"Verify before calling it production ready.",items:[
+  ["WFDOD-01", "Product: requirements met, critical journeys work, out-of-scope features not exposed", "P0", 0],
+  ["WFDOD-02", "Engineering: architecture documented, code reviewed, checks pass, build succeeds", "P0", 1],
+  ["WFDOD-03", "Security and privacy: authentication, authorization and data protection tested; no release-blocking vulnerabilities", "P0", 0, "See the Security view."],
+  ["WFDOD-04", "User experience: responsive, states and forms work, accessibility evaluated", "P0", 0],
+  ["WFDOD-05", "Data and integrations: migrations reviewed, failures handled, backups addressed", "P0", 0],
+  ["WFDOD-06", "Operations: production config verified, monitoring and alerts work, rollback documented", "P0", 0],
+  ["WFDOD-07", "Growth and documentation: SEO, analytics, legal pages, documents and release notes", "P1", 0, "See the SEO and Documents views."]
+ ]},
+ {id:"DOC",st:"build",name:"Documents: the 25 essentials",goal:"Starting set of documents for an AI-built web app. Ticked when a file or page in this repo covers it.",items:[
+  ["DOC-01", "Project Overview (PROJECT_OVERVIEW.md): README.md, docs/BRIEF-PLAN.md", "P1", 0],
+  ["DOC-02", "Product Requirements (PRD.md): FEATURE_LIST.md; tracker Features view", "P1", 0],
+  ["DOC-03", "Functional & Non-Functional Requirements (REQUIREMENTS.md): Tracker Features view and Blueprint checklists", "P1", 0],
+  ["DOC-04", "UI/UX Specification (UI_UX_SPEC.md): docs/FLOWCHARTS.md; tokens in globals.css", "P1", 0],
+  ["DOC-05", "Software Architecture (ARCHITECTURE.md): docs/ARCHITECTURE.md", "P1", 1],
+  ["DOC-06", "System Design (SYSTEM_DESIGN.md): docs/SLOT-BOOKING-DB.md, docs/ARCHITECTURE.md", "P1", 1],
+  ["DOC-07", "Architecture Decisions (docs/adr/): docs/adr/ (8 records)", "P1", 1],
+  ["DOC-08", "Technology Stack (TECH_STACK.md): README.md; docs/NEXT16-NOTES.md", "P1", 0],
+  ["DOC-09", "Repository & Development Guide (CONTRIBUTING.md): CONTRIBUTING.md, docs/CODEBASE-MAP.md", "P1", 1],
+  ["DOC-10", "AI Agent Instructions (AGENTS.md): AGENTS.md", "P1", 1],
+  ["DOC-11", "Database Schema (DATABASE.md): docs/SLOT-BOOKING-DB.md", "P1", 1],
+  ["DOC-12", "Database Migrations (database/migrations/): supabase/migrations/", "P1", 1],
+  ["DOC-13", "API Specification (openapi.yaml): No OpenAPI file; routes are listed in the tracker", "P1", 0],
+  ["DOC-14", "Authentication & Authorization (AUTHORIZATION.md): docs/AUTHORIZATION.md", "P1", 1],
+  ["DOC-15", "Security Requirements (SECURITY.md): docs/SECURITY.md", "P1", 1],
+  ["DOC-16", "Threat Model (THREAT_MODEL.md): STRIDE in the tracker; docs/SECURITY.md", "P1", 0],
+  ["DOC-17", "Environment Variables Reference (.env.example): .env.example", "P1", 1],
+  ["DOC-18", "Test Plan (TEST_PLAN.md): Testing described in docs/FEATURE-WORKFLOW.md only", "P1", 0],
+  ["DOC-19", "Deployment Guide (DEPLOYMENT.md): docs/GO-LIVE.md, docs/DEPLOY-SCHEDULE.md", "P1", 1],
+  ["DOC-20", "CI/CD Documentation (CI_CD.md): docs/DEPLOY-SCHEDULE.md, docs/DAILY-ROUTINE.md", "P1", 0],
+  ["DOC-21", "Backup & Recovery Plan (BACKUP_RECOVERY.md): docs/RUNBOOKS.md; backup workflow", "P1", 0],
+  ["DOC-22", "Monitoring & Incident Response (OPERATIONS.md): docs/RUNBOOKS.md", "P1", 0],
+  ["DOC-23", "Privacy Policy (PRIVACY_POLICY.md): /privacy page; docs/legal/ review pack", "P1", 1],
+  ["DOC-24", "Terms of Service (TERMS_OF_SERVICE.md): /terms page", "P1", 1],
+  ["DOC-25", "Release Notes (CHANGELOG.md): No changelog file", "P1", 0]
+ ]},
+ {id:"WFG",st:"run",name:"Workflow: Quality gates",goal:"Ten gates, each with an owner and a pass or fail, run at the right point and not all at the end.",items:[
+  ["WFG-01", "Requirements gate (before implementation): Acceptance criteria are defined", "P1", 0],
+  ["WFG-02", "Architecture gate (before major design changes): Dependencies and boundaries are reviewed", "P1", 0],
+  ["WFG-03", "Security gate (during development and before release): Relevant vulnerabilities are assessed", "P1", 0],
+  ["WFG-04", "Code quality gate (on each change): Linting and type checks pass (CI)", "P1", 1],
+  ["WFG-05", "Test gate (on each change): Required automated tests pass (CI)", "P1", 1],
+  ["WFG-06", "Migration gate (before database changes ship): Migration and recovery reviewed; SQL tests pass", "P1", 1],
+  ["WFG-07", "Accessibility gate (during ui work and release): Automated and manual checks", "P1", 0],
+  ["WFG-08", "Performance gate (for critical paths): Lighthouse thresholds and load tests", "P1", 0],
+  ["WFG-09", "Release gate (before production): Required checks and approvals pass", "P1", 1],
+  ["WFG-10", "Post-release gate (after deploy): Health checks and critical journeys succeed (13:00 IST check)", "P1", 1]
+ ]},
+ {id:"DOC2",st:"build",name:"Documents: 31 additional workflow documents",goal:"Documents the extra workflows recommend. Combine small ones into fewer files. Ticked when a file or page in this repo covers it.",items:[
+  ["DOC2-01", "BUSINESS_MODEL.md: Build tracker Cost tab; Blueprint money-flow checklist (BPMONEY)", "P2", 1],
+  ["DOC2-02", "PRODUCT_STRATEGY.md: docs/PHASES.md; docs/BRIEF-PLAN.md", "P2", 1],
+  ["DOC2-03", "USER_RESEARCH.md: Discovery checklist (DISC) in the tracker", "P2", 1],
+  ["DOC2-04", "DATA_GOVERNANCE.md: docs/legal/DPDP-REVIEW-BRIEF.md", "P2", 1],
+  ["DOC2-05", "DATA_RETENTION.md: /privacy section 5; src/lib/dpdp.ts", "P2", 1],
+  ["DOC2-06", "COMPLIANCE_REQUIREMENTS.md: docs/legal/README.md", "P2", 1],
+  ["DOC2-07", "I18N_STRATEGY.md: Not applicable yet: English only for now", "P2", 0],
+  ["DOC2-08", "FEATURE_FLAGS.md: Not applicable yet: No flag service; platform settings only", "P2", 0],
+  ["DOC2-09", "RELIABILITY.md: Tracker checklists BPFAIL and BPMON", "P2", 1],
+  ["DOC2-10", "DISASTER_RECOVERY.md: docs/RUNBOOKS.md", "P2", 1],
+  ["DOC2-11", "INCIDENT_RESPONSE.md: docs/RUNBOOKS.md", "P2", 1],
+  ["DOC2-12", "OBSERVABILITY.md: Tracker BPMON; post-deploy check", "P2", 1],
+  ["DOC2-13", "BACKGROUND_JOBS.md: vercel.json crons; docs/RUNBOOKS.md", "P2", 1],
+  ["DOC2-14", "CACHING_STRATEGY.md: docs/adr/0008-redis-vs-postgres.md", "P2", 0],
+  ["DOC2-15", "ACCESSIBILITY_TEST_PLAN.md: e2e/a11y.spec.ts; tracker P8-20", "P2", 1],
+  ["DOC2-16", "MOBILE_QA.md: Not applicable yet: No mobile app yet", "P2", 0],
+  ["DOC2-17", "DESKTOP_RELEASE_CHECKLIST.md: Not applicable yet: No desktop app", "P2", 0],
+  ["DOC2-18", "BROWSER_SUPPORT.md", "P2", 0],
+  ["DOC2-19", "SUPPLY_CHAIN_SECURITY.md: Dependabot, gitleaks, SHA-pinned actions", "P2", 1],
+  ["DOC2-20", "COST_MANAGEMENT.md: Build tracker Cost tab; docs/DEPLOY-SCHEDULE.md", "P2", 1],
+  ["DOC2-21", "AI_EVALUATION.md: Not applicable yet: No AI feature", "P2", 0],
+  ["DOC2-22", "SEARCH_AND_QUERY_CONVENTIONS.md", "P2", 0],
+  ["DOC2-23", "IMPORT_EXPORT_WORKFLOW.md: CSV exports and /api/privacy/export", "P2", 1],
+  ["DOC2-24", "CONTENT_WORKFLOW.md", "P2", 0],
+  ["DOC2-25", "CUSTOMER_SUPPORT.md", "P2", 0],
+  ["DOC2-26", "EXPERIMENTATION_WORKFLOW.md: Not applicable yet: Not used yet", "P2", 0],
+  ["DOC2-27", "VERSIONING_AND_DEPRECATION.md", "P2", 0],
+  ["DOC2-28", "INFRASTRUCTURE.md: docs/ENVIRONMENTS.md; vercel.json", "P2", 1],
+  ["DOC2-29", "TEAM_WORKFLOW.md: docs/BRANCHING.md; docs/TASK-WORKFLOW.md", "P2", 1],
+  ["DOC2-30", "FEATURE_DEPRECATION_WORKFLOW.md", "P2", 0],
+  ["DOC2-31", "THIRD_PARTY_SERVICES.md: Accounts list in the tracker; docs/adr/0004-clerk-optional.md", "P2", 1]
+ ]},
+ {id:"CS1",st:"run",name:"Coding session: Plan",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS1-01", "Review the backlog", "P2", 0],
+  ["CS1-02", "Select today's tasks", "P2", 0],
+  ["CS1-03", "Estimate time", "P2", 0],
+  ["CS1-04", "Update the kanban board / Jira", "P2", 0],
+  ["CS1-05", "Review roadmap and prioritise the next set of work", "P2", 0],
+  ["CS1-06", "Plan the feature or idea before coding", "P2", 0]
+ ]},
+ {id:"CS2",st:"run",name:"Coding session: Develop",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS2-01", "Build frontend", "P2", 0],
+  ["CS2-02", "Build backend", "P2", 0],
+  ["CS2-03", "Database changes (migration plus SQL test)", "P2", 0],
+  ["CS2-04", "API implementation", "P2", 0],
+  ["CS2-05", "Authentication", "P2", 0],
+  ["CS2-06", "File storage", "P2", 0],
+  ["CS2-07", "Payments", "P2", 0],
+  ["CS2-08", "Notifications", "P2", 0],
+  ["CS2-09", "Background jobs", "P2", 0]
+ ]},
+ {id:"CS3",st:"run",name:"Coding session: Debug",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS3-01", "Fix reported bugs (log in docs/BUGS.md)", "P2", 0],
+  ["CS3-02", "Fix console errors", "P2", 0],
+  ["CS3-03", "Fix API issues", "P2", 0],
+  ["CS3-04", "Fix UI issues", "P2", 0],
+  ["CS3-05", "Fix responsive layouts", "P2", 0],
+  ["CS3-06", "Fix performance bottlenecks", "P2", 0]
+ ]},
+ {id:"CS4",st:"run",name:"Coding session: Code quality",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS4-01", "Refactor code", "P2", 0],
+  ["CS4-02", "Remove duplicate code", "P2", 0],
+  ["CS4-03", "Rename unclear variables", "P2", 0],
+  ["CS4-04", "Improve folder structure", "P2", 0],
+  ["CS4-05", "Add comments where needed", "P2", 0],
+  ["CS4-06", "Improve architecture", "P2", 0]
+ ]},
+ {id:"CS5",st:"run",name:"Coding session: Test",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS5-01", "Unit tests", "P2", 0],
+  ["CS5-02", "Integration tests", "P2", 0],
+  ["CS5-03", "End-to-end tests", "P2", 0],
+  ["CS5-04", "Manual testing", "P2", 0],
+  ["CS5-05", "Edge-case testing", "P2", 0],
+  ["CS5-06", "Mobile testing", "P2", 0],
+  ["CS5-07", "Desktop testing", "P2", 0]
+ ]},
+ {id:"CS6",st:"run",name:"Coding session: Git",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS6-01", "Commit changes", "P2", 0],
+  ["CS6-02", "Push to GitHub", "P2", 0],
+  ["CS6-03", "Write meaningful commit messages", "P2", 0],
+  ["CS6-04", "Tag releases when needed", "P2", 0],
+  ["CS6-05", "Code review the diff before merge", "P2", 0]
+ ]},
+ {id:"CS7",st:"run",name:"Coding session: Deploy",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS7-01", "Build production version", "P2", 0],
+  ["CS7-02", "Run the CI pipeline", "P2", 0],
+  ["CS7-03", "Deploy (noon workflow)", "P2", 0],
+  ["CS7-04", "Verify deployment", "P2", 0],
+  ["CS7-05", "Check logs", "P2", 0],
+  ["CS7-06", "Roll back if needed", "P2", 0]
+ ]},
+ {id:"CS8",st:"run",name:"Coding session: Monitor",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS8-01", "Check server logs", "P2", 0],
+  ["CS8-02", "Check analytics", "P2", 0],
+  ["CS8-03", "Monitor uptime", "P2", 0],
+  ["CS8-04", "Monitor errors", "P2", 0],
+  ["CS8-05", "Monitor database", "P2", 0]
+ ]},
+ {id:"CS9",st:"run",name:"Coding session: Docs",goal:"Tick through this each session. Reset when a new session starts.",items:[
+  ["CS9-01", "Update README", "P2", 0],
+  ["CS9-02", "Update API docs", "P2", 0],
+  ["CS9-03", "Update changelog", "P2", 0],
+  ["CS9-04", "Update feature list", "P2", 0]
  ]}
 ];
 
@@ -2199,7 +3042,7 @@ DATA.tasks.push(
  {id:"P3-07",p:"P3",t:"Sport landing pages at /sports/[sport] for each city, area and sport, with structured data and sitemap entries",s:"done",pr:"P2",n:"PR #191. Sitemap entries are in src/app/sitemap.ts."},
  {id:"P7-44",p:"P7",t:"Partner calendar day view for one turf, with booking details",s:"done",pr:"P2",n:"PR #192. Test added in e2e/partner.spec.ts."},
  {id:"P7-45",p:"P7",t:"Partner calendar day view across all courts",s:"done",pr:"P2",n:"Implemented across all physical courts and pitch halves (R007). PR #237."},
- {id:"P7-46",p:"P7",t:"Launching soon page: /welcome shows a live countdown to 17 Oct 2026 (IST), with a new /about page and a shared header",s:"done",pr:"P2",n:"Commit 6a36f88 (no PR number, pushed to main). Old /welcome marketing sections removed on purpose. The header hides on scroll down and shows on scroll up; the bottom tab bar is hidden on both pages."},
+ {id:"P7-46",p:"P7",t:"Launching soon page: /welcome shows a live countdown to 31 Oct 2026 (IST), with a new /about page and a shared header",s:"done",pr:"P2",n:"Commit 6a36f88 (no PR number, pushed to main). Old /welcome marketing sections removed on purpose. The header hides on scroll down and shows on scroll up; the bottom tab bar is hidden on both pages."},
  {id:"P7-47",p:"P7",t:"Service worker: caches the start files, shows push messages and handles notification clicks",s:"done",pr:"P2",n:"Registered in production only (public/sw.js). No code yet saves push subscriptions or sends pushes, so P12-05 stays open. PR #212."},
  {id:"P8-66",p:"P8",t:"Lighthouse fixes for home, arenas and turf pages, with per-category thresholds",s:"done",pr:"P2",n:"PR #206. P8-64 stays open until the scores reach 90."},
  {id:"P9-28",p:"P9",t:"Security hardening: session expiry check, login timing, error-webhook mentions, HTTPS redirect host, hold-release Origin",s:"done",pr:"P1",n:"PR #187. A session token with a non-numeric expiry is refused (it used to pass because NaN is never less than now). An unknown partner email burns a dummy scrypt check so timing does not reveal accounts. Error-webhook text from the unauthenticated client-error endpoint has mentions neutralised. The HTTPS redirect only follows hostname-shaped hosts. A malformed or null Origin on hold release returns 403 instead of throwing. Tests in src/lib/session.test.ts and monitoring.test.ts."},

@@ -11,8 +11,8 @@ import {
   run,
   str,
 } from './action-utils';
-import { generateTempPassword, hashPassword } from './password';
-import { TURF_COOKIE, getPartnerContext, requirePartnerAction, type PartnerContext } from './partner-auth';
+import { generateTempPassword, hashPassword, verifyPassword } from './password';
+import { AccessError, TURF_COOKIE, getPartnerContext, requirePartnerAction, type PartnerContext } from './partner-auth';
 import { buildQuote, getSlots, turfHours } from './pricing';
 import { getDb, mutate, newBookingCode, newId } from './store';
 import { addDays, formatHour, formatSlotRange, isValidDate, istNow, parseHour } from './time';
@@ -23,6 +23,8 @@ import { withDate, withoutDate } from './rain';
 import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
 import { isV2SlotsActive, v2BlockSlot } from './v2-slots';
+import { sharedRateLimit } from './shared-rate-limit';
+import { logActivity } from './activity';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
   const booking = db.bookings.find((b) => b.id === bookingId);
@@ -42,6 +44,54 @@ export async function switchTurf(_prev: ActionResult, fd: FormData): Promise<Act
   if (!ctx || !ctx.turfs.some((t) => t.id === turfId)) return { error: 'Turf not found' };
   (await cookies()).set(TURF_COOKIE, turfId, { httpOnly: true, sameSite: 'lax', path: '/partner' });
   return run(() => ({ ok: 'Switched turf' }));
+}
+
+/* ---------- own profile & password ---------- */
+
+const MIN_PASSWORD_LENGTH = 12;
+
+// Any signed-in partner or staff member edits their own name and phone (email is the login and is changed by OYUN support)
+export async function updateAccount(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await getPartnerContext();
+    if (!ctx) throw new AccessError('Your session has expired. Please log in again.');
+    const name = required(fd, 'name', 'Name', 80);
+    const phone = phone10(fd, 'phone');
+    await mutate((db) => {
+      const record = ctx.staff ? db.staff.find((x) => x.id === ctx.staff!.id) : db.partners.find((x) => x.id === ctx.partner.id);
+      if (!record) throw new ValidationError('Account not found');
+      record.name = name;
+      record.phone = phone;
+    });
+    return { ok: 'Profile saved' };
+  });
+}
+
+// Changes the signed-in user's own password: the current one must be right, and guessing is rate limited
+export async function changePassword(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await getPartnerContext();
+    if (!ctx) throw new AccessError('Your session has expired. Please log in again.');
+    const subject = ctx.staff ? `s:${ctx.staff.id}` : `p:${ctx.partner.id}`;
+    // The OYUN operations login is checked against PARTNER_PASSWORD in the hosting settings, not a stored password
+    if (!ctx.staff && ctx.partner.id === 'partner_oyun' && process.env.PARTNER_PASSWORD) {
+      throw new ValidationError('This account signs in with PARTNER_PASSWORD from the hosting settings. Change it there.');
+    }
+    if (!(await sharedRateLimit(`partner-pwd:${subject}`, 5, 15 * 60_000))) throw new ValidationError('Too many attempts. Please try again in 15 minutes.');
+
+    const current = str(fd, 'current', 200);
+    const next = str(fd, 'next', 200);
+    if (next.length < MIN_PASSWORD_LENGTH) throw new ValidationError(`The new password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+    if (next !== str(fd, 'confirm', 200)) throw new ValidationError('The two new passwords do not match');
+    if (next === current) throw new ValidationError('Choose a password you have not used here');
+
+    return await mutate((db) => {
+      const record = ctx.staff ? db.staff.find((x) => x.id === ctx.staff!.id) : db.partners.find((x) => x.id === ctx.partner.id);
+      if (!record || !verifyPassword(current, record.passwordHash)) throw new ValidationError('Your current password is not right');
+      record.passwordHash = hashPassword(next);
+      return { ok: 'Password changed. Use it the next time you sign in.' };
+    });
+  });
 }
 
 /* ---------- bookings ---------- */
@@ -90,6 +140,7 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
         createdAt: new Date().toISOString(),
       };
       db.bookings.push(booking);
+      logActivity(db, ctx, 'Walk-in booking', `${name} · ${date} ${booking.timeLabel} · ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}`);
       return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booking.code}` };
     });
   });
@@ -107,9 +158,11 @@ export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<
         const player = db.players.find((p) => p.id === booking.playerId);
         if (player) walletTxn(db, player, refund, 'refund', `Booking ${booking.code} cancelled by the turf`, booking.id);
         booking.status = 'refunded';
+        logActivity(db, ctx, 'Cancelled and refunded', `${booking.customerName} · ${booking.date} ${booking.timeLabel} · ₹${refund} to wallet`);
         return { ok: `Cancelled. ₹${refund} refunded to ${booking.customerName}'s wallet.` };
       }
       booking.status = 'cancelled';
+      logActivity(db, ctx, 'Cancelled booking', `${booking.customerName} · ${booking.date} ${booking.timeLabel}`);
       return { ok: 'Booking cancelled' };
     });
   });
@@ -161,6 +214,7 @@ export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise
       booking.status = 'checked_in';
       booking.checkedInAt = new Date().toISOString();
       if (due > 0) booking.cashCollected = { amount: due, at: booking.checkedInAt, by: ctx.userName };
+      logActivity(db, ctx, 'Checked in', `${booking.customerName} · ${booking.date} ${booking.timeLabel}${due > 0 ? ` · ₹${due} collected` : ''}`);
       const rewards = rewardCheckIn(db, booking);
       // Pay-at-venue bookings are settled at the desk on check-in
       if (booking.paymentMode === 'venue') booking.amountPaid = booking.pricing.total;
@@ -182,6 +236,7 @@ export async function markNoShow(_prev: ActionResult, fd: FormData): Promise<Act
         throw new ValidationError('You can mark a no-show once the slot has started');
       }
       booking.status = 'no_show';
+      logActivity(db, ctx, 'Marked no-show', `${booking.customerName} · ${booking.date} ${booking.timeLabel}`);
       return { ok: 'Marked as no-show' };
     });
   });
@@ -222,7 +277,71 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
         throw new ValidationError('This slot is already blocked');
       }
       db.blocks.push({ id: newId('block'), turfId: ctx.turf.id, date, hour, reason, createdBy: ctx.userName, createdAt: new Date().toISOString() });
+      logActivity(db, ctx, 'Blocked a slot', `${date} ${formatHour(hour)} · ${reason}`);
       return { ok: `Blocked ${formatHour(hour)} on ${date}` };
+    });
+  });
+}
+
+// Block many slots at once: a date range, optional weekdays (recurring), and an hour range. Slots that are over, already
+// blocked, outside opening hours or booked are skipped and counted, never overwritten.
+export async function blockRange(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const ctx = await requirePartnerAction('slots');
+    const from = required(fd, 'from', 'From date', 10);
+    const to = required(fd, 'to', 'To date', 10);
+    if (!isValidDate(from) || !isValidDate(to)) throw new ValidationError('Pick valid dates');
+    if (to < from) throw new ValidationError('The end date is before the start date');
+    const today = istNow().date;
+    const start = from < today ? today : from;
+    if (to < today) throw new ValidationError('Those dates have already passed');
+    const hourFrom = int(fd, 'hourFrom', { min: 0, max: 23, label: 'Start time' });
+    const hourTo = int(fd, 'hourTo', { min: 1, max: 24, label: 'End time' });
+    if (hourTo <= hourFrom) throw new ValidationError('The end time must be after the start time');
+    const reason = required(fd, 'reason', 'Reason', 120);
+    const weekdays = fd.getAll('weekday').map((w) => Number(w)).filter((w) => Number.isInteger(w) && w >= 0 && w <= 6);
+
+    const dates: string[] = [];
+    for (let d = start; d <= to && dates.length < 93; d = addDays(d, 1)) {
+      if (weekdays.length === 0 || weekdays.includes(new Date(`${d}T12:00:00Z`).getUTCDay())) dates.push(d);
+    }
+    if (dates.length === 0) throw new ValidationError('No dates match those days of the week');
+    const open = turfHours(ctx.turf).filter((h) => h >= hourFrom && h < hourTo);
+    if (open.length === 0) throw new ValidationError(`${ctx.turf.name} has no open slots in that time range`);
+    if (dates.length * open.length > 500) throw new ValidationError('That is too many slots at once. Shorten the range.');
+
+    // Slots the v2 booking system rejects (already booked there) are skipped like any other conflict
+    const v2Rejected = new Set<string>();
+    if (isV2SlotsActive()) {
+      for (const d of dates) {
+        for (const h of open) {
+          const res = await v2BlockSlot(ctx.turf.id, d, h, reason);
+          if (res && !res.ok) v2Rejected.add(`${d}|${h}`);
+        }
+      }
+    }
+
+    return await mutate((db) => {
+      let blocked = 0;
+      let skipped = 0;
+      const now = new Date().toISOString();
+      for (const d of dates) {
+        for (const h of open) {
+          const conflict =
+            v2Rejected.has(`${d}|${h}`) ||
+            db.bookings.some((b) => b.turfId === ctx.turf.id && b.date === d && (b.hours && b.hours.length > 0 ? b.hours.includes(h) : b.hour === h) && ['confirmed', 'checked_in'].includes(b.status)) ||
+            db.blocks.some((b) => b.turfId === ctx.turf.id && b.date === d && b.hour === h);
+          if (conflict) {
+            skipped++;
+            continue;
+          }
+          db.blocks.push({ id: newId('block'), turfId: ctx.turf.id, date: d, hour: h, reason, createdBy: ctx.userName, createdAt: now });
+          blocked++;
+        }
+      }
+      if (blocked === 0) throw new ValidationError(`Nothing blocked: all ${skipped} slots were already booked or blocked`);
+      logActivity(db, ctx, 'Bulk blocked slots', `${blocked} slot${blocked === 1 ? '' : 's'} · ${from} to ${to} · ${reason}`);
+      return { ok: `Blocked ${blocked} slot${blocked === 1 ? '' : 's'}${skipped ? ` (${skipped} skipped: already booked or blocked)` : ''}` };
     });
   });
 }
@@ -233,8 +352,10 @@ export async function unblockSlot(_prev: ActionResult, fd: FormData): Promise<Ac
     const id = str(fd, 'blockId');
     return await mutate((db) => {
       const before = db.blocks.length;
+      const gone = db.blocks.find((b) => b.id === id && b.turfId === ctx.turf.id);
       db.blocks = db.blocks.filter((b) => !(b.id === id && b.turfId === ctx.turf.id));
       if (db.blocks.length === before) throw new ValidationError('Block not found');
+      if (gone) logActivity(db, ctx, 'Reopened a slot', `${gone.date} ${formatHour(gone.hour)}`);
       return { ok: 'Slot reopened' };
     });
   });
@@ -287,6 +408,7 @@ export async function savePricing(_prev: ActionResult, fd: FormData): Promise<Ac
       db.pricing[ctx.turf.id] = rules;
       const turf = db.turfs.find((t) => t.id === ctx.turf.id);
       if (turf) turf.pricePerHour = pricePerHour;
+      logActivity(db, ctx, 'Changed pricing', `Base ₹${pricePerHour}/hr`);
     });
     return { ok: 'Pricing saved. New prices apply to bookings from now on.' };
   });
@@ -398,6 +520,7 @@ export async function createStaff(_prev: ActionResult, fd: FormData): Promise<Ac
     await mutate((db) => {
       if (emailTaken(db, email)) throw new ValidationError('This email is already in use');
       db.staff.push({ id: newId('staff'), partnerId: ctx.partner.id, name, email, phone, role, passwordHash: hashPassword(password), createdAt: new Date().toISOString() });
+      logActivity(db, ctx, 'Added staff', `${name} · ${role === 'manager' ? 'Manager' : 'Front desk'}`);
     });
     return { ok: `${name} can now log in at /partner/login with ${email} and temporary password: ${password}` };
   });
@@ -420,7 +543,9 @@ export async function deleteStaff(_prev: ActionResult, fd: FormData): Promise<Ac
   return run(async () => {
     const ctx = await requirePartnerAction('staff');
     await mutate((db) => {
+      const removed = db.staff.find((s) => s.id === str(fd, 'staffId') && s.partnerId === ctx.partner.id);
       db.staff = db.staff.filter((s) => !(s.id === str(fd, 'staffId') && s.partnerId === ctx.partner.id));
+      if (removed) logActivity(db, ctx, 'Removed staff', removed.name);
     });
     return { ok: 'Staff access removed' };
   });

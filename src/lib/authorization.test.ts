@@ -42,12 +42,15 @@ describe('admin actions', () => {
 // action -> the permission it must require. null = any signed-in partner or staff member (see the extra checks below)
 const EXPECTED: Record<string, string | null> = {
   switchTurf: null,
+  updateAccount: null,
+  changePassword: null,
   createWalkIn: 'bookings',
   cancelBooking: 'bookings',
   getWalkInSlots: 'bookings',
   checkInBooking: 'checkin',
   markNoShow: 'checkin',
   blockSlot: 'slots',
+  blockRange: 'slots',
   unblockSlot: 'slots',
   setRainOut: 'slots',
   savePricing: 'pricing',

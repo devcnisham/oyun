@@ -15,7 +15,7 @@ export default async function PartnerReviews() {
     <div className={dash.page}>
       <PageHeader title="Reviews" desc="What players say after they play at your turf. Ratings appear on your turf page." />
       <div className={dash.stats}>
-        <Stat label="Average rating" value={turf.reviewCount ? `${turf.rating.toFixed(1)} ★` : '—'} />
+        <Stat label="Average rating" value={turf.reviewCount ? `${turf.rating.toFixed(1)} / 5` : '—'} />
         <Stat label="Ratings" value={turf.reviewCount} />
       </div>
       <div className={dash.card}>

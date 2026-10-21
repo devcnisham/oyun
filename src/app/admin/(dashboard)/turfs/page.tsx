@@ -53,7 +53,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
                     <td><Image src={t.images[0]} alt="" width={64} height={44} className={dash.imageThumb} unoptimized={!canOptimize(t.images[0])} /></td>
                     <td><div className={dash.strong}>{t.name}</div><div className={dash.muted}>{t.area}</div></td>
                     <td>{partnerName(t.partnerId)}</td>
-                    <td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
                       <ActionForm action={quickUpdateTurf} inline>
                         <input type="hidden" name="turfId" value={t.id} />
                         <input type="hidden" name="field" value="status" />
@@ -66,27 +66,27 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
                         <button className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Set</button>
                       </ActionForm>
                     </td>
-                    <td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
                       <div className={dash.inline}>
                         <ActionForm action={quickUpdateTurf} inline>
                           <input type="hidden" name="turfId" value={t.id} />
                           <input type="hidden" name="field" value="isVerified" />
-                          <button className={`${dash.btn} ${dash.btnSm} ${t.isVerified ? '' : dash.btnSecondary}`}>{t.isVerified ? '✓ Verified' : 'Verify'}</button>
+                          <button className={`${dash.btn} ${dash.btnSm} ${t.isVerified ? '' : dash.btnSecondary}`}>{t.isVerified ? 'Verified' : 'Verify'}</button>
                         </ActionForm>
                         <ActionForm action={quickUpdateTurf} inline>
                           <input type="hidden" name="turfId" value={t.id} />
                           <input type="hidden" name="field" value="isFeatured" />
-                          <button className={`${dash.btn} ${dash.btnSm} ${t.isFeatured ? '' : dash.btnSecondary}`}>{t.isFeatured ? '★ Featured' : 'Feature'}</button>
+                          <button className={`${dash.btn} ${dash.btnSm} ${t.isFeatured ? '' : dash.btnSecondary}`}>{t.isFeatured ? 'Featured' : 'Feature'}</button>
                         </ActionForm>
                       </div>
                     </td>
                     <td className={dash.num}>{inr(t.pricePerHour)}</td>
                     <td className={dash.num}>{commissionFor(db, t)}%{t.commissionPercent === null ? <div className={dash.muted}>default</div> : null}</td>
                     <td className={dash.num}>{inr(revenue)}</td>
-                    <td>
-                      <div className={dash.inline}>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <div className={dash.inline} style={{ flexWrap: 'nowrap' }}>
                         <Link href={`/admin/turfs/${t.id}`} className={`${dash.btn} ${dash.btnSm}`}>Edit</Link>
-                        <Link href={`/arenas/${t.id}`} target="_blank" className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>View</Link>
+                        <Link href={`/arenas/${t.id}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>View</Link>
                       </div>
                     </td>
                   </tr>

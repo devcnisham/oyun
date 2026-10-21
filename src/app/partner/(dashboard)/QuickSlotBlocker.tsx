@@ -1,5 +1,6 @@
 'use client';
 
+import NavIcon from '@/components/dash/NavIcon';
 import { useRef, useState } from 'react';
 import ActionForm from '@/components/dash/ActionForm';
 import { blockSlot, unblockSlot } from '@/lib/partner-actions';
@@ -16,11 +17,11 @@ interface QuickSlotBlockerProps {
 }
 
 const PRESET_REASONS = [
-  '📞 Phone / Offline Booking',
-  '🌧️ Heavy Rain / Weather',
-  '🧹 Turf Maintenance',
-  '🏆 Private Tournament / Event',
-  '⚡ Front Desk Hold',
+  'Phone / Offline Booking',
+  'Heavy Rain / Weather',
+  'Turf Maintenance',
+  'Private Tournament / Event',
+  'Front Desk Hold',
 ];
 
 export default function QuickSlotBlocker({
@@ -105,7 +106,7 @@ export default function QuickSlotBlocker({
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
           <button type="submit" className={styles.actionBtnPrimary} style={{ cursor: 'pointer' }}>
-            🔒 Block Slot Now
+            <NavIcon name="lock" size={16} /> Block Slot Now
           </button>
         </div>
       </ActionForm>
@@ -130,7 +131,7 @@ export default function QuickSlotBlocker({
                     title="Reopen slot"
                     aria-label={`Unblock ${formatHour(bl.hour)} on ${bl.date}`}
                   >
-                    ✕
+                    <NavIcon name="close" size={14} />
                   </button>
                 </ActionForm>
               </div>

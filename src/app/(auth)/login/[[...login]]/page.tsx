@@ -19,7 +19,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
     <AuthShell
       mode="login"
       title="Welcome back"
-      subtitle="Sign in with your mobile number to book in a tap."
+      subtitle="Sign in with Google, Apple or your email to book in a tap."
       footer={<p>New to OYUN? <Link href="/signup" className={styles.footerLink}>Create an account</Link></p>}
     >
       {clerkEnabled ? (

@@ -1,7 +1,9 @@
+import { refreshAll } from '@/lib/action-utils';
 import { deviceHolder } from '@/lib/device-holder';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
 import { mutate } from '@/lib/store';
 import { isV2SlotsActive, v2ReleaseHolds } from '@/lib/v2-slots';
+import { clientIpFrom } from '@/lib/client-ip';
 
 // A malformed or "null" Origin must be refused, not crash the route
 function originHost(origin: string) {
@@ -23,7 +25,7 @@ export async function POST(req: Request) {
   if (!origin || !host || originHost(origin) !== host) return new Response(null, { status: 403 });
 
   // Rate-limit to prevent this endpoint from being used to loop-release other devices' holds.
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = clientIpFrom(req.headers);
   if (!(await sharedRateLimit(`holds-release:${ip}`, 60, 60_000))) return new Response(null, { status: 429 });
 
   const holder = await deviceHolder(false);
@@ -35,6 +37,7 @@ export async function POST(req: Request) {
       await mutate((db) => {
         db.holds = db.holds.filter((h) => h.holder !== holder);
       });
+      refreshAll();
     } catch (err) {
       console.warn('[holds/release] release failed:', err);
     }

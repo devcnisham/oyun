@@ -1,0 +1,63 @@
+name: Scheduled deploy (12:00 IST)
+
+# Vercel no longer builds on every push (see vercel.json). Merged changes pile up on main and go live together
+# once a day at 12:00 noon IST, so the free plan's 100-deployments-a-day limit is never spent on single commits.
+# Manual run: Actions -> Scheduled deploy -> Run workflow (use it for a hotfix that cannot wait for noon).
+
+on:
+  schedule:
+    - cron: '30 6 * * *' # 06:30 UTC = 12:00 IST
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Deploy even if main has not changed since the last deploy'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scheduled-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy main to production if it changed
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Has main changed since the last deploy?
+        id: changed
+        run: |
+          git fetch --tags --force origin
+          head=$(git rev-parse HEAD)
+          last=$(git rev-parse -q --verify refs/tags/last-deployed^{commit} || true)
+          echo "head=$head" >> "$GITHUB_OUTPUT"
+          if [ "$head" = "$last" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Nothing new on main since ${last:0:7}; skipping so no deployment is spent."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Deploying ${head:0:7} (last deployed: ${last:0:7})"
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Trigger the Vercel production deploy
+        if: steps.changed.outputs.deploy == 'true'
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "::error::Secret VERCEL_DEPLOY_HOOK is missing. Vercel -> slot-arena -> Settings -> Git -> Deploy Hooks (branch: main), then add its URL as a repository secret."
+            exit 1
+          fi
+          curl --fail --silent --show-error -X POST "$VERCEL_DEPLOY_HOOK"
+          echo
+      - name: Remember what was deployed
+        if: steps.changed.outputs.deploy == 'true'
+        run: |
+          git tag -f last-deployed "${{ steps.changed.outputs.head }}"
+          git push --force origin refs/tags/last-deployed

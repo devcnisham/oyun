@@ -1,9 +1,10 @@
 import { reportError } from '@/lib/monitoring';
 import { sharedRateLimit } from '@/lib/shared-rate-limit';
+import { clientIpFrom } from '@/lib/client-ip';
 
 // Receives browser error reports from instrumentation-client.ts
 export async function POST(req: Request) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = clientIpFrom(req.headers);
   if (!(await sharedRateLimit(`client-error:${ip}`, 20, 60_000))) return new Response(null, { status: 429 });
 
   const raw = await req.text();

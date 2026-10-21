@@ -422,6 +422,18 @@ export interface Database {
   payouts?: PayoutRecord[];
   openMatches?: OpenMatch[];
   tournaments?: Tournament[];
+  activity?: ActivityEntry[];
+}
+
+// One line of the partner activity log: who did what, for which turf
+export interface ActivityEntry {
+  id: string;
+  partnerId: string;
+  turfId: string;
+  at: string; // ISO time
+  by: string; // person's name
+  action: string;
+  detail: string;
 }
 
 export type PayoutStatus = 'pending' | 'processing' | 'paid' | 'failed' | 'on_hold';

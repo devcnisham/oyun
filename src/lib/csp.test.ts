@@ -9,12 +9,12 @@ describe('Content Security Policy (CSP)', () => {
     expect(csp).not.toContain("'nonce-");
   });
 
-  test('nonce-based CSP uses nonce and strict-dynamic, dropping unsafe-inline from script-src', () => {
+  test('nonce-based CSP uses a nonce without strict-dynamic (so host-listed loaders like Clerk still run), dropping unsafe-inline from script-src', () => {
     const nonce = 'test-nonce-12345';
     const csp = buildCsp(nonce, false);
     const scriptSrc = csp.split(';').find((s) => s.trim().startsWith('script-src')) ?? '';
     expect(scriptSrc).toContain(`'nonce-${nonce}'`);
-    expect(scriptSrc).toContain("'strict-dynamic'");
+    expect(scriptSrc).not.toContain("'strict-dynamic'");
     expect(scriptSrc).not.toContain("'unsafe-inline'");
   });
 

@@ -130,7 +130,7 @@
   padding: 10px 18px;
   background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
   color: #ffffff;
-  border-radius: 10px;
+  border-radius: 999px;
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
@@ -154,7 +154,7 @@
   padding: 10px 16px;
   background: #ffffff;
   color: #374151;
-  border-radius: 10px;
+  border-radius: 999px;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -169,6 +169,27 @@
   color: #111827;
   transform: translateY(-1px);
 }
+
+/* Coloured action buttons (modifiers on actionBtnPrimary / actionBtnSecondary) */
+.btnRed {
+  background: linear-gradient(135deg, #d31027 0%, #ef4444 100%);
+  border-color: #b91c1c;
+  box-shadow: 0 4px 12px rgba(211, 16, 39, 0.28);
+}
+
+.btnRed:hover {
+  background: linear-gradient(135deg, #b50e22 0%, #dc2626 100%);
+  box-shadow: 0 6px 16px rgba(211, 16, 39, 0.35);
+}
+
+.btnGreen { background: #ecfdf3; border-color: #a6f4c5; color: #067647; }
+.btnGreen:hover { background: #d1fadf; border-color: #6ce9a6; color: #054f31; }
+
+.btnAmber { background: #fffaeb; border-color: #fedf89; color: #b54708; }
+.btnAmber:hover { background: #fef0c7; border-color: #fec84b; color: #93370d; }
+
+.btnBlue { background: #eff8ff; border-color: #b2ddff; color: #175cd3; }
+.btnBlue:hover { background: #d1e9ff; border-color: #84caff; color: #1849a9; }
 
 /* --------------------------------------------------------------------------
    "Next Up" Priority Spotlight Card
@@ -585,7 +606,7 @@
 
 @media (max-width: 1024px) {
   .dashboardGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr); /* minmax(0) so wide children scroll instead of widening the page */
   }
 }
 
@@ -1020,20 +1041,48 @@
 
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
+  .dashboard,
+  .dashboard > *,
+  .dashboardGrid > *,
+  .card {
+    min-width: 0;
+    max-width: 100%;
+  }
   .commandHero {
     padding: 18px 20px;
+  }
+  .heroActions {
+    width: 100%;
+  }
+  .heroActions > a {
+    flex: 1 1 calc(50% - 10px);
+    justify-content: center;
+  }
+  .heroSubtitle {
+    flex-wrap: wrap;
+    gap: 4px 8px;
   }
   .greetingTitle {
     font-size: 20px;
   }
+  .kpiGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
   .kpiValue {
-    font-size: 24px;
+    font-size: 22px;
   }
   .card {
-    padding: 18px;
+    padding: 16px;
+  }
+  .chartBarsWrapper,
+  .tableContainer,
+  .scheduleList {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .tableContainer {
-    margin: 0 -18px;
-    padding: 0 18px;
+    margin: 0 -16px;
+    padding: 0 16px;
   }
 }

@@ -140,7 +140,7 @@ export default async function AdminAnalyticsPage() {
                 <tr key={t.id}>
                   <td className={dash.strong}>{t.name}</td>
                   <td>{t.area}</td>
-                  <td className={dash.num}>{t.rating > 0 ? `★ ${t.rating.toFixed(1)} (${t.reviewCount})` : 'New'}</td>
+                  <td className={dash.num}>{t.rating > 0 ? `${t.rating.toFixed(1)} (${t.reviewCount})` : 'New'}</td>
                   <td className={dash.num}>{t.bookingsCount}</td>
                   <td className={`${dash.num} ${dash.strong}`}>{inr(t.revenue)}</td>
                 </tr>

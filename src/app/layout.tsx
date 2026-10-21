@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Baloo_2, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -10,6 +10,8 @@ import AuthProvider from "@/components/AuthProvider";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+// Rounded face for the OYUN wordmark only (navbar and footer); one weight keeps it a few KB
+const wordmark = Baloo_2({ subsets: ["latin"], weight: "800", variable: "--font-wordmark", display: "swap" });
 
 // Inter's Latin-Extended file is 85 KB and the only reason a page asks for it is the rupee sign (U+20B9).
 // This is that one glyph cut from the same Inter file (1 KB), listed ahead of Inter so the big file is never fetched.
@@ -60,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-IN" className={`${rupee.variable} ${inter.variable}`}>
+    <html lang="en-IN" className={`${rupee.variable} ${inter.variable} ${wordmark.variable}`}>
       <body>
         <AuthProvider>
         {children}

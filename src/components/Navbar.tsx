@@ -22,7 +22,8 @@ export default function Navbar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const suggestions = useSuggestions(q, searchFocused);
   const [pastHero, setPastHero] = useState(false);
-  const isHome = pathname === '/';
+  // Phones get the home page prebuilt at /m but the address bar says /: both count as home
+  const isHome = pathname === '/' || pathname === '/m';
   const isArenaDetail = pathname?.startsWith('/arenas/') && pathname !== '/arenas';
   
   const [firstName, setFirstName] = useState('');
@@ -30,11 +31,8 @@ export default function Navbar() {
   const [upcoming, setUpcoming] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [overscrolled, setOverscrolled] = useState(false);
-  
-  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    let lastY = window.scrollY;
     let frame = 0;
     const handleScroll = () => {
       if (frame) return;
@@ -44,12 +42,6 @@ export default function Navbar() {
         setScrolled(y > 20);
         setPastHero(y > 420);
         setOverscrolled(y < 0);
-        // Slide the header away while reading down the page; bring it back on any scroll back up
-        // Desktop keeps the header pinned; only phones slide it away
-        if (y < 80 || window.innerWidth > 768) setHidden(false);
-        else if (y > lastY + 6) setHidden(true);
-        else if (y < lastY - 6) setHidden(false);
-        if (Math.abs(y - lastY) > 6) lastY = y;
       });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -59,7 +51,6 @@ export default function Navbar() {
     };
   }, []);
 
-  const headerHidden = hidden;
   // Desktop: home shows just the search once the hero is scrolled past; every other page shows just back + search
   const compactBar = !isHome || pastHero;
 
@@ -88,7 +79,7 @@ export default function Navbar() {
 
   return (
     <>
-    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${headerHidden ? styles.headerHidden : ''}`}>
+    <div data-app-header className={`${isHome ? styles.transparentWrapper : styles.stickyWrapper} ${isArenaDetail ? styles.desktopOnlyNav : ''} ${scrolled || !isHome ? styles.floating : ''}`}>
       <header className={`${styles.navbar} ${isHome && !scrolled && !overscrolled ? styles.navbarTransparent : ''}`}>
         <div className={`container ${styles.inner} ${compactBar ? styles.searchOnly : ''}`}>
           <div className={styles.left}>
@@ -126,26 +117,34 @@ export default function Navbar() {
               role="search"
               onSubmit={(e) => {
                 e.preventDefault();
-                const term = q.trim();
-                router.push(term ? `/arenas?q=${encodeURIComponent(term)}` : '/arenas');
+                const params = new URLSearchParams();
+                if (q.trim()) params.set('q', q.trim());
+                const qs = params.toString();
+                router.push(qs ? `/arenas?${qs}` : '/arenas');
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3.5-3.5" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
+                <circle cx="12" cy="10" r="2.5" />
               </svg>
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                placeholder="Search turfs or areas"
-                aria-label="Search turfs or areas"
+                placeholder={compactBar ? "Search city or arena" : "Search by city, location or arena name"}
+                aria-label="Search by city, location or arena name"
                 autoComplete="off"
               />
               <button type="submit">Search</button>
               {searchFocused && <SearchSuggestions query={q} suggestions={suggestions} onPick={() => setSearchFocused(false)} className={styles.navSuggest} />}
             </form>
+            <Link href="/arenas?view=map" className={styles.navMap} aria-label="Map view" title="Map view">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z" />
+                <path d="M9 4v13M15 7v13" />
+              </svg>
+            </Link>
             </>
           )}
 

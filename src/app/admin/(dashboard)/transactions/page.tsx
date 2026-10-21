@@ -71,7 +71,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
                   <td className={dash.num}>{inr(b.amountPaid)}</td>
                   <td>
                     <div className={dash.inline}>
-                      <Link href={`/bookings/${b.id}/invoice`} target="_blank" className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Invoice</Link>
+                      <Link href={`/bookings/${b.id}/invoice`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Invoice</Link>
                       {!['cancelled', 'refunded'].includes(b.status) && (
                         <ActionForm action={refundBooking} inline confirm={`Refund ₹${b.amountPaid} to ${b.customerName}'s wallet?`}>
                           <input type="hidden" name="bookingId" value={b.id} />

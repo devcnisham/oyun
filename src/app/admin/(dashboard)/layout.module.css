@@ -107,7 +107,9 @@
 }
 
 .navIcon {
-  font-size: 16px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .sidebarBottom {
@@ -170,12 +172,57 @@
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggleBtn {
+  display: none; /* desktop only */
+  align-items: center;
+  padding: 4px 6px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+
+.toggleBtn:hover {
+  background: var(--bg-primary);
+}
+
+.hideMenu {
+  display: none; /* desktop only */
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: var(--radius-md);
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hideMenu:hover {
+  background: rgba(255,255,255,0.14);
 }
 
 .headerActions {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.headerActions :global(.btn) {
+  border-radius: 999px;
 }
 
 .notifBtn {
@@ -192,13 +239,89 @@
 }
 
 /* Responsive */
+@media (min-width: 769px) {
+  /* main area: header is its own floating card, the page content sits below it as separate cards */
+  .layout { background: #eceff3; }
+  .main { margin: 0 12px 12px 0; background: transparent; }
+  .main > .header { position: static; margin-top: 12px; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); background: var(--bg-card); }
+  .main > .content { padding: 20px 0 0; }
+  /* floating cards: toggle, brand, nav and profile each sit in their own rounded card */
+  .sidebar { background: transparent; border-right: none; padding: 12px; gap: 12px; }
+  .brand { display: none; } /* desktop only: the mobile drawer keeps its brand row (it holds the close button) */
+  .sidebar > * { border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; background: var(--primary-gradient); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+  .toggleBtn { display: inline-flex; }
+  .sidebar .hideMenu { display: flex; } /* beats the base display:none that is declared later in the file */
+  /* pin the hide/unhide button to the bottom of the nav card */
+  .sidebar .nav { display: flex; flex-direction: column; }
+  .sidebar .nav > :nth-last-child(2) { margin-bottom: 16px; }
+  .sidebar .hideMenu { margin-top: auto; flex-shrink: 0; }
+  /* collapsed icon rail (html[data-sidebar='hidden'], set by SidebarToggle) */
+  :global(html[data-sidebar='hidden']) .sidebar { width: 84px; transition: width 0.2s ease; }
+  /* after the cursor rests on the rail for 1s it temporarily expands and pushes the page aside */
+  :global(html[data-sidebar='hidden']) .sidebar[data-peek] { width: 280px; }
+  :global(html[data-sidebar='hidden']) .brand { display: none; }
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .logoText,
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .navTitle,
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .userInfo { display: none; }
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .nav { padding: 16px 8px; }
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .navLink { font-size: 0; gap: 0; justify-content: center; padding: 10px 0; }
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .sidebarBottom { padding: 16px 8px; }
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .userProfile { justify-content: center; }
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .hideMenu { justify-content: center; padding: 10px 0; }
+  :global(html[data-sidebar='hidden']) .sidebar:not([data-peek]) .hideMenu [data-sb-label] { display: none; }
+}
+
 @media (max-width: 768px) {
   .layout { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
-  .nav { padding: 16px; overflow-x: auto; white-space: nowrap; }
-  .navGroup { flex-direction: row; gap: 8px; align-items: center; }
-  .navTitle { display: none; }
-  .sidebarBottom { display: none; }
-  .header { padding: 0 16px; }
-  .content { padding: 16px; }
+  /* the bottom tab bar + "More" sheet replace the stacked sidebar */
+  .sidebar { display: none; }
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: auto;
+    min-height: 56px;
+    padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .headerTitle { min-width: 0; flex: 1; }
+  .headerActions { flex-shrink: 0; gap: 8px; }
+  .headerActions a { display: none; } /* View site lives in the More sheet */
+  .content { padding: 16px 16px calc(88px + env(safe-area-inset-bottom)); }
+}
+
+/* the page name lives in the top bar, so hide the duplicate big title inside the page (descriptions stay) */
+.pageName {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.turfName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content h1[class*='pageTitle'] {
+  /* visually hidden but still in the accessibility tree (the top bar shows the page name) */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 768px) {
+  .turfName { display: none; }
 }

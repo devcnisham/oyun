@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
 import JsonLd from '@/components/JsonLd';
@@ -15,15 +14,17 @@ export const metadata: Metadata = {
   openGraph: { url: '/arenas' },
 };
 
-export default async function ArenasPage({ searchParams }: { searchParams: Promise<{ q?: string; area?: string; sport?: string; date?: string }> }) {
-  const { q = '', area = '', sport = '', date = '' } = await searchParams;
-  await connection(); // live availability: render per request
+// Open-slot counts are rebuilt in the background every 30 seconds and served from the CDN in between;
+// a slot is always checked again on the server when someone holds or books it
+export const revalidate = 30;
+
+export default async function ArenasPage() {
   const turfs = await listPublicTurfs();
   return (
     <>
     <JsonLd data={[itemListSchema(turfs, 'Turfs and courts in Mangalore'), breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Turfs in Mangalore', path: '/arenas' }])]} />
     <Suspense fallback={<div className={styles.loading}>Loading arenas...</div>}>
-      <ArenasClient key={`${q}|${area}|${sport}|${date}`} turfs={turfs} areaNames={listAreas(turfs)} />
+      <ArenasClient turfs={turfs} areaNames={listAreas(turfs)} />
     </Suspense>
     </>
   );

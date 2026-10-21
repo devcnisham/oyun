@@ -59,12 +59,23 @@ test('the booking path works with the keyboard alone', async ({ page }) => {
   const open = seats(page).and(page.locator('[aria-disabled="false"][aria-pressed="false"]'));
   await open.first().waitFor({ timeout: 10_000 });
 
-  await open.first().focus();
-  await page.keyboard.press('Enter');
-  await expect(seats(page).and(page.locator('[aria-pressed="true"]')).first()).toBeVisible();
+  // A key press before the page hydrates does nothing, so repeat until the slot is selected (never toggling it off)
+  const selected = seats(page).and(page.locator('[aria-pressed="true"]')).first();
+  await expect(async () => {
+    if (!(await selected.isVisible())) {
+      await open.first().focus();
+      await page.keyboard.press('Enter');
+    }
+    await expect(selected).toBeVisible({ timeout: 1_500 });
+  }).toPass({ timeout: 15_000 });
 
   const proceed = page.getByRole('button', { name: 'Proceed' });
-  await proceed.focus();
-  await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Checkout' })).toBeVisible();
+  const dialog = page.getByRole('dialog', { name: 'Checkout' });
+  await expect(async () => {
+    if (!(await dialog.isVisible())) {
+      await proceed.focus();
+      await page.keyboard.press('Enter');
+    }
+    await expect(dialog).toBeVisible({ timeout: 1_500 });
+  }).toPass({ timeout: 15_000 });
 });

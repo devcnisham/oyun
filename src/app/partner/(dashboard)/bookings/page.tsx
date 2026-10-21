@@ -9,6 +9,7 @@ import WalkInForm from './WalkInForm';
 import { halfNote } from '@/lib/pricing';
 import { paginate } from '@/lib/paginate';
 import Pager from '@/components/dash/Pager';
+import CourtTimeline from '../CourtTimeline';
 
 const VIEWS = [
   { key: 'today', label: 'Today' },
@@ -38,6 +39,9 @@ export default async function PartnerBookings({ searchParams }: { searchParams: 
   return (
     <div className={dash.page}>
       <PageHeader title="Bookings" desc={`All bookings for ${ctx.turf.name}, online and walk-in.`} />
+      <div><a href="/partner/bookings/export" className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`} download>Export CSV</a></div>
+
+      <CourtTimeline ctx={ctx} />
 
       <div className={dash.card} id="walk-in">
         <div className={dash.cardHeader}>

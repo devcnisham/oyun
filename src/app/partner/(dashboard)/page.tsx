@@ -1,3 +1,4 @@
+import NavIcon from '@/components/dash/NavIcon';
 import Link from 'next/link';
 import { Badge, inr, tableScroll } from '@/components/dash/ui';
 import { requirePartner } from '@/lib/partner-auth';
@@ -68,7 +69,7 @@ export default async function PartnerDashboard() {
         <div className={styles.heroLeft}>
           <div className={styles.greetingRow}>
             <h1 className={styles.greetingTitle}>
-              {timeGreeting}, {partnerFirstName} 👋
+              {timeGreeting}, {partnerFirstName}
             </h1>
             <div className={`${styles.facilityStatusPill} ${isFacilityOpen ? styles.facilityOpen : styles.facilityClosed}`}>
               {isFacilityOpen && <span className={styles.pulseDot} aria-hidden="true" />}
@@ -86,22 +87,22 @@ export default async function PartnerDashboard() {
 
         <div className={styles.heroActions}>
           {ctx.can('bookings') && (
-            <Link href="/partner/bookings#walk-in" className={styles.actionBtnPrimary}>
+            <Link href="/partner/bookings#walk-in" className={`${styles.actionBtnPrimary} ${styles.btnRed}`}>
               <span>+</span> Walk-in Booking
             </Link>
           )}
           {ctx.can('checkin') && (
-            <Link href="/partner/check-in" className={styles.actionBtnSecondary}>
-              <span>📷</span> Check-in Desk
+            <Link href="/partner/check-in" className={`${styles.actionBtnSecondary} ${styles.btnGreen}`}>
+              <NavIcon name="camera" size={16} /> Check-in Desk
             </Link>
           )}
           {ctx.can('slots') && (
-            <a href="#block-slot" className={styles.actionBtnSecondary}>
-              <span>🔒</span> Block Slot
+            <a href="#block-slot" className={`${styles.actionBtnSecondary} ${styles.btnAmber}`}>
+              <NavIcon name="lock" size={16} /> Block Slot
             </a>
           )}
-          <Link href={`/arenas/${ctx.turf.id}`} target="_blank" rel="noopener noreferrer" className={styles.actionBtnSecondary}>
-            <span>↗</span> Public Page
+          <Link href={`/arenas/${ctx.turf.id}`} className={`${styles.actionBtnSecondary} ${styles.btnBlue}`}>
+            <NavIcon name="external" size={16} /> Public Page
           </Link>
         </div>
       </section>
@@ -130,115 +131,11 @@ export default async function PartnerDashboard() {
               href={`/partner/check-in?code=${nextBooking.code}`}
               className={styles.nextUpAction}
             >
-              <span>📷</span> Check In Player Now
+              <NavIcon name="camera" size={16} /> Check In Player Now
             </Link>
           )}
         </section>
       )}
-
-      {/* 3. Real-Time Court Timeline (Horizontal Slot Ribbon) */}
-      <section className={styles.timelineSection} aria-label="Today's court timeline">
-        <div className={styles.timelineHeader}>
-          <div className={styles.timelineTitleGroup}>
-            <h2 className={styles.sectionTitle}>Today&apos;s Court Timeline</h2>
-            <span style={{ fontSize: 13, color: '#6b7280' }}>
-              ({formatDate(now.date, { weekday: 'short', month: 'short', day: 'numeric' })})
-            </span>
-          </div>
-
-          <div className={styles.timelineLegend}>
-            <div className={styles.legendItem}>
-              <span className={`${styles.legendDot} ${styles.dotNow}`} />
-              <span>Current Slot</span>
-            </div>
-            <div className={styles.legendItem}>
-              <span className={`${styles.legendDot} ${styles.dotBooked}`} />
-              <span>Booked ({today.filter((b) => b.status === 'confirmed').length})</span>
-            </div>
-            <div className={styles.legendItem}>
-              <span className={`${styles.legendDot} ${styles.dotCheckedIn}`} />
-              <span>Checked in ({today.filter((b) => b.status === 'checked_in').length})</span>
-            </div>
-            <div className={styles.legendItem}>
-              <span className={`${styles.legendDot} ${styles.dotBlocked}`} />
-              <span>Blocked</span>
-            </div>
-            <div className={styles.legendItem}>
-              <span className={`${styles.legendDot} ${styles.dotAvailable}`} />
-              <span>Available</span>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.timelineTrack}>
-          {operatingHours.map((h) => {
-            const isNow = h === now.hour;
-            const booking = today.find((b) => b.hour === h);
-            const block = activeBlocks.find((bl) => bl.date === now.date && bl.hour === h);
-
-            let nodeClass = styles.slotNode;
-            if (isNow) nodeClass += ` ${styles.slotNodeNow}`;
-            else if (booking?.status === 'checked_in') nodeClass += ` ${styles.slotNodeCheckedIn}`;
-            else if (booking) nodeClass += ` ${styles.slotNodeBooked}`;
-            else if (block) nodeClass += ` ${styles.slotNodeBlocked}`;
-
-            return (
-              <div key={h} className={nodeClass}>
-                <div className={styles.slotTimeHeader}>
-                  <span className={styles.slotHour}>{formatHour(h)}</span>
-                  {isNow && <span className={styles.slotNowTag}>NOW</span>}
-                </div>
-
-                {booking ? (
-                  <>
-                    <span className={styles.slotPlayerName} title={booking.customerName}>
-                      {booking.customerName}
-                    </span>
-                    <span className={styles.slotStatusText}>
-                      {booking.status === 'checked_in' ? '✓ Checked in' : `Code: ${booking.code}`}
-                    </span>
-                    {booking.status === 'confirmed' && ctx.can('checkin') ? (
-                      <Link
-                        href={`/partner/check-in?code=${booking.code}`}
-                        className={`${styles.slotQuickBtn} ${isNow ? styles.slotQuickBtnActive : ''}`}
-                      >
-                        Check in
-                      </Link>
-                    ) : (
-                      <span style={{ fontSize: 11, color: '#4b5563', fontStyle: 'italic' }}>
-                        {booking.status.replace(/_/g, ' ')}
-                      </span>
-                    )}
-                  </>
-                ) : block ? (
-                  <>
-                    <span className={styles.slotPlayerName} style={{ color: '#b45309' }}>
-                      🔒 Blocked
-                    </span>
-                    <span className={styles.slotStatusText} title={block.reason}>
-                      {block.reason}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span className={styles.slotPlayerName} style={{ color: '#6b7280', fontWeight: 500 }}>
-                      Available
-                    </span>
-                    <span className={styles.slotStatusText} style={{ color: '#047857' }}>
-                      Open for play
-                    </span>
-                    {ctx.can('bookings') && (
-                      <Link href="/partner/bookings#walk-in" className={styles.slotQuickBtn}>
-                        + Book
-                      </Link>
-                    )}
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
 
       {/* 4. KPI Telemetry Metric Grid */}
       <section className={styles.kpiGrid} aria-label="Key Performance Indicators">
@@ -247,7 +144,7 @@ export default async function PartnerDashboard() {
           <div className={styles.kpiCard}>
             <div className={styles.kpiHeader}>
               <span className={styles.kpiLabel}>Revenue This Month</span>
-              <div className={styles.kpiIconBox} title="Monthly revenue">💰</div>
+              <div className={styles.kpiIconBox} title="Monthly revenue"><NavIcon name="payouts" size={18} /></div>
             </div>
             <div className={styles.kpiValue}>{inr(revenue)}</div>
             <div className={styles.kpiFooter}>
@@ -261,7 +158,7 @@ export default async function PartnerDashboard() {
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
             <span className={styles.kpiLabel}>Today&apos;s Court Occupancy</span>
-            <div className={styles.kpiIconBox} title="Occupancy">📊</div>
+            <div className={styles.kpiIconBox} title="Occupancy"><NavIcon name="analytics" size={18} /></div>
           </div>
           <div className={styles.kpiValue}>{todayOccupancy}%</div>
           <div className={styles.kpiProgressTrack}>
@@ -277,7 +174,7 @@ export default async function PartnerDashboard() {
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
             <span className={styles.kpiLabel}>Next 7 Days Pipeline</span>
-            <div className={styles.kpiIconBox} title="Upcoming pipeline">🗓️</div>
+            <div className={styles.kpiIconBox} title="Upcoming pipeline"><NavIcon name="calendar" size={18} /></div>
           </div>
           <div className={styles.kpiValue}>{upcoming.length} bookings</div>
           <div className={styles.kpiFooter}>
@@ -290,7 +187,7 @@ export default async function PartnerDashboard() {
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
             <span className={styles.kpiLabel}>Player Attendance Rate</span>
-            <div className={styles.kpiIconBox} title="Attendance rate">🎯</div>
+            <div className={styles.kpiIconBox} title="Attendance rate"><NavIcon name="target" size={18} /></div>
           </div>
           <div className={styles.kpiValue}>{attendanceRate}%</div>
           <div className={styles.kpiFooter}>
@@ -313,7 +210,7 @@ export default async function PartnerDashboard() {
                 <p className={styles.cardSubtitle}>Total earnings across online and walk-in sales</p>
               </div>
               <Link href="/partner/payouts" className={styles.actionBtnSecondary} style={{ padding: '6px 12px', fontSize: 13 }}>
-                View Payouts ↗
+                View Payouts <NavIcon name="external" size={14} />
               </Link>
             </div>
 
@@ -378,7 +275,7 @@ export default async function PartnerDashboard() {
 
           {today.length === 0 ? (
             <div className={styles.emptyState}>
-              <span className={styles.emptyIcon}>📅</span>
+              <span className={styles.emptyIcon}><NavIcon name="bookings" size={32} /></span>
               <p className={styles.emptyText}>No bookings scheduled yet today.</p>
               <p style={{ fontSize: 13 }}>Slots are currently open for walk-in or online bookings.</p>
             </div>
@@ -435,7 +332,7 @@ export default async function PartnerDashboard() {
           </div>
           {ctx.can('bookings') && (
             <Link href="/partner/bookings" className={styles.actionBtnSecondary} style={{ padding: '6px 12px', fontSize: 13 }}>
-              View All Bookings ↗
+              View All Bookings <NavIcon name="external" size={14} />
             </Link>
           )}
         </div>
@@ -511,7 +408,7 @@ export default async function PartnerDashboard() {
             </p>
           </div>
           <Link href="/partner/slots" className={styles.actionBtnSecondary} style={{ padding: '6px 12px', fontSize: 13 }}>
-            Full Slot Calendar Grid ↗
+            Full Slot Calendar Grid <NavIcon name="external" size={14} />
           </Link>
         </div>
 
