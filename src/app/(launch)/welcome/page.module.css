@@ -181,3 +181,103 @@
   }
 }
 
+
+/* About section under the countdown */
+.about {
+  position: relative;
+  max-width: 64rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 3rem;
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ff6b6b;
+}
+
+.h2 {
+  margin: 0 0 1rem;
+  max-width: 22ch;
+  font-size: clamp(1.9rem, 6vw, 3.25rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.lead {
+  margin: 0 0 2.5rem;
+  max-width: 40rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.steps {
+  list-style: none;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+}
+
+.step strong { font-size: 1.15rem; color: #fff; }
+.stepNo { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; color: #ff6b6b; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  background: linear-gradient(160deg, rgba(211, 16, 39, 0.18), rgba(255, 255, 255, 0.03));
+}
+
+.card h3 { margin: 0 0 0.85rem; font-size: 1.25rem; color: #fff; }
+.card ul { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.55rem; color: rgba(255, 255, 255, 0.85); line-height: 1.45; }
+
+.owners {
+  padding: 1.75rem;
+  border-radius: 1rem;
+  background: #d31027;
+  color: #fff;
+}
+
+.owners h3 { margin: 0 0 0.5rem; font-size: 1.4rem; color: #fff; }
+.owners p { margin: 0 0 1.1rem; max-width: 36rem; line-height: 1.5; }
+
+.cta {
+  display: inline-block;
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  background: #fff;
+  color: #8a0a1a;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.cta:hover { background: #ffe9ec; }
+.cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
