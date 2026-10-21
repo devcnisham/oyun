@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import FaqList from '@/components/FaqList';
 import JsonLd from '@/components/JsonLd';
-import TurfCard from '@/components/TurfCard';
+import TurfGrid from '@/components/TurfGrid';
 import { rupees } from '@/lib/format';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
 import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
@@ -103,11 +104,7 @@ export default async function SportPage({ params }: Props) {
       {turfs.length > 0 ? (
         <section aria-labelledby="list-heading">
           <h2 id="list-heading" className={styles.h2}>Where to play {sport.label.toLowerCase()}</h2>
-          <div className={styles.grid}>
-            {turfs.map((t) => (
-              <TurfCard key={t.id} turf={t} />
-            ))}
-          </div>
+          <TurfGrid turfs={turfs} />
         </section>
       ) : (
         <div className={styles.emptyState}>
@@ -138,14 +135,7 @@ export default async function SportPage({ params }: Props) {
       {faqs.length > 0 && (
         <section aria-labelledby="faq-heading">
           <h2 id="faq-heading" className={styles.h2}>Frequently asked questions about {sport.label.toLowerCase()} in {SITE_CITY}</h2>
-          <div className={styles.faqList}>
-            {faqs.map((faq, i) => (
-              <details key={i} className={styles.faqItem} open={i === 0}>
-                <summary>{faq.q}</summary>
-                <p>{faq.a}</p>
-              </details>
-            ))}
-          </div>
+          <FaqList faqs={faqs} />
         </section>
       )}
 
