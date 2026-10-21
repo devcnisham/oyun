@@ -1,5 +1,4 @@
-import { Barlow, Barlow_Condensed } from 'next/font/google';
+import { Instrument_Serif } from 'next/font/google';
 
-// Barlow Condensed gives the headlines their scoreboard weight; Barlow carries the reading text
-export const display = Barlow_Condensed({ subsets: ['latin'], weight: ['700', '800'], variable: '--font-display', display: 'swap' });
-export const body = Barlow({ subsets: ['latin'], weight: ['400', '600', '700'], variable: '--font-body', display: 'swap' });
+// One refined serif for headlines; the body text is Inter, already loaded for the whole site (--font-inter)
+export const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], variable: '--font-serif', display: 'swap' });
