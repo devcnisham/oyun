@@ -233,6 +233,196 @@ export const GUIDES: GuideArticle[] = [
       },
     ],
   },
+  {
+    slug: 'how-to-book-a-turf-in-mangalore',
+    title: 'How to Book a Turf in Mangalore Online: Slots, Advance and Cancellation',
+    metaTitle: 'How to Book a Turf in Mangalore Online | Step-by-Step Guide',
+    metaDescription: 'Book a football or box cricket turf in Mangalore without phone calls. How live slots, the 8-minute hold, the ₹150 advance per hour and free cancellation work on OYUN.',
+    category: 'Booking Basics',
+    readTime: '3 min read',
+    publishedAt: '2026-10-21',
+    excerpt: 'Booking a turf used to mean calling three venues and waiting for a reply. Here is how online booking works in Mangalore, from picking a slot to walking in with your ticket.',
+    coverImage: '/turfs/turf_0.jpg',
+    relatedSportSlug: 'football',
+    sections: [
+      {
+        heading: '1. Pick a venue, a day and your hours',
+        paragraphs: [
+          'Start from the list of turfs and courts in Mangalore and filter by sport, area or price. Each venue page shows hour-by-hour availability for the coming days, so you can see what is open before you commit to anything.',
+          'You can book several hours in one go. If the venue allows it you can also book a half pitch instead of the full turf.',
+        ],
+        keyTakeaway: 'Check the live slot picker first. If an hour is shown as open, it is open: nobody has to confirm it by phone.',
+      },
+      {
+        heading: '2. Your hours are held for 8 minutes',
+        paragraphs: [
+          'When you choose your hours they are held for you for 8 minutes while you sign in and confirm. During that time nobody else can book them. If you do not finish, the hold ends and the hours become open again.',
+        ],
+      },
+      {
+        heading: '3. Pay a small advance, the rest at the venue',
+        paragraphs: [
+          'A flat advance of ₹150 per hour secures your booking. You pay the balance at the venue by cash or UPI. Hourly prices on OYUN include floodlights and pitch maintenance, so there is no extra lighting charge at the gate.',
+        ],
+        keyTakeaway: 'Three hours means a ₹450 advance, and the remaining amount is paid at the turf.',
+      },
+      {
+        heading: '4. Walk in with your ticket',
+        paragraphs: [
+          'After booking you get a ticket with a QR code. Show it at the venue to check in. The ticket also holds your invoice and a calendar file so the game lands in your phone calendar.',
+        ],
+      },
+      {
+        heading: '5. Cancelling and rain',
+        paragraphs: [
+          'You can cancel from your ticket up to 2 hours before the slot starts, and the refund goes to your OYUN wallet. For open-air turfs, the Monsoon Rain Guarantee gives a full wallet refund if the match is rained out or the turf is waterlogged.',
+        ],
+      },
+    ],
+    faqs: [
+      { q: 'Do I need to call the turf to confirm my booking?', a: 'No. Open slots on OYUN are live, and your booking is confirmed once you complete it. Your ticket is the confirmation.' },
+      { q: 'How much is the advance for a turf booking in Mangalore?', a: 'The advance is a flat ₹150 per hour. You pay the rest at the venue by cash or UPI.' },
+      { q: 'Can I cancel a turf booking?', a: 'Yes, from your ticket up to 2 hours before the slot starts. The refund goes to your OYUN wallet.' },
+    ],
+  },
+  {
+    slug: 'badminton-courts-mangalore',
+    title: 'Badminton Courts in Mangalore: Where to Play, Prices and Court Basics',
+    metaTitle: 'Badminton Courts in Mangalore | Indoor Court Booking & Prices',
+    metaDescription: 'Where to play badminton in Mangalore: indoor wooden courts in Bejai, a court at Prime Sports Arena in Ullal, hourly prices from ₹400 and how to book online.',
+    category: 'Racket Sports',
+    readTime: '3 min read',
+    publishedAt: '2026-10-21',
+    excerpt: 'Indoor wooden courts, air conditioning and a pro shop: a quick guide to booking a badminton court in Mangalore, with the listed hourly prices.',
+    coverImage: '/turfs/turf_3.jpg',
+    relatedSportSlug: 'badminton',
+    sections: [
+      {
+        heading: '1. Venues listed on OYUN',
+        paragraphs: [
+          '**Smash Court Badminton (Bejai):** indoor wooden courts with air conditioning, changing rooms and a pro shop, listed from ₹400 per hour. Open from 5:00 AM to 10:00 PM.',
+          '**Prime Sports Arena (Ullal):** a multi-sport venue that offers badminton alongside football, listed from ₹700 per hour for the venue. Open from 6:00 AM to 10:00 PM.',
+        ],
+        keyTakeaway: 'Prices and hours are as listed on each venue page. Check the live slot picker for today’s availability.',
+      },
+      {
+        heading: '2. Why indoor wooden courts matter',
+        paragraphs: [
+          'Wooden floors give better grip and are kinder on knees and ankles than concrete. Indoor courts also remove wind from the game, which matters because a shuttlecock is easily pushed off line outdoors.',
+          'In Mangalore’s monsoon, indoor courts are also the safest way to avoid a cancelled evening.',
+        ],
+      },
+      {
+        heading: '3. Court basics',
+        paragraphs: [
+          'A doubles badminton court is 13.4 m long and 6.1 m wide. The net is 1.55 m high at the posts. Singles use the same length but a narrower width.',
+          'Bring non-marking indoor shoes. Many venues ask for them to protect the floor.',
+        ],
+      },
+      {
+        heading: '4. Booking tips',
+        paragraphs: [
+          'Early-morning and late-evening hours are usually the busiest for working players, so look at weekday evenings a few days ahead. Booking online holds your hours for 8 minutes while you check out, and you pay a small advance with the balance at the venue.',
+        ],
+      },
+    ],
+    faqs: [
+      { q: 'How much does a badminton court cost per hour in Mangalore?', a: 'On OYUN, badminton courts are listed from ₹400 per hour. Each venue page shows its current price.' },
+      { q: 'Are there indoor badminton courts in Mangalore?', a: 'Yes. Smash Court Badminton in Bejai has indoor wooden courts with air conditioning.' },
+      { q: 'Can I book a badminton court online?', a: 'Yes. Pick a venue, choose your hours, and confirm. Your hours are held for 8 minutes while you check out.' },
+    ],
+  },
+  {
+    slug: 'playing-sports-in-mangalore-monsoon',
+    title: 'Playing Sports in the Mangalore Monsoon: Covered Courts, Rain Refunds and Tips',
+    metaTitle: 'Sports in the Mangalore Monsoon | Covered Turfs & Rain Refund',
+    metaDescription: 'How to keep your game on during the Mangalore monsoon: indoor and covered venues, what the Monsoon Rain Guarantee refunds, and tips for playing safely in the rain.',
+    category: 'Planning',
+    readTime: '3 min read',
+    publishedAt: '2026-10-21',
+    excerpt: 'Mangalore gets heavy rain every year. Here is how to keep your booking useful: choose covered venues, know the refund rule and play safely when the pitch is wet.',
+    coverImage: '/turfs/turf_4.jpg',
+    relatedSportSlug: 'football',
+    sections: [
+      {
+        heading: '1. Prefer covered or indoor venues in the rainy months',
+        paragraphs: [
+          'Indoor courts such as the wooden badminton courts in Bejai and the indoor pickleball courts stay playable in heavy rain. Open-air turfs can be waterlogged after a downpour even if it has stopped raining.',
+        ],
+        keyTakeaway: 'See the list of covered turfs on OYUN for venues that keep playing through the monsoon.',
+      },
+      {
+        heading: '2. What the Monsoon Rain Guarantee does',
+        paragraphs: [
+          'For open-air outdoor turfs, if a match is rained out or the turf is waterlogged, you get a 100% refund to your OYUN wallet, even right up until your scheduled slot time.',
+        ],
+      },
+      {
+        heading: '3. Playing safely on a wet pitch',
+        paragraphs: [
+          'Wet artificial grass is slippery. Wear studs or turf shoes with good grip and warm up longer than usual. Avoid playing during lightning: leave the pitch and shelter indoors.',
+          'Bring a towel and a change of clothes. Many venues have changing rooms, which you can check on the venue page.',
+        ],
+      },
+      {
+        heading: '4. Plan a backup',
+        paragraphs: [
+          'If you organise a regular team game, book one covered or indoor option as a backup. You can cancel from your ticket up to 2 hours before the slot, with the refund going to your wallet.',
+        ],
+      },
+    ],
+    faqs: [
+      { q: 'What happens if it rains on my booking?', a: 'For open-air outdoor turfs, the Monsoon Rain Guarantee gives a 100% refund to your OYUN wallet if the match is rained out or the turf is waterlogged.' },
+      { q: 'Which venues are safe to play in heavy rain?', a: 'Indoor and covered venues, such as indoor badminton and pickleball courts. See the covered turfs list for football and box cricket options.' },
+      { q: 'Can I cancel if the forecast looks bad?', a: 'Yes, from your ticket up to 2 hours before the slot starts. The refund goes to your wallet.' },
+    ],
+  },
+  {
+    slug: 'football-5-a-side-vs-7-a-side-mangalore',
+    title: '5-a-Side vs 7-a-Side Football in Mangalore: Which Turf Size to Book',
+    metaTitle: '5-a-Side vs 7-a-Side Football Turfs in Mangalore | Which to Book',
+    metaDescription: 'Choosing a football turf size in Mangalore: how 5-a-side and 7-a-side games differ, how many players to bring, and how to split the hourly price.',
+    category: 'Football',
+    readTime: '3 min read',
+    publishedAt: '2026-10-21',
+    excerpt: 'A small pitch means more touches and quick play; a bigger one needs more players and stamina. Here is how to pick the right turf size for your group.',
+    coverImage: '/turfs/turf_5.jpg',
+    relatedSportSlug: 'football',
+    sections: [
+      {
+        heading: '1. The difference in one line',
+        paragraphs: [
+          'A 5-a-side game has five players per team and is fast, close and technical. A 7-a-side game has seven per team on a larger pitch and leaves more room for passing and positions.',
+        ],
+        keyTakeaway: 'Bring 10 to 12 players for a 5-a-side game, and 14 to 18 for 7-a-side so you can rotate.',
+      },
+      {
+        heading: '2. How to choose',
+        paragraphs: [
+          'If your group is under 12 people, a smaller pitch keeps everyone involved. For bigger groups, pick a larger turf, and check the venue page for its size, surface and whether the pitch can be split into halves.',
+          'Some venues list a half pitch that you can book separately, which can suit a smaller group at a lower price.',
+        ],
+      },
+      {
+        heading: '3. Prices and splitting the cost',
+        paragraphs: [
+          'Football turfs on OYUN are priced per hour for the whole pitch, listed from around ₹600 to ₹1,200 depending on the venue and time. Divide the hourly price by the number of players: for example a ₹900 hour with 12 players is ₹75 each.',
+          'Booking is a ₹150 advance per hour, with the balance paid at the venue by cash or UPI.',
+        ],
+      },
+      {
+        heading: '4. What to bring',
+        paragraphs: [
+          'Turf shoes or studs suited to artificial grass, shin guards, water and a spare shirt. Many venues provide bibs and offer equipment rental; check the amenities on the venue page.',
+        ],
+      },
+    ],
+    faqs: [
+      { q: 'How many players are needed for a turf football game?', a: 'A 5-a-side game needs 10 players, and a 7-a-side game needs 14. Bring a few extra to rotate.' },
+      { q: 'How much does a football turf cost in Mangalore?', a: 'Hourly prices on OYUN range from about ₹600 to ₹1,200 for the whole pitch, depending on the venue and time.' },
+      { q: 'Can I book half of a turf?', a: 'Some venues split the pitch into two halves that are booked separately. Check the venue page.' },
+    ],
+  },
 ];
 
 export function getGuide(slug: string): GuideArticle | null {
