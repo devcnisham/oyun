@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { isIndexableTurf, ogBase } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import FaqList from '@/components/FaqList';
@@ -25,7 +26,7 @@ interface Props {
 async function load(slug: string) {
   const sport = sportFromSlug(slug);
   if (!sport) return null;
-  const all = await listPublicTurfs();
+  const all = (await listPublicTurfs()).filter(isIndexableTurf);
   const turfs = all
     .filter((t) => t.sports.some((x) => sportSlug(x) === slug))
     .sort((a, b) => b.rating - a.rating);
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${sport.label} Courts in ${SITE_CITY} | Venue Guide & Launch Updates`,
       description: `Complete guide to ${sport.label.toLowerCase()} in ${SITE_CITY}. Discover court developments, rules, equipment tips, and get notified when slots launch on OYUN.`,
       alternates: { canonical: `/sports/${slug}` },
-      openGraph: { url: `/sports/${slug}` },
+      openGraph: ogBase(`/sports/${slug}`),
     };
   }
   const from = Math.min(...turfs.map((t) => t.pricePerHour));
@@ -57,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${sport.label} ${sport.place}s in ${SITE_CITY} | Book online from ₹${from}/hr`,
     description: `${turfs.length} ${sport.label.toLowerCase()} ${sport.place}${turfs.length === 1 ? '' : 's'} in ${areas.join(', ')}, ${SITE_CITY}. Check live slot availability and book online on OYUN.`,
     alternates: { canonical: `/sports/${slug}` },
-    openGraph: { url: `/sports/${slug}` },
+    openGraph: ogBase(`/sports/${slug}`),
   };
 }
 

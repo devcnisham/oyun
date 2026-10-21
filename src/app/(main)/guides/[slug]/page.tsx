@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ogBase } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import FaqList from '@/components/FaqList';
@@ -38,9 +39,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: guide.metaDescription,
     alternates: { canonical: `/guides/${slug}` },
     openGraph: {
-      url: `/guides/${slug}`,
+      ...ogBase(`/guides/${slug}`),
       type: 'article',
-      images: [guide.coverImage],
+      title: guide.metaTitle,
+      description: guide.metaDescription,
+      images: [{ url: guide.coverImage, alt: guide.metaTitle }],
+      publishedTime: guide.publishedAt,
     },
   };
 }

@@ -1,4 +1,4 @@
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from './site';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, SOCIAL_LINKS, absoluteUrl } from './site';
 import type { PublicTurf } from './types';
 
 // schema.org JSON-LD builders
@@ -15,6 +15,8 @@ export function organizationSchema(supportEmail: string, supportPhone: string) {
     email: supportEmail,
     telephone: supportPhone || undefined,
     areaServed: { '@type': 'City', name: 'Mangalore' },
+    sameAs: Object.values(SOCIAL_LINKS).filter(Boolean),
+    contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: supportEmail, telephone: supportPhone || undefined, areaServed: 'IN', availableLanguage: ['English', 'Kannada', 'Hindi'] },
   };
 }
 
@@ -55,6 +57,13 @@ export function turfSchema(turf: PublicTurf) {
     url: absoluteUrl(`/arenas/${turf.id}`),
     image: turf.images.map((src) => absoluteUrl(src)),
     telephone: turf.phone || undefined,
+    ...(turf.lat !== undefined && turf.lng !== undefined
+      ? {
+          geo: { '@type': 'GeoCoordinates', latitude: turf.lat, longitude: turf.lng },
+          hasMap: `https://www.google.com/maps?q=${turf.lat},${turf.lng}`,
+        }
+      : {}),
+    isAccessibleForFree: false,
     priceRange: `₹${turf.pricePerHour}+ per hour`,
     address: {
       '@type': 'PostalAddress',
@@ -102,6 +111,7 @@ export function articleSchema(article: {
   path: string;
   image?: string;
   datePublished: string;
+  dateModified?: string;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -111,6 +121,8 @@ export function articleSchema(article: {
     url: absoluteUrl(article.path),
     image: article.image || undefined,
     datePublished: article.datePublished,
+    dateModified: article.dateModified ?? article.datePublished,
+    mainEntityOfPage: absoluteUrl(article.path),
     author: {
       '@type': 'Organization',
       name: SITE_NAME,

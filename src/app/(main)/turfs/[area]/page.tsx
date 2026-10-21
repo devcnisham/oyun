@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import { isIndexableTurf, ogBase } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/JsonLd';
 import TurfCard from '@/components/TurfCard';
 import { rupees } from '@/lib/format';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
-import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
+import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
 import { areaSlug } from '@/lib/site';
 import styles from './page.module.css';
 import { sportInfo } from '@/lib/sports';
@@ -19,7 +20,7 @@ function areaSports(turfs: { sports: string[] }[]) {
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const turfs = await listPublicTurfs();
+  const turfs = (await listPublicTurfs()).filter(isIndexableTurf);
   return listAreas(turfs).map((a) => ({ area: areaSlug(a) }));
 }
 
@@ -28,7 +29,7 @@ interface Props {
 }
 
 async function load(slug: string) {
-  const turfs = await listPublicTurfs();
+  const turfs = (await listPublicTurfs()).filter(isIndexableTurf);
   const areas = listAreas(turfs);
   const area = areas.find((a) => areaSlug(a) === slug);
   if (!area) return null;
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `Turfs & Courts in ${area}, Mangalore | Book from ₹${from}/hr`,
     description: `${turfs.length} venue${turfs.length === 1 ? '' : 's'} in ${area}, Mangalore for ${areaSports(turfs)}. Check live slot availability and book online on OYUN.`,
     alternates: { canonical: `/turfs/${slug}` },
-    openGraph: { url: `/turfs/${slug}` },
+    openGraph: ogBase(`/turfs/${slug}`),
   };
 }
 
@@ -58,6 +59,15 @@ export default async function AreaPage({ params }: Props) {
   const openToday = turfs.reduce((n, t) => n + t.availableToday, 0);
   const sizes = [...new Set(turfs.map((t) => t.size))];
   const amenities = [...new Set(turfs.flatMap((t) => t.amenities))].slice(0, 6);
+  // Facts come straight from the venues, so the page says something specific about this area
+  const to = Math.max(...turfs.map((t) => t.pricePerHour));
+  const opens = turfs.map((t) => t.openTime).sort()[0];
+  const closes = turfs.map((t) => t.closeTime).sort().at(-1);
+  const faqs = [
+    { q: `How much does a turf cost in ${area}, Mangalore?`, a: `Turfs and courts in ${area} cost ${from === to ? rupees(from) : `${rupees(from)} to ${rupees(to)}`} per hour on OYUN. Peak evening slots can cost a little more than morning slots.` },
+    { q: `Which sports can I play in ${area}?`, a: `Venues in ${area} offer ${areaSports(turfs)}.` },
+    { q: `What time do turfs in ${area} open?`, a: `Venues in ${area} open from ${opens} and the latest closes at ${closes === '00:00' ? 'midnight' : closes}. Check each venue page for exact hours and live open slots.` },
+  ];
 
   return (
     <div className={`container ${styles.page}`}>
@@ -69,6 +79,7 @@ export default async function AreaPage({ params }: Props) {
             { name: area, path: `/turfs/${slug}` },
           ]),
           itemListSchema(turfs, `Turfs and courts in ${area}, Mangalore`),
+          faqSchema(faqs),
         ]}
       />
 
@@ -98,6 +109,16 @@ export default async function AreaPage({ params }: Props) {
           fill up fastest and cost a little more at peak time, while early-morning games are usually cheaper and often carry an Early Bird discount.
           Book online on OYUN to lock your slot instantly, pay in full or a small advance, and check in at the venue with your QR code.
         </p>
+      </section>
+
+      <section aria-labelledby="faq-heading">
+        <h2 id="faq-heading" className={styles.h2}>Turf booking in {area}: quick answers</h2>
+        {faqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
       </section>
 
       <section aria-labelledby="areas-heading">

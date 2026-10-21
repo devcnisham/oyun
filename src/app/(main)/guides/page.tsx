@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ogBase } from '@/lib/seo';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { GUIDES } from '@/lib/guides-content';
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   title: `Sports Guides, Rules & Venue Tips in ${SITE_CITY} | OYUN`,
   description: `Essential playing guides for football, box cricket, badminton, pickleball, and padel in ${SITE_CITY}. Discover rules, gear requirements, pricing benchmarks, and court recommendations.`,
   alternates: { canonical: '/guides' },
-  openGraph: { url: '/guides' },
+  openGraph: ogBase('/guides'),
 };
 
 export default function GuidesIndexPage() {

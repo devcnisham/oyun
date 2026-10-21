@@ -38,66 +38,43 @@ describe('shared endpoints', () => {
   });
 });
 
+const perm = (path: string) => ({ kind: 'redirect', host: 'www.oyun.co.in', path, permanent: true });
+
 describe('landing host (www)', () => {
-  test('shows the landing page at / and its few pages; sends the rest back to the landing page before launch', () => {
+  test('shows the landing page at / and its pages before launch; sends closed player pages to the countdown', () => {
     expect(routeForHost('landing', '/')).toEqual({ kind: 'rewrite', path: '/landing' });
-    for (const p of ['/countdown', '/welcome', '/about', '/privacy', '/terms', '/faq']) expect(routeForHost('landing', p)).toEqual(next);
+    for (const p of ['/countdown', '/welcome', '/about', '/privacy', '/terms', '/faq', '/help', '/guides/padel']) expect(routeForHost('landing', p)).toEqual(next);
     expect(routeForHost('landing', '/arenas/perfect-pass-kodialbail')).toEqual(go('www', '/countdown'));
-    expect(routeForHost('landing', '/help')).toEqual(go('help', '/help'));
     expect(routeForHost('landing', '/partner/calendar')).toEqual(go('partner', '/partner/calendar'));
     expect(routeForHost('landing', '/admin')).toEqual(go('admin', '/admin'));
   });
-  test('a team member with the preview cookie is sent to the right host; the landing page still shows at /', () => {
+  test('a team member with the preview cookie sees the player site on www; the landing page still shows at /', () => {
     expect(routeForHost('landing', '/', TEAM)).toEqual({ kind: 'rewrite', path: '/landing' });
-    expect(routeForHost('landing', '/arenas', TEAM)).toEqual(go('app', '/arenas'));
-    expect(routeForHost('landing', '/arenas/x', TEAM)).toEqual(go('book', '/arenas/x'));
+    expect(routeForHost('landing', '/arenas', TEAM)).toEqual(next);
+    expect(routeForHost('landing', '/arenas/x', TEAM)).toEqual(next);
   });
-  test('after launch www hands over to the app', () => {
-    expect(routeForHost('landing', '/', LIVE)).toEqual(go('app', '/'));
-    expect(routeForHost('landing', '/arenas/x', LIVE)).toEqual(go('book', '/arenas/x'));
-    expect(routeForHost('landing', '/guides/padel', LIVE)).toEqual(go('help', '/guides/padel'));
+  test('after launch www serves the whole public site (the single SEO host)', () => {
+    for (const p of ['/', '/arenas', '/arenas/x', '/guides/padel', '/sports/football', '/turfs/kodialbail', '/login']) expect(routeForHost('landing', p, LIVE)).toEqual(next);
+    expect(routeForHost('landing', '/countdown', LIVE)).toEqual(perm('/'));
     expect(routeForHost('landing', '/admin', LIVE)).toEqual(go('admin', '/admin'));
   });
 });
 
-describe('app host: main customer application', () => {
-  test('serves the browsing pages, and sends turf pages to book and guides to help', () => {
-    for (const p of ['/', '/arenas', '/profile', '/saved', '/bookings', '/matches', '/tournaments', '/sports/football', '/turfs/kodialbail']) expect(routeForHost('app', p, LIVE)).toEqual(next);
-    expect(routeForHost('app', '/arenas/perfect-pass-kodialbail', LIVE)).toEqual(go('book', '/arenas/perfect-pass-kodialbail'));
-    expect(routeForHost('app', '/bookings/b_123', LIVE)).toEqual(go('book', '/bookings/b_123'));
-    expect(routeForHost('app', '/faq', LIVE)).toEqual(go('help', '/faq'));
-    expect(routeForHost('app', '/guides/padel-in-mangalore', LIVE)).toEqual(go('help', '/guides/padel-in-mangalore'));
+describe('old subdomains (app, book, help) permanently redirect to www', () => {
+  test('after launch every public path moves to the same path on www', () => {
+    for (const role of ['app', 'book', 'help'] as const) {
+      for (const p of ['/arenas', '/arenas/x', '/bookings/b_1', '/faq', '/guides/padel', '/login']) expect(routeForHost(role, p, LIVE)).toEqual(perm(p));
+    }
+    expect(routeForHost('help', '/', LIVE)).toEqual(perm('/help'));
+    expect(routeForHost('app', '/', LIVE)).toEqual(perm('/'));
+  });
+  test('help content moves to www even before launch', () => {
+    expect(routeForHost('help', '/')).toEqual(perm('/help'));
+    for (const p of ['/help', '/faq', '/guides', '/guides/padel-in-mangalore', '/privacy', '/terms']) expect(routeForHost('help', p)).toEqual(perm(p));
   });
   test('never shows the dashboards', () => {
     expect(routeForHost('app', '/partner/login', LIVE)).toEqual(go('partner', '/partner/login'));
-    expect(routeForHost('app', '/admin/users', LIVE)).toEqual(go('admin', '/admin/users'));
-  });
-});
-
-describe('book host: booking interface', () => {
-  test('serves a turf page, tickets and player sign-in; everything else goes to app or help', () => {
-    for (const p of ['/arenas/perfect-pass-kodialbail', '/bookings/b_123', '/bookings/b_123/invoice', '/login', '/signup', '/sso-callback']) expect(routeForHost('book', p, LIVE)).toEqual(next);
-    expect(routeForHost('book', '/', LIVE)).toEqual(go('app', '/'));
-    expect(routeForHost('book', '/arenas', LIVE)).toEqual(go('app', '/arenas'));
-    expect(routeForHost('book', '/bookings', LIVE)).toEqual(go('app', '/bookings'));
-    expect(routeForHost('book', '/profile', LIVE)).toEqual(go('app', '/profile'));
-    expect(routeForHost('book', '/faq', LIVE)).toEqual(go('help', '/faq'));
-    expect(routeForHost('book', '/admin', LIVE)).toEqual(go('admin', '/admin'));
-  });
-});
-
-describe('help host: booking guides and FAQs', () => {
-  test('opens at /help and serves guides, FAQs and legal pages, even before launch', () => {
-    expect(routeForHost('help', '/')).toEqual(go('help', '/help'));
-    for (const p of ['/help', '/faq', '/guides', '/guides/padel-in-mangalore', '/privacy', '/terms']) {
-      expect(routeForHost('help', p)).toEqual(next);
-      expect(routeForHost('help', p, LIVE)).toEqual(next);
-    }
-  });
-  test('anything else goes to the app once open, or to the landing page before launch', () => {
-    expect(routeForHost('help', '/arenas')).toEqual(go('www', '/countdown'));
-    expect(routeForHost('help', '/arenas', LIVE)).toEqual(go('app', '/arenas'));
-    expect(routeForHost('help', '/arenas/x', LIVE)).toEqual(go('book', '/arenas/x'));
+    expect(routeForHost('book', '/admin/users', LIVE)).toEqual(go('admin', '/admin/users'));
   });
 });
 
@@ -108,7 +85,7 @@ describe('partner and admin hosts', () => {
     expect(routeForHost('partner', '/partner/login/sso')).toEqual(next);
     expect(routeForHost('partner', '/partner/signup')).toEqual(next);
     expect(routeForHost('partner', '/admin', LIVE)).toEqual(go('admin', '/admin'));
-    expect(routeForHost('partner', '/partnership', LIVE)).toEqual(go('app', '/partnership'));
+    expect(routeForHost('partner', '/partnership', LIVE)).toEqual(perm('/partnership'));
     expect(routeForHost('partner', '/partnership')).toEqual(go('www', '/countdown'));
     expect(routeForHost('admin', '/')).toEqual(go('admin', '/admin'));
     expect(routeForHost('admin', '/admin/settings')).toEqual(next);
@@ -119,6 +96,7 @@ describe('launch gate', () => {
   test('before launch app, book and the vercel.app address send player pages to the landing page', () => {
     expect(routeForHost('app', '/')).toEqual(go('www', '/countdown'));
     expect(routeForHost('app', '/about')).toEqual(go('www', '/about'));
+    expect(routeForHost('app', '/faq')).toEqual(perm('/faq'));
     expect(routeForHost('book', '/arenas/x')).toEqual(go('www', '/countdown'));
     expect(routeForHost('preview', '/arenas')).toEqual(go('www', '/countdown'));
   });
@@ -130,8 +108,8 @@ describe('launch gate', () => {
     expect(routeForHost('book', '/api/health')).toEqual(next);
   });
   test('a team member with the preview cookie sees the player site', () => {
-    expect(routeForHost('app', '/arenas', TEAM)).toEqual(next);
-    expect(routeForHost('book', '/arenas/x', TEAM)).toEqual(next);
+    expect(routeForHost('app', '/arenas', TEAM)).toEqual(perm('/arenas'));
+    expect(routeForHost('book', '/arenas/x', TEAM)).toEqual(perm('/arenas/x'));
     expect(routeForHost('preview', '/', TEAM)).toEqual(next);
   });
   test('after launch the vercel.app address is just the site', () => {

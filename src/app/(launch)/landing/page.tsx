@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
 import { getSettings } from '@/lib/queries';
+import { organizationSchema, websiteSchema } from '@/lib/schema';
+import { ogBase } from '@/lib/seo';
 import { SITE_CITY, SITE_DESCRIPTION } from '@/lib/site';
 import { IconArrow, IconPlus } from '../_ui/icons';
-import { APP_URL } from '../_ui/links';
+import { BROWSE_URL } from '../_ui/links';
 import Reveal from '../_ui/Reveal';
 import SiteFooter from '../_ui/SiteFooter';
 import SiteHeader from '../_ui/SiteHeader';
@@ -12,9 +15,10 @@ import { serif } from './fonts';
 import styles from './landing.module.css';
 
 export const metadata: Metadata = {
-  title: 'Turf and court booking in Mangalore',
+  title: 'Book Football, Box Cricket, Badminton & Pickleball Turfs in Mangalore',
   description: SITE_DESCRIPTION,
   alternates: { canonical: '/' },
+  openGraph: { ...ogBase('/'), title: 'OYUN | Book Sports Turfs & Courts in Mangalore Online', description: SITE_DESCRIPTION },
 };
 
 const PRINCIPLES = [
@@ -40,23 +44,25 @@ const FAQ = [
 ];
 
 export default async function LandingPage() {
-  const { supportEmail } = await getSettings();
+  const { supportEmail, supportPhone } = await getSettings();
   return (
     <div className={`${serif.variable} ${styles.page}`}>
+      <JsonLd data={[organizationSchema(supportEmail, supportPhone), websiteSchema()]} />
       <SiteHeader />
       <main id="content">
         {/* hero: one photograph, one sentence, two actions */}
         <section className={styles.hero} aria-labelledby="hero-title">
-          <Image src="/turfs/turf_0.jpg" alt="" fill priority sizes="100vw" quality={70} className={styles.heroImg} />
+          <Image src="/turfs/turf_0.jpg" alt={`Football turf in ${SITE_CITY} ready for a booked game`} fill priority sizes="100vw" quality={70} className={styles.heroImg} />
           <div className={styles.heroShade} aria-hidden="true" />
           <div className={`${styles.wrap} ${styles.heroInner}`}>
             <p className={styles.kicker}>{SITE_CITY}</p>
             <h1 id="hero-title" className={styles.h1}>
+              <span className="sr-only">Book football, box cricket, badminton and pickleball turfs in {SITE_CITY}. </span>
               Book your game<br />in <em>a minute.</em>
             </h1>
-            <p className={styles.lead}>See what is open at venues across the city, hold the hours you want, and walk in with a ticket.</p>
+            <p className={styles.lead}>See what is open at football, box cricket, badminton and pickleball venues across the city, hold the hours you want, and walk in with a ticket.</p>
             <div className={styles.actions}>
-              <a href={APP_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
+              <a href={BROWSE_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
               <Link href="/countdown" className={styles.btnGhost}>Launch countdown</Link>
             </div>
           </div>
@@ -118,7 +124,7 @@ export default async function LandingPage() {
             <Reveal>
               <p className={styles.kickerDark}>Questions</p>
               <h2 id="faq-title" className={`${styles.h2} ${styles.h2Dark}`}>Good to know.</h2>
-              <p className={styles.bodyDark}>More guides and rules are in the <a className={styles.link} href="https://help.oyun.co.in/help">help centre</a>.</p>
+              <p className={styles.bodyDark}>More guides and rules are in the <a className={styles.link} href="/help">help centre</a>.</p>
             </Reveal>
             <div className={styles.faqList}>
               {FAQ.map((f, i) => (
@@ -140,7 +146,7 @@ export default async function LandingPage() {
             <Reveal>
               <h2 id="close-title" className={styles.h2Big}>Ready when <em>you are.</em></h2>
               <div className={styles.actions}>
-                <a href={APP_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
+                <a href={BROWSE_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
                 <Link href="/countdown" className={styles.btnGhost}>Launch countdown</Link>
               </div>
             </Reveal>
