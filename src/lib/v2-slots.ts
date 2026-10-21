@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { broadcastSlotChanges } from './realtime';
 import { formatSlotRange, istNow, slotTimestamp } from './time';
 import type { PitchSize, Slot, SlotUnavailableReason } from './types';
-import { getDb, storageInfo, v2SlotsEnabled } from './store';
+import { getDb, invalidateV2Snapshot, storageInfo, v2SlotsEnabled } from './store';
 
 export interface V2BookableInfo {
   id: string;
@@ -286,6 +286,8 @@ export async function v2HoldSlots(
     // Broadcast live update to all open slot maps
     await broadcastSlotChanges([{ turfId, date }]);
 
+    invalidateV2Snapshot();
+
     return { ok: true, expiresInMs: 8 * 60_000, bookingId: String(bookingId) };
   } catch (err) {
     console.warn('[v2-slots] v2HoldSlots error:', err);
@@ -312,6 +314,7 @@ export async function v2ReleaseHolds(
       .update({ status: 'expired' })
       .eq('holder', holder)
       .eq('status', 'held');
+    invalidateV2Snapshot();
 
     if (turfId && date) {
       await broadcastSlotChanges([{ turfId, date }]);
@@ -353,6 +356,8 @@ export async function v2ConfirmHold(
     if (turfId && date) {
       await broadcastSlotChanges([{ turfId, date }]);
     }
+
+    invalidateV2Snapshot();
 
     return { ok: true, booking };
   } catch (err) {
@@ -406,6 +411,7 @@ export async function v2ConfirmHoldPriced(
     }
 
     if (options.turfId && options.date) await broadcastSlotChanges([{ turfId: options.turfId, date: options.date }]);
+    invalidateV2Snapshot();
     return { ok: true, booking };
   } catch (err) {
     console.warn('[v2-slots] v2ConfirmHoldPriced error:', err);
@@ -439,6 +445,8 @@ export async function v2CancelBooking(
     if (turfId && date) {
       await broadcastSlotChanges([{ turfId, date }]);
     }
+
+    invalidateV2Snapshot();
 
     return { ok: true };
   } catch (err) {
@@ -492,6 +500,7 @@ export async function v2BlockSlot(
     }
 
     await broadcastSlotChanges([{ turfId, date }]);
+    invalidateV2Snapshot();
     return { ok: true, blockId: String(blockId) };
   } catch (err) {
     console.warn('[v2-slots] v2BlockSlot error:', err);

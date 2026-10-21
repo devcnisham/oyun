@@ -9,6 +9,7 @@ import { DB_VERSION, migrate, seed } from './seed';
 import type { Database } from './types';
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
 import { broadcastSlotChanges } from './realtime';
+import { loadV2Snapshot, type V2Snapshot } from './v2-bookings';
 
 export { newBookingCode, newId } from './ids';
 
@@ -161,6 +162,39 @@ function announceSlotChanges(slots: { turfId: string; date: string }[]) {
     });
   } catch {
     broadcastSlotChanges(slots).catch((err) => console.warn('[store] failed to announce slot changes:', err));
+  }
+}
+
+/*
+ * With v2 slots on, bookings, holds and blocks live in the oyun schema. Everything that reads the store
+ * (pages, dashboards, mutate callbacks) sees them as the app's own Booking, SlotHold and SlotBlock,
+ * read from a short per-server cache so a page does not query on every request. Writes through the v2
+ * RPCs drop the cache (invalidateV2Snapshot) so the same server sees them straight away.
+ */
+const V2_TTL_MS = 2000;
+const v2Memory = globalThis as unknown as { __oyunV2?: { at: number; snap: Promise<V2Snapshot> }; __oyunV2Last?: V2Snapshot };
+
+export function invalidateV2Snapshot() {
+  delete v2Memory.__oyunV2;
+}
+
+async function withV2(db: Database): Promise<Database> {
+  if (!booksInV2()) return db;
+  const now = Date.now();
+  if (!v2Memory.__oyunV2 || now - v2Memory.__oyunV2.at > V2_TTL_MS) {
+    const openHours = new Map(db.turfs.map((t) => [t.id, t.openTime ? parseInt(t.openTime.split(':')[0], 10) || 0 : 0]));
+    const snap = loadV2Snapshot(createAdminClient(), (turfId) => openHours.get(turfId) ?? 0);
+    v2Memory.__oyunV2 = { at: now, snap };
+    snap.then((s) => (v2Memory.__oyunV2Last = s), () => {});
+  }
+  try {
+    const snap = await v2Memory.__oyunV2.snap;
+    return { ...db, bookings: snap.bookings, holds: snap.holds, blocks: snap.blocks };
+  } catch (err) {
+    delete v2Memory.__oyunV2;
+    console.error('[store] could not read v2 bookings; using the last good copy:', err instanceof Error ? err.message : err);
+    const last = v2Memory.__oyunV2Last;
+    return { ...db, bookings: last?.bookings ?? [], holds: last?.holds ?? [], blocks: last?.blocks ?? [] };
   }
 }
 
@@ -509,7 +543,7 @@ export async function getDb(): Promise<Database> {
   const state = requestState();
   state.current ??= loadSupabase();
   try {
-    return (await state.current).db;
+    return await withV2((await state.current).db);
   } catch (err) {
     state.current = null;
     if (fallBackInDev(err)) return fileDb();
@@ -545,11 +579,12 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
       throw err;
     }
     // Work on a private copy: the loaded object is shared with other requests on this server
-    const work = lazyCopy(loaded.db);
+    const base = await withV2(loaded.db);
+    const work = lazyCopy(base);
     const result = fn(work.db);
     const touched = work.tables();
     const db = work.settled();
-    const before = snapshot(loaded.db, touched);
+    const before = snapshot(base, touched);
     const changes = diff(before, db, touched);
     try {
       const rev = changes.empty ? loaded.rev : await applyChanges(changes, loaded.rev);
