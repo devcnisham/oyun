@@ -40,15 +40,15 @@ describe('shared endpoints', () => {
 
 describe('landing host (www)', () => {
   test('shows the landing page at / and its few pages; sends the rest back to the landing page before launch', () => {
-    expect(routeForHost('landing', '/')).toEqual({ kind: 'rewrite', path: '/welcome' });
-    for (const p of ['/welcome', '/about', '/privacy', '/terms', '/faq']) expect(routeForHost('landing', p)).toEqual(next);
-    expect(routeForHost('landing', '/arenas/perfect-pass-kodialbail')).toEqual(go('www', '/'));
+    expect(routeForHost('landing', '/')).toEqual({ kind: 'rewrite', path: '/landing' });
+    for (const p of ['/countdown', '/welcome', '/about', '/privacy', '/terms', '/faq']) expect(routeForHost('landing', p)).toEqual(next);
+    expect(routeForHost('landing', '/arenas/perfect-pass-kodialbail')).toEqual(go('www', '/countdown'));
     expect(routeForHost('landing', '/help')).toEqual(go('help', '/help'));
     expect(routeForHost('landing', '/partner/calendar')).toEqual(go('partner', '/partner/calendar'));
     expect(routeForHost('landing', '/admin')).toEqual(go('admin', '/admin'));
   });
   test('a team member with the preview cookie is sent to the right host; the landing page still shows at /', () => {
-    expect(routeForHost('landing', '/', TEAM)).toEqual({ kind: 'rewrite', path: '/welcome' });
+    expect(routeForHost('landing', '/', TEAM)).toEqual({ kind: 'rewrite', path: '/landing' });
     expect(routeForHost('landing', '/arenas', TEAM)).toEqual(go('app', '/arenas'));
     expect(routeForHost('landing', '/arenas/x', TEAM)).toEqual(go('book', '/arenas/x'));
   });
@@ -95,7 +95,7 @@ describe('help host: booking guides and FAQs', () => {
     }
   });
   test('anything else goes to the app once open, or to the landing page before launch', () => {
-    expect(routeForHost('help', '/arenas')).toEqual(go('www', '/'));
+    expect(routeForHost('help', '/arenas')).toEqual(go('www', '/countdown'));
     expect(routeForHost('help', '/arenas', LIVE)).toEqual(go('app', '/arenas'));
     expect(routeForHost('help', '/arenas/x', LIVE)).toEqual(go('book', '/arenas/x'));
   });
@@ -109,7 +109,7 @@ describe('partner and admin hosts', () => {
     expect(routeForHost('partner', '/partner/signup')).toEqual(next);
     expect(routeForHost('partner', '/admin', LIVE)).toEqual(go('admin', '/admin'));
     expect(routeForHost('partner', '/partnership', LIVE)).toEqual(go('app', '/partnership'));
-    expect(routeForHost('partner', '/partnership')).toEqual(go('www', '/'));
+    expect(routeForHost('partner', '/partnership')).toEqual(go('www', '/countdown'));
     expect(routeForHost('admin', '/')).toEqual(go('admin', '/admin'));
     expect(routeForHost('admin', '/admin/settings')).toEqual(next);
   });
@@ -117,10 +117,10 @@ describe('partner and admin hosts', () => {
 
 describe('launch gate', () => {
   test('before launch app, book and the vercel.app address send player pages to the landing page', () => {
-    expect(routeForHost('app', '/')).toEqual(go('www', '/'));
+    expect(routeForHost('app', '/')).toEqual(go('www', '/countdown'));
     expect(routeForHost('app', '/about')).toEqual(go('www', '/about'));
-    expect(routeForHost('book', '/arenas/x')).toEqual(go('www', '/'));
-    expect(routeForHost('preview', '/arenas')).toEqual(go('www', '/'));
+    expect(routeForHost('book', '/arenas/x')).toEqual(go('www', '/countdown'));
+    expect(routeForHost('preview', '/arenas')).toEqual(go('www', '/countdown'));
   });
   test('dashboards, shared endpoints and help content stay reachable before launch', () => {
     expect(routeForHost('preview', '/partner/login')).toEqual(next);
