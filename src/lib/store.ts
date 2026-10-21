@@ -9,7 +9,7 @@ import { DB_VERSION, migrate, seed } from './seed';
 import type { Database } from './types';
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
 import { broadcastSlotChanges } from './realtime';
-import { diffV2Bookings, loadV2Snapshot, type V2Snapshot } from './v2-bookings';
+import { diffV2Bookings, loadV2BookingsByIds, loadV2Snapshot, type V2Snapshot } from './v2-bookings';
 
 export { newBookingCode, newId } from './ids';
 
@@ -44,6 +44,11 @@ const LIST_TABLES = {
   applications: 'applications',
   walletTxns: 'wallet_txns',
   holds: 'holds',
+  waitlist: 'waitlist',
+  payouts: 'payouts',
+  openMatches: 'open_matches',
+  tournaments: 'tournaments',
+  activity: 'activity',
 } as const;
 
 type Table = (typeof LIST_TABLES)[keyof typeof LIST_TABLES] | 'promo_codes' | 'pricing' | 'app_config';
@@ -55,7 +60,7 @@ function toRows(db: Database, only?: ReadonlySet<Table>): TableRows {
   const rows: TableRows = {};
   const want = (table: Table) => !only || only.has(table);
   for (const [key, table] of Object.entries(LIST_TABLES) as [keyof typeof LIST_TABLES, Table][]) {
-    if (want(table)) rows[table] = (db[key] as { id: string }[]).map((item) => ({ id: item.id, data: item }));
+    if (want(table)) rows[table] = ((db[key] ?? []) as { id: string }[]).map((item) => ({ id: item.id, data: item }));
   }
   if (want('promo_codes')) rows.promo_codes = db.promoCodes.map((p) => ({ id: p.code, data: p }));
   if (want('pricing')) rows.pricing = Object.entries(db.pricing).map(([turfId, rules]) => ({ id: turfId, data: rules }));
@@ -177,6 +182,21 @@ const v2Memory = globalThis as unknown as { __oyunV2?: { at: number; snap: Promi
 
 export function invalidateV2Snapshot() {
   delete v2Memory.__oyunV2;
+}
+
+/**
+ * Bookings by id. Anything older than the per-request window is fetched from oyun, so records that point at
+ * old bookings (a payout statement) stay complete.
+ */
+export async function bookingsByIds(db: Database, ids: string[]) {
+  const found = db.bookings.filter((b) => ids.includes(b.id));
+  if (!booksInV2()) return found;
+  const have = new Set(found.map((b) => b.id));
+  const missing = ids.filter((id) => !have.has(id));
+  if (missing.length === 0) return found;
+  const openHours = new Map(db.turfs.map((t) => [t.id, t.openTime ? parseInt(t.openTime.split(':')[0], 10) || 0 : 0]));
+  const older = await loadV2BookingsByIds(createAdminClient(), missing, (turfId) => openHours.get(turfId) ?? 0);
+  return [...found, ...older];
 }
 
 async function withV2(db: Database): Promise<Database> {

@@ -1,6 +1,6 @@
 import { getPartnerContext } from '@/lib/partner-auth';
 import { generatePayoutStatementHtml } from '@/lib/payouts';
-import { getDb } from '@/lib/store';
+import { bookingsByIds, getDb } from '@/lib/store';
 
 export async function GET(
   request: Request,
@@ -23,7 +23,7 @@ export async function GET(
     return new Response('Forbidden', { status: 403 });
   }
 
-  const bookings = db.bookings.filter((b) => payout.bookingIds.includes(b.id));
+  const bookings = await bookingsByIds(db, payout.bookingIds);
   const html = generatePayoutStatementHtml(payout, ctx.partner, ctx.turf, bookings, db.settings.gstPercent);
 
   return new Response(html, {

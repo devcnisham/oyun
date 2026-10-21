@@ -297,3 +297,20 @@ export function v2QuoteOf(b: Booking): V2Quote {
     source: b.source === 'walk_in' ? 'walk_in' : 'online',
   };
 }
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Bookings by id (the app's id or the uuid), for records older than the per-request window, like a payout statement. */
+export async function loadV2BookingsByIds(client: SupabaseClient, ids: string[], openHourOf: OpenHourOf): Promise<Booking[]> {
+  const uuids = ids.filter((id) => UUID.test(id));
+  const legacy = ids.filter((id) => !UUID.test(id));
+  const base = () => client.schema('oyun').from('bookings').select(BOOKING_COLUMNS);
+  const [byLegacy, byUuid] = await Promise.all([
+    legacy.length ? base().in('legacy_id', legacy) : Promise.resolve({ data: [], error: null }),
+    uuids.length ? base().in('id', uuids) : Promise.resolve({ data: [], error: null }),
+  ]);
+  if (byLegacy.error) throw new Error(`[v2-bookings] ${byLegacy.error.message}`);
+  if (byUuid.error) throw new Error(`[v2-bookings] ${byUuid.error.message}`);
+  const rows = [...(byLegacy.data ?? []), ...(byUuid.data ?? [])] as unknown as V2BookingRow[];
+  return rows.flatMap((r) => mapV2Booking(r, openHourOf) ?? []);
+}

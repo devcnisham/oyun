@@ -48,6 +48,12 @@ echo "== Booking updates (v2 integration phase 3)"
 echo "== Book ranges and move booking"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_book_and_move_test.sql
 
+echo "== Persisted collections (payouts, waitlist, matches, tournaments, activity)"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/persist_collections_test.sql
+
+echo "== Payment event claim and release"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/payment_events_test.sql
+
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 
