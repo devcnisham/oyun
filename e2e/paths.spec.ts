@@ -46,5 +46,5 @@ for (const [path, heading] of [
 
 test('/sports links to each sport page', async ({ page }) => {
   await page.goto('/sports');
-  await expect(page.locator('a[href^="/sports/"]')).toHaveCount(4);
+  await expect(page.locator('main a[href^="/sports/"]')).toHaveCount(4);
 });

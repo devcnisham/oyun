@@ -57,3 +57,11 @@ Short, specific, local. Real areas (Kodialbail, Kankanady, Bejai, Ullal), real s
 
 ## Update 21 Oct 2026: the 3D version was too much
 The floodlit 3D pitch, slot board, court line art, tilt cards, marquee, mock demos and giant wordmark read as cheap and childish. The landing was rebuilt to be restrained: three real photographs, Instrument Serif headlines with Inter text, hairline rules instead of cards, square-cornered buttons, one deep-red accent, and only gentle fades. No illustration, 3D or decorative gradients. Header and footer say "venue" instead of "turf".
+
+## v4 (21 Oct 2026): "the board", rebuilt from scratch
+Why a fourth pass: the 3D, photo and editorial versions were all rejected. v4 drops decoration and makes the product's own object the design: the hour board.
+
+- **Hero.** A working sample board (sport tabs, open and booked hours, pick, hold with a live 8:00 countdown ring), labelled as a sample. It teaches the product in five seconds, and it is the one motion on the page that carries meaning.
+- **Look.** Dark ink hero with a faint 56px grid (the board's own grid), light body, one red close. Sora (display, numbers) and Inter (text). Cards use 20px radius, controls 12px. Red only for the main action and the closing band; green only for "Open", always with a text label.
+- **Sections.** Hero, three steps drawn as the three states of one booking (pick, hold, play), venue areas from live data, owners with a sample partner calendar, FAQ, closing.
+- **Rules kept.** No photos, 3D, emoji, invented numbers or venues. Reduced motion shows everything at once. Passes axe on desktop and phone, Lighthouse mobile 93 / 100 / 100 / 100, no horizontal scroll at 375px.
