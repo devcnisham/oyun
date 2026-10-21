@@ -1,9 +1,10 @@
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { broadcastSlotChanges } from './realtime';
-import { formatSlotRange, istNow, slotTimestamp } from './time';
+import { addDays, formatSlotRange, istNow, slotTimestamp } from './time';
+import { parseRange } from './v2-bookings';
 import type { PitchSize, Slot, SlotUnavailableReason } from './types';
-import { getDb, storageInfo, v2SlotsEnabled } from './store';
+import { getDb, invalidateV2Snapshot, storageInfo, v2SlotsEnabled } from './store';
 
 export interface V2BookableInfo {
   id: string;
@@ -286,6 +287,8 @@ export async function v2HoldSlots(
     // Broadcast live update to all open slot maps
     await broadcastSlotChanges([{ turfId, date }]);
 
+    invalidateV2Snapshot();
+
     return { ok: true, expiresInMs: 8 * 60_000, bookingId: String(bookingId) };
   } catch (err) {
     console.warn('[v2-slots] v2HoldSlots error:', err);
@@ -312,6 +315,7 @@ export async function v2ReleaseHolds(
       .update({ status: 'expired' })
       .eq('holder', holder)
       .eq('status', 'held');
+    invalidateV2Snapshot();
 
     if (turfId && date) {
       await broadcastSlotChanges([{ turfId, date }]);
@@ -354,9 +358,182 @@ export async function v2ConfirmHold(
       await broadcastSlotChanges([{ turfId, date }]);
     }
 
+    invalidateV2Snapshot();
+
     return { ok: true, booking };
   } catch (err) {
     console.warn('[v2-slots] v2ConfirmHold error:', err);
+    return null;
+  }
+}
+
+/** Maps the booking functions' error text to something a player or desk can act on. */
+function bookingErrorText(message: string | undefined): string {
+  const text = message ?? '';
+  if (text.includes('slot_taken') || text.includes('23P01')) return 'That slot was just taken. Please pick another time.';
+  if (text.includes('slot_in_past')) return 'That slot has already passed';
+  if (text.includes('outside_booking_window')) return 'Pick a date within the next week';
+  if (text.includes('venue_closed')) return 'The venue is closed at that time';
+  if (text.includes('not_movable')) return 'Only confirmed bookings can be rescheduled';
+  if (text.includes('invalid_quote')) return 'The price changed. Please review your booking and try again.';
+  return text || 'Could not complete the booking';
+}
+
+/** A time range from a local date, hour and minute, in the form Postgres reads: [start,end) */
+export function v2Range(date: string, hour: number, minute: number, minutes: number, openHour: number): string {
+  const start = slotTimestamp(date, hour, openHour, minute);
+  const end = new Date(new Date(start).getTime() + minutes * 60_000).toISOString();
+  return `[${start},${end})`;
+}
+
+/**
+ * Books arbitrary time ranges in one step (walk-ins of any length, recurring weeks) and stores the quote.
+ */
+export async function v2BookRanges(args: {
+  turfId: string;
+  size?: PitchSize;
+  courtId?: string;
+  ranges: string[];
+  name: string;
+  phone: string;
+  quote: V2Quote;
+  playerId?: string;
+  allowPast?: boolean;
+  date?: string;
+  clientOverride?: SupabaseClient;
+}): Promise<{ ok: true; id: string; code: string } | { ok: false; error: string } | null> {
+  if (!isV2SlotsActive() && !args.clientOverride) return null;
+  const client = args.clientOverride ?? createAdminClient();
+  try {
+    const bookable = await resolveBookable(client, args.turfId, args.size ?? 'full', args.courtId);
+    if (!bookable) return null;
+    const { data, error } = await client.rpc('book_ranges', {
+      p_bookable: bookable.id,
+      p_ranges: args.ranges,
+      p_name: args.name,
+      p_phone: args.phone,
+      p_quote: args.quote,
+      p_player: args.playerId ?? null,
+      p_allow_past: args.allowPast ?? false,
+    });
+    if (error) return { ok: false, error: bookingErrorText(error.message) };
+    invalidateV2Snapshot();
+    if (args.date) await broadcastSlotChanges([{ turfId: args.turfId, date: args.date }]);
+    const row = data as { id?: string; code?: string } | null;
+    return { ok: true, id: String(row?.id ?? ''), code: String(row?.code ?? '') };
+  } catch (err) {
+    console.warn('[v2-slots] v2BookRanges error:', err);
+    return null;
+  }
+}
+
+/**
+ * Moves a confirmed booking to a new start time, keeping each slot's length. Refused (and left where it
+ * was) when the new time is taken, closed or outside the booking window.
+ */
+export async function v2MoveBooking(
+  bookingId: string,
+  start: string,
+  turfId: string,
+  dates: string[],
+  clientOverride?: SupabaseClient
+): Promise<{ ok: true } | { ok: false; error: string } | null> {
+  if (!isV2SlotsActive() && !clientOverride) return null;
+  const client = clientOverride ?? createAdminClient();
+  try {
+    const { error } = await client.rpc('move_booking', { p_booking: bookingId, p_start: start });
+    if (error) return { ok: false, error: bookingErrorText(error.message) };
+    invalidateV2Snapshot();
+    await broadcastSlotChanges(dates.map((date) => ({ turfId, date })));
+    return { ok: true };
+  } catch (err) {
+    console.warn('[v2-slots] v2MoveBooking error:', err);
+    return null;
+  }
+}
+
+/**
+ * Removes an owner block (its slot claims go with it) after checking it belongs to this venue.
+ */
+export async function v2UnblockSlot(
+  blockId: string,
+  turfId: string,
+  clientOverride?: SupabaseClient
+): Promise<{ ok: true; date: string; hour: number } | { ok: false; error: string }> {
+  const client = clientOverride ?? createAdminClient();
+  const { data: block, error } = await client
+    .schema('oyun')
+    .from('blocks')
+    .select('id, during, venues(slug)')
+    .eq('id', blockId)
+    .maybeSingle();
+  const row = block as { during: string; venues?: { slug?: string } | null } | null;
+  if (error || !row || row.venues?.slug !== turfId) return { ok: false, error: 'Block not found' };
+  const range = parseRange(row.during);
+  const db = await getDb();
+  const openHour = db.turfs.find((t) => t.id === turfId)?.openTime;
+  const start = range ? istNow(range.start) : null;
+  const afterMidnight = start && openHour && start.hour < (parseInt(openHour.split(':')[0], 10) || 0);
+  const { error: delError } = await client.schema('oyun').from('blocks').delete().eq('id', blockId);
+  if (delError) return { ok: false, error: 'Could not reopen this slot. Please try again.' };
+  invalidateV2Snapshot();
+  if (!start) return { ok: true, date: '', hour: 0 };
+  const date = afterMidnight ? addDays(start.date, -1) : start.date;
+  const hour = afterMidnight ? start.hour + 24 : start.hour;
+  await broadcastSlotChanges([{ turfId, date }]);
+  return { ok: true, date, hour };
+}
+
+/** The priced checkout stored on a v2 booking. Amounts are whole rupees. */
+export interface V2Quote {
+  subtotal: number;
+  discount: number;
+  walletUsed: number;
+  total: number;
+  advanceDue: number;
+  amountPaid: number;
+  priceBreakdown: Record<string, unknown>;
+  meta: Record<string, unknown>;
+  legacyId: string;
+  source?: 'online' | 'walk_in' | 'phone';
+}
+
+/**
+ * Confirms a held booking and stores its priced quote via public.confirm_hold_priced.
+ */
+export async function v2ConfirmHoldPriced(
+  bookingId: string,
+  holder: string,
+  name: string,
+  phone: string,
+  quote: V2Quote,
+  options: { playerId?: string; payOnline?: boolean; turfId?: string; date?: string; clientOverride?: SupabaseClient } = {}
+): Promise<{ ok: true; booking: unknown } | { ok: false; error: string } | null> {
+  if (!isV2SlotsActive() && !options.clientOverride) return null;
+  const client = options.clientOverride ?? createAdminClient();
+
+  try {
+    const { data: booking, error } = await client.rpc('confirm_hold_priced', {
+      p_booking: bookingId,
+      p_holder: holder,
+      p_name: name,
+      p_phone: phone,
+      p_quote: quote,
+      p_player: options.playerId ?? null,
+      p_pay_online: options.payOnline ?? false,
+    });
+
+    if (error) {
+      const text = error.message || '';
+      if (text.includes('invalid_quote')) return { ok: false, error: 'The price changed. Please review your booking and try again.' };
+      return { ok: false, error: text || 'Hold expired or booking not found' };
+    }
+
+    if (options.turfId && options.date) await broadcastSlotChanges([{ turfId: options.turfId, date: options.date }]);
+    invalidateV2Snapshot();
+    return { ok: true, booking };
+  } catch (err) {
+    console.warn('[v2-slots] v2ConfirmHoldPriced error:', err);
     return null;
   }
 }
@@ -387,6 +564,8 @@ export async function v2CancelBooking(
     if (turfId && date) {
       await broadcastSlotChanges([{ turfId, date }]);
     }
+
+    invalidateV2Snapshot();
 
     return { ok: true };
   } catch (err) {
@@ -440,6 +619,7 @@ export async function v2BlockSlot(
     }
 
     await broadcastSlotChanges([{ turfId, date }]);
+    invalidateV2Snapshot();
     return { ok: true, blockId: String(blockId) };
   } catch (err) {
     console.warn('[v2-slots] v2BlockSlot error:', err);

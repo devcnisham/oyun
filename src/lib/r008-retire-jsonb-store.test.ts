@@ -31,17 +31,18 @@ describe('R008: Retire jsonb store for bookings, holds, blocks, pricing', () => 
     expect(typeof db.pricing).toBe('object');
   });
 
-  test('createBookings delegates to v2ConfirmHold when v2 is active', async () => {
+  test('createBookings prices the order and confirms the v2 hold with it when v2 is active', async () => {
     vi.spyOn(v2Slots, 'isV2SlotsActive').mockReturnValue(true);
 
-    const mockConfirm = vi.spyOn(v2Slots, 'v2ConfirmHold').mockResolvedValue({
+    const mockConfirm = vi.spyOn(v2Slots, 'v2ConfirmHoldPriced').mockResolvedValue({
       ok: true,
-      booking: { id: 'bk_v2_1234567890ab' },
+      booking: { id: 'bk_v2_1234567890ab', code: 'AB12CD34' },
     });
 
     const mockClient = {
       schema: vi.fn().mockReturnValue({
         from: vi.fn().mockReturnValue({
+          upsert: vi.fn().mockResolvedValue({ error: null }),
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
@@ -69,7 +70,7 @@ describe('R008: Retire jsonb store for bookings, holds, blocks, pricing', () => 
     vi.spyOn(adminUtil, 'createAdminClient').mockReturnValue(mockClient);
 
     const res = await createBookings({
-      turfId: 'turf_kankanady',
+      turfId: 'squad-x-kankanady',
       date: addDays(istNow().date, 3), // always in the future, so the slot is never "past"
       name: 'Rohan Kumar',
       phone: '9876543210',
@@ -79,8 +80,14 @@ describe('R008: Retire jsonb store for bookings, holds, blocks, pricing', () => 
       useWallet: false,
     });
 
-    expect(res.ids).toEqual(['bk_v2_1234567890ab']);
-    expect(mockConfirm).toHaveBeenCalled();
+    expect(res.error).toBeUndefined();
+    expect(res.ids).toHaveLength(1);
+    expect(mockConfirm).toHaveBeenCalledTimes(1);
+    const [heldId, , name, phone, quote] = mockConfirm.mock.calls[0];
+    expect(heldId).toBe('bk_v2_1234567890ab');
+    expect([name, phone]).toEqual(['Rohan Kumar', '9876543210']);
+    expect(quote).toMatchObject({ legacyId: res.ids![0], amountPaid: 0 });
+    expect(quote.total).toBeGreaterThan(0);
   });
 
   test('storageInfo reports local-file by default in test environment', () => {

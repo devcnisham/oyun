@@ -46,7 +46,7 @@ export function roleForHost(hostHeader: string | null | undefined): HostRole | n
 export type HostRoute = { kind: 'next' } | { kind: 'rewrite'; path: string } | { kind: 'redirect'; host: string; path: string };
 
 // Pages the landing host serves itself. Everything else belongs to another host and is sent there.
-const LANDING_PAGES = new Set(['/welcome', '/about', '/privacy', '/terms', '/faq']);
+const LANDING_PAGES = new Set(['/countdown', '/welcome', '/about', '/privacy', '/terms', '/faq']);
 // help.: booking guides and FAQs, plus the legal pages
 const HELP_AREAS = ['/help', '/faq', '/guides', '/privacy', '/terms'];
 // Files and endpoints every host serves (search engines, the install manifest, health checks, share images)
@@ -73,8 +73,8 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
   if (!role || SHARED.test(pathname)) return { kind: 'next' };
   const playerSiteOpen = access.launched || access.preview;
   const dashboard = (): HostRoute | null => (inArea(pathname, '/partner') ? to('partner', pathname) : inArea(pathname, '/admin') ? to('admin', pathname) : null);
-  // Closed pages send visitors to the landing page (the pages it serves keep their own address)
-  const toLanding = (): HostRoute => to('landing', LANDING_PAGES.has(pathname) ? pathname : '/');
+    // Before launch app. and book. send visitors to the countdown page, so Browse & book always lands somewhere that explains why
+  const toLanding = (): HostRoute => to('landing', LANDING_PAGES.has(pathname) ? pathname : '/countdown');
   // Where a page that does not belong on this host goes
   const elsewhere = (): HostRoute => (isHelp(pathname) ? to('help', pathname) : isBooking(pathname) ? to('book', pathname) : to('app', pathname));
 
@@ -83,7 +83,7 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
       if (dashboard()) return dashboard()!;
       // After launch the landing host hands over to the app
       if (access.launched) return elsewhere();
-      if (pathname === '/') return { kind: 'rewrite', path: '/welcome' };
+      if (pathname === '/') return { kind: 'rewrite', path: '/landing' };
       if (LANDING_PAGES.has(pathname)) return { kind: 'next' };
       if (isHelp(pathname)) return to('help', pathname);
       return playerSiteOpen ? elsewhere() : toLanding();

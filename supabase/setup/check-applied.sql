@@ -33,11 +33,20 @@ select step, what, applied from (values
       or not exists (select 1 from pg_available_extensions where name = 'pg_cron')),
   (16, '16-row-level-conflicts: apply_changes() checks touched rows, not the global revision',
       exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'apply_changes' and p.prosrc like '%clash%')),
+  (17, '17-v2-priced-confirm: oyun.bookings meta/legacy_id and confirm_hold_priced()',
+      exists (select 1 from information_schema.columns where table_schema = 'oyun' and table_name = 'bookings' and column_name = 'legacy_id')
+      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'confirm_hold_priced')),
+  (18, '18-v2-booking-updates: apply_booking_updates()',
+      exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'apply_booking_updates')),
+  (19, '19-v2-book-and-move: book_ranges() and move_booking()',
+      exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'move_booking')),
   (20, '20-persist-remaining-collections: payouts, waitlist, open_matches, tournaments, activity tables',
       exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'payouts')
       and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'store_tables')),
   (21, '21-release-payment-event: release_payment_event()',
       exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'release_payment_event')),
+  (22, '22-v2-backfill: backfill_legacy_bookings() and parity_report()',
+      exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'parity_report')),
   (15, '15-payment-events: processed_payment_events and claim_payment_event()',
       exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'processed_payment_events')
       and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_payment_event'))

@@ -22,7 +22,8 @@ import { mapTurfToResourcesAndBookables } from './venue-mapping';
 import { withDate, withoutDate } from './rain';
 import { isOutdoorTurf } from './weather';
 import { createPlayer, refundDue, rewardCheckIn, walletTxn } from './wallet';
-import { isV2SlotsActive, v2BlockSlot } from './v2-slots';
+import { isV2SlotsActive, v2BlockSlot, v2BookRanges, v2Range, v2UnblockSlot } from './v2-slots';
+import { v2QuoteOf } from './v2-bookings';
 import { sharedRateLimit } from './shared-rate-limit';
 import { logActivity } from './activity';
 
@@ -109,6 +110,12 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       .filter((k) => k.startsWith('addon_'))
       .map((k) => ({ id: k.slice(6), qty: Number(fd.get(k)) || 0 }));
 
+    if (isV2SlotsActive()) {
+      const durationMinutes = Math.max(15, Math.min(240, Number(fd.get('durationMinutes')) || 60));
+      const startMinute = Math.max(0, Math.min(45, Number(fd.get('minute')) || 0));
+      return await v2WalkIn(ctx, { name, phone, date, hour, paymentMode, addOns, durationMinutes, startMinute });
+    }
+
     return await mutate((db) => {
       const quote = buildQuote(db, { turfId: ctx.turf.id, date, hour, addOns, phone, source: 'walk_in' }, istNow());
       if (!quote) throw new ValidationError('Turf not found');
@@ -144,6 +151,67 @@ export async function createWalkIn(_prev: ActionResult, fd: FormData): Promise<A
       return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booking.code}` };
     });
   });
+}
+
+// A walk-in with v2 slots: price it, then book the range in oyun (the guard against double bookings) with
+// the price already paid at the desk, and record the player and the activity.
+async function v2WalkIn(
+  ctx: PartnerContext,
+  input: {
+    name: string;
+    phone: string;
+    date: string;
+    hour: number;
+    paymentMode: 'cash' | 'upi';
+    addOns: { id: string; qty: number }[];
+    durationMinutes: number;
+    startMinute: number;
+  }
+): Promise<ActionResult> {
+  const { name, phone, date, hour, paymentMode, durationMinutes, startMinute } = input;
+  const quote = buildQuote(await getDb(), { turfId: ctx.turf.id, date, hour, addOns: input.addOns, phone, source: 'walk_in' }, istNow());
+  if (!quote) throw new ValidationError('Turf not found');
+  if (quote.slotError) throw new ValidationError(quote.slotError);
+
+  const player = await mutate((db) => upsertPlayer(db, name, phone).id);
+  const booking: Booking = {
+    id: newId('bk'),
+    code: '',
+    turfId: ctx.turf.id,
+    date,
+    hour,
+    timeLabel: formatSlotRange(hour, durationMinutes, startMinute),
+    durationMinutes,
+    startMinute,
+    customerName: name,
+    customerPhone: phone,
+    playerId: player,
+    source: 'walk_in',
+    createdBy: ctx.userName,
+    addOns: quote.addOns,
+    pricing: quote.breakdown,
+    paymentMode,
+    amountPaid: quote.breakdown.total,
+    status: 'confirmed',
+    checkedInAt: null,
+    createdAt: new Date().toISOString(),
+  };
+  const openHour = parseHour(ctx.turf.openTime);
+  const booked = await v2BookRanges({
+    turfId: ctx.turf.id,
+    ranges: [v2Range(date, hour, startMinute, durationMinutes, openHour)],
+    name,
+    phone,
+    quote: v2QuoteOf(booking),
+    allowPast: true,
+    date,
+  });
+  if (!booked) throw new Error('[walk-in] could not reach the booking service');
+  if (!booked.ok) throw new ValidationError(booked.error);
+  await mutate((db) => {
+    logActivity(db, ctx, 'Walk-in booking', `${name} · ${date} ${booking.timeLabel} · ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}`);
+  });
+  return { ok: `Walk-in booked: ${name}, ${booking.timeLabel} — collect ₹${quote.breakdown.total} by ${paymentMode.toUpperCase()}. Code ${booked.code}` };
 }
 
 export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
@@ -263,9 +331,12 @@ export async function blockSlot(_prev: ActionResult, fd: FormData): Promise<Acti
 
     if (isV2SlotsActive()) {
       const v2Res = await v2BlockSlot(ctx.turf.id, date, hour, reason);
-      if (v2Res && !v2Res.ok) {
-        throw new ValidationError(v2Res.error);
-      }
+      if (!v2Res) throw new Error('[block] could not reach the booking service');
+      if (!v2Res.ok) throw new ValidationError(v2Res.error);
+      return await mutate((db) => {
+        logActivity(db, ctx, 'Blocked a slot', `${date} ${formatHour(hour)} · ${reason}`);
+        return { ok: `Blocked ${formatHour(hour)} on ${date}` };
+      });
     }
 
     return await mutate((db) => {
@@ -316,9 +387,20 @@ export async function blockRange(_prev: ActionResult, fd: FormData): Promise<Act
       for (const d of dates) {
         for (const h of open) {
           const res = await v2BlockSlot(ctx.turf.id, d, h, reason);
-          if (res && !res.ok) v2Rejected.add(`${d}|${h}`);
+          if (!res || !res.ok) v2Rejected.add(`${d}|${h}`);
         }
       }
+    }
+
+    if (isV2SlotsActive()) {
+      const total = dates.length * open.length;
+      const skipped = v2Rejected.size;
+      const blocked = total - skipped;
+      if (blocked === 0) throw new ValidationError(`Nothing blocked: all ${skipped} slots were already booked or blocked`);
+      return await mutate((db) => {
+        logActivity(db, ctx, 'Bulk blocked slots', `${blocked} slot${blocked === 1 ? '' : 's'} · ${from} to ${to} · ${reason}`);
+        return { ok: `Blocked ${blocked} slot${blocked === 1 ? '' : 's'}${skipped ? ` (${skipped} skipped: already booked or blocked)` : ''}` };
+      });
     }
 
     return await mutate((db) => {
@@ -350,6 +432,14 @@ export async function unblockSlot(_prev: ActionResult, fd: FormData): Promise<Ac
   return run(async () => {
     const ctx = await requirePartnerAction('slots');
     const id = str(fd, 'blockId');
+    if (isV2SlotsActive()) {
+      const removed = await v2UnblockSlot(id, ctx.turf.id);
+      if (!removed.ok) throw new ValidationError(removed.error);
+      return await mutate((db) => {
+        logActivity(db, ctx, 'Reopened a slot', `${removed.date} ${formatHour(removed.hour)}`);
+        return { ok: 'Slot reopened' };
+      });
+    }
     return await mutate((db) => {
       const before = db.blocks.length;
       const gone = db.blocks.find((b) => b.id === id && b.turfId === ctx.turf.id);

@@ -33,7 +33,7 @@ vi.mock('./v2-slots', () => ({
   isV2SlotsActive: () => true,
   v2GetSlotsForDate: async () => [],
   v2HoldSlots: async () => state.holdResult,
-  v2ConfirmHold: async () => state.confirmResult,
+  v2ConfirmHoldPriced: async () => state.confirmResult,
   v2ReleaseHolds: async () => {},
   v2CancelBooking: async () => null,
 }));
@@ -44,6 +44,7 @@ vi.mock('@/utils/supabase/admin', () => ({
         const q: Record<string, unknown> = {};
         for (const m of ['select', 'eq', 'gt', 'order', 'limit']) q[m] = () => q;
         q.maybeSingle = async () => ({ data: state.held });
+        q.upsert = async () => ({ error: null });
         return q;
       },
     }),
@@ -78,15 +79,21 @@ describe('relational slots on: no fallback to the legacy store', () => {
     state.held = { id: 'bk_1', venue_id: 'v_1', venues: { slug: 'turf_test' } };
     state.confirmResult = null;
     const res = await createBookings(base);
-    expect(res.error).toMatch(/hold has expired/i);
+    expect(res.ids).toBeUndefined();
+    expect(res.error).toBeTruthy();
+    // Nothing is charged to the wallet or counted against a promo code when the booking was not confirmed
     expect(state.mutateCalls).toBe(0);
   });
 
-  test('a confirmed hold still books', async () => {
+  test('a confirmed hold books, then applies the wallet, promo and player changes once', async () => {
     state.held = { id: 'bk_1', venue_id: 'v_1', venues: { slug: 'turf_test' } };
-    state.confirmResult = { ok: true };
-    expect(await createBookings(base)).toEqual({ ids: ['bk_1'] });
-    expect(state.mutateCalls).toBe(0);
+    state.confirmResult = { ok: true, booking: { code: 'AB12CD34' } };
+    const res = await createBookings(base);
+    expect(res.error).toBeUndefined();
+    expect(res.ids).toHaveLength(1);
+    expect(state.mutateCalls).toBe(1);
+    // The booking itself lives in oyun: the store's own list gets no copy
+    expect(getTestDb().bookings).toHaveLength(0);
   });
 
   test('holding a turf with no relational setup is refused instead of saving a hold that would be dropped', async () => {

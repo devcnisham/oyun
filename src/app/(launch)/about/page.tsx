@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SITE_CITY } from '@/lib/site';
-import LaunchHeader from '../LaunchHeader';
+import { getSettings } from '@/lib/queries';
+import SiteFooter from '../_ui/SiteFooter';
+import SiteHeader from '../_ui/SiteHeader';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
@@ -16,11 +18,12 @@ const pillars = [
   { title: 'Play', desc: 'Show up and enjoy the game.' },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { supportEmail } = await getSettings();
   return (
     <div className={styles.page}>
-      <LaunchHeader current="about" />
-      <main className={styles.main}>
+      <SiteHeader current="about" />
+      <main id="content" className={styles.main}>
         <p className={styles.eyebrow}>About us</p>
         <h1 className={styles.title}>
           Finding a place to play should take a minute.
@@ -43,8 +46,9 @@ export default function AboutPage() {
           ))}
         </ul>
 
-        <Link href="/welcome" className={styles.back}>← Back</Link>
+        <Link href="/" className={styles.back}>← Back to home</Link>
       </main>
+      <SiteFooter supportEmail={supportEmail} />
     </div>
   );
 }
