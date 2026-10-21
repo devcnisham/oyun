@@ -16,7 +16,7 @@ with every existing feature working. Today only slot hold/confirm/cancel/block u
 ## Phases (each its own PR, each shippable behind the flag)
 
 1. **Schema**: `oyun.bookings.meta jsonb`, `confirm_hold(..., p_quote jsonb)` storing price, wallet use, add-ons, payment mode. SQL tests.
-2. **Read layer** (`src/lib/v2-bookings.ts`): `oyun.bookings` + items + venues to legacy `Booking[]`, plus blocks and active holds. `getDb()` merges them, scoped by venue/player/date window, not all rows.
+2. **Read layer, done in this PR** (`src/lib/v2-bookings.ts`, overlay in `store.ts`): `oyun.bookings` + items + venues to legacy `Booking[]`, plus blocks and active holds. `getDb()` merges them, scoped by venue/player/date window, not all rows.
 3. **Write paths onto RPCs**: createBookings (priced), cancel/reschedule, check-in, mark paid, refunds, walk-in, blocks. About 25 call sites in booking/partner/admin actions.
 4. **Money**: wallet ledger, promo redemptions, payouts and invoices read `oyun.payments/wallet_ledger/invoices`.
 5. **Cutover**: backfill existing bookings, run parity checks on staging, then drop setup step 12 tables.
@@ -27,3 +27,10 @@ Players, wallet and promos are still jsonb with text ids; v2 expects uuids. Eith
 (as `stringToUuid` does for venues) or migrate players first. Recommendation: deterministic mapping now, migrate later.
 
 Nothing in phases 2 to 5 can be verified without a staging Supabase; use a throwaway local Postgres for SQL, staging for end to end.
+
+## Phase 2 notes
+
+- `getDb()` and `mutate()` overlay `bookings`, `holds` and `blocks` read from `oyun` when the flag is on (2 s per-server cache, dropped by every v2 write).
+- Window: bookings created in the last 90 days and live holds. Older history needs a ranged query (reports, payouts: phase 4).
+- Not covered yet: `pricing` is still excluded from the store when the flag is on, so price rules must move to `oyun.price_rules` reads in phase 3 before the flag can be switched on.
+- Bookings made by the legacy path while the flag is on are not saved (phase 3 routes them to `confirm_hold_priced`). Do not enable the flag in production before phase 3.
