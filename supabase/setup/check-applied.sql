@@ -40,6 +40,11 @@ select step, what, applied from (values
       exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'apply_booking_updates')),
   (19, '19-v2-book-and-move: book_ranges() and move_booking()',
       exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'move_booking')),
+  (20, '20-persist-remaining-collections: payouts, waitlist, open_matches, tournaments, activity tables',
+      exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'payouts')
+      and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'store_tables')),
+  (21, '21-release-payment-event: release_payment_event()',
+      exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'release_payment_event')),
   (15, '15-payment-events: processed_payment_events and claim_payment_event()',
       exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'processed_payment_events')
       and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_payment_event'))
