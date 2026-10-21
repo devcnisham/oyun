@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import BookButton from './BookButton';
 import styles from './LaunchHeader.module.css';
 
 // Header bar shared by the pre-launch pages: same brand-gradient bar as the site navbar
@@ -62,7 +63,7 @@ export default function LaunchHeader({ current }: { current?: 'about' }) {
           >
             About us
           </Link>
-          <span className={styles.soonBtn}>Launching soon</span>
+          <BookButton className={styles.bookBtn} closedClassName={styles.soonBtn} />
         </nav>
       </div>
     </header>

@@ -2,7 +2,7 @@ import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse, type NextFetchEvent } from 'next/server';
 import { clerkEnabled } from '@/lib/clerk';
 import { buildCsp } from '@/lib/csp';
-import { roleForHost, routeForHost } from '@/lib/hosts';
+import { PREVIEW_COOKIE, isLaunched, previewAllowed, roleForHost, routeForHost } from '@/lib/hosts';
 import { devLoginSkipped, sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
 import { updateSession } from '@/utils/supabase/middleware';
 
@@ -51,9 +51,25 @@ async function handle(req: NextRequest) {
 
   // oyun.co.in is the landing page; booking, partner and admin each have a subdomain (see lib/hosts.ts).
   // This runs before the dashboard login guard so a dashboard link on the wrong host moves to the right host first.
-  const route = routeForHost(roleForHost(req.headers.get('x-forwarded-host') ?? req.headers.get('host')), req.nextUrl.pathname);
+  const role = roleForHost(req.headers.get('x-forwarded-host') ?? req.headers.get('host'));
+  const previewKey = process.env.LAUNCH_PREVIEW_KEY;
+  // Visiting any page with ?preview=<key> sets a cookie that lets the team see the booking site before launch
+  if (role && previewKey && req.nextUrl.searchParams.get('preview') === previewKey) {
+    const clean = new URL(req.url);
+    clean.searchParams.delete('preview');
+    const res = NextResponse.redirect(clean, 307);
+    // One cookie for every oyun.co.in subdomain, so the team opens app., book. and help. once
+    const shared = /(^|\.)oyun\.co\.in$/.test((req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '').replace(/:\d+$/, '')) ? { domain: '.oyun.co.in' } : {};
+    res.cookies.set(PREVIEW_COOKIE, previewKey, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 30, ...shared });
+    return res;
+  }
+  const route = routeForHost(role, req.nextUrl.pathname, {
+    launched: isLaunched(),
+    preview: previewAllowed(req.cookies.get(PREVIEW_COOKIE)?.value, previewKey),
+  });
   // 307 on purpose while this is new: a permanent redirect is cached by browsers and hard to take back
-  if (route.kind === 'redirect') return NextResponse.redirect(`https://${route.host}${route.path}${req.nextUrl.search}`, 307);
+  // The query string is dropped: it may hold the preview key, and the landing page needs none
+  if (route.kind === 'redirect') return NextResponse.redirect(`https://${route.host}${route.path}`, 307);
   const guard = dashboardGuard(req);
   if (guard) return guard;
   const pathname = route.kind === 'rewrite' ? route.path : req.nextUrl.pathname;
