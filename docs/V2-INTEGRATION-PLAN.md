@@ -55,3 +55,12 @@ Migration `20261019` adds `book_ranges()` (confirmed, priced booking for any tim
 - DPDP erase anonymises bookings in place, which the write-back covers.
 
 Known limits before enabling the flag: the read window is 90 days, so a data export or erase request only sees that window; the `oyun.players` row (name, phone) is not erased by the DPDP flow; a multi-hour order moves as a block (all slots keep their offsets); half-pitch reschedule keeps the same half (it does not swap to the other half if only that is free).
+
+## Phase 4 notes (money)
+
+What the audit found, independent of the v2 flag:
+- **Five collections were never saved with Supabase**: payouts, waitlist, open matches, tournaments and the partner activity log had no table, so they vanished on restart. Migration `20261020` adds the tables and replaces the four store functions with versions driven by one `store_tables()` list.
+- **Webhook claim was never given back**: a failed confirm left the Razorpay event marked processed, so the retry was ignored and a paid booking stayed unconfirmed. Migration `20261021` adds `release_payment_event()`; the webhook releases the claim and answers 503. With v2 on, a failed `confirm_payment` no longer falls back to memory (which said "confirmed" regardless).
+
+Decisions: wallet, promos and players stay in the main store (they already write correctly through `mutate`); payouts keep reading bookings through the store, and a payout statement now fetches bookings older than the 90-day window by id (`bookingsByIds`).
+Not done: online payments are not wired into any checkout (nothing calls `createRazorpayOrder`), so there is no `oyun.payments` row for `confirm_payment` to find. When they are wired, record the order in `oyun.payments` at order creation and confirm through `pay_online` holds.

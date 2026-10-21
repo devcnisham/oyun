@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { supabaseConfigured, createAdminClient } from '@/utils/supabase/admin';
+import { v2SlotsEnabled } from './store';
 
 export interface PaymentWebhookEvent {
   event: string;
@@ -41,6 +42,8 @@ export interface WebhookProcessResult {
   paymentId?: string;
   refundId?: string;
   error?: string;
+  // The failure was ours (database), not the sender's: answer with a 5xx so the gateway retries
+  retryable?: boolean;
 }
 
 // In-memory registry of processed events and refunds for testing and local fallback
@@ -72,6 +75,19 @@ async function claimPaymentEvent(eventKey: string, orderId: string, paymentId: s
     return data === true ? 'claimed' : 'duplicate';
   } catch {
     return 'unavailable';
+  }
+}
+
+// Gives a claimed event back after a failed confirm, so the gateway's retry is processed instead of ignored
+async function releasePaymentEvent(eventKey: string, claimed: 'claimed' | 'unavailable'): Promise<void> {
+  if (claimed === 'unavailable') {
+    processedEvents.delete(eventKey);
+    return;
+  }
+  try {
+    await createAdminClient().rpc('release_payment_event', { p_event_key: eventKey });
+  } catch (err) {
+    console.error('[payment] could not release the event claim; a retry will be ignored:', err);
   }
 }
 
@@ -229,6 +245,9 @@ export async function confirmSlotPayment(
       }
       return data as 'confirmed' | 'already_confirmed' | 'refund_needed';
     } catch (rpcErr) {
+      // With v2 slots the database is the only truth: confirming from memory would accept money for a booking
+      // that was never confirmed. Let the caller answer with an error so the gateway retries.
+      if (v2SlotsEnabled()) throw rpcErr;
       console.warn('[payment] RPC fallback to memory state:', rpcErr);
     }
   }
@@ -297,7 +316,14 @@ export async function processPaymentWebhook(
   }
 
   // Attempt to confirm the slot booking
-  const confirmResult = await confirmSlotPayment(orderId, paymentId, amount, slotKey);
+  let confirmResult: Awaited<ReturnType<typeof confirmSlotPayment>>;
+  try {
+    confirmResult = await confirmSlotPayment(orderId, paymentId, amount, slotKey);
+  } catch (err) {
+    console.error('[payment] could not confirm the payment; releasing the event for a retry:', err);
+    await releasePaymentEvent(eventKey, claimed);
+    return { ok: false, action: 'ignored', orderId, paymentId, error: 'confirm_failed', retryable: true };
+  }
 
   if (confirmResult === 'confirmed') {
     return { ok: true, action: 'confirmed', orderId, paymentId };
