@@ -361,6 +361,58 @@ export async function v2ConfirmHold(
   }
 }
 
+/** The priced checkout stored on a v2 booking. Amounts are whole rupees. */
+export interface V2Quote {
+  subtotal: number;
+  discount: number;
+  walletUsed: number;
+  total: number;
+  advanceDue: number;
+  amountPaid: number;
+  priceBreakdown: Record<string, unknown>;
+  meta: Record<string, unknown>;
+  legacyId: string;
+}
+
+/**
+ * Confirms a held booking and stores its priced quote via public.confirm_hold_priced.
+ */
+export async function v2ConfirmHoldPriced(
+  bookingId: string,
+  holder: string,
+  name: string,
+  phone: string,
+  quote: V2Quote,
+  options: { playerId?: string; payOnline?: boolean; turfId?: string; date?: string; clientOverride?: SupabaseClient } = {}
+): Promise<{ ok: true; booking: unknown } | { ok: false; error: string } | null> {
+  if (!isV2SlotsActive() && !options.clientOverride) return null;
+  const client = options.clientOverride ?? createAdminClient();
+
+  try {
+    const { data: booking, error } = await client.rpc('confirm_hold_priced', {
+      p_booking: bookingId,
+      p_holder: holder,
+      p_name: name,
+      p_phone: phone,
+      p_quote: quote,
+      p_player: options.playerId ?? null,
+      p_pay_online: options.payOnline ?? false,
+    });
+
+    if (error) {
+      const text = error.message || '';
+      if (text.includes('invalid_quote')) return { ok: false, error: 'The price changed. Please review your booking and try again.' };
+      return { ok: false, error: text || 'Hold expired or booking not found' };
+    }
+
+    if (options.turfId && options.date) await broadcastSlotChanges([{ turfId: options.turfId, date: options.date }]);
+    return { ok: true, booking };
+  } catch (err) {
+    console.warn('[v2-slots] v2ConfirmHoldPriced error:', err);
+    return null;
+  }
+}
+
 /**
  * Cancels a booking via public.cancel_booking and notifies real-time subscribers.
  */
