@@ -23,11 +23,16 @@ const HELD = 'id, venue_id, venues(slug)';
 /** The oyun player row a booking points at. A number v2 rejects leaves the booking unlinked rather than failing it. */
 export async function ensureV2Player(playerId: string | null, name: string, phone: string, accountId: string | null): Promise<string | undefined> {
   if (!playerId) return undefined;
+  const table = () => createAdminClient().schema('oyun').from('players');
+  // Players copied by the backfill have their own uuid; find them by the app's id before deriving one
+  try {
+    const { data: existing } = await table().select('id').eq('legacy_id', playerId).maybeSingle();
+    if (existing?.id) return String(existing.id);
+  } catch {
+    // fall through to the derived id
+  }
   const id = legacyToUuid('player', playerId);
-  const { error } = await createAdminClient()
-    .schema('oyun')
-    .from('players')
-    .upsert({ id, legacy_id: playerId, clerk_user_id: accountId, name, phone }, { onConflict: 'id' });
+  const { error } = await table().upsert({ id, legacy_id: playerId, clerk_user_id: accountId, name, phone }, { onConflict: 'id' });
   if (error) {
     console.warn('[v2-checkout] could not link the player:', error.message);
     return undefined;

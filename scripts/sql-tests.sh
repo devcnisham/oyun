@@ -54,6 +54,9 @@ echo "== Persisted collections (payouts, waitlist, matches, tournaments, activit
 echo "== Payment event claim and release"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/payment_events_test.sql
 
+echo "== Backfill and parity (v2 integration phase 5)"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_backfill_test.sql
+
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 
