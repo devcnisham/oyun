@@ -16,8 +16,8 @@ import { freePart, getSlots, normalizePhone, turfHours } from './pricing';
 import { bookableTurf, planBooking } from './booking-plan';
 import { cleanHours, cleanSide, cleanSize, type BookingRequest, type SelectionQuote, type SelectionRequest } from './booking-types';
 import { getDb, mutate, newId, storageInfo } from './store';
-import { BOOKING_DAYS, addDays, formatHour, formatSlotRange, isValidDate, istNow } from './time';
-import type { Booking, Database, HalfNames, PitchSide, PitchSize, Slot } from './types';
+import { BOOKING_DAYS, addDays, formatHour, formatSlotRange, isValidDate, istNow, parseHour, slotTimestamp } from './time';
+import type { Booking, Database, HalfNames, PitchPart, PitchSide, PitchSize, Slot } from './types';
 import { findByReferralCode, refundDue, walletTxn } from './wallet';
 import { notifyWaitlistWhenSlotFreed } from './waitlist';
 import { sendBookingConfirmation, sendOwnerAlert } from './notifications';
@@ -63,7 +63,7 @@ import {
   v2GetSlotsForDate,
   v2HoldSlots,
   v2ReleaseHolds,
-  v2CancelBooking,
+  v2MoveBooking,
 } from './v2-slots';
 import { v2Checkout } from './v2-checkout';
 
@@ -286,9 +286,7 @@ export async function cancelMyBooking(bookingId: string, phone?: string): Promis
         sendOwnerAlert(booking, turf, 'cancellation').catch(() => {});
       }
     });
-    if (isV2SlotsActive()) {
-      await v2CancelBooking(id, 'player cancelled');
-    }
+    // With v2 slots the status change above is written back to oyun, which frees the slots
     refreshAll();
     return { ok: true };
   } catch (err) {
@@ -324,7 +322,9 @@ export async function rescheduleBooking(
     }
 
     const accountId = await currentAccountId();
-    await mutate((db) => {
+
+    // The checks both paths share: who owns it, whether it can still move, and the new slot's hours and pitch
+    const check = (db: Database) => {
       const booking = db.bookings.find((b) => b.id === id);
       if (!booking) throw new ValidationError('Booking not found');
       proveBookingOwner(booking, accountId, phone, 'reschedule');
@@ -347,16 +347,34 @@ export async function rescheduleBooking(
       if (!allocatedPitch) {
         throw new ValidationError('Selected slot is not available. Please choose another time.');
       }
-
-      const oldDate = booking.date;
-      const oldHour = booking.hour;
-      booking.originalSlot = booking.originalSlot || { date: oldDate, hour: oldHour };
+      return { booking, turf, allocatedPitch };
+    };
+    const record = (booking: Booking, allocatedPitch: PitchPart, original: { date: string; hour: number }) => {
+      booking.originalSlot = booking.originalSlot || original;
       booking.date = dateStr;
       booking.hour = hourNum;
       booking.pitch = allocatedPitch;
       booking.timeLabel = formatSlotRange(hourNum, booking.durationMinutes ?? 60, booking.startMinute ?? 0);
       booking.rescheduledAt = new Date().toISOString();
-    });
+    };
+
+    if (isV2SlotsActive()) {
+      // The slot claims move first (atomic: a taken slot leaves the booking where it was), then the record follows
+      const { booking, turf } = check(await getDb());
+      const original = { date: booking.date, hour: booking.hour };
+      const moved = await v2MoveBooking(id, slotTimestamp(dateStr, hourNum, parseHour(turf.openTime), booking.startMinute ?? 0), booking.turfId, [booking.date, dateStr]);
+      if (!moved) throw new Error('[reschedule] could not reach the booking service');
+      if (!moved.ok) throw new ValidationError(moved.error);
+      await mutate((db) => {
+        const b = db.bookings.find((x) => x.id === id);
+        if (b) record(b, b.pitch ?? 'full', original);
+      });
+    } else {
+      await mutate((db) => {
+        const { booking, allocatedPitch } = check(db);
+        record(booking, allocatedPitch, { date: booking.date, hour: booking.hour });
+      });
+    }
 
     refreshAll();
     return { ok: true };

@@ -38,6 +38,8 @@ select step, what, applied from (values
       and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'confirm_hold_priced')),
   (18, '18-v2-booking-updates: apply_booking_updates()',
       exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'apply_booking_updates')),
+  (19, '19-v2-book-and-move: book_ranges() and move_booking()',
+      exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'move_booking')),
   (15, '15-payment-events: processed_payment_events and claim_payment_event()',
       exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'processed_payment_events')
       and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_payment_event'))
