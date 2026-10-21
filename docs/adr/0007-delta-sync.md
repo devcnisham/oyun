@@ -12,4 +12,4 @@ Each server keeps the store in memory and calls `load_changes(since)` for rows w
 Tiny reads and no API change for 30+ pages. A cold start still loads everything and memory grows with history.
 
 ## Reopen when
-When a cold-start load passes about 5 MB, or more than a few servers run at once (task P10-14).
+When a cold-start load passes about 5 MB, or more than a few servers run at once (task P10-14, closed 21 Oct 2026: bookings left the in-memory copy with R008, so only the small config tables remain in it).
