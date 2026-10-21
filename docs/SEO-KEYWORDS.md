@@ -41,3 +41,13 @@ Market: Mangalore only (launch 31 Oct 2026). Canonical host: `https://www.oyun.c
 
 ## Competitors to review monthly
 Playo, Hudle, local WhatsApp groups, Google Maps listings for "turf in Mangalore". Note which queries they rank for and which venue pages exist.
+
+## Performance notes (lab, 21 Oct 2026, `next start`, Lighthouse 12.8.2 mobile)
+| Page | Perf | A11y | Best practices | SEO | LCP | TBT | CLS |
+|---|---|---|---|---|---|---|---|
+| `/` (phone home) | 92 | 100 | 100 | 100 | 3.4 s | 50 ms | 0 |
+| `/arenas` | 89 | 100 | 100 | 100 | 3.8 s | 40 ms | 0 |
+| `/arenas/perfect-pass-kodialbail` | 93 | 100 | 100 | 100 | 3.3 s | 10 ms | 0 |
+
+Lab numbers on a laptop with Lighthouse's slow-phone throttling; real-user data comes from Speed Insights and Search Console after launch.
+Known gap: on `/arenas` the first card image is not in the initial HTML (the list renders on the client inside a Suspense boundary), so the browser finds it late. Fixing it means server-rendering the list; do it only with a test that filters still work.

@@ -22,7 +22,7 @@ export default function TurfCard({ turf, eager = false, compact = false, date }:
     <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.fav} />
     <Link href={date ? `/arenas/${turf.id}?date=${date}` : `/arenas/${turf.id}`} className={styles.card}>
       <div className={styles.imageWrap}>
-        <Image src={turf.images[0]} alt={turf.name} fill sizes="(max-width: 768px) 100vw, 400px" className={styles.image} {...(eager ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})} unoptimized={!canOptimize(turf.images[0])} />
+        <Image src={turf.images[0]} alt={turf.name} fill sizes="(max-width: 768px) 94vw, 400px" className={styles.image} {...(eager ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})} unoptimized={!canOptimize(turf.images[0])} />
         {turf.isFeatured && (
           <div className={styles.badgeTop}>OYUN WIZARD</div>
         )}
