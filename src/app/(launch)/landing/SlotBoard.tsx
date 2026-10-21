@@ -1,4 +1,4 @@
-import styles from './landing.module.css';
+import styles from './slotboard.module.css';
 
 // The hero picture: a turf's evening timetable. An illustration, not live data. Green is open, red is booked, the ringed
 // cell is the slot held for you. Slots fill in one after another; with reduced motion it simply shows the finished board.
