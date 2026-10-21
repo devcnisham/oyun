@@ -3,7 +3,7 @@ import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { getSettings } from '@/lib/queries';
 import { organizationSchema, websiteSchema } from '@/lib/schema';
-import { ogBase } from '@/lib/seo';
+import { localeAlternates, ogBase } from '@/lib/seo';
 import { SITE_CITY, SITE_DESCRIPTION } from '@/lib/site';
 import { IconArrow, IconPlus } from '../_ui/icons';
 import { BROWSE_URL } from '../_ui/links';
@@ -16,7 +16,7 @@ import styles from './landing.module.css';
 export const metadata: Metadata = {
   title: 'Book Football, Box Cricket, Badminton & Pickleball Turfs in Mangalore',
   description: SITE_DESCRIPTION,
-  alternates: { canonical: '/' },
+  alternates: { canonical: '/', languages: localeAlternates() },
   openGraph: { ...ogBase('/'), title: 'OYUN | Book Sports Turfs & Courts in Mangalore Online', description: SITE_DESCRIPTION },
 };
 

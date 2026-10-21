@@ -47,3 +47,25 @@ describe('robots', () => {
     }
   });
 });
+
+describe('localized pages', () => {
+  test('hreflang is only advertised once the Kannada and Hindi pages are opened to search engines', async () => {
+    const { localeAlternates } = await import('./seo');
+    const prev = process.env.LOCALIZED_PAGES_INDEXED;
+    delete process.env.LOCALIZED_PAGES_INDEXED;
+    expect(localeAlternates()).toBeUndefined();
+    process.env.LOCALIZED_PAGES_INDEXED = 'true';
+    expect(localeAlternates()).toEqual({ 'en-IN': '/', 'kn-IN': '/kn', 'hi-IN': '/hi', 'x-default': '/' });
+    if (prev === undefined) delete process.env.LOCALIZED_PAGES_INDEXED;
+    else process.env.LOCALIZED_PAGES_INDEXED = prev;
+  });
+  test('every localized page has the same structure', async () => {
+    const { LOCALIZED } = await import('./localized-home');
+    for (const c of Object.values(LOCALIZED)) {
+      expect(c.steps).toHaveLength(3);
+      expect(c.faqs.length).toBeGreaterThanOrEqual(3);
+      expect(c.sports.map((s) => s.slug)).toEqual(['football', 'box-cricket', 'badminton', 'pickleball']);
+      expect(c.h1.length).toBeGreaterThan(5);
+    }
+  });
+});
