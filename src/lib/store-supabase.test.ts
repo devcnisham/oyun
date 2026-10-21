@@ -23,12 +23,18 @@ const V2_BOOKING = {
   booking_items: [{ id: 'it_1', during: '["2026-10-20 12:30:00+00","2026-10-20 13:30:00+00")', price: 1000, bookables: { name: 'Full pitch' } }],
 };
 
+const updates: unknown[] = [];
+
 function fakeClient(applied: unknown[], newRev = 8) {
   return {
     schema: () => ({ from: (table: string) => query(table === 'bookings' ? [V2_BOOKING] : []) }),
     rpc: vi.fn(async (fn: string, args?: unknown) => {
       if (fn === 'load_state') return { data: EMPTY_STATE, error: null };
       if (fn === 'load_changes') return { data: { rev: 7, full: false }, error: null };
+      if (fn === 'apply_booking_updates') {
+        updates.push(args);
+        return { data: (args as { p_updates: unknown[] }).p_updates.length, error: null };
+      }
       if (fn === 'apply_changes') {
         applied.push(args);
         return { data: newRev, error: null };
@@ -74,13 +80,32 @@ describe('store writes in Supabase mode', () => {
     expect(call.changes.upserts.bookings.map((r) => r.id)).toEqual(['bk_1']);
   });
 
-  test('bookings are left to the oyun schema when v2 slots are on', async () => {
+  test('with v2 slots on, a booking cannot be created by editing the list', async () => {
     const applied: unknown[] = [];
+    updates.length = 0;
+    const { mutate } = await loadStore({ OYUN_V2_SLOTS: '1' }, fakeClient(applied));
+    await expect(
+      mutate((db) => {
+        db.bookings.push(booking as never);
+      })
+    ).rejects.toThrow(/cannot be created/);
+    expect(applied).toHaveLength(0);
+    expect(updates).toHaveLength(0);
+  });
+
+  test('with v2 slots on, an edit to an existing booking is written back to oyun', async () => {
+    const applied: unknown[] = [];
+    updates.length = 0;
     const { mutate } = await loadStore({ OYUN_V2_SLOTS: '1' }, fakeClient(applied));
     await mutate((db) => {
-      db.bookings.push(booking as never);
+      const b = db.bookings.find((x) => x.id === 'bk_v2')!;
+      b.status = 'checked_in';
+      b.checkedInAt = '2026-10-20T13:00:00.000Z';
     });
     expect(applied).toHaveLength(0);
+    const sent = (updates[0] as { p_updates: { id: string; status: string; checkedInAt: string }[] }).p_updates;
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ id: 'bk_v2', status: 'checked_in', checkedInAt: '2026-10-20T13:00:00.000Z' });
   });
 
   test('only the rows a mutation touched are sent', async () => {

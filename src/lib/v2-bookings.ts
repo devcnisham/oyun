@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { addDays, formatSlotRange, istNow } from './time';
+import type { V2Quote } from './v2-slots';
 import type { Booking, BookingItem, BookingStatus, PaymentMode, PitchPart, PriceBreakdown, SlotBlock, SlotHold } from './types';
 
 /*
@@ -223,5 +224,76 @@ export async function loadV2Snapshot(client: SupabaseClient, openHourOf: OpenHou
     bookings: rows.flatMap((r) => mapV2Booking(r, openHourOf) ?? []),
     holds: rows.flatMap((r) => mapV2Holds(r, openHourOf)).filter((h) => new Date(h.expiresAt).getTime() > now),
     blocks: ((blocks.data ?? []) as unknown as V2BlockRow[]).flatMap((r) => mapV2Block(r, openHourOf) ?? []),
+  };
+}
+
+/* ---------- writes ---------- */
+
+/** One edit for apply_booking_updates: the fields of a booking the app changes after it exists. */
+export function bookingUpdate(b: Booking) {
+  return {
+    id: b.id,
+    status: b.status === 'refunded' ? 'cancelled' : b.status,
+    amountPaid: b.amountPaid,
+    checkedInAt: b.checkedInAt,
+    cancelledAt: b.cancelledAt ?? null,
+    cancelReason: b.cancelReason ?? null,
+    customerName: b.customerName,
+    customerPhone: b.customerPhone,
+    meta: {
+      addOns: b.addOns,
+      paymentMode: b.paymentMode,
+      cashback: b.cashback,
+      cashCollected: b.cashCollected,
+      accountId: b.accountId,
+      review: b.review,
+      rescheduledAt: b.rescheduledAt,
+      originalSlot: b.originalSlot,
+      recurringGroupId: b.recurringGroupId,
+      recurringWeek: b.recurringWeek,
+      createdBy: b.createdBy,
+      refunded: b.status === 'refunded',
+    },
+  };
+}
+
+const slotKey = (b: Booking) => `${b.turfId}|${b.date}|${[...(b.hours ?? [b.hour])].sort((x, y) => x - y).join(',')}|${b.pitch ?? 'full'}`;
+
+/**
+ * What a mutate() callback did to bookings: edits to existing ones, ids it added and bookings it moved to another slot. New bookings cannot
+ * be created by editing the list (slots and claims come from the v2 functions), so the store refuses them.
+ */
+export function diffV2Bookings(before: Booking[], after: Booking[]) {
+  const old = new Map(before.map((b) => [b.id, b]));
+  const updates: ReturnType<typeof bookingUpdate>[] = [];
+  const created: string[] = [];
+  const moved: string[] = [];
+  for (const b of after) {
+    const prev = old.get(b.id);
+    if (!prev) created.push(b.id);
+    else if (JSON.stringify(prev) !== JSON.stringify(b)) {
+      // The slot is held by claims in oyun; changing the date or hour here would leave the claims behind
+      if (slotKey(prev) !== slotKey(b)) moved.push(b.id);
+      else updates.push(bookingUpdate(b));
+    }
+  }
+  return { updates, created, moved };
+}
+
+/** The quote stored with a v2 booking, from the booking the planner priced. Amounts in whole rupees. */
+export function v2QuoteOf(b: Booking): V2Quote {
+  const p = b.pricing;
+  const discount = [p.offer, p.promo].reduce((sum, line) => sum + (line && line.amount < 0 ? -line.amount : 0), 0);
+  return {
+    subtotal: p.subtotal,
+    discount,
+    walletUsed: p.walletDeduction,
+    total: p.total,
+    advanceDue: p.advance,
+    amountPaid: b.amountPaid,
+    priceBreakdown: p as unknown as Record<string, unknown>,
+    meta: bookingUpdate(b).meta,
+    legacyId: b.id,
+    source: b.source === 'walk_in' ? 'walk_in' : 'online',
   };
 }
