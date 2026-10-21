@@ -15,8 +15,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Payload too large or empty' }, { status: 400 });
   }
 
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET || 'test_webhook_secret';
-  if (!verifyRazorpaySignature(rawBody, signature, secret)) {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'Webhook secret is not configured' }, { status: 503 });
+    }
+  }
+  const effectiveSecret = secret || 'test_webhook_secret';
+  if (!verifyRazorpaySignature(rawBody, signature, effectiveSecret)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
