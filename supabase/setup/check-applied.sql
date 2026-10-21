@@ -47,6 +47,8 @@ select step, what, applied from (values
       exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'release_payment_event')),
   (22, '22-v2-backfill: backfill_legacy_bookings() and parity_report()',
       exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'parity_report')),
+  (23, '23-v2-erase-account: erase_account()',
+      exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'erase_account')),
   (15, '15-payment-events: processed_payment_events and claim_payment_event()',
       exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'processed_payment_events')
       and exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_payment_event'))

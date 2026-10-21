@@ -1,4 +1,4 @@
-import { getDb, mutate } from '@/lib/store';
+import { eraseV2Account, getDb, mutate, withAccountHistory } from '@/lib/store';
 import type { Database, Player, Booking, WalletTxn, BookingReview } from '@/lib/types';
 import { ValidationError } from '@/lib/errors';
 import { expireStudentIds } from '@/lib/student-id';
@@ -73,7 +73,7 @@ export function extractUserData(db: Database, accountId: string): DataExportPayl
  * Export the signed-in account's data by reading the database.
  */
 export async function exportUserData(accountId: string): Promise<DataExportPayload> {
-  const db = await getDb();
+  const db = await withAccountHistory(await getDb(), accountId);
   return extractUserData(db, accountId);
 }
 
@@ -114,12 +114,15 @@ export function applyUserDeletion(db: Database, accountId: string): { bookingsAn
  */
 export async function deleteUserData(accountId: string): Promise<{ ok: boolean; bookingsAnonymized: number; reviewsAnonymized: number }> {
   let result: ReturnType<typeof applyUserDeletion> = { bookingsAnonymized: 0, reviewsAnonymized: 0 };
+  const playerId = (await getDb()).players.find((p) => p.accountId === accountId)?.id ?? null;
   await mutate((db) => {
     result = applyUserDeletion(db, accountId);
   });
+  // With relational slots the bookings older than the per-request window live only in oyun
+  const olderAnonymized = await eraseV2Account(accountId, playerId);
   await removeStudentIds([result.studentIdPath]);
-  const { bookingsAnonymized, reviewsAnonymized } = result;
-  return { ok: true, bookingsAnonymized, reviewsAnonymized };
+  const { reviewsAnonymized } = result;
+  return { ok: true, bookingsAnonymized: result.bookingsAnonymized + olderAnonymized, reviewsAnonymized };
 }
 
 /**
