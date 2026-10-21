@@ -8,9 +8,8 @@ import { BROWSE_URL } from './links';
 import styles from './site.module.css';
 
 const SECTIONS = [
-  { href: '/#sports', label: 'Sports' },
   { href: '/#how', label: 'How it works' },
-  { href: '/#owners', label: 'For turf owners' },
+  { href: '/#owners', label: 'For venue owners' },
   { href: '/#faq', label: 'FAQ' },
 ];
 

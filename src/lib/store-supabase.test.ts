@@ -11,7 +11,7 @@ const EMPTY_STATE = {
 // A query builder that answers every chained call, then resolves to the rows for its table
 function query(rows: unknown[]) {
   const chain: Record<string, unknown> = {};
-  for (const m of ['select', 'gte', 'order', 'limit', 'eq', 'in']) chain[m] = () => chain;
+  for (const m of ['select', 'gte', 'order', 'limit', 'eq', 'in', 'or']) chain[m] = () => chain;
   chain.then = (resolve: (v: unknown) => unknown) => resolve({ data: rows, error: null });
   return chain;
 }
@@ -32,6 +32,10 @@ function fakeClient(applied: unknown[], newRev = 8) {
     rpc: vi.fn(async (fn: string, args?: unknown) => {
       if (fn === 'load_state') return { data: EMPTY_STATE, error: null };
       if (fn === 'load_changes') return { data: { rev: 7, full: false }, error: null };
+      if (fn === 'erase_account') {
+        updates.push({ erase: args });
+        return { data: 3, error: null };
+      }
       if (fn === 'apply_booking_updates') {
         updates.push(args);
         return { data: (args as { p_updates: unknown[] }).p_updates.length, error: null };
@@ -197,5 +201,23 @@ describe('store writes in Supabase mode', () => {
   test('payouts come back from the database', async () => {
     const { getDb } = await loadStore({ OYUN_V2_SLOTS: '' }, fakeClient([]));
     expect((await getDb()).payouts).toEqual([{ id: 'po_1', net: 500 }]);
+  });
+
+  test('a privacy export sees bookings older than the per-request window', async () => {
+    const { getDb, withAccountHistory } = await loadStore({ OYUN_V2_SLOTS: '1' }, fakeClient([]));
+    const bare = { ...(await getDb()), bookings: [] };
+    const full = await withAccountHistory(bare, 'user_x');
+    expect(full.bookings.map((b) => b.id)).toEqual(['bk_v2']);
+  });
+
+  test('a privacy erase reaches every v2 booking, and does nothing with v2 off', async () => {
+    updates.length = 0;
+    const on = await loadStore({ OYUN_V2_SLOTS: '1' }, fakeClient([]));
+    expect(await on.eraseV2Account('user_x', 'pl_x')).toBe(3);
+    expect(updates[0]).toEqual({ erase: { p_account_id: 'user_x', p_player_legacy_id: 'pl_x' } });
+    updates.length = 0;
+    const off = await loadStore({ OYUN_V2_SLOTS: '' }, fakeClient([]));
+    expect(await off.eraseV2Account('user_x', null)).toBe(0);
+    expect(updates).toHaveLength(0);
   });
 });

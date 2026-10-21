@@ -9,7 +9,7 @@ import { DB_VERSION, migrate, seed } from './seed';
 import type { Database } from './types';
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
 import { broadcastSlotChanges } from './realtime';
-import { diffV2Bookings, loadV2BookingsByIds, loadV2Snapshot, type V2Snapshot } from './v2-bookings';
+import { diffV2Bookings, loadV2BookingsByIds, loadV2BookingsForAccount, loadV2Snapshot, type V2Snapshot } from './v2-bookings';
 
 export { newBookingCode, newId } from './ids';
 
@@ -197,6 +197,25 @@ export async function bookingsByIds(db: Database, ids: string[]) {
   const openHours = new Map(db.turfs.map((t) => [t.id, t.openTime ? parseInt(t.openTime.split(':')[0], 10) || 0 : 0]));
   const older = await loadV2BookingsByIds(createAdminClient(), missing, (turfId) => openHours.get(turfId) ?? 0);
   return [...found, ...older];
+}
+
+/** The store with every booking of one account, including those older than the per-request window (privacy export). */
+export async function withAccountHistory(db: Database, accountId: string): Promise<Database> {
+  if (!booksInV2()) return db;
+  const playerId = db.players.find((p) => p.accountId === accountId)?.id ?? null;
+  const openHours = new Map(db.turfs.map((t) => [t.id, t.openTime ? parseInt(t.openTime.split(':')[0], 10) || 0 : 0]));
+  const all = await loadV2BookingsForAccount(createAdminClient(), accountId, playerId, (turfId) => openHours.get(turfId) ?? 0);
+  const have = new Set(db.bookings.map((b) => b.id));
+  return { ...db, bookings: [...db.bookings, ...all.filter((b) => !have.has(b.id))] };
+}
+
+/** Anonymises every v2 booking of an account (privacy erase), however old. Returns how many changed. */
+export async function eraseV2Account(accountId: string, playerLegacyId: string | null): Promise<number> {
+  if (!booksInV2()) return 0;
+  const { data, error } = await createAdminClient().rpc('erase_account', { p_account_id: accountId, p_player_legacy_id: playerLegacyId });
+  invalidateV2Snapshot();
+  if (error) throw new Error(`[store] erase_account failed: ${error.message}`);
+  return Number(data ?? 0);
 }
 
 async function withV2(db: Database): Promise<Database> {

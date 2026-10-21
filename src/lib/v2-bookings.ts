@@ -314,3 +314,37 @@ export async function loadV2BookingsByIds(client: SupabaseClient, ids: string[],
   const rows = [...(byLegacy.data ?? []), ...(byUuid.data ?? [])] as unknown as V2BookingRow[];
   return rows.flatMap((r) => mapV2Booking(r, openHourOf) ?? []);
 }
+
+/**
+ * Every booking of one account, whatever its age: those linked to its player and those that only carry the
+ * account id in meta. Used by the privacy export, which must not stop at the per-request window.
+ */
+export async function loadV2BookingsForAccount(
+  client: SupabaseClient,
+  accountId: string,
+  playerLegacyId: string | null,
+  openHourOf: OpenHourOf
+): Promise<Booking[]> {
+  const players = await client
+    .schema('oyun')
+    .from('players')
+    .select('id')
+    .or(playerLegacyId ? `clerk_user_id.eq.${accountId},legacy_id.eq.${playerLegacyId}` : `clerk_user_id.eq.${accountId}`);
+  if (players.error) throw new Error(`[v2-bookings] ${players.error.message}`);
+  const ids = (players.data ?? []).map((p) => String(p.id));
+  const base = () => client.schema('oyun').from('bookings').select(BOOKING_COLUMNS);
+  const [byPlayer, byAccount] = await Promise.all([
+    ids.length ? base().in('player_id', ids) : Promise.resolve({ data: [], error: null }),
+    base().eq('meta->>accountId', accountId),
+  ]);
+  if (byPlayer.error) throw new Error(`[v2-bookings] ${byPlayer.error.message}`);
+  if (byAccount.error) throw new Error(`[v2-bookings] ${byAccount.error.message}`);
+  const rows = [...(byPlayer.data ?? []), ...(byAccount.data ?? [])] as unknown as V2BookingRow[];
+  const seen = new Set<string>();
+  return rows.flatMap((r) => {
+    const b = mapV2Booking(r, openHourOf);
+    if (!b || seen.has(b.id)) return [];
+    seen.add(b.id);
+    return [b];
+  });
+}

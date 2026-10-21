@@ -6,7 +6,7 @@ Nothing here is automatic; each step is a command you run and a result you check
 ## Before
 
 1. Merge the v2 PRs (see `docs/V2-INTEGRATION-PLAN.md`) and deploy with the flag still off.
-2. Apply the migrations in `supabase/migrations/` up to `20261022` (SQL editor, or the files in `supabase/setup/`).
+2. Apply the migrations in `supabase/migrations/` up to `20261023` (SQL editor, or the files in `supabase/setup/`).
    `supabase/setup/check-applied.sql` lists which steps are in.
 3. Make sure every turf has a venue: `select public.sync_all_turfs_to_venues();`.
 
@@ -33,7 +33,7 @@ Read the dry run:
 ## Known limits (set the flag only if these are acceptable)
 
 - The pages read the last 90 days of bookings; older history is fetched only by id (payout statements).
-- Privacy export and erase only see that window; the `oyun.players` row is not erased.
+- Privacy export and erase cover every booking (export queries oyun by account; erase uses `erase_account()`, migration `20261023`). The retention purge for records older than 8 years still works only on the per-request window; nothing is that old yet.
 - Half-pitch reschedule stays on the same half.
 - Online payments are not wired into checkout.
 

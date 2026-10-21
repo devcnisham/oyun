@@ -53,3 +53,7 @@ Short, specific, local. Real areas (Kodialbail, Kankanady, Bejai, Ullal), real s
 - 3D and many animated layers can hurt mobile performance: cap layers, pause off-screen, lower effects on small or low-power screens.
 - Heavy pinned scroll can feel hijacked: keep native scroll, never trap it.
 - The three photos repeat across turfs; the landing uses them as brand imagery, not as specific venues.
+
+
+## Update 21 Oct 2026: the 3D version was too much
+The floodlit 3D pitch, slot board, court line art, tilt cards, marquee, mock demos and giant wordmark read as cheap and childish. The landing was rebuilt to be restrained: three real photographs, Instrument Serif headlines with Inter text, hairline rules instead of cards, square-cornered buttons, one deep-red accent, and only gentle fades. No illustration, 3D or decorative gradients. Header and footer say "venue" instead of "turf".

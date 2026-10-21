@@ -11,7 +11,7 @@ export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
         <div className={styles.footGrid}>
           <div className={styles.footBrand}>
             <span className={styles.footName}><BrandMark size={32} />OYUN</span>
-            <p>Turf and court booking for {SITE_CITY}. Find an open slot, hold it, and walk in with a ticket.</p>
+            <p>Venue booking for {SITE_CITY}. See what is open, hold the hours you want, and walk in with a ticket.</p>
           </div>
           <nav className={styles.footCol} aria-label="Explore">
             <h2>Explore</h2>
@@ -22,10 +22,10 @@ export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
               <li><Link href="/countdown">Launch countdown</Link></li>
             </ul>
           </nav>
-          <nav className={styles.footCol} aria-label="For turf owners">
-            <h2>For turf owners</h2>
+          <nav className={styles.footCol} aria-label="For venue owners">
+            <h2>For venue owners</h2>
             <ul>
-              <li><Link href="/#owners">List your turf</Link></li>
+              <li><Link href="/#owners">List your venue</Link></li>
               <li><a href="https://partner.oyun.co.in/partner/login">Partner login</a></li>
               <li><a href={`mailto:${supportEmail}`}>Contact us</a></li>
             </ul>
