@@ -25,6 +25,8 @@ import { clientIpFrom } from '@/lib/client-ip';
 
 const MAX_DAYS_AHEAD = BOOKING_DAYS - 1;
 const HOLD_MINUTES = 8;
+const HOLD_LOST_MESSAGE = 'Your slot hold has expired. Please pick your slot again.';
+const SLOTS_UNAVAILABLE_MESSAGE = 'Booking is not available for this turf right now. Please try again later.';
 
 function checkDate(date: string) {
   const today = istNow().date;
@@ -103,6 +105,8 @@ export async function holdSlots(turfId: string, date: string, hours: number[], s
         }
         return { ok: true, expiresInMs: v2Res.expiresInMs, slots: await getSlotsForDate(turfId, date, pitchSize, pitchSide) };
       }
+      // The turf has no relational slot setup. A hold saved through `mutate` would be dropped (R008), so refuse it.
+      return { ok: false, error: SLOTS_UNAVAILABLE_MESSAGE, slots: await getSlotsForDate(turfId, date, pitchSize, pitchSide) };
     }
 
     const expiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString();
@@ -227,6 +231,9 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
           return { error: confirmRes.error };
         }
       }
+      // With relational slots on, the store no longer saves bookings made through `mutate` (R008), so falling through
+      // would show the player a ticket that was never kept. Ask them to pick the slot again instead.
+      return { error: HOLD_LOST_MESSAGE };
     }
 
     const ids = await mutate((db) => {
