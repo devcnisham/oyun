@@ -3,7 +3,7 @@
 | Environment | Where | Data and keys | Who sees it |
 | --- | --- | --- | --- |
 | Local | `npm run dev` on your machine | A file in `.data/` unless Supabase keys are set; Clerk off unless keys are set; admin and partner logins skipped | Developers |
-| Preview | Vercel builds every pull request | Uses the separate staging Supabase project `oyun-staging` (see docs/STAGING.md); set its keys on the Preview scope | Reviewers |
+| Preview | Vercel builds every pull request | Should use a separate staging Supabase project (not set up yet, task P8-12) | Reviewers |
 | Production | Vercel deploys `main` | Production Supabase, Clerk live keys | Customers |
 
 Never point local or preview at the production database with the secret key unless you mean to change real data.
