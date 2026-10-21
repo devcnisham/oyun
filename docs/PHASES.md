@@ -527,7 +527,7 @@ flowchart LR
 | Item | Priority | Status | What | Note |
 | ---- | -------- | ------ | ---- | ---- |
 | P10-13 | P0 | ⬜ to do | Run supabase/setup/5-delta-sync.sql on the production Supabase project | Until then the new code falls back to the old full load per request and logs a warning. |
-| P10-14 | P2 | ⬜ to do | Keep bookings older than 90 days out of the in-memory copy (archive table, read on demand) | Keeps cold-start loads and per-write clone and diff small as history grows. |
+| P10-14 | P2 | ✅ done (superseded by R008) | Keep bookings older than 90 days out of the in-memory copy (archive table, read on demand) | Keeps cold-start loads and per-write clone and diff small as history grows. |
 | P10-11 | P0 | ⬜ to do | Upgrade Supabase to Pro before launch; set spend cap and usage alerts |  |
 | P10-12 | P1 | ⬜ to do | 1,000-user readiness test: 3 months of seeded bookings, k6 run, p95 under 800 ms |  |
 | P10-16 | P1 | ⬜ to do | Run supabase/setup/6-half-pitch.sql on production before switching any turf to halves | Until it runs the old one-booking-per-hour index makes the second half fail to book. Code is live and safe while no turf has halves on. |

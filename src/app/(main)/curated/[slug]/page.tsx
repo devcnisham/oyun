@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import FaqList from '@/components/FaqList';
 import JsonLd from '@/components/JsonLd';
-import TurfCard from '@/components/TurfCard';
+import TurfGrid from '@/components/TurfGrid';
 import { CURATED_COLLECTIONS, getCuratedCollection } from '@/lib/curated-collections';
 import { listPublicTurfs } from '@/lib/queries';
 import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
@@ -86,11 +87,7 @@ export default async function CuratedCollectionPage({ params }: Props) {
           <h2 id="curated-list" className={styles.h2}>
             Recommended Venues ({turfs.length})
           </h2>
-          <div className={styles.grid}>
-            {turfs.map((t) => (
-              <TurfCard key={t.id} turf={t} />
-            ))}
-          </div>
+          <TurfGrid turfs={turfs} />
         </section>
       ) : (
         <div className={styles.emptyState}>
@@ -118,14 +115,7 @@ export default async function CuratedCollectionPage({ params }: Props) {
       {collection.faqs.length > 0 && (
         <section aria-labelledby="faqs-heading">
           <h2 id="faqs-heading" className={styles.h2}>Frequently Asked Questions</h2>
-          <div className={styles.faqList}>
-            {collection.faqs.map((faq, i) => (
-              <details key={i} className={styles.faqItem} open={i === 0}>
-                <summary>{faq.q}</summary>
-                <p>{faq.a}</p>
-              </details>
-            ))}
-          </div>
+          <FaqList faqs={collection.faqs} />
         </section>
       )}
 

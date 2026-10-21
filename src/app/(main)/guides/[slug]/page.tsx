@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import FaqList from '@/components/FaqList';
 import JsonLd from '@/components/JsonLd';
 import { GUIDES, getGuide } from '@/lib/guides-content';
 import { articleSchema, breadcrumbSchema, faqSchema } from '@/lib/schema';
@@ -144,14 +145,7 @@ export default async function GuideDetailPage({ params }: Props) {
           <h2 id="faqs-heading" className={styles.h2}>
             Frequently Asked Questions
           </h2>
-          <div className={styles.faqList}>
-            {guide.faqs.map((faq, i) => (
-              <details key={i} className={styles.faqItem} open={i === 0}>
-                <summary>{faq.q}</summary>
-                <p>{faq.a}</p>
-              </details>
-            ))}
-          </div>
+          <FaqList faqs={guide.faqs} />
         </section>
       )}
 
