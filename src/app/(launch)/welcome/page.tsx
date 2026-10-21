@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { SITE_CITY } from '@/lib/site';
 import { SPORTS } from '@/lib/sports';
 import { getSettings } from '@/lib/queries';
+import BookButton from '../BookButton';
 import LaunchHeader from '../LaunchHeader';
 import Countdown from './Countdown';
 import styles from './page.module.css';
@@ -58,6 +59,7 @@ export default async function WelcomePage() {
           </span>
         </h1>
         <Countdown />
+        <BookButton className={styles.bookCta} closedClassName={styles.bookCtaClosed} />
       </section>
 
       <div className={styles.tickerWrap} id="sports" aria-hidden="true">

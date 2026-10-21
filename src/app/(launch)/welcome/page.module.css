@@ -281,3 +281,20 @@
 
 .cta:hover { background: #ffe9ec; }
 .cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* Booking button under the countdown: a quiet label until launch, a real button after */
+.bookCta,
+.bookCtaClosed {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.bookCta { background: #d31027; color: #fff; box-shadow: 0 10px 30px rgba(211, 16, 39, 0.45); }
+.bookCta:hover { background: #e3263a; }
+.bookCta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.bookCtaClosed { background: rgba(255, 255, 255, 0.12); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); cursor: default; }
+.bookCtaClosed small { font-weight: 600; color: rgba(255, 255, 255, 0.82); }

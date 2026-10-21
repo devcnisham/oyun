@@ -58,7 +58,9 @@ async function handle(req: NextRequest) {
     const clean = new URL(req.url);
     clean.searchParams.delete('preview');
     const res = NextResponse.redirect(clean, 307);
-    res.cookies.set(PREVIEW_COOKIE, previewKey, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 30 });
+    // One cookie for every oyun.co.in subdomain, so the team opens app., book. and help. once
+    const shared = /(^|\.)oyun\.co\.in$/.test((req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '').replace(/:\d+$/, '')) ? { domain: '.oyun.co.in' } : {};
+    res.cookies.set(PREVIEW_COOKIE, previewKey, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 30, ...shared });
     return res;
   }
   const route = routeForHost(role, req.nextUrl.pathname, {
