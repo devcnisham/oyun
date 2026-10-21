@@ -35,7 +35,7 @@ export default function LaunchHeader({ current }: { current?: 'about' }) {
     <div className={styles.spacer} aria-hidden="true" />
     <header className={`${styles.header} ${hidden ? styles.hidden : ''}`}>
       <div className={styles.inner}>
-        <Link href="/welcome" className={styles.brandLink} aria-label="OYUN home">
+        <Link href="/welcome" className={styles.brandLink}>
           <svg className={styles.logoSvg} width="36" height="36" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle cx="20" cy="20" r="18" fill="url(#oyunGradHead)" />
             <path d="M 12 12 L 18 22 L 27 16 L 31 19" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
