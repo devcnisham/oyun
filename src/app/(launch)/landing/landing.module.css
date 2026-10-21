@@ -60,30 +60,29 @@
 .btnGhost:hover { border-color: var(--text); background: rgba(243, 241, 237, 0.06); }
 .btn:focus-visible, .btnGhost:focus-visible, .link:focus-visible, .faqQ:focus-visible { outline: 3px solid #ffd166; outline-offset: 3px; }
 
-/* ---------- hero ---------- */
-.hero { position: relative; display: flex; align-items: flex-end; min-height: max(92svh, 640px); padding: 140px 0 88px; overflow: hidden; isolation: isolate; background: var(--ink); }
-.heroImg { z-index: -2; object-fit: cover; object-position: 50% 62%; }
-.heroShade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(11, 11, 12, 0.62) 0%, rgba(11, 11, 12, 0.35) 38%, rgba(11, 11, 12, 0.92) 100%); }
+/* ---------- hero: type only ---------- */
+.hero { position: relative; display: flex; align-items: flex-end; min-height: max(88svh, 620px); padding: 150px 0 96px; background: var(--ink); border-bottom: 1px solid var(--hair); }
 .heroInner { width: 100%; animation: rise 0.9s var(--ease) both; }
+.hero .h1 { font-size: clamp(3.3rem, 9.4vw, 8.2rem); }
 
 /* ---------- principles: three columns divided by hairlines ---------- */
 .principles { display: grid; gap: 0; margin: 56px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--hair); }
 .principle { padding: 32px 0; border-bottom: 1px solid var(--hair); }
 
-/* ---------- photographic band ---------- */
-.band { position: relative; display: flex; align-items: flex-end; min-height: 72svh; padding: 96px 0; overflow: hidden; isolation: isolate; background: var(--ink); }
-.bandImg { z-index: -2; object-fit: cover; object-position: 50% 58%; }
-.bandShade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(11, 11, 12, 0.85), rgba(11, 11, 12, 0.15) 60%); }
-.bandInner { width: 100%; }
-.quote { margin: 0; max-width: 18ch; font-size: clamp(2.2rem, 5.4vw, 4.4rem); line-height: 1.06; color: #fff; }
+/* ---------- interlude ---------- */
+.interlude { padding: 112px 0; background: var(--surface); border-bottom: 1px solid var(--hair); }
+.quote { margin: 0; max-width: 20ch; font-family: var(--font-serif), Georgia, serif; font-size: clamp(2.2rem, 5.4vw, 4.4rem); line-height: 1.08; letter-spacing: -0.01em; color: var(--text); }
+.quote em { font-style: italic; color: #e9b8c0; }
 
 /* ---------- owners ---------- */
 .split { background: var(--ink); }
 .splitGrid { display: grid; gap: 56px; align-items: center; }
 .rules { margin: 0 0 36px; padding: 0; list-style: none; border-top: 1px solid var(--hair); }
 .rules li { padding: 14px 0; border-bottom: 1px solid var(--hair); color: rgba(243, 241, 237, 0.88); }
-.photo { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 4px; background: var(--surface); }
-.photoImg { object-fit: cover; object-position: 50% 55%; }
+.listing { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--hair); }
+.listingItem { display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding: 28px 0; border-bottom: 1px solid var(--hair); }
+.listingNo { font-family: var(--font-serif), Georgia, serif; font-size: 2.2rem; line-height: 1; color: #e9b8c0; }
+.listingItem .body { margin: 0; }
 
 /* ---------- faq ---------- */
 .paper { background: var(--paper); color: var(--paper-ink); }
