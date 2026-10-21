@@ -9,6 +9,7 @@ import { DB_VERSION, migrate, seed } from './seed';
 import type { Database } from './types';
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
 import { broadcastSlotChanges } from './realtime';
+import { diffV2Bookings, loadV2BookingsByIds, loadV2Snapshot, type V2Snapshot } from './v2-bookings';
 
 export { newBookingCode, newId } from './ids';
 
@@ -43,6 +44,11 @@ const LIST_TABLES = {
   applications: 'applications',
   walletTxns: 'wallet_txns',
   holds: 'holds',
+  waitlist: 'waitlist',
+  payouts: 'payouts',
+  openMatches: 'open_matches',
+  tournaments: 'tournaments',
+  activity: 'activity',
 } as const;
 
 type Table = (typeof LIST_TABLES)[keyof typeof LIST_TABLES] | 'promo_codes' | 'pricing' | 'app_config';
@@ -54,7 +60,7 @@ function toRows(db: Database, only?: ReadonlySet<Table>): TableRows {
   const rows: TableRows = {};
   const want = (table: Table) => !only || only.has(table);
   for (const [key, table] of Object.entries(LIST_TABLES) as [keyof typeof LIST_TABLES, Table][]) {
-    if (want(table)) rows[table] = (db[key] as { id: string }[]).map((item) => ({ id: item.id, data: item }));
+    if (want(table)) rows[table] = ((db[key] ?? []) as { id: string }[]).map((item) => ({ id: item.id, data: item }));
   }
   if (want('promo_codes')) rows.promo_codes = db.promoCodes.map((p) => ({ id: p.code, data: p }));
   if (want('pricing')) rows.pricing = Object.entries(db.pricing).map(([turfId, rules]) => ({ id: turfId, data: rules }));
@@ -84,11 +90,12 @@ function fromRows(rows: TableRows): Database {
 }
 
 // Serialized rows, to work out what a mutation changed.
-// R008: With the v2 relational slot schema on (OYUN_V2_SLOTS=1), bookings, holds, blocks, and pricing live
-// in the `oyun` schema and are excluded from apply_changes and load_changes. Until the booking pages,
-// dashboards, wallet and payouts read from it, v2 stays off and these tables are saved like the rest,
-// guarded by the unique slot indexes (supabase/migrations/20261008000000_half_pitch.sql).
-const RETIRED_BOOKING_TABLES = new Set<string>(['bookings', 'holds', 'blocks', 'pricing']);
+// R008: With the v2 relational slot schema on (OYUN_V2_SLOTS=1), bookings, holds and blocks live in the
+// `oyun` schema and are excluded from apply_changes and load_changes; edits to existing bookings are written
+// back through apply_booking_updates (see writeBackV2Bookings). Pricing rules stay in the main store.
+// With the flag off these tables are saved like the rest, guarded by the unique slot indexes
+// (supabase/migrations/20261008000000_half_pitch.sql).
+const RETIRED_BOOKING_TABLES = new Set<string>(['bookings', 'holds', 'blocks']);
 
 export function v2SlotsEnabled() {
   return process.env.OYUN_V2_SLOTS === '1';
@@ -161,6 +168,74 @@ function announceSlotChanges(slots: { turfId: string; date: string }[]) {
     });
   } catch {
     broadcastSlotChanges(slots).catch((err) => console.warn('[store] failed to announce slot changes:', err));
+  }
+}
+
+/*
+ * With v2 slots on, bookings, holds and blocks live in the oyun schema. Everything that reads the store
+ * (pages, dashboards, mutate callbacks) sees them as the app's own Booking, SlotHold and SlotBlock,
+ * read from a short per-server cache so a page does not query on every request. Writes through the v2
+ * RPCs drop the cache (invalidateV2Snapshot) so the same server sees them straight away.
+ */
+const V2_TTL_MS = 2000;
+const v2Memory = globalThis as unknown as { __oyunV2?: { at: number; snap: Promise<V2Snapshot> }; __oyunV2Last?: V2Snapshot };
+
+export function invalidateV2Snapshot() {
+  delete v2Memory.__oyunV2;
+}
+
+/**
+ * Bookings by id. Anything older than the per-request window is fetched from oyun, so records that point at
+ * old bookings (a payout statement) stay complete.
+ */
+export async function bookingsByIds(db: Database, ids: string[]) {
+  const found = db.bookings.filter((b) => ids.includes(b.id));
+  if (!booksInV2()) return found;
+  const have = new Set(found.map((b) => b.id));
+  const missing = ids.filter((id) => !have.has(id));
+  if (missing.length === 0) return found;
+  const openHours = new Map(db.turfs.map((t) => [t.id, t.openTime ? parseInt(t.openTime.split(':')[0], 10) || 0 : 0]));
+  const older = await loadV2BookingsByIds(createAdminClient(), missing, (turfId) => openHours.get(turfId) ?? 0);
+  return [...found, ...older];
+}
+
+async function withV2(db: Database): Promise<Database> {
+  if (!booksInV2()) return db;
+  const now = Date.now();
+  if (!v2Memory.__oyunV2 || now - v2Memory.__oyunV2.at > V2_TTL_MS) {
+    const openHours = new Map(db.turfs.map((t) => [t.id, t.openTime ? parseInt(t.openTime.split(':')[0], 10) || 0 : 0]));
+    const snap = loadV2Snapshot(createAdminClient(), (turfId) => openHours.get(turfId) ?? 0);
+    v2Memory.__oyunV2 = { at: now, snap };
+    snap.then((s) => (v2Memory.__oyunV2Last = s), () => {});
+  }
+  try {
+    const snap = await v2Memory.__oyunV2.snap;
+    return { ...db, bookings: snap.bookings, holds: snap.holds, blocks: snap.blocks };
+  } catch (err) {
+    delete v2Memory.__oyunV2;
+    console.error('[store] could not read v2 bookings; using the last good copy:', err instanceof Error ? err.message : err);
+    const last = v2Memory.__oyunV2Last;
+    return { ...db, bookings: last?.bookings ?? [], holds: last?.holds ?? [], blocks: last?.blocks ?? [] };
+  }
+}
+
+/*
+ * Edits a mutate() callback made to existing bookings go to oyun.bookings (check-in, no-show, cash collected,
+ * cancel, refund, review...). Adding a booking this way would skip the slot claims that stop double bookings,
+ * so it is refused before anything is written; bookings are created through the v2 checkout.
+ */
+async function writeBackV2Bookings(before: Database['bookings'], after: Database['bookings']) {
+  const { updates, created, moved } = diffV2Bookings(before, after);
+  if (moved.length > 0) throw new ValidationError('Rescheduling is not available yet. Cancel this booking and book the new slot.');
+  if (created.length > 0) {
+    throw new Error(`[store] bookings cannot be created by editing the list while v2 slots are on (${created.join(', ')}); use the v2 checkout`);
+  }
+  if (updates.length === 0) return;
+  const { error } = await createAdminClient().rpc('apply_booking_updates', { p_updates: updates });
+  invalidateV2Snapshot();
+  if (error) {
+    if (error.code === 'P0002' || error.code === 'P0001') throw new ValidationError('This booking can no longer be changed.');
+    throw new Error(`[store] booking update failed: ${error.message}`);
   }
 }
 
@@ -509,7 +584,7 @@ export async function getDb(): Promise<Database> {
   const state = requestState();
   state.current ??= loadSupabase();
   try {
-    return (await state.current).db;
+    return await withV2((await state.current).db);
   } catch (err) {
     state.current = null;
     if (fallBackInDev(err)) return fileDb();
@@ -545,12 +620,14 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
       throw err;
     }
     // Work on a private copy: the loaded object is shared with other requests on this server
-    const work = lazyCopy(loaded.db);
+    const base = await withV2(loaded.db);
+    const work = lazyCopy(base);
     const result = fn(work.db);
     const touched = work.tables();
     const db = work.settled();
-    const before = snapshot(loaded.db, touched);
+    const before = snapshot(base, touched);
     const changes = diff(before, db, touched);
+    if (booksInV2() && touched.has('bookings')) await writeBackV2Bookings(base.bookings, db.bookings);
     try {
       const rev = changes.empty ? loaded.rev : await applyChanges(changes, loaded.rev);
       // Our write is exactly the next revision, so the cache can take it without a round trip.

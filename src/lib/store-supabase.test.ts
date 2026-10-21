@@ -4,14 +4,38 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 const EMPTY_STATE = {
   turfs: [], partners: [], staff: [], players: [], bookings: [], blocks: [], offers: [],
   add_ons: [], applications: [], wallet_txns: [{ id: 'wt_1', data: { id: 'wt_1', playerId: 'pl_1', amount: 100 } }], holds: [], promo_codes: [], pricing: [], app_config: [],
+  waitlist: [], payouts: [{ id: 'po_1', data: { id: 'po_1', net: 500 } }], open_matches: [], tournaments: [], activity: [],
   rev: 7,
 };
 
+// A query builder that answers every chained call, then resolves to the rows for its table
+function query(rows: unknown[]) {
+  const chain: Record<string, unknown> = {};
+  for (const m of ['select', 'gte', 'order', 'limit', 'eq', 'in']) chain[m] = () => chain;
+  chain.then = (resolve: (v: unknown) => unknown) => resolve({ data: rows, error: null });
+  return chain;
+}
+
+const V2_BOOKING = {
+  id: '11111111-1111-5111-8111-111111111111', legacy_id: 'bk_v2', code: 'AB12CD34', holder: null, customer_name: 'Asha',
+  customer_phone: '9876543210', source: 'online', status: 'confirmed', hold_expires_at: null, subtotal: 1000, discount: 0,
+  wallet_used: 0, total: 1000, advance_due: 150, amount_paid: 150, price_breakdown: {}, meta: {}, cancelled_at: null,
+  cancel_reason: null, checked_in_at: null, created_at: '2026-10-19T10:00:00Z', venues: { slug: 'turf_a' }, players: null,
+  booking_items: [{ id: 'it_1', during: '["2026-10-20 12:30:00+00","2026-10-20 13:30:00+00")', price: 1000, bookables: { name: 'Full pitch' } }],
+};
+
+const updates: unknown[] = [];
+
 function fakeClient(applied: unknown[], newRev = 8) {
   return {
+    schema: () => ({ from: (table: string) => query(table === 'bookings' ? [V2_BOOKING] : []) }),
     rpc: vi.fn(async (fn: string, args?: unknown) => {
       if (fn === 'load_state') return { data: EMPTY_STATE, error: null };
       if (fn === 'load_changes') return { data: { rev: 7, full: false }, error: null };
+      if (fn === 'apply_booking_updates') {
+        updates.push(args);
+        return { data: (args as { p_updates: unknown[] }).p_updates.length, error: null };
+      }
       if (fn === 'apply_changes') {
         applied.push(args);
         return { data: newRev, error: null };
@@ -57,13 +81,32 @@ describe('store writes in Supabase mode', () => {
     expect(call.changes.upserts.bookings.map((r) => r.id)).toEqual(['bk_1']);
   });
 
-  test('bookings are left to the oyun schema when v2 slots are on', async () => {
+  test('with v2 slots on, a booking cannot be created by editing the list', async () => {
     const applied: unknown[] = [];
+    updates.length = 0;
+    const { mutate } = await loadStore({ OYUN_V2_SLOTS: '1' }, fakeClient(applied));
+    await expect(
+      mutate((db) => {
+        db.bookings.push(booking as never);
+      })
+    ).rejects.toThrow(/cannot be created/);
+    expect(applied).toHaveLength(0);
+    expect(updates).toHaveLength(0);
+  });
+
+  test('with v2 slots on, an edit to an existing booking is written back to oyun', async () => {
+    const applied: unknown[] = [];
+    updates.length = 0;
     const { mutate } = await loadStore({ OYUN_V2_SLOTS: '1' }, fakeClient(applied));
     await mutate((db) => {
-      db.bookings.push(booking as never);
+      const b = db.bookings.find((x) => x.id === 'bk_v2')!;
+      b.status = 'checked_in';
+      b.checkedInAt = '2026-10-20T13:00:00.000Z';
     });
     expect(applied).toHaveLength(0);
+    const sent = (updates[0] as { p_updates: { id: string; status: string; checkedInAt: string }[] }).p_updates;
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ id: 'bk_v2', status: 'checked_in', checkedInAt: '2026-10-20T13:00:00.000Z' });
   });
 
   test('only the rows a mutation touched are sent', async () => {
@@ -122,5 +165,37 @@ describe('store writes in Supabase mode', () => {
     });
     const removed = (applied[1] as { changes: { deletes: Record<string, string[]> } }).changes;
     expect(removed.deletes.wallet_txns).toEqual(['wt_1']);
+  });
+
+  test('with v2 slots on, getDb shows bookings read from the oyun schema', async () => {
+    const { getDb } = await loadStore({ OYUN_V2_SLOTS: '1' }, fakeClient([]));
+    const db = await getDb();
+    expect(db.bookings).toHaveLength(1);
+    expect(db.bookings[0]).toMatchObject({ id: 'bk_v2', turfId: 'turf_a', date: '2026-10-20', hour: 18, status: 'confirmed' });
+  });
+
+  test('with v2 slots off, the oyun schema is not read', async () => {
+    const { getDb } = await loadStore({ OYUN_V2_SLOTS: '' }, fakeClient([]));
+    expect((await getDb()).bookings).toEqual([]);
+  });
+
+  test('payouts, waitlist, matches, tournaments and activity are saved, not dropped', async () => {
+    const applied: unknown[] = [];
+    const { mutate } = await loadStore({ OYUN_V2_SLOTS: '' }, fakeClient(applied));
+    await mutate((db) => {
+      db.waitlist = [...(db.waitlist ?? []), { id: 'wl_1' } as never];
+      db.activity = [...(db.activity ?? []), { id: 'act_1' } as never];
+      db.openMatches = [...(db.openMatches ?? []), { id: 'match_1' } as never];
+      db.tournaments = [...(db.tournaments ?? []), { id: 'tour_1' } as never];
+      (db.payouts![0] as { net: number }).net = 450;
+    });
+    const up = (applied[0] as { changes: { upserts: Record<string, { id: string }[]> } }).changes.upserts;
+    expect(Object.keys(up).sort()).toEqual(['activity', 'open_matches', 'payouts', 'tournaments', 'waitlist']);
+    expect(up.payouts[0].id).toBe('po_1');
+  });
+
+  test('payouts come back from the database', async () => {
+    const { getDb } = await loadStore({ OYUN_V2_SLOTS: '' }, fakeClient([]));
+    expect((await getDb()).payouts).toEqual([{ id: 'po_1', net: 500 }]);
   });
 });
