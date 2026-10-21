@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import ConsentManager from "@/components/consent/ConsentManager";
+import AttributionCapture from "@/components/AttributionCapture";
 import NavTracker from "@/components/NavTracker";
 import BottomNav from "@/components/BottomNav";
 import AuthProvider from "@/components/AuthProvider";
@@ -69,6 +70,7 @@ export default function RootLayout({
         <BottomNav />
         <ConsentManager />
         <NavTracker />
+        <AttributionCapture />
         <ServiceWorkerRegister />
         </AuthProvider>
       </body>

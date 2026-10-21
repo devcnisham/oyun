@@ -291,6 +291,7 @@ export interface Booking {
   cashback?: number; // wallet credit given when the player checked in
   cashCollected?: { amount: number; at: string; by: string }; // balance the desk confirmed taking at check-in
   accountId?: string | null; // signed-in player account (Clerk user id) that made the booking
+  acquisition?: { source: string; medium: string; campaign?: string; landing: string } | null; // first visit: where the player came from
   review?: BookingReview | null; // the player's rating after playing
   cancelledAt?: string | null;
   cancelReason?: string | null; // 'rain' when cancelled under the rain policy
