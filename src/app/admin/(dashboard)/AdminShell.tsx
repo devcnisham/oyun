@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import BrandMark from '@/components/BrandMark';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/auth-actions';
 import NavIcon from '@/components/dash/NavIcon';
@@ -39,7 +40,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       <aside className={`${styles.sidebar} noPrint`}>
         <div className={styles.brand}>
           <Link href="/" className={styles.logo}>
-            <span className={styles.logoIcon}><NavIcon name="ball" size={18} /></span>
+            <BrandMark size={32} shadow={false} />
             <div className={styles.logoText}>
               <span className={styles.logoName}>OYUN</span>
               <span className={styles.logoTag}>Super Admin</span>

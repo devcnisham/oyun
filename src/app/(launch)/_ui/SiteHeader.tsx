@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { IconArrow, IconClose, IconMenu } from './icons';
-import Logo from './Logo';
+import BrandMark from '@/components/BrandMark';
 import { APP_URL } from './links';
 import styles from './site.module.css';
 
@@ -40,7 +40,7 @@ export default function SiteHeader({ current }: { current?: 'about' | 'countdown
       <a href="#content" className={styles.skip}>Skip to content</a>
       <div className={styles.bar}>
         <Link href="/" className={styles.brand}>
-          <Logo id="siteHeadLogo" size={34} />
+          <BrandMark size={34} />
           <span className={styles.brandName}>OYUN</span>
         </Link>
 

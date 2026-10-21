@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import BrandMark from '@/components/BrandMark';
 
 const KEY = 'oyun:sidebar-hidden';
 const ATTR = 'data-sidebar';
@@ -75,20 +76,9 @@ export default function SidebarToggle({ className, variant = 'logo' }: { classNa
   return (
     <button type="button" className={className} onClick={toggle} aria-pressed={collapsed} aria-label={label} title={label}>
       {collapsed ? (
-        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden style={{ display: 'block', margin: '0 auto' }}>
-          <circle cx="20" cy="20" r="18" fill="url(#sidebarLogo)" />
-          <path d="M 12 12 L 18 22 L 27 16 L 31 19" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <circle cx="32" cy="12" r="2.5" fill="white" />
-          <path d="M 14 28 Q 22 32 30 24" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" fill="none" />
-          <defs>
-            <linearGradient id="sidebarLogo" x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#d31027" />
-              <stop offset="1" stopColor="#4A0000" />
-            </linearGradient>
-          </defs>
-        </svg>
+        <span style={{ display: 'block', margin: '0 auto', width: 26 }}><BrandMark size={26} shadow={false} /></span>
       ) : (
-        <span style={{ fontWeight: 900, letterSpacing: '-0.02em' }}>OYUN</span>
+        <span style={{ fontFamily: 'var(--font-wordmark-family)', fontWeight: 800, letterSpacing: 0 }}>OYUN</span>
       )}
     </button>
   );

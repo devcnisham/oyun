@@ -36,9 +36,10 @@
 }
 
 .brandTitle {
+  font-family: var(--font-wordmark-family);
   font-size: 48px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
+  font-weight: 800;
+  letter-spacing: 0;
   margin-bottom: 8px;
   text-transform: uppercase;
 }
