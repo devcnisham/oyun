@@ -64,3 +64,7 @@ What the audit found, independent of the v2 flag:
 
 Decisions: wallet, promos and players stay in the main store (they already write correctly through `mutate`); payouts keep reading bookings through the store, and a payout statement now fetches bookings older than the 90-day window by id (`bookingsByIds`).
 Not done: online payments are not wired into any checkout (nothing calls `createRazorpayOrder`), so there is no `oyun.payments` row for `confirm_payment` to find. When they are wired, record the order in `oyun.payments` at order creation and confirm through `pay_online` holds.
+
+## Phase 5 notes (backfill and cutover)
+
+`oyun.backfill_legacy_bookings(dry_run)` copies `public.bookings` (and valid players) into oyun: slots from the order's items or hours (hours 24+ and before-opening hours go to the next calendar day), half pitch to the matching bookable, refunds as cancelled with `meta.refunded`, claims only for live bookings. Overlapping live bookings in the old data are copied without a claim and listed. `oyun.parity_report()` compares count and money per status. `scripts/v2-backfill.mjs` runs both; the steps are in `docs/V2-CUTOVER.md`. Verified on local Postgres only; the first real run should be a dry run on staging.
