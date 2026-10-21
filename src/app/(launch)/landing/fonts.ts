@@ -1,4 +1,4 @@
-import { Instrument_Serif } from 'next/font/google';
+import { Sora } from 'next/font/google';
 
-// One refined serif for headlines; the body text is Inter, already loaded for the whole site (--font-inter)
-export const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], variable: '--font-serif', display: 'swap' });
+// Display face for headlines and numbers: geometric, wide and sporty. Body text is Inter, already loaded for the whole site (--font-inter).
+export const display = Sora({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-display', display: 'swap' });

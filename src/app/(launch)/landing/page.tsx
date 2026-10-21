@@ -1,16 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
-import { getSettings } from '@/lib/queries';
+import { getSettings, listAreas, listPublicTurfs } from '@/lib/queries';
 import { organizationSchema, websiteSchema } from '@/lib/schema';
 import { localeAlternates, ogBase } from '@/lib/seo';
-import { SITE_CITY, SITE_DESCRIPTION } from '@/lib/site';
+import { SITE_CITY, SITE_DESCRIPTION, areaSlug } from '@/lib/site';
 import { IconArrow, IconPlus } from '../_ui/icons';
 import { BROWSE_URL } from '../_ui/links';
 import Reveal from '../_ui/Reveal';
 import SiteFooter from '../_ui/SiteFooter';
 import SiteHeader from '../_ui/SiteHeader';
-import { serif } from './fonts';
+import { display } from './fonts';
+import OwnerCalendar from './OwnerCalendar';
+import SlotBoard from './SlotBoard';
 import styles from './landing.module.css';
 
 export const metadata: Metadata = {
@@ -20,10 +22,10 @@ export const metadata: Metadata = {
   openGraph: { ...ogBase('/'), title: 'OYUN | Book Sports Turfs & Courts in Mangalore Online', description: SITE_DESCRIPTION },
 };
 
-const PRINCIPLES = [
-  { title: 'See what is open', text: 'Live availability for every venue, hour by hour. No calls, no waiting for a reply.' },
-  { title: 'Hold, then confirm', text: 'Your hours are held for 8 minutes while you check out, so nobody books them from under you.' },
-  { title: 'Change your mind', text: 'Cancel from your ticket up to 2 hours before the slot starts.' },
+const STEPS = [
+  { title: 'Pick', text: 'Choose a venue, a day and the hours you want. Open hours are live, so what you see is what is free.' },
+  { title: 'Hold', text: 'Your hours are held for 8 minutes while you sign in and confirm, so nobody books them from under you.' },
+  { title: 'Play', text: 'Pay a small advance, keep the ticket, and settle the rest at the venue. Cancel from the ticket up to 2 hours before.' },
 ];
 
 const OWNER_POINTS = [
@@ -49,61 +51,105 @@ const FAQ = [
 ];
 
 export default async function LandingPage() {
-  const { supportEmail, supportPhone } = await getSettings();
+  const [{ supportEmail, supportPhone }, turfs] = await Promise.all([getSettings(), listPublicTurfs()]);
+  const areas = listAreas(turfs).map((a) => ({ name: a, slug: areaSlug(a), count: turfs.filter((t) => t.area === a).length }));
   return (
-    <div className={`${serif.variable} ${styles.page}`}>
+    <div className={`${display.variable} ${styles.page}`}>
       <JsonLd data={[organizationSchema(supportEmail, supportPhone), websiteSchema()]} />
       <SiteHeader />
       <main id="content">
-        {/* hero: one sentence, two actions */}
+        {/* hero: the promise and a board you can use */}
         <section className={styles.hero} aria-labelledby="hero-title">
-          <div className={`${styles.wrap} ${styles.heroInner}`}>
-            <p className={styles.kicker}>{SITE_CITY}</p>
-            <h1 id="hero-title" className={styles.h1}>
-              <span className="sr-only">Book football, box cricket, badminton and pickleball turfs in {SITE_CITY}. </span>
-              Book your game<br />in <em>a minute.</em>
-            </h1>
-            <p className={styles.lead}>See what is open at football, box cricket, badminton and pickleball venues across the city, hold the hours you want, and walk in with a ticket.</p>
-            <div className={styles.actions}>
-              <a href={BROWSE_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
-              <Link href="/countdown" className={styles.btnGhost}>Launch countdown</Link>
+          <div className={`${styles.wrap} ${styles.heroGrid}`}>
+            <div className={styles.heroCopy}>
+              <p className={styles.kicker}>{SITE_CITY}</p>
+              <h1 id="hero-title" className={styles.h1}>
+                <span className="sr-only">Book football, box cricket, badminton and pickleball turfs in {SITE_CITY}. </span>
+                <span className={styles.rise} style={{ ['--d' as string]: '0ms' }}>Pick the hour.</span>
+                <span className={`${styles.rise} ${styles.h1Accent}`} style={{ ['--d' as string]: '120ms' }}>Play the game.</span>
+              </h1>
+              <p className={`${styles.lead} ${styles.rise}`} style={{ ['--d' as string]: '240ms' }}>See what is open at football, box cricket, badminton and pickleball venues across the city, hold the hours you want, and walk in with a ticket.</p>
+              <div className={`${styles.actions} ${styles.rise}`} style={{ ['--d' as string]: '340ms' }}>
+                <a href={BROWSE_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
+                <Link href="/countdown" className={styles.btnGhost}>Launch countdown</Link>
+              </div>
+            </div>
+            <div className={`${styles.heroBoard} ${styles.rise}`} style={{ ['--d' as string]: '200ms' }}>
+              <SlotBoard />
             </div>
           </div>
         </section>
 
-        {/* what it does: three plain statements */}
+        {/* how it works: three states of the same booking */}
         <section id="how" className={styles.section} aria-labelledby="how-title">
           <div className={styles.wrap}>
             <Reveal>
-              <h2 id="how-title" className={styles.h2}>Finding a place to play should not take a round of phone calls.</h2>
+              <p className={styles.eyebrow}>How it works</p>
+              <h2 id="how-title" className={styles.h2}>From open hour to ticket, in three moves.</h2>
             </Reveal>
-            <ol className={styles.principles}>
-              {PRINCIPLES.map((p, i) => (
-                <Reveal as="li" key={p.title} delay={i * 90} className={styles.principle}>
-                  <h3 className={styles.h3}>{p.title}</h3>
-                  <p className={styles.body}>{p.text}</p>
+            <ol className={styles.steps}>
+              {STEPS.map((s, i) => (
+                <Reveal as="li" key={s.title} delay={i * 100} className={styles.step}>
+                  <div className={styles.stepArt} aria-hidden="true">
+                    {i === 0 && (
+                      <div className={styles.miniSlots}>
+                        {['6 PM', '7 PM', '8 PM', '9 PM'].map((t, n) => (
+                          <span key={t} className={n === 1 || n === 2 ? styles.miniOn : n === 3 ? styles.miniOff : ''}>{t}</span>
+                        ))}
+                      </div>
+                    )}
+                    {i === 1 && (
+                      <div className={styles.miniHold}>
+                        <svg viewBox="0 0 64 64" width="72" height="72"><circle cx="32" cy="32" r="26" className={styles.miniRingBg} /><circle cx="32" cy="32" r="26" className={styles.miniRingFg} /></svg>
+                        <span>8:00</span>
+                      </div>
+                    )}
+                    {i === 2 && (
+                      <div className={styles.miniTicket}>
+                        <b>7 PM to 9 PM</b>
+                        <span>Show this at the venue</span>
+                      </div>
+                    )}
+                  </div>
+                  <h3 className={styles.h3}>{s.title}</h3>
+                  <p className={styles.body}>{s.text}</p>
                 </Reveal>
               ))}
             </ol>
           </div>
         </section>
 
-        {/* a typographic interlude */}
-        <section className={styles.interlude} aria-label="A line about the city">
-          <div className={styles.wrap}>
-            <Reveal>
-              <p className={styles.quote}>Every neighbourhood has room for <em>a game.</em></p>
-            </Reveal>
-          </div>
-        </section>
+        {/* the neighbourhoods, from live venue data */}
+        {areas.length > 0 && (
+          <section className={`${styles.section} ${styles.areasSection}`} aria-labelledby="where-title">
+            <div className={styles.wrap}>
+              <Reveal>
+                <p className={styles.eyebrow}>Where</p>
+                <h2 id="where-title" className={styles.h2}>Venues across {SITE_CITY}.</h2>
+              </Reveal>
+              <Reveal delay={100}>
+                <ul className={styles.areas}>
+                  {areas.map((a) => (
+                    <li key={a.slug}>
+                      <Link href={`/turfs/${a.slug}`} className={styles.area}>
+                        <span>{a.name}</span>
+                        <span className={styles.areaCount}>{a.count}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            </div>
+          </section>
+        )}
 
         {/* owners */}
-        <section id="owners" className={`${styles.section} ${styles.split}`} aria-labelledby="owners-title">
-          <div className={`${styles.wrap} ${styles.splitGrid}`}>
+        <section id="owners" className={styles.owners} aria-labelledby="owners-title">
+          <div className={`${styles.wrap} ${styles.ownersGrid}`}>
             <Reveal>
-              <p className={styles.kicker}>For venue owners</p>
-              <h2 id="owners-title" className={styles.h2}>Fill the quiet hours without the phone tag.</h2>
-              <p className={styles.body}>Players book straight into your calendar, and you run the day from your phone.</p>
+              <p className={styles.eyebrowLight}>For venue owners</p>
+              <h2 id="owners-title" className={`${styles.h2} ${styles.h2Light}`}>Fill the quiet hours without the phone tag.</h2>
+              <p className={styles.bodyLight}>Players book straight into your calendar, and you run the day from your phone.</p>
               <ul className={styles.rules}>
                 {OWNER_POINTS.map((p) => (
                   <li key={p}>{p}</li>
@@ -112,28 +158,29 @@ export default async function LandingPage() {
               <a href={`mailto:${supportEmail}?subject=List%20my%20venue%20on%20OYUN`} className={styles.btn}>List your venue <IconArrow size={16} /></a>
             </Reveal>
             <Reveal delay={120}>
-              <ol className={styles.listing} aria-label="How listing works">
-                {LISTING.map((st, n) => (
-                  <li key={st.title} className={styles.listingItem}>
-                    <span className={styles.listingNo} aria-hidden="true">{n + 1}</span>
-                    <div>
-                      <h3 className={styles.h3}>{st.title}</h3>
-                      <p className={styles.body}>{st.text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+              <OwnerCalendar />
             </Reveal>
+          </div>
+          <div className={styles.wrap}>
+            <ol className={styles.listing} aria-label="How listing works">
+              {LISTING.map((st, n) => (
+                <li key={st.title} className={styles.listingItem}>
+                  <span className={styles.listingNo} aria-hidden="true">{n + 1}</span>
+                  <h3 className={styles.h3Light}>{st.title}</h3>
+                  <p className={styles.bodyLight}>{st.text}</p>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
         {/* faq */}
-        <section id="faq" className={`${styles.section} ${styles.paper}`} aria-labelledby="faq-title">
+        <section id="faq" className={styles.section} aria-labelledby="faq-title">
           <div className={`${styles.wrap} ${styles.faqGrid}`}>
             <Reveal>
-              <p className={styles.kickerDark}>Questions</p>
-              <h2 id="faq-title" className={`${styles.h2} ${styles.h2Dark}`}>Good to know.</h2>
-              <p className={styles.bodyDark}>More guides and rules are in the <a className={styles.link} href="/help">help centre</a>.</p>
+              <p className={styles.eyebrow}>Questions</p>
+              <h2 id="faq-title" className={styles.h2}>Good to know.</h2>
+              <p className={styles.body}>More guides and rules are in the <a className={styles.link} href="/help">help centre</a>.</p>
             </Reveal>
             <div className={styles.faqList}>
               {FAQ.map((f, i) => (
@@ -152,13 +199,11 @@ export default async function LandingPage() {
         {/* close */}
         <section className={styles.closing} aria-labelledby="close-title">
           <div className={styles.wrap}>
-            <Reveal>
-              <h2 id="close-title" className={styles.h2Big}>Ready when <em>you are.</em></h2>
-              <div className={styles.actions}>
-                <a href={BROWSE_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
-                <Link href="/countdown" className={styles.btnGhost}>Launch countdown</Link>
-              </div>
-            </Reveal>
+            <h2 id="close-title" className={styles.closeTitle}>Your hour is waiting.</h2>
+            <div className={styles.actions}>
+              <a href={BROWSE_URL} className={styles.btnLight}>Browse &amp; book <IconArrow size={16} /></a>
+              <Link href="/countdown" className={styles.btnGhostLight}>Launch countdown</Link>
+            </div>
           </div>
         </section>
       </main>
