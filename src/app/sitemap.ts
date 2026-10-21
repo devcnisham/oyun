@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { CURATED_COLLECTIONS } from '@/lib/curated-collections';
 import { GUIDES } from '@/lib/guides-content';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
+import { localizedPagesIndexed } from '@/lib/localized-home';
 import { PRICE_BANDS, bandSlug } from '@/lib/price-bands';
 import { isIndexableTurf, showCountdownInSitemap } from '@/lib/seo';
 import { absoluteUrl, areaSlug } from '@/lib/site';
@@ -23,6 +24,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/offers'), lastModified: now, changeFrequency: 'daily', priority: 0.6 },
     { url: absoluteUrl('/events'), lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
     { url: absoluteUrl('/membership'), lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    ...(localizedPagesIndexed()
+      ? [
+          { url: absoluteUrl('/kn'), lastModified: now, changeFrequency: 'weekly' as const, priority: 0.6 },
+          { url: absoluteUrl('/hi'), lastModified: now, changeFrequency: 'weekly' as const, priority: 0.6 },
+        ]
+      : []),
     { url: absoluteUrl('/guides'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     ...(showCountdownInSitemap() ? [{ url: absoluteUrl('/countdown'), lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 }] : []),
     { url: absoluteUrl('/matches'), lastModified: now, changeFrequency: 'daily', priority: 0.6 },
