@@ -39,6 +39,12 @@ echo "== Money guards (CHECK constraints)"
 echo "== Data mapping from turfs to venues, resources, bookables (#134)"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/data_mapping_test.sql
 
+echo "== Persisted collections (payouts, waitlist, matches, tournaments, activity)"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/persist_collections_test.sql
+
+echo "== Payment event claim and release"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/payment_events_test.sql
+
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 

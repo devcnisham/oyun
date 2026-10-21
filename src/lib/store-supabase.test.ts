@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 const EMPTY_STATE = {
   turfs: [], partners: [], staff: [], players: [], bookings: [], blocks: [], offers: [],
   add_ons: [], applications: [], wallet_txns: [{ id: 'wt_1', data: { id: 'wt_1', playerId: 'pl_1', amount: 100 } }], holds: [], promo_codes: [], pricing: [], app_config: [],
+  waitlist: [], payouts: [{ id: 'po_1', data: { id: 'po_1', net: 500 } }], open_matches: [], tournaments: [], activity: [],
   rev: 7,
 };
 
@@ -122,5 +123,25 @@ describe('store writes in Supabase mode', () => {
     });
     const removed = (applied[1] as { changes: { deletes: Record<string, string[]> } }).changes;
     expect(removed.deletes.wallet_txns).toEqual(['wt_1']);
+  });
+
+  test('payouts, waitlist, matches, tournaments and activity are saved, not dropped', async () => {
+    const applied: unknown[] = [];
+    const { mutate } = await loadStore({ OYUN_V2_SLOTS: '' }, fakeClient(applied));
+    await mutate((db) => {
+      db.waitlist = [...(db.waitlist ?? []), { id: 'wl_1' } as never];
+      db.activity = [...(db.activity ?? []), { id: 'act_1' } as never];
+      db.openMatches = [...(db.openMatches ?? []), { id: 'match_1' } as never];
+      db.tournaments = [...(db.tournaments ?? []), { id: 'tour_1' } as never];
+      (db.payouts![0] as { net: number }).net = 450;
+    });
+    const up = (applied[0] as { changes: { upserts: Record<string, { id: string }[]> } }).changes.upserts;
+    expect(Object.keys(up).sort()).toEqual(['activity', 'open_matches', 'payouts', 'tournaments', 'waitlist']);
+    expect(up.payouts[0].id).toBe('po_1');
+  });
+
+  test('payouts come back from the database', async () => {
+    const { getDb } = await loadStore({ OYUN_V2_SLOTS: '' }, fakeClient([]));
+    expect((await getDb()).payouts).toEqual([{ id: 'po_1', net: 500 }]);
   });
 });

@@ -43,6 +43,11 @@ const LIST_TABLES = {
   applications: 'applications',
   walletTxns: 'wallet_txns',
   holds: 'holds',
+  waitlist: 'waitlist',
+  payouts: 'payouts',
+  openMatches: 'open_matches',
+  tournaments: 'tournaments',
+  activity: 'activity',
 } as const;
 
 type Table = (typeof LIST_TABLES)[keyof typeof LIST_TABLES] | 'promo_codes' | 'pricing' | 'app_config';
@@ -54,7 +59,7 @@ function toRows(db: Database, only?: ReadonlySet<Table>): TableRows {
   const rows: TableRows = {};
   const want = (table: Table) => !only || only.has(table);
   for (const [key, table] of Object.entries(LIST_TABLES) as [keyof typeof LIST_TABLES, Table][]) {
-    if (want(table)) rows[table] = (db[key] as { id: string }[]).map((item) => ({ id: item.id, data: item }));
+    if (want(table)) rows[table] = ((db[key] ?? []) as { id: string }[]).map((item) => ({ id: item.id, data: item }));
   }
   if (want('promo_codes')) rows.promo_codes = db.promoCodes.map((p) => ({ id: p.code, data: p }));
   if (want('pricing')) rows.pricing = Object.entries(db.pricing).map(([turfId, rules]) => ({ id: turfId, data: rules }));

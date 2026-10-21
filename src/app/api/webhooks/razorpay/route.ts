@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   const result = await processPaymentWebhook(rawBody, signature);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error || 'Webhook processing failed' }, { status: 400 });
+    return NextResponse.json({ error: result.error || 'Webhook processing failed' }, { status: result.retryable ? 503 : 400 });
   }
 
   // A confirmed or refunded payment changes bookings: update player, partner and admin pages
