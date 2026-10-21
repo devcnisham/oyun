@@ -86,6 +86,7 @@ describe('API and file routes', () => {
     'src/app/api/webhooks/razorpay/route.ts': ['verifyRazorpaySignature(', 'sharedRateLimit('],
     'src/app/api/monitoring/double-bookings/route.ts': ['sharedRateLimit(', 'detectDoubleBookings('],
     'src/app/api/partner/payouts/[id]/statement/route.ts': ["!ctx || !ctx.can('payouts')", 'payout.partnerId !== ctx.partner.id'],
+    'src/app/partner/login/sso/route.ts': ['partnerSubjectForEmail(', "verification?.status !== 'verified'", 'clerkEnabled'],
     'src/app/api/partner/upload/route.ts': ['getPartnerContext()', "getSessionSubject('admin')"],
     'src/app/api/student-id/route.ts': ['isSameOrigin(', 'sharedRateLimit(', 'existing.accountId !== accountId', 'studentIdFileError('],
     'src/app/api/admin/student-id/[playerId]/route.ts': ["getSessionSubject('admin')", "status === 'pending'"],

@@ -20,9 +20,9 @@ function dashboardGuard(req: NextRequest) {
   if (devLoginSkipped()) return pathname === loginPath ? NextResponse.redirect(new URL(dashboardPath, req.url)) : null;
   const loggedIn = verifySessionToken(req.cookies.get(sessionCookieName(role))?.value, role) !== null;
 
-  if (pathname === loginPath) {
-    return loggedIn ? NextResponse.redirect(new URL(dashboardPath, req.url)) : null;
-  }
+  // Clerk's Google and Apple steps live under the login and sign-up addresses and must stay reachable without a session
+  const open = pathname === loginPath || pathname.startsWith(`${loginPath}/`) || (role === 'partner' && (pathname === '/partner/signup' || pathname.startsWith('/partner/signup/')));
+  if (open) return pathname === loginPath && loggedIn ? NextResponse.redirect(new URL(dashboardPath, req.url)) : null;
   return loggedIn ? null : NextResponse.redirect(new URL(loginPath, req.url));
 }
 
