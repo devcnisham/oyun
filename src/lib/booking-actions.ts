@@ -2,7 +2,8 @@
 
 import { BOOKINGS_NOT_SAVED_MESSAGE, bookingsAreSaved } from './booking-availability';
 import { randomBytes } from 'node:crypto';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
+import { ATTRIBUTION_COOKIE, decodeAttribution } from './attribution';
 import { auth } from '@clerk/nextjs/server';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from './cancel-policy';
 import { isRainDisruption } from './rain';
@@ -206,13 +207,18 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
       return { ids };
     }
 
+    // Where the player first came from (saved on the booking for the legacy store; the v2 relational path does not store it yet)
+    const acquisition = decodeAttribution((await cookies()).get(ATTRIBUTION_COOKIE)?.value);
     const ids = await mutate((db) => {
       purgeExpiredHolds(db);
       const { bookings, quote } = planBooking(db, req, holder, true, accountId);
       if (quote.slotError) throw new ValidationError(quote.slotError);
       if (quote.promoError) throw new ValidationError(quote.promoError);
       db.holds = db.holds.filter((h) => h.holder !== holder);
-      for (const b of bookings) b.accountId = accountId;
+      for (const b of bookings) {
+        b.accountId = accountId;
+        b.acquisition = acquisition;
+      }
       return bookings.map((b) => b.id);
     });
 

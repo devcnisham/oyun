@@ -61,7 +61,7 @@ export default async function PrivacyPage() {
           <p>We use a small number of cookies:</p>
           <ul>
             <li><strong>Essential:</strong> <code>oyun_device</code> (holds your slots during checkout), <code>sa_partner_session</code> and <code>sa_admin_session</code> (keep partners and admins signed in), <code>sa_partner_turf</code> (remembers the selected venue), and <code>oyun_consent</code> (remembers your cookie choice).</li>
-            <li><strong>Analytics (optional):</strong> only set if you choose &quot;Accept all&quot; in the cookie banner. You can change your choice at any time from the <em>Cookie settings</em> link in the footer.</li>
+            <li><strong>Analytics (optional):</strong> only set if you choose &quot;Accept all&quot; in the cookie banner. This includes <code>oyun_src</code>, which remembers the website or campaign that sent you to OYUN (for example Google or an Instagram link) for 30 days so we can see which channels lead to bookings; it holds no personal details. You can change your choice at any time from the <em>Cookie settings</em> link in the footer.</li>
           </ul>
           <p>Your saved name, number and booking list are stored in your browser&apos;s local storage and never leave your device unless you make a booking. You can clear them from the Profile tab.</p>
 
