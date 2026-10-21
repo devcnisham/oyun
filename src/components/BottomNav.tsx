@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSyncExternalStore } from 'react';
+import { roleForHost } from '@/lib/hosts';
 import FloatingSearch from './FloatingSearch';
 import ProfileTabIcon from './ProfileTabIcon';
 import styles from './BottomNav.module.css';
@@ -26,12 +28,16 @@ const TABS = [
   { href: '/profile', label: 'Profile', icon: 'profile', match: (p: string) => ['/profile', '/settings', '/help', '/saved'].some((x) => p.startsWith(x)) },
 ] as const;
 
+const subscribeNever = () => () => {};
+
 // App-style tab bar on phones, on every player-facing page. The admin and partner dashboards have their own menus.
 export default function BottomNav() {
   // The phone home page is prebuilt at /m while the address bar says /
   const raw = usePathname() ?? '/';
   const path = raw === '/m' ? '/' : raw;
-  if (path.startsWith('/admin') || path.startsWith('/partner') || path === '/welcome' || path === '/about') return null;
+  // The landing host shows the landing page at / (the address bar does not change), so the host tells us too
+  const onLandingHost = useSyncExternalStore(subscribeNever, () => roleForHost(window.location.host) === 'landing', () => false);
+  if (onLandingHost || path.startsWith('/admin') || path.startsWith('/partner') || ['/landing', '/countdown', '/welcome', '/about'].includes(path)) return null;
 
   return (
     <>
