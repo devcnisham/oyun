@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { getSettings } from '@/lib/queries';
 import { SITE_CITY, SITE_DESCRIPTION } from '@/lib/site';
@@ -30,6 +29,12 @@ const OWNER_POINTS = [
   'Separate logins for your managers and front desk',
 ];
 
+const LISTING = [
+  { title: 'Write to us', text: 'Send your venue details and a few photos of your own.' },
+  { title: 'We review it', text: 'Every venue is checked before it goes live.' },
+  { title: 'Get your login', text: 'Once approved you get a partner login with your calendar, bookings and check-in tools.' },
+];
+
 const FAQ = [
   { q: 'What is OYUN?', a: `OYUN is a booking platform for sports venues in ${SITE_CITY}. You see open slots, hold the hours you want and get a ticket, instead of calling around.` },
   { q: 'What can I book?', a: 'Football and box cricket turfs, plus badminton and pickleball courts. More venues are joining before launch.' },
@@ -47,8 +52,6 @@ export default async function LandingPage() {
       <main id="content">
         {/* hero: one photograph, one sentence, two actions */}
         <section className={styles.hero} aria-labelledby="hero-title">
-          <Image src="/turfs/turf_0.jpg" alt="" fill priority sizes="100vw" quality={70} className={styles.heroImg} />
-          <div className={styles.heroShade} aria-hidden="true" />
           <div className={`${styles.wrap} ${styles.heroInner}`}>
             <p className={styles.kicker}>{SITE_CITY}</p>
             <h1 id="hero-title" className={styles.h1}>
@@ -79,13 +82,11 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* a quiet photographic break */}
-        <section className={styles.band} aria-label="Neighbourhood turf">
-          <Image src="/turfs/turf_1.jpg" alt="Players on a turf between buildings in a city lane" fill sizes="100vw" quality={72} className={styles.bandImg} />
-          <div className={styles.bandShade} aria-hidden="true" />
-          <div className={`${styles.wrap} ${styles.bandInner}`}>
+        {/* a typographic interlude */}
+        <section className={styles.interlude} aria-label="A line about the city">
+          <div className={styles.wrap}>
             <Reveal>
-              <p className={styles.quote}>Every neighbourhood has room for a game.</p>
+              <p className={styles.quote}>Every neighbourhood has room for <em>a game.</em></p>
             </Reveal>
           </div>
         </section>
@@ -105,9 +106,17 @@ export default async function LandingPage() {
               <a href={`mailto:${supportEmail}?subject=List%20my%20venue%20on%20OYUN`} className={styles.btn}>List your venue <IconArrow size={16} /></a>
             </Reveal>
             <Reveal delay={120}>
-              <div className={styles.photo}>
-                <Image src="/turfs/turf_2.jpg" alt="A match under floodlights" fill sizes="(max-width: 900px) 100vw, 560px" quality={70} className={styles.photoImg} />
-              </div>
+              <ol className={styles.listing} aria-label="How listing works">
+                {LISTING.map((st, n) => (
+                  <li key={st.title} className={styles.listingItem}>
+                    <span className={styles.listingNo} aria-hidden="true">{n + 1}</span>
+                    <div>
+                      <h3 className={styles.h3}>{st.title}</h3>
+                      <p className={styles.body}>{st.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </Reveal>
           </div>
         </section>
