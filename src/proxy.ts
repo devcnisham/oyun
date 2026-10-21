@@ -2,6 +2,7 @@ import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse, type NextFetchEvent } from 'next/server';
 import { clerkEnabled } from '@/lib/clerk';
 import { buildCsp } from '@/lib/csp';
+import { roleForHost, routeForHost } from '@/lib/hosts';
 import { devLoginSkipped, sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
 import { updateSession } from '@/utils/supabase/middleware';
 
@@ -45,13 +46,22 @@ const PRERENDERED_FOLDERS = /^\/(arenas|sports|turfs)\/[^/]+$/;
 const isPrerendered = (pathname: string) => PRERENDERED_PAGES.has(pathname) || PRERENDERED_FOLDERS.test(pathname);
 
 async function handle(req: NextRequest) {
-  const redirect = forceHttps(req) ?? dashboardGuard(req);
-  if (redirect) return redirect;
+  const https = forceHttps(req);
+  if (https) return https;
 
-  if (req.method === 'GET' && isPrerendered(req.nextUrl.pathname)) {
+  // oyun.co.in is the landing page; booking, partner and admin each have a subdomain (see lib/hosts.ts).
+  // This runs before the dashboard login guard so a dashboard link on the wrong host moves to the right host first.
+  const route = routeForHost(roleForHost(req.headers.get('x-forwarded-host') ?? req.headers.get('host')), req.nextUrl.pathname);
+  // 307 on purpose while this is new: a permanent redirect is cached by browsers and hard to take back
+  if (route.kind === 'redirect') return NextResponse.redirect(`https://${route.host}${route.path}${req.nextUrl.search}`, 307);
+  const guard = dashboardGuard(req);
+  if (guard) return guard;
+  const pathname = route.kind === 'rewrite' ? route.path : req.nextUrl.pathname;
+
+  if (req.method === 'GET' && isPrerendered(pathname)) {
     // Phones get the app-style home page, prebuilt at /m (the address bar still shows /)
-    const phone = req.nextUrl.pathname === '/' && /Mobi|Android|iPhone|iPod/i.test(req.headers.get('user-agent') ?? '');
-    const res = phone ? NextResponse.rewrite(new URL('/m', req.url)) : NextResponse.next();
+    const phone = route.kind === 'next' && pathname === '/' && /Mobi|Android|iPhone|iPod/i.test(req.headers.get('user-agent') ?? '');
+    const res = route.kind === 'rewrite' ? NextResponse.rewrite(new URL(route.path, req.url)) : phone ? NextResponse.rewrite(new URL('/m', req.url)) : NextResponse.next();
     res.headers.set('Content-Security-Policy', buildCsp(undefined));
     return res;
   }
