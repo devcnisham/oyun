@@ -30,6 +30,7 @@
 }
 
 .brand {
+  font-family: var(--font-wordmark-family);
   font-weight: 800;
   font-size: 18px;
   color: var(--primary-700);

@@ -1,24 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import BackButton from '@/components/BackButton';
+import BrandMark from '@/components/BrandMark';
 import styles from '../auth.module.css';
-
-function Logo({ id, size = 36 }: { id: string; size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden>
-      <circle cx="20" cy="20" r="18" fill={`url(#${id})`} />
-      <path d="M 12 12 L 18 22 L 27 16 L 31 19" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <circle cx="32" cy="12" r="2.5" fill="white" />
-      <path d="M 14 28 Q 22 32 30 24" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" fill="none" />
-      <defs>
-        <linearGradient id={id} x1="4" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#d31027" />
-          <stop offset="1" stopColor="#4A0000" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
 
 const perks = [
   { icon: '⚡', title: 'Instant confirmation', text: 'Pick your hours and they are yours in seconds.' },
@@ -47,7 +31,7 @@ export default function AuthShell({ mode, title, subtitle, children, footer }: {
         />
         <div className={styles.brandInner}>
           <Link href="/" className={styles.brandHome} aria-label="OYUN home">
-            <Logo id="authLogoBrand" size={44} />
+            <BrandMark size={44} />
             <span>OYUN</span>
           </Link>
           <div>
@@ -72,7 +56,7 @@ export default function AuthShell({ mode, title, subtitle, children, footer }: {
             Back
           </BackButton>
           <Link href="/" className={styles.mobileLogo} aria-label="OYUN home">
-            <Logo id="authLogoMobile" size={30} />
+            <BrandMark size={30} />
             <span>OYUN</span>
           </Link>
         </div>

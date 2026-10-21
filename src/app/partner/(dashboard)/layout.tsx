@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BrandMark from '@/components/BrandMark';
 import ActionForm from '@/components/dash/ActionForm';
 import { logout } from '@/lib/auth-actions';
 import NavIcon from '@/components/dash/NavIcon';
@@ -47,7 +48,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
       
       <header className={`${styles.mobileHeader} noPrint`}>
         <Link href="/" className={styles.logo}>
-          <span className={styles.logoIcon}><NavIcon name="ball" size={18} /></span>
+          <BrandMark size={32} shadow={false} />
           <div className={styles.logoText}>
             <span className={styles.logoName}>OYUN</span>
             <span className={styles.logoTag}>Partner</span>
@@ -59,7 +60,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
       <aside className={`${styles.sidebar} noPrint`}>
         <div className={styles.brand}>
           <Link href="/" className={styles.logo}>
-            <span className={styles.logoIcon}><NavIcon name="ball" size={18} /></span>
+            <BrandMark size={32} shadow={false} />
             <div className={styles.logoText}>
               <span className={styles.logoName}>OYUN</span>
               <span className={styles.logoTag}>Partner</span>

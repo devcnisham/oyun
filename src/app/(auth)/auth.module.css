@@ -46,8 +46,9 @@
   color: #fff;
   text-decoration: none;
   font-size: 26px;
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-family: var(--font-wordmark-family);
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .brandHeadline {
@@ -148,8 +149,9 @@
   color: var(--text-primary);
   text-decoration: none;
   font-size: 20px;
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-family: var(--font-wordmark-family);
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .formWrapper {

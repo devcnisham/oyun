@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { SITE_CITY } from '@/lib/site';
-import Logo from './Logo';
+import BrandMark from '@/components/BrandMark';
 import { APP_URL, HELP_URL } from './links';
 import styles from './site.module.css';
 
@@ -10,7 +10,7 @@ export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
       <div className={styles.footWrap}>
         <div className={styles.footGrid}>
           <div className={styles.footBrand}>
-            <span className={styles.footName}><Logo id="siteFootLogo" size={32} />OYUN</span>
+            <span className={styles.footName}><BrandMark size={32} />OYUN</span>
             <p>Turf and court booking for {SITE_CITY}. Find an open slot, hold it, and walk in with a ticket.</p>
           </div>
           <nav className={styles.footCol} aria-label="Explore">

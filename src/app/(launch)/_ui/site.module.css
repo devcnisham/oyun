@@ -44,10 +44,11 @@
   margin-right: auto;
 }
 .brandName {
-  font-family: var(--font-display, inherit), system-ui, sans-serif;
+  font-family: var(--font-wordmark-family);
   font-size: 26px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  line-height: 1;
+  letter-spacing: 0;
 }
 .nav { display: none; gap: 4px; }
 .navLink {
@@ -139,7 +140,7 @@
 .footWrap { max-width: 1200px; margin: 0 auto; padding: 56px 20px 32px; }
 .footGrid { display: grid; gap: 40px; grid-template-columns: 1fr; }
 .footBrand p { max-width: 34ch; margin: 14px 0 0; line-height: 1.6; }
-.footName { display: inline-flex; align-items: center; gap: 10px; color: #f4f1ec; font-family: var(--font-display, inherit), system-ui, sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em; }
+.footName { display: inline-flex; align-items: center; gap: 10px; color: #f4f1ec; font-family: var(--font-wordmark-family); font-size: 26px; font-weight: 800; line-height: 1; letter-spacing: 0; }
 .footCol h2 { margin: 0 0 14px; color: #f4f1ec; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
 .footCol ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
 .footCol a { display: inline-block; padding: 6px 0; color: inherit; text-decoration: none; }
