@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
         destination: "/list-turf",
         permanent: true,
       },
+      // Short addresses people expect, all served by the venue list
+      { source: "/turfs", destination: "/arenas?type=turf", permanent: false },
+      { source: "/courts", destination: "/arenas?type=court", permanent: false },
+      { source: "/venues", destination: "/arenas", permanent: false },
     ];
   },
   async headers() {

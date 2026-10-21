@@ -7,7 +7,7 @@ import TurfCard from '@/components/TurfCard';
 import type { TurfSummary } from '@/lib/types';
 import styles from './page.module.css';
 import BackButton from '@/components/BackButton';
-import { SPORTS } from '@/lib/sports';
+import { SPORTS, sportInfo } from '@/lib/sports';
 import { PRICE_STEPS, filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/lib/search';
 import { locateTurfs } from '@/lib/map-actions';
 import { getOpenHours } from '@/lib/availability-actions';
@@ -33,7 +33,7 @@ const sortOptions = [
 // Re-keying on the filters that come from other pages (home search, top bar) restarts the list state when they change.
 export default function ArenasClient(props: { turfs: TurfSummary[]; areaNames: string[] }) {
   const sp = useSearchParams();
-  const key = ['q', 'area', 'sport', 'date'].map((k) => sp.get(k) ?? '').join('|');
+  const key = ['q', 'area', 'sport', 'date', 'type'].map((k) => sp.get(k) ?? '').join('|');
   return <ArenasList key={key} {...props} />;
 }
 
@@ -45,6 +45,9 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
   const urlArea = searchParams.get('area');
   const urlSort = searchParams.get('sort');
   const urlSport = searchParams.get('sport');
+  // /turfs and /courts arrive here as ?type=turf and ?type=court
+  const urlType = searchParams.get('type');
+  const placeType = urlType === 'turf' || urlType === 'court' ? urlType : null;
   const urlDate = searchParams.get('date');
   const pickedDate = urlDate && /^\d{4}-\d{2}-\d{2}$/.test(urlDate) ? urlDate : undefined;
   const defaultArea = urlArea && areas.includes(urlArea) ? urlArea : 'All Areas';
@@ -129,6 +132,11 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
       result = result.filter((t) => t.area === selectedArea);
     }
 
+    // Filter by kind of venue (turf or court), from the address
+    if (placeType) {
+      result = result.filter((t) => t.sports.some((sp) => sportInfo(sp).place === placeType));
+    }
+
     // Filter by sport
     if (selectedSport !== 'All Sports') {
       result = result.filter((t) => t.sports.includes(selectedSport));
@@ -163,7 +171,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
     }
 
     return result;
-  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time]);
+  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time, placeType]);
 
   const mapTurfs = filtered.map((t) => (located[t.id] ? { ...t, ...located[t.id] } : t));
 
