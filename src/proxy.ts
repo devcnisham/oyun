@@ -40,7 +40,7 @@ function forceHttps(req: NextRequest) {
 // Pages prerendered at build (the ○ rows of `next build`). A per-request nonce on the request makes Next render them again
 // for every visitor (private, no-store), so these skip it and let the CDN serve the prebuilt HTML. They hold no per-player
 // data and no forms with user input, so the build-time policy (inline scripts allowed, hosts still allow-listed) is used.
-const PRERENDERED_PAGES = new Set(['/', '/m', '/about', '/arenas', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/profile', '/saved', '/settings', '/terms', '/tournaments', '/areas', '/welcome', '/countdown', '/landing']);
+const PRERENDERED_PAGES = new Set(['/', '/m', '/about', '/arenas', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/profile', '/saved', '/settings', '/terms', '/tournaments', '/areas', '/welcome', '/countdown', '/landing', '/sports', '/events']);
 // Also cached by the CDN: the turf, sport and area pages (one segment under these folders)
 const PRERENDERED_FOLDERS = /^\/(arenas|sports|turfs|prices)\/[^/]+$/;
 const isPrerendered = (pathname: string) => PRERENDERED_PAGES.has(pathname) || PRERENDERED_FOLDERS.test(pathname);
