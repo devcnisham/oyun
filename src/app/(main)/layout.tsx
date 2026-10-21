@@ -20,8 +20,9 @@ export default async function MainLayout({
           {site.announcement}
         </div>
       )}
+      <a href="#main" className="skipLink">Skip to main content</a>
       <Navbar />
-      <main className="appMain">{children}</main>
+      <main id="main" tabIndex={-1} className="appMain">{children}</main>
       <Footer supportEmail={settings.supportEmail} />
     </>
   );

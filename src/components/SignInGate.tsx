@@ -1,15 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useDialogFocus } from '@/lib/client/use-dialog-focus';
 import PlayerForm from '@/app/(auth)/_shell/PlayerForm';
 import styles from './SignInGate.module.css';
 
 // Sign in / sign up without leaving checkout, so the held slots stay held
 export default function SignInGate({ onDone, onClose }: { onDone: () => void; onClose: () => void }) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const dialogRef = useDialogFocus<HTMLDivElement>(onClose);
   return (
     <div className={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className={styles.sheet} role="dialog" aria-modal="true" aria-labelledby="gate-title">
+      <div ref={dialogRef} className={styles.sheet} role="dialog" aria-modal="true" aria-labelledby="gate-title">
         <button type="button" className={styles.close} onClick={onClose} aria-label="Close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden><path d="M18 6 6 18M6 6l12 12" /></svg>
         </button>
