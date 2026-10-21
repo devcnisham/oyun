@@ -57,6 +57,9 @@ echo "== Payment event claim and release"
 echo "== Backfill and parity (v2 integration phase 5)"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_backfill_test.sql
 
+echo "== Erase account (privacy)"
+"${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/v2_erase_account_test.sql
+
 echo "== Shared rate limits"
 "${PSQL[@]}" -d "$STORE_DB" -f supabase/tests/rate_limits_test.sql
 
