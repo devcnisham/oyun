@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { isIndexableTurf, ogBase } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import FaqList from '@/components/FaqList';
@@ -15,7 +16,7 @@ import styles from '../../../turfs/[area]/page.module.css';
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const turfs = await listPublicTurfs();
+  const turfs = (await listPublicTurfs()).filter(isIndexableTurf);
   const areas = listAreas(turfs);
   const params: { sport: string; area: string }[] = [];
 
@@ -41,7 +42,7 @@ async function load(sportParam: string, areaParam: string) {
   const sport = sportFromSlug(sportParam);
   if (!sport) return null;
 
-  const all = await listPublicTurfs();
+  const all = (await listPublicTurfs()).filter(isIndexableTurf);
   const allAreas = listAreas(all);
   const area = allAreas.find((a) => areaSlug(a) === areaParam);
   if (!area) return null;
@@ -84,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${sport.label} in ${area}, ${SITE_CITY} | Court Availability & Guide`,
       description: `Explore ${sport.label.toLowerCase()} courts and turfs in ${area}, ${SITE_CITY}. Check nearby venues, prices, and booking options on OYUN.`,
       alternates: { canonical: `/sports/${sportParam}/${areaParam}` },
-      openGraph: { url: `/sports/${sportParam}/${areaParam}` },
+      openGraph: ogBase(`/sports/${sportParam}/${areaParam}`),
     };
   }
 
@@ -93,7 +94,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `Best ${sport.label} in ${area}, ${SITE_CITY} | Book from ₹${from}/hr`,
     description: `Book verified ${sport.label.toLowerCase()} ${sport.place}s in ${area}, ${SITE_CITY}. ${turfs.length} venue${turfs.length === 1 ? '' : 's'} available with live slot booking from ₹${from}/hr on OYUN.`,
     alternates: { canonical: `/sports/${sportParam}/${areaParam}` },
-    openGraph: { url: `/sports/${sportParam}/${areaParam}` },
+    openGraph: ogBase(`/sports/${sportParam}/${areaParam}`),
   };
 }
 

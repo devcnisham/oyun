@@ -2305,11 +2305,11 @@ D2.lists = [
  {id:"SEO01",st:"ship",name:"SEO: Strategy and keyword planning",goal:"Decide which pages exist, what each is for, and how it is measured.",items:[
   ["SEO01-01", "Primary SEO goal: players searching 'turf booking Mangalore' and 'book football turf near me'", "P0", 1, "Set in site metadata and the home page."],
   ["SEO01-02", "Target market: Mangalore first; languages English now, Kannada later", "P1", 1],
-  ["SEO01-03", "Keyword research for football, box cricket, badminton, pickleball and padel in Mangalore, with long-tail questions", "P1", 0],
-  ["SEO01-04", "Map one primary search intent to each page (home, arenas, sport pages, area pages, turf pages, FAQ)", "P1", 0],
+  ["SEO01-03", "Keyword research for football, box cricket, badminton, pickleball and padel in Mangalore, with long-tail questions", "P1", 1],
+  ["SEO01-04", "Map one primary search intent to each page (home, arenas, sport pages, area pages, turf pages, FAQ)", "P1", 1],
   ["SEO01-05", "Competitor review: Playo, Hudle and local WhatsApp groups", "P2", 0, "Market check is in the Blueprint."],
-  ["SEO01-06", "Measurable SEO KPIs: impressions, clicks, indexed pages, booking conversion from organic", "P1", 0],
-  ["SEO01-07", "SEO roadmap and a page-to-keyword sheet", "P2", 0]
+  ["SEO01-06", "Measurable SEO KPIs: impressions, clicks, indexed pages, booking conversion from organic", "P1", 1],
+  ["SEO01-07", "SEO roadmap and a page-to-keyword sheet", "P2", 1]
  ]},
  {id:"SEO02",st:"ship",name:"SEO: Crawling and indexing",goal:"Search engines can find, fetch and index every public page.",items:[
   ["SEO02-01", "Public pages return 200; removed pages return a real 404", "P0", 1, "notFound() on unknown turf, area and sport."],
@@ -2328,7 +2328,7 @@ D2.lists = [
   ["SEO03-01", "Readable URLs: /arenas/<turf>, /turfs/<area>, /sports/<sport>", "P1", 1],
   ["SEO03-02", "Canonical tag on every indexable page, with the right protocol and host", "P0", 1, "Needs NEXT_PUBLIC_SITE_URL set to the real domain before the build."],
   ["SEO03-03", "Set NEXT_PUBLIC_SITE_URL to the final domain (not the Vercel address)", "P0", 0, "docs/LAUNCH-SEO.md section 1."],
-  ["SEO03-04", "Resolve http/https and www/non-www duplicates with redirects", "P1", 0],
+  ["SEO03-04", "Resolve http/https and www/non-www duplicates with redirects", "P1", 1],
   ["SEO03-05", "Query parameters (date, ref) do not create indexable duplicates", "P0", 1, "Turf pages ignore ?date and ?ref for the cached page; robots blocks ?ref=."],
   ["SEO03-06", "Sitemap URLs match the canonical URLs", "P1", 1],
   ["SEO03-07", "Phone home page at /m is a rewrite target; its canonical points to /", "P1", 1, "Added with the CDN caching work."]
@@ -2401,7 +2401,7 @@ D2.lists = [
   ["SEO11-03", "Same name, address and phone on every listing", "P1", 0],
   ["SEO11-04", "Listings: Justdial, Sulekha, Bing Places, Apple Maps, Facebook, Instagram, LinkedIn", "P1", 0],
   ["SEO11-05", "Ask real players for Google reviews after check-in; never buy reviews", "P1", 0],
-  ["SEO11-06", "Area pages with real local content, not just a list", "P1", 0],
+  ["SEO11-06", "Area pages with real local content, not just a list", "P1", 1],
   ["SEO11-07", "Track calls, directions and bookings from local search", "P2", 0]
  ]},
  {id:"SEO12",st:"ship",name:"SEO: Content and blog",goal:"Useful content that answers players' questions.",items:[
@@ -2454,14 +2454,14 @@ D2.lists = [
   ["SEO17-07", "Test representative routes after each deploy", "P1", 1, "The 13:00 post-deploy check covers health and cache headers."]
  ]},
  {id:"SEO18",st:"ship",name:"SEO: Rules for AI coding agents (SEO)",goal:"Put these in AGENTS.md so agents keep SEO intact.",items:[
-  ["SEO18-01", "Every public page gets a real title, description and canonical", "P0", 0],
-  ["SEO18-02", "Keep the sitemap and robots current when routes change; no private routes in public sitemaps", "P0", 0],
-  ["SEO18-03", "Never use robots.txt or noindex instead of authentication", "P0", 0],
-  ["SEO18-04", "Use semantic HTML, real headings and crawlable links; no placeholder or fabricated content", "P1", 0],
-  ["SEO18-05", "Structured data must match visible content; never fabricate reviews, ratings or prices", "P0", 0],
-  ["SEO18-06", "Do not expose private data in metadata or schema; keep sensitive responses out of public caches", "P0", 0],
-  ["SEO18-07", "Test metadata, sitemap, robots, status codes and canonicals; never claim a check passed unless run", "P1", 0],
-  ["SEO18-08", "Update SEO notes when route structure changes", "P2", 0]
+  ["SEO18-01", "Every public page gets a real title, description and canonical", "P0", 1],
+  ["SEO18-02", "Keep the sitemap and robots current when routes change; no private routes in public sitemaps", "P0", 1],
+  ["SEO18-03", "Never use robots.txt or noindex instead of authentication", "P0", 1],
+  ["SEO18-04", "Use semantic HTML, real headings and crawlable links; no placeholder or fabricated content", "P1", 1],
+  ["SEO18-05", "Structured data must match visible content; never fabricate reviews, ratings or prices", "P0", 1],
+  ["SEO18-06", "Do not expose private data in metadata or schema; keep sensitive responses out of public caches", "P0", 1],
+  ["SEO18-07", "Test metadata, sitemap, robots, status codes and canonicals; never claim a check passed unless run", "P1", 1],
+  ["SEO18-08", "Update SEO notes when route structure changes", "P2", 1]
  ]},
  {id:"WF01",st:"plan",name:"Workflow: Phase 1: Idea and discovery",goal:"Understand what is being built and why.",items:[
   ["WF01-01", "Problem, audience and pain points defined", "P0", 1, "docs/BRIEF-PLAN.md; pilot playbook in the tracker."],

@@ -1,5 +1,7 @@
 # Domains and subdomains
 
+**SEO update:** all public pages are served from `www.oyun.co.in` only. The table below describes the older split; `app.`, `book.` and `help.` now only redirect to `www`. Help content (`/help`, `/faq`, `/guides`) is served on `www` even before launch.
+
 `oyun.co.in` is the public landing page. Each audience has its own subdomain. Routing lives in `src/lib/hosts.ts` and `src/proxy.ts`; any other host (localhost, `*.vercel.app`, previews) is left alone.
 
 | Host | Shows | Notes |
@@ -12,12 +14,12 @@
 | `partner.oyun.co.in` | turf owner dashboard | `/` goes to `/partner`; other paths go to `app.` |
 | `admin.oyun.co.in` | OYUN admin dashboard | `/` goes to `/admin`; other paths go to `app.` |
 
-Redirects are 307 while the setup is new; switch to 308 once it has been stable.
+`app.`, `book.` and `help.` are permanent (301) redirects to the same path on `www` (query string kept). Launch-gate redirects stay 307.
 
 ## Setup (once)
 1. Vercel project: add `app.`, `book.`, `help.`, `partner.` and `admin.oyun.co.in` as domains.
 2. GoDaddy DNS: a CNAME for each of `app`, `book`, `help`, `partner`, `admin` to the same target as `www`.
-3. Set `NEXT_PUBLIC_SITE_URL=https://app.oyun.co.in` in Vercel once booking is live, so sitemap and canonical links point at the booking site.
+3. Set `NEXT_PUBLIC_SITE_URL=https://www.oyun.co.in` in Vercel. `www` is the single canonical host for SEO.
 4. Clerk: the production instance must allow `app.oyun.co.in` (same root domain as the instance).
 
 At launch the landing page `/` can stop rewriting to `/welcome`: change `landing` in `routeForHost`.

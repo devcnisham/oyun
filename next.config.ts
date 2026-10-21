@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
         destination: "/list-turf",
         permanent: true,
       },
+      // Short addresses people expect, all served by the venue list
+      { source: "/turfs", destination: "/arenas?type=turf", permanent: false },
+      { source: "/courts", destination: "/arenas?type=court", permanent: false },
+      { source: "/venues", destination: "/arenas", permanent: false },
     ];
   },
   async headers() {
@@ -85,6 +89,15 @@ const nextConfig: NextConfig = {
             value: 'require-corp',
           },
         ],
+      },
+      {
+        // Share previews: WhatsApp, Facebook, LinkedIn and Slack fetch these from another origin, so they must be loadable cross-origin
+        source: '/:file(opengraph-image.*|twitter-image.*|icon.*|apple-icon.*|favicon.ico|logo.*|oyun-.*|manifest.webmanifest)',
+        headers: [{ key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' }],
+      },
+      {
+        source: '/turfs/:file*',
+        headers: [{ key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' }],
       },
     ];
   },

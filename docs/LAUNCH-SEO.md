@@ -6,7 +6,7 @@ What the code already does, and the steps that need a person with access to Goog
 
 | Variable | Why |
 |---|---|
-| `NEXT_PUBLIC_SITE_URL` | Your real domain, e.g. `https://oyun.in`. Used for canonical URLs, sitemap, Open Graph. Must be set **before** building. |
+| `NEXT_PUBLIC_SITE_URL` | Your real domain, `https://www.oyun.co.in` (the single canonical host). Used for canonical URLs, sitemap, Open Graph. Must be set **before** building. |
 | `GOOGLE_SITE_VERIFICATION` | The `content` value from Search Console's "HTML tag" method (see §2). |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics 4 measurement ID (`G-XXXXXXX`). Loads only after a visitor accepts cookies. |
 | `ERROR_WEBHOOK_URL` | Optional Slack or Discord incoming webhook; you get a message for each new server or browser error. |

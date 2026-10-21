@@ -10,7 +10,6 @@ import styles from '../../auth.module.css';
 export const metadata: Metadata = {
   title: 'Create an account',
   description: 'Create a free OYUN account to book turfs faster and keep your bookings in one place.',
-  alternates: { canonical: '/signup' },
 };
 
 export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ redirect_url?: string }> }) {

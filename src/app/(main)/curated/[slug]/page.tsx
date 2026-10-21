@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ogBase } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import FaqList from '@/components/FaqList';
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${collection.metaTitle} | OYUN`,
     description: collection.metaDescription,
     alternates: { canonical: `/curated/${slug}` },
-    openGraph: { url: `/curated/${slug}` },
+    openGraph: ogBase(`/curated/${slug}`),
   };
 }
 

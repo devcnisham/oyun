@@ -40,9 +40,9 @@ function forceHttps(req: NextRequest) {
 // Pages prerendered at build (the ○ rows of `next build`). A per-request nonce on the request makes Next render them again
 // for every visitor (private, no-store), so these skip it and let the CDN serve the prebuilt HTML. They hold no per-player
 // data and no forms with user input, so the build-time policy (inline scripts allowed, hosts still allow-listed) is used.
-const PRERENDERED_PAGES = new Set(['/', '/m', '/about', '/arenas', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/profile', '/saved', '/settings', '/terms', '/tournaments', '/welcome', '/countdown', '/landing']);
+const PRERENDERED_PAGES = new Set(['/', '/m', '/about', '/arenas', '/faq', '/help', '/list-turf', '/matches', '/privacy', '/profile', '/saved', '/settings', '/terms', '/tournaments', '/areas', '/welcome', '/countdown', '/landing', '/sports', '/events']);
 // Also cached by the CDN: the turf, sport and area pages (one segment under these folders)
-const PRERENDERED_FOLDERS = /^\/(arenas|sports|turfs)\/[^/]+$/;
+const PRERENDERED_FOLDERS = /^\/(arenas|sports|turfs|prices)\/[^/]+$/;
 const isPrerendered = (pathname: string) => PRERENDERED_PAGES.has(pathname) || PRERENDERED_FOLDERS.test(pathname);
 
 async function handle(req: NextRequest) {
@@ -67,9 +67,12 @@ async function handle(req: NextRequest) {
     launched: isLaunched(),
     preview: previewAllowed(req.cookies.get(PREVIEW_COOKIE)?.value, previewKey),
   });
-  // 307 on purpose while this is new: a permanent redirect is cached by browsers and hard to take back
-  // The query string is dropped: it may hold the preview key, and the landing page needs none
-  if (route.kind === 'redirect') return NextResponse.redirect(`https://${route.host}${route.path}`, 307);
+  if (route.kind === 'redirect') {
+    // Old subdomains (app., book., help.) move to www with a permanent redirect so search engines pass their signals on.
+    // Those keep the query string (campaign tags); the temporary launch-gate redirects drop it (it may hold the preview key).
+    if (route.permanent) return NextResponse.redirect(`https://${route.host}${route.path}${req.nextUrl.search}`, req.method === 'GET' || req.method === 'HEAD' ? 301 : 308);
+    return NextResponse.redirect(`https://${route.host}${route.path}`, 307);
+  }
   const guard = dashboardGuard(req);
   if (guard) return guard;
   const pathname = route.kind === 'rewrite' ? route.path : req.nextUrl.pathname;
