@@ -37,5 +37,12 @@ begin
     perform oyun.confirm_hold_priced(bid, 'h1', 'Asha', '9876543210', '{"total":1}');
     raise exception 'FAIL: confirming twice accepted';
   exception when sqlstate 'P0001' then null; end;
+  -- a booking paid fully from the wallet: total 0, wallet 500
+  bid := oyun.hold_slots('h3', '00000000-0000-0000-0000-0000000000c3', array[start_at + interval '2 hours']);
+  bk := oyun.confirm_hold_priced(bid, 'h3', 'Ravi', '9876543211', '{"subtotal":500,"walletUsed":500,"total":0}');
+  if bk.status <> 'confirmed' or bk.wallet_used <> 500 or bk.total <> 0 then raise exception 'FAIL: wallet-paid booking: %', row_to_json(bk); end if;
+  bid := oyun.hold_slots('h4', '00000000-0000-0000-0000-0000000000c3', array[start_at + interval '4 hours']);
+  bk := oyun.confirm_hold_priced(bid, 'h4', 'Desk', '9876543212', '{"total":400,"amountPaid":400,"source":"walk_in"}');
+  if bk.source <> 'walk_in' then raise exception 'FAIL: source not stored: %', bk.source; end if;
   raise notice 'confirm_hold_priced tests passed';
 end $$;

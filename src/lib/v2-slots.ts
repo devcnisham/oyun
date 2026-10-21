@@ -1,7 +1,8 @@
 import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { broadcastSlotChanges } from './realtime';
-import { formatSlotRange, istNow, slotTimestamp } from './time';
+import { addDays, formatSlotRange, istNow, slotTimestamp } from './time';
+import { parseRange } from './v2-bookings';
 import type { PitchSize, Slot, SlotUnavailableReason } from './types';
 import { getDb, invalidateV2Snapshot, storageInfo, v2SlotsEnabled } from './store';
 
@@ -366,6 +367,38 @@ export async function v2ConfirmHold(
   }
 }
 
+/**
+ * Removes an owner block (its slot claims go with it) after checking it belongs to this venue.
+ */
+export async function v2UnblockSlot(
+  blockId: string,
+  turfId: string,
+  clientOverride?: SupabaseClient
+): Promise<{ ok: true; date: string; hour: number } | { ok: false; error: string }> {
+  const client = clientOverride ?? createAdminClient();
+  const { data: block, error } = await client
+    .schema('oyun')
+    .from('blocks')
+    .select('id, during, venues(slug)')
+    .eq('id', blockId)
+    .maybeSingle();
+  const row = block as { during: string; venues?: { slug?: string } | null } | null;
+  if (error || !row || row.venues?.slug !== turfId) return { ok: false, error: 'Block not found' };
+  const range = parseRange(row.during);
+  const db = await getDb();
+  const openHour = db.turfs.find((t) => t.id === turfId)?.openTime;
+  const start = range ? istNow(range.start) : null;
+  const afterMidnight = start && openHour && start.hour < (parseInt(openHour.split(':')[0], 10) || 0);
+  const { error: delError } = await client.schema('oyun').from('blocks').delete().eq('id', blockId);
+  if (delError) return { ok: false, error: 'Could not reopen this slot. Please try again.' };
+  invalidateV2Snapshot();
+  if (!start) return { ok: true, date: '', hour: 0 };
+  const date = afterMidnight ? addDays(start.date, -1) : start.date;
+  const hour = afterMidnight ? start.hour + 24 : start.hour;
+  await broadcastSlotChanges([{ turfId, date }]);
+  return { ok: true, date, hour };
+}
+
 /** The priced checkout stored on a v2 booking. Amounts are whole rupees. */
 export interface V2Quote {
   subtotal: number;
@@ -377,6 +410,7 @@ export interface V2Quote {
   priceBreakdown: Record<string, unknown>;
   meta: Record<string, unknown>;
   legacyId: string;
+  source?: 'online' | 'walk_in' | 'phone';
 }
 
 /**
