@@ -129,3 +129,18 @@ Best done **now, before launch data exists**. Production isn't on Supabase yet (
   for a 60-min game) need the grid step separate from the slot length.
 - **Advance**: v2 has `advance_due` and `amount_paid`. Today's rule (percent within ₹min–max) stays in app code.
 - **Holidays**: add a `special_dates` table if holiday pricing is needed; weekday rules cover the rest.
+
+## Status: v2 slots are opt-in (`OYUN_V2_SLOTS=1`)
+
+Until the booking pages, partner dashboard, wallet, promos and payouts read from the `oyun` schema, v2 stays off.
+With it off, bookings, holds, blocks and pricing are saved in the main store like every other table, and slots are
+protected by the unique indexes in `supabase/migrations/20261008000000_half_pitch.sql`. With it on, those four tables
+are skipped by the store, so a booking confirmed in `oyun` is invisible to the rest of the app (the ticket page 404s).
+Do not run `supabase/setup/12-retire-legacy-jsonb-tables.sql` while it is off.
+
+## Store conflicts are per row
+
+`apply_changes` (migration `20261016000000`) rejects a write only if a row it touches changed after the revision the
+caller loaded. Audit of the money paths: wallet debits/credits, referral rewards and promo use each write the row they
+depend on (the player or promo row), so a race on them still conflicts and retries on fresh data. A new mutation that
+reads a row it does not write must write that row too.
