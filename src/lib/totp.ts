@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
@@ -44,9 +44,11 @@ export function verifyTotp(token: string, secret: string, windowSteps = 1, times
   if (!/^\d{6}$/.test(cleanedToken)) return false;
 
   const currentCounter = Math.floor(timestampMs / 1000 / 30);
+  const tokenBuf = Buffer.from(cleanedToken, 'utf8');
   for (let step = -windowSteps; step <= windowSteps; step++) {
     const expected = generateTotp(secret, (currentCounter + step) * 30 * 1000);
-    if (expected === cleanedToken) return true;
+    const expectedBuf = Buffer.from(expected, 'utf8');
+    if (expectedBuf.length === tokenBuf.length && timingSafeEqual(expectedBuf, tokenBuf)) return true;
   }
   return false;
 }

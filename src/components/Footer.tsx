@@ -65,6 +65,16 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
               </ul>
             </div>
             <div className={styles.linkGroup}>
+              <p className={styles.linkGroupTitle}>Guides &amp; Highlights</p>
+              <ul className={styles.linkList}>
+                <li><Link href="/guides">Sports guides &amp; rules</Link></li>
+                <li><Link href="/guides/pickleball-mangalore-venues">Pickleball in Mangalore</Link></li>
+                <li><Link href="/guides/padel-in-mangalore">Padel court guide</Link></li>
+                <li><Link href="/curated/night-turfs-mangalore">Night turfs (after 12 AM)</Link></li>
+                <li><Link href="/curated/monsoon-covered-turfs-mangalore">Monsoon covered turfs</Link></li>
+              </ul>
+            </div>
+            <div className={styles.linkGroup}>
               <p className={styles.linkGroupTitle}>Turf owners</p>
               <ul className={styles.linkList}>
                 <li><Link href="/list-turf">List your turf</Link></li>

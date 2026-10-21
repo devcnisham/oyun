@@ -5,6 +5,7 @@ export const SPORTS = [
   { value: 'Box Cricket', label: 'Box Cricket', icon: '🏏', place: 'turf', image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=600&auto=format&fit=crop' },
   { value: 'Badminton', label: 'Badminton', icon: '🏸', place: 'court', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=600&auto=format&fit=crop' },
   { value: 'Pickleball', label: 'Pickleball', icon: '🏓', place: 'court', image: 'https://images.unsplash.com/photo-1693142517898-2f986215e412?q=80&w=600&auto=format&fit=crop' },
+  { value: 'Padel', label: 'Padel', icon: '🎾', place: 'court', image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=600&auto=format&fit=crop' },
 ] as const;
 
 // URL slug for a sport, e.g. "Box Cricket" -> "box-cricket" (used by /sports/[sport])

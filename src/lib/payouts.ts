@@ -339,6 +339,13 @@ export function generatePayoutStatementHtml(
 ): string {
   const business = partner.business;
   const inr = (amount: number) => `₹${amount.toLocaleString('en-IN')}`;
+  const escapeHtml = (str: string | undefined | null) =>
+    String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
 
   const rowsHtml = bookings
     .map((b) => {
@@ -350,10 +357,10 @@ export function generatePayoutStatementHtml(
       const net = Math.max(0, online - commission - gst);
 
       return `<tr>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${b.date} ${b.timeLabel}</td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><code>${b.code}</code></td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${b.customerName}</td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-transform: uppercase;">${b.paymentMode}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(b.date)} ${escapeHtml(b.timeLabel)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;"><code>${escapeHtml(b.code)}</code></td>
+        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(b.customerName)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-transform: uppercase;">${escapeHtml(b.paymentMode)}</td>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${inr(gross)}</td>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">${inr(online)}</td>
         <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">-${inr(commission)}</td>
@@ -367,7 +374,7 @@ export function generatePayoutStatementHtml(
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>OYUN Settlement Statement - ${payout.id}</title>
+  <title>OYUN Settlement Statement - ${escapeHtml(payout.id)}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #111827; margin: 40px; }
     .header { display: flex; justify-content: space-between; border-bottom: 2px solid #10b981; padding-bottom: 20px; }
@@ -387,8 +394,8 @@ export function generatePayoutStatementHtml(
   <div class="header">
     <div>
       <div class="title">OYUN TURF SETTLEMENT STATEMENT</div>
-      <div>Statement ID: <strong>${payout.id}</strong></div>
-      <div>Period: <strong>${payout.periodStart}</strong> to <strong>${payout.periodEnd}</strong></div>
+      <div>Statement ID: <strong>${escapeHtml(payout.id)}</strong></div>
+      <div>Period: <strong>${escapeHtml(payout.periodStart)}</strong> to <strong>${escapeHtml(payout.periodEnd)}</strong></div>
     </div>
     <div style="text-align: right;">
       <div style="font-size: 18px; font-weight: bold;">OYUN Technologies Pvt Ltd</div>
@@ -400,18 +407,18 @@ export function generatePayoutStatementHtml(
   <div class="meta-grid">
     <div class="box">
       <div style="font-size: 12px; font-weight: bold; color: #6b7280; text-transform: uppercase;">Partner Beneficiary</div>
-      <div style="font-size: 16px; font-weight: bold; margin-top: 4px;">${business.legalName || partner.name}</div>
-      <div>Venue: ${turf.name} (${turf.location})</div>
-      <div>GSTIN: ${business.gstin || 'Not registered'}</div>
-      <div>Bank: ${business.bankAccountNumber ? '•••• ' + business.bankAccountNumber.slice(-4) : 'Pending update'} (IFSC: ${business.bankIfsc || 'N/A'})</div>
+      <div style="font-size: 16px; font-weight: bold; margin-top: 4px;">${escapeHtml(business.legalName || partner.name)}</div>
+      <div>Venue: ${escapeHtml(turf.name)} (${escapeHtml(turf.location)})</div>
+      <div>GSTIN: ${escapeHtml(business.gstin || 'Not registered')}</div>
+      <div>Bank: ${business.bankAccountNumber ? '•••• ' + escapeHtml(business.bankAccountNumber.slice(-4)) : 'Pending update'} (IFSC: ${escapeHtml(business.bankIfsc || 'N/A')})</div>
     </div>
     <div class="box">
       <div style="font-size: 12px; font-weight: bold; color: #6b7280; text-transform: uppercase;">Settlement Status</div>
       <div style="margin-top: 6px;">
-        <span class="badge ${payout.status === 'paid' ? 'badge-paid' : ''}">${payout.status.toUpperCase()}</span>
+        <span class="badge ${payout.status === 'paid' ? 'badge-paid' : ''}">${escapeHtml(payout.status.toUpperCase())}</span>
       </div>
-      <div style="margin-top: 8px;">UTR Reference: <strong>${payout.utr || 'Pending'}</strong></div>
-      <div>Payout Date: ${payout.paidAt ? payout.paidAt.slice(0, 10) : payout.payoutDate}</div>
+      <div style="margin-top: 8px;">UTR Reference: <strong>${escapeHtml(payout.utr || 'Pending')}</strong></div>
+      <div>Payout Date: ${escapeHtml(payout.paidAt ? payout.paidAt.slice(0, 10) : payout.payoutDate)}</div>
     </div>
   </div>
 
