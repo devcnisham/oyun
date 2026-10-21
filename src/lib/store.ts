@@ -49,17 +49,21 @@ type Table = (typeof LIST_TABLES)[keyof typeof LIST_TABLES] | 'promo_codes' | 'p
 type Row = { id: string; data: unknown };
 type TableRows = Partial<Record<Table, Row[]>>;
 
-function toRows(db: Database): TableRows {
+// `only` limits the rows built to those tables, so untouched collections are never read (or cloned)
+function toRows(db: Database, only?: ReadonlySet<Table>): TableRows {
   const rows: TableRows = {};
+  const want = (table: Table) => !only || only.has(table);
   for (const [key, table] of Object.entries(LIST_TABLES) as [keyof typeof LIST_TABLES, Table][]) {
-    rows[table] = (db[key] as { id: string }[]).map((item) => ({ id: item.id, data: item }));
+    if (want(table)) rows[table] = (db[key] as { id: string }[]).map((item) => ({ id: item.id, data: item }));
   }
-  rows.promo_codes = db.promoCodes.map((p) => ({ id: p.code, data: p }));
-  rows.pricing = Object.entries(db.pricing).map(([turfId, rules]) => ({ id: turfId, data: rules }));
-  rows.app_config = [
-    { id: 'settings', data: db.settings },
-    { id: 'site', data: db.site },
-  ];
+  if (want('promo_codes')) rows.promo_codes = db.promoCodes.map((p) => ({ id: p.code, data: p }));
+  if (want('pricing')) rows.pricing = Object.entries(db.pricing).map(([turfId, rules]) => ({ id: turfId, data: rules }));
+  if (want('app_config')) {
+    rows.app_config = [
+      { id: 'settings', data: db.settings },
+      { id: 'site', data: db.site },
+    ];
+  }
   return rows;
 }
 
@@ -80,25 +84,35 @@ function fromRows(rows: TableRows): Database {
 }
 
 // Serialized rows, to work out what a mutation changed.
-// R008: When Supabase is active, bookings, holds, blocks, and pricing are handled by the v2 relational schema
-// and excluded from apply_changes and load_changes.
+// R008: With the v2 relational slot schema on (OYUN_V2_SLOTS=1), bookings, holds, blocks, and pricing live
+// in the `oyun` schema and are excluded from apply_changes and load_changes. Until the booking pages,
+// dashboards, wallet and payouts read from it, v2 stays off and these tables are saved like the rest,
+// guarded by the unique slot indexes (supabase/migrations/20261008000000_half_pitch.sql).
 const RETIRED_BOOKING_TABLES = new Set<string>(['bookings', 'holds', 'blocks', 'pricing']);
 
-function snapshot(db: Database) {
+export function v2SlotsEnabled() {
+  return process.env.OYUN_V2_SLOTS === '1';
+}
+
+function booksInV2() {
+  return supabaseActive() && v2SlotsEnabled();
+}
+
+function snapshot(db: Database, only?: ReadonlySet<Table>) {
   const snap = new Map<Table, Map<string, string>>();
-  const retired = supabaseActive();
-  for (const [table, rows] of Object.entries(toRows(db)) as [Table, Row[]][]) {
+  const retired = booksInV2();
+  for (const [table, rows] of Object.entries(toRows(db, only)) as [Table, Row[]][]) {
     if (retired && RETIRED_BOOKING_TABLES.has(table)) continue;
     snap.set(table, new Map(rows.map((r) => [r.id, JSON.stringify(r.data)])));
   }
   return snap;
 }
 
-function diff(before: Map<Table, Map<string, string>>, db: Database) {
+function diff(before: Map<Table, Map<string, string>>, db: Database, only?: ReadonlySet<Table>) {
   const upserts: TableRows = {};
   const deletes: Partial<Record<Table, string[]>> = {};
-  const retired = supabaseActive();
-  for (const [table, rows] of Object.entries(toRows(db)) as [Table, Row[]][]) {
+  const retired = booksInV2();
+  for (const [table, rows] of Object.entries(toRows(db, only)) as [Table, Row[]][]) {
     if (retired && RETIRED_BOOKING_TABLES.has(table)) continue;
     const old = before.get(table) ?? new Map<string, string>();
     const changed = rows.filter((r) => old.get(r.id) !== JSON.stringify(r.data));
@@ -148,6 +162,42 @@ function announceSlotChanges(slots: { turfId: string; date: string }[]) {
   } catch {
     broadcastSlotChanges(slots).catch((err) => console.warn('[store] failed to announce slot changes:', err));
   }
+}
+
+/*
+ * mutate() hands the callback a copy it may edit freely. Copying the whole store for every write costs
+ * more as players and wallet history grow (tens of milliseconds of blocked event loop at 10,000 players),
+ * so each collection is copied the first time the callback touches it. Collections it never reads stay
+ * shared and are never copied, snapshotted or compared.
+ */
+const COLLECTION_TABLES: Record<string, Table> = {
+  ...LIST_TABLES,
+  promoCodes: 'promo_codes',
+  pricing: 'pricing',
+  settings: 'app_config',
+  site: 'app_config',
+};
+
+function lazyCopy(base: Database) {
+  const copies = new Map<string, unknown>();
+  const copy = {} as Record<string, unknown>;
+  for (const key of Object.keys(base)) {
+    Object.defineProperty(copy, key, {
+      enumerable: true,
+      configurable: true,
+      get() {
+        if (!copies.has(key)) copies.set(key, structuredClone((base as unknown as Record<string, unknown>)[key]));
+        return copies.get(key);
+      },
+      set(value: unknown) {
+        copies.set(key, value);
+      },
+    });
+  }
+  const tables = () => new Set<Table>([...copies.keys()].flatMap((key) => (COLLECTION_TABLES[key] ? [COLLECTION_TABLES[key]] : [])));
+  // A plain object for readers after the write: the callback's copies where it made them, shared data elsewhere
+  const settled = () => ({ ...(base as unknown as Record<string, unknown>), ...Object.fromEntries(copies) }) as unknown as Database;
+  return { db: copy as unknown as Database, tables, settled };
 }
 
 class StoreConflict extends Error {}
@@ -495,15 +545,19 @@ export async function mutate<T>(fn: (db: Database) => T): Promise<T> {
       throw err;
     }
     // Work on a private copy: the loaded object is shared with other requests on this server
-    const db = structuredClone(loaded.db);
-    const before = snapshot(db);
-    const result = fn(db);
-    const changes = diff(before, db);
+    const work = lazyCopy(loaded.db);
+    const result = fn(work.db);
+    const touched = work.tables();
+    const db = work.settled();
+    const before = snapshot(loaded.db, touched);
+    const changes = diff(before, db, touched);
     try {
       const rev = changes.empty ? loaded.rev : await applyChanges(changes, loaded.rev);
-      // Our write is exactly the next revision, so the cache can take it without a round trip
+      // Our write is exactly the next revision, so the cache can take it without a round trip.
+      // If other writers landed in between (row-level conflicts allow that), the cache would skip
+      // their rows by jumping ahead, so leave it and let the next sync fetch the delta.
       const cache = memory.__oyunCache;
-      if (!changes.empty && rev !== null && cache && cache.rev === loaded.rev) {
+      if (!changes.empty && rev !== null && cache && cache.rev === loaded.rev && rev === loaded.rev! + 1) {
         applyToCache(cache, structuredClone(changes.upserts), changes.deletes, rev);
       }
       requestState().current = Promise.resolve({ db, rev });

@@ -4,25 +4,14 @@ import { sharedRateLimit } from '@/lib/shared-rate-limit';
 import { mutate } from '@/lib/store';
 import { isV2SlotsActive, v2ReleaseHolds } from '@/lib/v2-slots';
 import { clientIpFrom } from '@/lib/client-ip';
-
-// A malformed or "null" Origin must be refused, not crash the route
-function originHost(origin: string) {
-  try {
-    return new URL(origin).host;
-  } catch {
-    return null;
-  }
-}
+import { isSameOrigin } from '@/lib/same-origin';
 
 // Called with navigator.sendBeacon when a player leaves checkout (closes the tab, goes back),
 // so their held slots open up for everyone straight away instead of after the 8-minute timeout.
 export async function POST(req: Request) {
-  const origin = req.headers.get('origin');
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host');
-
   // Reject requests with no Origin (direct script/curl calls) or from a different host.
   // navigator.sendBeacon always sends Origin, so legitimate releases are never rejected.
-  if (!origin || !host || originHost(origin) !== host) return new Response(null, { status: 403 });
+  if (!isSameOrigin(req.headers)) return new Response(null, { status: 403 });
 
   // Rate-limit to prevent this endpoint from being used to loop-release other devices' holds.
   const ip = clientIpFrom(req.headers);
@@ -30,16 +19,18 @@ export async function POST(req: Request) {
 
   const holder = await deviceHolder(false);
   if (holder) {
+    // With v2 slots the holds live in the oyun schema and the store has nothing to write
     if (isV2SlotsActive()) {
       await v2ReleaseHolds(holder);
-    }
-    try {
-      await mutate((db) => {
-        db.holds = db.holds.filter((h) => h.holder !== holder);
-      });
-      refreshAll();
-    } catch (err) {
-      console.warn('[holds/release] release failed:', err);
+    } else {
+      try {
+        await mutate((db) => {
+          db.holds = db.holds.filter((h) => h.holder !== holder);
+        });
+        refreshAll();
+      } catch (err) {
+        console.warn('[holds/release] release failed:', err);
+      }
     }
   }
   return new Response(null, { status: 204 });
