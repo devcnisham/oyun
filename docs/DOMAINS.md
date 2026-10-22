@@ -25,7 +25,7 @@
 At launch the landing page `/` can stop rewriting to `/welcome`: change `landing` in `routeForHost`.
 
 ## Launch gate
-Until **31 October 2026, 12:00 am India time** the booking site is closed to the public, on `app.oyun.co.in` and on the `*.vercel.app` address. `help.` stays public. Visitors to a closed page go to the countdown page on `www.oyun.co.in/countdown`, so the Browse & book button always lands on something that explains why. Dashboards (`partner.`, `admin.`, and `/partner` `/admin` on any host) and `/api/*` stay reachable.
+The booking site was **opened to the public on 22 October 2026** (`LAUNCH_AT` in `src/lib/hosts.ts`; the plan was 31 October). While `LAUNCH_AT` is in the future the booking site is closed to the public, on `app.oyun.co.in` and on the `*.vercel.app` address. `help.` stays public. Visitors to a closed page go to the countdown page on `www.oyun.co.in/countdown`, so the Browse & book button always lands on something that explains why. Dashboards (`partner.`, `admin.`, and `/partner` `/admin` on any host) and `/api/*` stay reachable.
 
 - **Opens by itself** at the launch time. After it, `www.oyun.co.in` also serves the real site (the landing page stops showing).
 - **Open early:** set `LAUNCH_OPEN=true` in Vercel.

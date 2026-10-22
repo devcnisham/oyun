@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { isLaunched } from '@/lib/hosts';
 import { SITE_CITY } from '@/lib/site';
 import BrandMark from '@/components/BrandMark';
 import { BROWSE_URL, HELP_URL } from './links';
 import styles from './site.module.css';
 
 export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
+  const open = isLaunched();
   return (
     <footer className={styles.footer}>
       <div className={styles.footWrap}>
@@ -17,15 +19,15 @@ export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
             <h2>Explore</h2>
             <ul>
               <li><a href={BROWSE_URL}>Browse &amp; book</a></li>
-              <li><Link href="/#sports">Sports</Link></li>
-              <li><Link href="/#how">How it works</Link></li>
-              <li><Link href="/countdown">Launching soon</Link></li>
+              <li><Link href="/sports">Sports</Link></li>
+              <li><Link href="/guides">Guides</Link></li>
+              {!open && <li><Link href="/countdown">Launching soon</Link></li>}
             </ul>
           </nav>
           <nav className={styles.footCol} aria-label="For venue owners">
             <h2>For venue owners</h2>
             <ul>
-              <li><Link href="/#owners">List your venue</Link></li>
+              <li><Link href="/list-turf">List your venue</Link></li>
               <li><a href="https://partner.oyun.co.in/partner/login">Partner login</a></li>
               <li><a href={`mailto:${supportEmail}`}>Contact us</a></li>
             </ul>

@@ -5,6 +5,7 @@ import { SPORTS } from '@/lib/sports';
 import { getSettings } from '@/lib/queries';
 import { IconArrow } from '../_ui/icons';
 import { BROWSE_URL } from '../_ui/links';
+import { isLaunched } from '@/lib/hosts';
 import SiteFooter from '../_ui/SiteFooter';
 import SiteHeader from '../_ui/SiteHeader';
 import Countdown from './Countdown';
@@ -22,7 +23,7 @@ export default async function CountdownPage() {
   const ticker = [...SPORTS, ...SPORTS, ...SPORTS, ...SPORTS];
   return (
     <div className={styles.shell}>
-      <SiteHeader current="countdown" />
+      <SiteHeader current="countdown" waiting={!isLaunched()} />
       <main id="content" className={styles.page}>
         <div className={styles.glow} aria-hidden="true" />
         <div className={styles.orbs} aria-hidden="true">

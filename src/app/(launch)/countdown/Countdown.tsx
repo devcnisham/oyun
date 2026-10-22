@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { LAUNCH_AT } from '@/lib/hosts';
 import styles from './Countdown.module.css';
-
-// 31 October 2026, 12:00 am India time
-const LAUNCH_AT = new Date('2026-10-31T00:00:00+05:30').getTime();
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
