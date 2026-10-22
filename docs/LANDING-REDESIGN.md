@@ -65,3 +65,6 @@ Why a fourth pass: the 3D, photo and editorial versions were all rejected. v4 dr
 - **Look.** Dark ink hero with a faint 56px grid (the board's own grid), light body, one red close. Sora (display, numbers) and Inter (text). Cards use 20px radius, controls 12px. Red only for the main action and the closing band; green only for "Open", always with a text label.
 - **Sections.** Hero, three steps drawn as the three states of one booking (pick, hold, play), venue areas from live data, owners with a sample partner calendar, FAQ, closing.
 - **Rules kept.** No photos, 3D, emoji, invented numbers or venues. Reduced motion shows everything at once. Passes axe on desktop and phone, Lighthouse mobile 93 / 100 / 100 / 100, no horizontal scroll at 375px.
+
+## 22 Oct 2026: /welcome removed, landing kept
+`/welcome` (an old redirect page) is gone: the address now 301s to `/countdown`, or to `/` after launch. The landing page stays at `/` on www until launch.

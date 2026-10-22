@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { collection } = data;
   return {
-    title: `${collection.metaTitle} | OYUN`,
+    title: collection.metaTitle,
     description: collection.metaDescription,
     alternates: { canonical: `/curated/${slug}` },
     openGraph: ogBase(`/curated/${slug}`),

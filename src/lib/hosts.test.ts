@@ -43,7 +43,7 @@ const perm = (path: string) => ({ kind: 'redirect', host: 'www.oyun.co.in', path
 describe('landing host (www)', () => {
   test('shows the landing page at / and its pages before launch; sends closed player pages to the countdown', () => {
     expect(routeForHost('landing', '/')).toEqual({ kind: 'rewrite', path: '/landing' });
-    for (const p of ['/countdown', '/welcome', '/about', '/privacy', '/terms', '/faq', '/help', '/guides/padel']) expect(routeForHost('landing', p)).toEqual(next);
+    for (const p of ['/countdown', '/about', '/privacy', '/terms', '/faq', '/help', '/guides/padel']) expect(routeForHost('landing', p)).toEqual(next);
     expect(routeForHost('landing', '/arenas/perfect-pass-kodialbail')).toEqual(go('www', '/countdown'));
     expect(routeForHost('landing', '/partner/calendar')).toEqual(go('partner', '/partner/calendar'));
     expect(routeForHost('landing', '/admin')).toEqual(go('admin', '/admin'));
@@ -57,6 +57,10 @@ describe('landing host (www)', () => {
     for (const p of ['/', '/arenas', '/arenas/x', '/guides/padel', '/sports/football', '/turfs/kodialbail', '/login']) expect(routeForHost('landing', p, LIVE)).toEqual(next);
     expect(routeForHost('landing', '/countdown', LIVE)).toEqual(perm('/'));
     expect(routeForHost('landing', '/admin', LIVE)).toEqual(go('admin', '/admin'));
+  });
+  test('the old /welcome address redirects to the countdown before launch and to / after', () => {
+    expect(routeForHost('landing', '/welcome')).toEqual(perm('/countdown'));
+    expect(routeForHost('landing', '/welcome', LIVE)).toEqual(perm('/'));
   });
 });
 

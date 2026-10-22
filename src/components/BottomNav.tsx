@@ -37,7 +37,7 @@ export default function BottomNav() {
   const path = raw === '/m' ? '/' : raw;
   // The landing host shows the landing page at / (the address bar does not change), so the host tells us too
   const onLandingHost = useSyncExternalStore(subscribeNever, () => roleForHost(window.location.host) === 'landing', () => false);
-  if (onLandingHost || path.startsWith('/admin') || path.startsWith('/partner') || ['/landing', '/countdown', '/welcome', '/about'].includes(path)) return null;
+  if (onLandingHost || path.startsWith('/admin') || path.startsWith('/partner') || ['/landing', '/countdown', '/about'].includes(path)) return null;
 
   return (
     <>

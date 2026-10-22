@@ -8,7 +8,7 @@ import { SITE_CITY } from '@/lib/site';
 import styles from '../turfs/[area]/page.module.css';
 
 export const metadata: Metadata = {
-  title: `Sports Guides, Rules & Venue Tips in ${SITE_CITY} | OYUN`,
+  title: `Sports Guides, Rules & Venue Tips in ${SITE_CITY}`,
   description: `Essential playing guides for football, box cricket, badminton, pickleball, and padel in ${SITE_CITY}. Discover rules, gear requirements, pricing benchmarks, and court recommendations.`,
   alternates: { canonical: '/guides' },
   openGraph: ogBase('/guides'),
