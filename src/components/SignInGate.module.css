@@ -16,7 +16,7 @@
   max-width: 420px;
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 28px 24px 24px;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
@@ -72,7 +72,7 @@
 }
 
 .tabs button.on {
-  background: #fff;
+  background: var(--bg-card);
   color: var(--text-primary);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

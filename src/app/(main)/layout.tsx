@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import AppBar from "@/components/AppBar";
 import Footer from "@/components/Footer";
 import { getSettings, getSiteContent } from "@/lib/queries";
 
@@ -10,20 +11,21 @@ export default async function MainLayout({
   const site = await getSiteContent();
   const settings = await getSettings();
   return (
-    <>
+    <div className="playerRoot">
       {site.announcementActive && site.announcement && (
         <div
           role="status"
           className="noPrint"
-          style={{ background: "#111", color: "#fff", textAlign: "center", fontSize: 14, fontWeight: 600, padding: "10px 16px" }}
+          style={{ background: "var(--bg-inverse)", color: "#fff", textAlign: "center", fontSize: 14, fontWeight: 600, padding: "10px 16px" }}
         >
           {site.announcement}
         </div>
       )}
       <a href="#main" className="skipLink">Skip to main content</a>
       <Navbar />
+      <AppBar />
       <main id="main" tabIndex={-1} className="appMain">{children}</main>
       <Footer supportEmail={settings.supportEmail} />
-    </>
+    </div>
   );
 }

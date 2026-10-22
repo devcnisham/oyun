@@ -7,7 +7,7 @@ import SearchSuggestions, { useSuggestions } from './SearchSuggestions';
 import styles from './FloatingSearch.module.css';
 
 // Raised red search button in the middle of the phone tab bar; opens a search sheet
-export default function FloatingSearch({ className }: { className: string }) {
+export default function FloatingSearch({ className, renderTrigger }: { className?: string; renderTrigger?: (open: () => void) => React.ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
@@ -26,12 +26,14 @@ export default function FloatingSearch({ className }: { className: string }) {
 
   return (
     <>
+      {renderTrigger ? renderTrigger(() => setOpen(true)) : (
       <button type="button" className={className} aria-label="Search turfs" onClick={() => setOpen(true)}>
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />
         </svg>
       </button>
+      )}
 
       {/* Portal so the sheet is not trapped under the tab bar's stacking layer */}
       {open && createPortal(

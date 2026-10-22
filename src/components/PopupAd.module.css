@@ -18,7 +18,7 @@
 
 .popup {
   position: relative;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 20px;
   width: 100%;
   max-width: 460px;
@@ -61,7 +61,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
-  background: #111;
+  background: var(--bg-inverse);
 }
 
 .image {

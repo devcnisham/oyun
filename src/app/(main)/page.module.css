@@ -8,7 +8,7 @@
   position: relative;
   height: 720px;
   padding-top: 110px; /* Account for absolute transparent navbar */
-  background: #111;
+  background: var(--bg-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,7 +74,7 @@
 .searchBar {
   display: flex;
   align-items: center;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 6px;
   flex: 1;
@@ -84,8 +84,8 @@
 }
 
 .mapBtn {
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--bg-card);
+  color: var(--text-primary);
   justify-content: center;
   width: 56px;
   padding: 0;
@@ -103,7 +103,7 @@
 }
 
 .mapBtn:hover {
-  background: #f3f3f3;
+  background: var(--bg-muted);
 }
 
 .searchInputGroup {
@@ -122,7 +122,7 @@
 }
 
 .searchIcon {
-  color: #6b7280;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -133,13 +133,13 @@
   font-family: inherit;
   font-size: 15px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-primary);
   width: 100%;
 }
 
 .searchInput::placeholder {
   font-weight: 400;
-  color: #8a8f98;
+  color: var(--text-muted);
 }
 
 .searchBtn {
@@ -405,7 +405,7 @@
 }
 
 .areaCard {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px;
@@ -439,7 +439,7 @@
 .sportGrid {
   --ear: 0px; /* no scoops and no gap: the tabs touch like cards stacked side by side */
   --space: 0px;
-  --tab: #f7f8fa;
+  --tab: var(--bg-muted);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: calc(var(--ear) * 2 + var(--space)); /* both scoops plus a little open space between tabs */
@@ -526,7 +526,7 @@
   font-size: 20px;
   font-weight: 800;
   line-height: 1.2;
-  color: #6b7280;
+  color: var(--text-muted);
   transition: color 0.3s;
 }
 
@@ -534,7 +534,7 @@
 .sportCard:hover,
 .sportCard:focus-visible,
 .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child {
-  --tab: #fff0ee;
+  --tab: var(--primary-50);
   height: 246px;
 }
 
@@ -548,7 +548,7 @@
 .sportCard:hover .sportName,
 .sportCard:focus-visible .sportName,
 .sportGrid:not(:has(.sportCard:hover, .sportCard:focus-visible)) .sportCard:first-child .sportName {
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -581,7 +581,7 @@
 }
 
 .ctaSection {
-  background: #fff;
+  background: var(--bg-card);
   border-top: 1px solid var(--border);
   padding: 60px 0;
 }

@@ -107,11 +107,11 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         {(() => {
           const alert = getWeatherAlert(turf);
           return alert.active ? (
-            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '10px 14px', margin: '14px 0', fontSize: 13, color: '#1e40af', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ background: 'var(--info-bg)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', margin: '14px 0', fontSize: 13, color: 'var(--info)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 20 }} aria-hidden>🌧️</span>
               <div>
                 <strong>{alert.title}</strong>
-                <p style={{ margin: '2px 0 0', color: '#1e3a8a', fontSize: 12 }}>{alert.description}</p>
+                <p style={{ margin: '2px 0 0', color: 'var(--info)', fontSize: 12 }}>{alert.description}</p>
               </div>
             </div>
           ) : null;

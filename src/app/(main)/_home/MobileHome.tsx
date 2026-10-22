@@ -1,109 +1,54 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { rupees } from '@/lib/format';
-import { canOptimize } from '@/lib/images';
-import type { PromoCard, TurfSummary } from '@/lib/types';
-import CouponCard from './CouponCard';
-import NextGame from './NextGame';
-import SportRail, { type RailTurf } from './SportRail';
-import styles from './MobileHome.module.css';
+import { areaSlug } from '@/lib/site';
+import { CURATED_COLLECTIONS } from '@/lib/curated-collections';
+import { SPORTS, sportSlug } from '@/lib/sports';
+import type { OpenMatch, PromoCard, TurfSummary } from '@/lib/types';
+import PhoneHome from './PhoneHome';
+import type { HomeData } from './types';
 
 interface Props {
   turfs: TurfSummary[];
   promos: PromoCard[];
-  coupons: { code: string; title: string; note: string }[];
-  deals: { id: string; turfId: string; turfName: string; image: string; title: string; percentOff: number; when: string }[];
+  coupons: HomeData['coupons'];
+  deals: HomeData['deals'];
+  matches: OpenMatch[];
 }
 
-const TOP_RATED_SHOWN = 3;
+const dateLabel = (date: string) => new Date(`${date}T00:00:00+05:30`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
 
-// The phone version of the home page: an app-style feed instead of the desktop landing page
-export default function MobileHome({ turfs, promos, coupons, deals }: Props) {
-  // Only what the rail needs, since it runs in the browser
-  const railTurfs: RailTurf[] = turfs.map((t) => ({ id: t.id, name: t.name, area: t.area, pricePerHour: t.pricePerHour, image: t.images[0], availableToday: t.availableToday, sports: t.sports }));
-  const topRated = [...turfs].sort((a, b) => b.rating - a.rating).slice(0, TOP_RATED_SHOWN);
+// The phone version of the home page: an app-style home with three modes (categories, turfs, play with others).
+// Everything is prepared here on the server and trimmed, since the page itself runs in the browser.
+export default function MobileHome({ turfs, promos, coupons, deals, matches }: Props) {
+  const homeTurfs = turfs.map((t) => ({ id: t.id, name: t.name, area: t.area, size: t.size, rating: t.rating, reviewCount: t.reviewCount, pricePerHour: t.pricePerHour, image: t.images[0], availableToday: t.availableToday, sports: t.sports }));
 
-  return (
-    <div className={styles.home}>
-      <header className={styles.head}>
-        <NextGame />
-        <h1 className={styles.title}>What do you want to play?</h1>
-      </header>
+  // Sports shown: the four main ones always, any other only once a venue offers it
+  const sports = SPORTS.map((s) => ({ value: s.value, label: s.label, slug: sportSlug(s.value), image: s.image.replace('w=600', 'w=800'), count: turfs.filter((t) => t.sports.includes(s.value)).length })).filter((s, i) => i < 4 || s.count > 0);
 
-      <SportRail turfs={railTurfs} />
+  const collections = CURATED_COLLECTIONS.map((c) => {
+    const hit = turfs.filter((t) => c.filter(t));
+    return { slug: c.slug, label: c.badge, count: hit.length, image: hit[0]?.images[0] ?? '' };
+  }).filter((c) => c.count > 0 && c.image);
 
-      {promos.length > 0 && (
-        <section className={styles.promos} tabIndex={0} aria-label="Featured">
-          {promos.map((p, i) => (
-            <div key={p.id} className={styles.promo}>
-              {/* The first card is the biggest thing above the fold: fetch it early and keep it out of lazy loading */}
-              <Image src={p.image} alt={p.title} fill sizes="85vw" preload={i === 0} loading={i === 0 ? 'eager' : undefined} fetchPriority={i === 0 ? 'high' : undefined} unoptimized={!canOptimize(p.image)} />
-              <div>
-                <b>{p.title}</b>
-                <span>{p.subtitle}</span>
-              </div>
-            </div>
-          ))}
-        </section>
-      )}
+  const areaNames = [...new Set(turfs.map((t) => t.area))].sort();
+  const areas = areaNames.map((name) => ({ name, slug: areaSlug(name), count: turfs.filter((t) => t.area === name).length })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
-      {(coupons.length > 0 || deals.length > 0) && (
-        <section id="deals" className={styles.anchor}>
-          <div className={styles.sectionHead}>
-            <h2>Deals for you</h2>
-            <span className={styles.muted}>Tap a code to copy</span>
-          </div>
-          <div className={styles.rail}>
-            {coupons.map((c) => (
-              <CouponCard key={c.code} {...c} />
-            ))}
-            {deals.map((d) => (
-              <Link key={d.id} href={`/arenas/${d.turfId}`} className={styles.deal}>
-                <span className={styles.dealOff}>-{d.percentOff}%</span>
-                <b>{d.title}</b>
-                <span>{d.turfName}</span>
-                <small>{d.when}</small>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+  // Open games: only first names and counts leave the server, never phone numbers
+  const openMatches = matches
+    .filter((m) => m.status === 'open')
+    .map((m) => ({ id: m.id, turfName: m.turfName, sport: m.sport, dateLabel: dateLabel(m.date), timeLabel: m.timeLabel, format: m.format, spotsLeft: Math.max(0, m.playersNeeded - m.playersJoined.length), host: m.hostName.split(' ')[0] }))
+    .filter((m) => m.spotsLeft > 0)
+    .slice(0, 12);
 
-      <section>
-        <div className={styles.sectionHead}>
-          <h2>{topRated.some((t) => t.reviewCount > 0) ? 'Top rated near you' : 'Popular turfs'}</h2>
-          <Link href="/arenas">See all</Link>
-        </div>
-        <div className={styles.list}>
-          {topRated.map((t, i) => (
-            <Link key={t.id} href={`/arenas/${t.id}`} className={styles.row}>
-              <div className={styles.rowImg}>
-                <Image src={t.images[0]} alt={`${t.name} turf in ${t.area}`} fill sizes="96px" unoptimized={!canOptimize(t.images[0])} />
-                {t.reviewCount > 0 && <span className={styles.rank}>#{i + 1}</span>}
-              </div>
-              <div className={styles.rowInfo}>
-                <b>{t.name}</b>
-                <span>{t.area} · {t.size}</span>
-                <span className={styles.rowMeta}>
-                  {t.reviewCount > 0 ? <em>★ {t.rating}</em> : <em>New</em>}
-                  <strong>{rupees(t.pricePerHour)}<small>/hr</small></strong>
-                  <span className={styles.bookBtn}>Book</span>
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-        <Link href="/arenas" className={styles.seeAll}>See all {turfs.length} turfs</Link>
-      </section>
-
-      <Link href="/list-turf" prefetch={false} className={styles.ownerCta}>
-        <span>💼</span>
-        <div>
-          <b>Own a turf?</b>
-          <small>List it free and get bookings</small>
-        </div>
-        <i aria-hidden>›</i>
-      </Link>
-    </div>
-  );
+  const data: HomeData = {
+    turfs: homeTurfs,
+    sports,
+    collections,
+    areas,
+    matches: openMatches,
+    coupons,
+    deals,
+    promos: promos.map((p) => ({ id: p.id, title: p.title, subtitle: p.subtitle, image: p.image })),
+    offerMax: deals.reduce((m, d) => Math.max(m, d.percentOff), 0),
+    openSlots: turfs.reduce((n, t) => n + t.availableToday, 0),
+  };
+  return <PhoneHome data={data} />;
 }

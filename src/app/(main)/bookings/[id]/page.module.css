@@ -6,7 +6,7 @@
 .card {
   max-width: 520px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: 28px;
@@ -24,13 +24,13 @@
 }
 
 .ok {
-  background: #ecfdf3;
-  color: #067647;
+  background: var(--ok-bg);
+  color: var(--ok);
 }
 
 .off {
-  background: #f2f4f7;
-  color: #475467;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
 }
 
 .turf {
@@ -145,7 +145,7 @@
 
 .rewardLine {
   font-size: 14px;
-  color: #067647;
+  color: var(--ok);
   margin: 4px 0;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .credit {
-  color: #067647;
+  color: var(--ok);
   font-weight: 700;
 }
 
@@ -182,7 +182,7 @@
 
 .referBox {
   margin-top: 16px;
-  background: #fef2f2;
+  background: var(--err-bg);
   border: 1px dashed var(--primary-300);
   border-radius: var(--radius-lg);
   padding: 16px;
@@ -224,4 +224,4 @@
   font-weight: 700;
   text-decoration: none;
 }
-.extra:hover { border-color: var(--primary-700); color: var(--primary-700); }
+.extra:hover { border-color: var(--primary-700); color: var(--accent-text); }

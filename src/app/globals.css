@@ -48,6 +48,17 @@
   --accent-gold-deep: #cba052;
 
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Semantic colours: status and surfaces. Light values here; the player pages switch them in dark mode (see the end of this file) */
+  --accent-text: #d31027;
+  --ok: #067647; --ok-bg: #ecfdf3; --ok-border: #bbf7d0;
+  --warn: #7c4a03; --warn-bg: #fff4d6;
+  --err: #b91c1c; --err-bg: #fef2f2; --err-border: #fca5a5;
+  --info: #0a5fb4; --info-bg: #e6efff;
+  --bg-inverse: #111111; --on-inverse: #ffffff;
+  --skeleton-a: #e8eaed; --skeleton-b: #f5f6f8;
+  --hero-bg: linear-gradient(180deg, #a60d20 0%, #d31027 42%, #8d0b1c 100%);
+  --tab-off: rgba(0, 0, 0, 0.22); --tab-on: rgba(255, 255, 255, 0.14);
 }
 
 * {
@@ -217,7 +228,7 @@ html, body {
 /* Height of the bottom tab bar; bars pinned to the bottom of the screen sit on top of it */
 :root { --bottom-nav-h: 0px; }
 @media (max-width: 768px) {
-  :root { --bottom-nav-h: calc(62px + env(safe-area-inset-bottom)); }
+  :root { --bottom-nav-h: calc(82px + env(safe-area-inset-bottom)); }
 }
 html {
   -webkit-tap-highlight-color: transparent;
@@ -328,3 +339,23 @@ input[type='month'] {
 }
 .skipLink:focus { top: 12px; }
 #main:focus { outline: none; }
+
+/* Player pages are always light */
+html:has(.playerRoot) { color-scheme: light; }
+/* Paper stays light */
+@media print {
+  html:has(.playerRoot) { color-scheme: light;
+    --bg-primary: #f3f5f7; --bg-secondary: #ffffff; --bg-card: #ffffff; --bg-muted: #f8f9fa;
+    --text-primary: #222222; --text-secondary: #4a4a4a; --text-muted: #626262; --border: #e0e0e0; --accent-text: #d31027;
+  }
+}
+
+/* Phones get an app bar (AppBar) instead of the website header */
+@media (max-width: 768px) {
+  [data-app-header] { display: none; }
+}
+
+/* Phones: the app bar carries the back arrow, so the in-page floating one steps aside */
+@media (max-width: 768px) {
+  html:has([data-app-bar]) .floatingBackSpot { display: none; }
+}

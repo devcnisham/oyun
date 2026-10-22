@@ -118,7 +118,7 @@ export default async function GuideDetailPage({ params }: Props) {
               </p>
             ))}
             {section.keyTakeaway && (
-              <div style={{ background: '#f0fdf4', borderLeft: '4px solid #10b981', padding: '12px 16px', borderRadius: '4px 8px 8px 4px', fontSize: '14px', color: '#065f46', fontWeight: 500, lineHeight: 1.6 }}>
+              <div style={{ background: 'var(--ok-bg)', borderLeft: '4px solid #10b981', padding: '12px 16px', borderRadius: '4px 8px 8px 4px', fontSize: '14px', color: 'var(--ok)', fontWeight: 500, lineHeight: 1.6 }}>
                 💡 <strong>Key Takeaway:</strong> {section.keyTakeaway}
               </div>
             )}
@@ -127,7 +127,7 @@ export default async function GuideDetailPage({ params }: Props) {
       </article>
 
       {relatedSport && (
-        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px', maxWidth: '820px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px', maxWidth: '820px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
           <div>
             <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '4px' }}>Ready to play {relatedSport.label}?</h3>
             <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>

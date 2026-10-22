@@ -104,7 +104,7 @@ export default async function CuratedCollectionPage({ params }: Props) {
           <h2 id="tips-heading" className={styles.h2}>Expert Tips for Players</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
             {collection.editorialTips.map((tip, idx) => (
-              <div key={idx} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '12px', padding: '18px 20px' }}>
+              <div key={idx} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '18px 20px' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 800, marginBottom: '6px', color: 'var(--text-primary)' }}>{tip.title}</h3>
                 <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{tip.desc}</p>
               </div>

@@ -108,7 +108,7 @@ export default function RescheduleBooking({
                 padding: '8px 10px',
                 borderRadius: 8,
                 border: '1px solid var(--border)',
-                background: '#fff',
+                background: 'var(--bg-card)',
               }}
             />
           </label>
@@ -123,7 +123,7 @@ export default function RescheduleBooking({
                 padding: '8px 10px',
                 borderRadius: 8,
                 border: '1px solid var(--border)',
-                background: '#fff',
+                background: 'var(--bg-card)',
               }}
             >
               {hours.map((h) => (
@@ -149,19 +149,19 @@ export default function RescheduleBooking({
                   padding: '8px 10px',
                   borderRadius: 8,
                   border: '1px solid var(--border)',
-                  background: '#fff',
+                  background: 'var(--bg-card)',
                 }}
               />
             </label>
           )}
 
           {error && (
-            <p role="alert" style={{ color: '#b00020', fontSize: 13, marginBottom: 10 }}>
+            <p role="alert" style={{ color: 'var(--err)', fontSize: 13, marginBottom: 10 }}>
               {error}
             </p>
           )}
           {success && (
-            <p role="status" style={{ color: '#007a3d', fontSize: 13, marginBottom: 10 }}>
+            <p role="status" style={{ color: 'var(--ok)', fontSize: 13, marginBottom: 10 }}>
               {success}
             </p>
           )}

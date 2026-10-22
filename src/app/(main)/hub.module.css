@@ -7,23 +7,23 @@
 .lead { max-width: 720px; margin-top: -14px; font-size: 16px; line-height: 1.6; color: var(--text-secondary); }
 .h2 { font-size: 20px; font-weight: 800; margin-bottom: 14px; }
 .cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-.card { display: flex; flex-direction: column; gap: 8px; padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: #fff; color: inherit; text-decoration: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.card { display: flex; flex-direction: column; gap: 8px; padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-card); color: inherit; text-decoration: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 a.card:hover { border-color: var(--primary-700); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06); }
 .card:focus-visible, .cta:focus-visible { outline: 3px solid var(--primary-700); outline-offset: 3px; }
 .cardTitle { font-size: 18px; font-weight: 800; color: var(--text-primary); }
 .cardText { font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
-.cardMeta { margin-top: auto; font-size: 13px; font-weight: 700; color: var(--primary-700); }
+.cardMeta { margin-top: auto; font-size: 13px; font-weight: 700; color: var(--accent-text); }
 .list { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
-.row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-card); }
 .rowTitle { font-weight: 700; color: var(--text-primary); }
 .rowDetail { color: var(--text-secondary); }
-.rowLink { font-size: 13px; font-weight: 700; color: var(--primary-700); text-decoration: none; }
+.rowLink { font-size: 13px; font-weight: 700; color: var(--accent-text); text-decoration: none; }
 .rowLink:hover { text-decoration: underline; }
-.empty { max-width: 640px; padding: 32px 24px; border: 1px dashed var(--border); border-radius: 16px; background: #fff; text-align: center; color: var(--text-secondary); line-height: 1.6; }
+.empty { max-width: 640px; padding: 32px 24px; border: 1px dashed var(--border); border-radius: 16px; background: var(--bg-card); text-align: center; color: var(--text-secondary); line-height: 1.6; }
 .perks { display: flex; flex-direction: column; gap: 10px; max-width: 760px; margin: 0; padding: 0; list-style: none; }
-.perks li { padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; background: #fff; color: var(--text-primary); }
+.perks li { padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-card); color: var(--text-primary); }
 .perks b { display: block; margin-bottom: 2px; }
 .perks span { color: var(--text-secondary); font-size: 14px; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .cta { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border-radius: 10px; background: var(--primary-700); color: #fff; font-weight: 700; text-decoration: none; }
-.ctaGhost { background: #fff; color: var(--text-primary); border: 1px solid var(--border); }
+.ctaGhost { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }

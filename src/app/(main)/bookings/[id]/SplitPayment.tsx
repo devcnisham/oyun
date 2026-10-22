@@ -131,7 +131,7 @@ export default function SplitPayment({
 
           <div
             style={{
-              background: '#fff',
+              background: 'var(--bg-card)',
               border: '1px solid var(--border)',
               borderRadius: 10,
               padding: '12px 14px',
@@ -164,12 +164,12 @@ export default function SplitPayment({
                 padding: '8px 10px',
                 borderRadius: 8,
                 border: `1px solid ${upiId && !isValidUpiId(upiId) ? '#b00020' : 'var(--border)'}`,
-                background: '#fff',
+                background: 'var(--bg-card)',
                 fontSize: 14,
               }}
             />
             {upiId && !isValidUpiId(upiId) && (
-              <span style={{ color: '#b00020', fontSize: 11, marginTop: 4, display: 'block' }}>
+              <span style={{ color: 'var(--err)', fontSize: 11, marginTop: 4, display: 'block' }}>
                 Please enter a valid UPI VPA (e.g. mobile@upi)
               </span>
             )}

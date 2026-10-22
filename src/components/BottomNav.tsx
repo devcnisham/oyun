@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSyncExternalStore } from 'react';
 import { roleForHost } from '@/lib/hosts';
-import FloatingSearch from './FloatingSearch';
 import ProfileTabIcon from './ProfileTabIcon';
 import styles from './BottomNav.module.css';
 
@@ -44,7 +43,7 @@ export default function BottomNav() {
     {/* Keeps the end of the page clear of the fixed bar */}
     <div className={styles.spacer} aria-hidden />
     <nav className={styles.nav} aria-label="Main">
-      {TABS.map((t, i) => {
+      {TABS.map((t) => {
         const active = t.match(path);
         const tab = (
           <Link key={t.href} href={t.href} className={`${styles.tab} ${active ? styles.active : ''}`} aria-current={active ? 'page' : undefined}>
@@ -52,8 +51,7 @@ export default function BottomNav() {
             <span>{t.label}</span>
           </Link>
         );
-        // Search sits raised in the middle, between Turfs and Bookings
-        return i === 2 ? [<FloatingSearch key="search" className={styles.search} />, tab] : tab;
+        return tab;
       })}
     </nav>
     </>

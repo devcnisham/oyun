@@ -7,6 +7,7 @@ import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
 import { shortHour } from '@/lib/format';
 import { homeStats } from '@/lib/home-stats';
 import { getDb } from '@/lib/store';
+import { listOpenMatches } from '@/lib/community';
 import HeroSearchBar from './HeroSearchBar';
 import { SPORTS, sportHref } from '@/lib/sports';
 import PopupAd from '@/components/PopupAdLazy';
@@ -20,6 +21,7 @@ export async function HomeView({ phone }: { phone: boolean }) {
   const site = await getSiteContent();
   const turfs = await listPublicTurfs();
   const settings = await getSettings();
+  const matches = await listOpenMatches();
   const recommended = [...turfs].sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating).slice(0, 10);
 
   // Phone home feed extras: coupons, turf deals and every area with its turf count
@@ -117,7 +119,7 @@ export async function HomeView({ phone }: { phone: boolean }) {
 
       {/* Turfs Slider */}
       <TurfSlider 
-        title="Recommended Turfs in Mangalore" 
+        title="Recommended Turfs" 
         turfs={recommended} 
         viewAllLink="/arenas" 
       />
@@ -168,7 +170,7 @@ export async function HomeView({ phone }: { phone: boolean }) {
           <div className={styles.ctaInner}>
             <div className={styles.ctaLeft}>
               <h2>Own a sports facility?</h2>
-              <p>List your arena on OYUN for free and start getting online bookings in Mangalore.</p>
+              <p>List your arena on OYUN for free and start getting online bookings across India.</p>
             </div>
             <div className={styles.ctaRight}>
               <Link href="/list-turf" className="btn btn--secondary">List Your Property</Link>
@@ -180,7 +182,7 @@ export async function HomeView({ phone }: { phone: boolean }) {
       )}
 
       <div className={`${styles.mobileHome} ${phone ? styles.mobileForced : ''}`}>
-        <MobileHome turfs={turfs} promos={site.promos} coupons={coupons} deals={deals} />
+        <MobileHome turfs={turfs} promos={site.promos} coupons={coupons} deals={deals} matches={matches} />
       </div>
     </div>
   );
