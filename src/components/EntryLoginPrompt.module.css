@@ -1,0 +1,25 @@
+.actions { display: grid; gap: 10px; margin-top: 20px; }
+.primary, .secondary {
+  min-height: 48px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.primary { border: 0; background: #d31027; color: #fff; }
+.primary:hover { background: #b50d21; }
+.secondary { border: 1.5px solid #cfd3d9; background: #fff; color: #12161c; }
+.secondary:hover { border-color: #12161c; }
+.skip {
+  margin-top: 6px;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: #4a5260;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.primary:focus-visible, .secondary:focus-visible, .skip:focus-visible { outline: 3px solid #d31027; outline-offset: 2px; }

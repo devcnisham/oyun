@@ -34,3 +34,6 @@ export const useAccount: () => Account = clerkHooks ? clerkHooks.useClerkAccount
 
 // Opens Clerk's sign-in modal (Clerk mode only)
 export const useOpenClerkSignIn: () => () => void = clerkHooks ? clerkHooks.useClerkOpenSignIn : () => () => {};
+
+// Opens Clerk's sign-up modal (Clerk mode only)
+export const useOpenClerkSignUp: () => () => void = clerkHooks ? clerkHooks.useClerkOpenSignUp : () => () => {};
