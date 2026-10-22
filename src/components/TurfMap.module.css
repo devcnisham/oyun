@@ -21,7 +21,7 @@
   padding: 1px 6px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.92);
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-size: 11px;
   font-weight: 600;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
@@ -38,8 +38,8 @@
 
 .card { display: flex; flex-direction: column; gap: 2px; min-width: 150px; }
 .cardName { font-size: 14px; }
-.cardMeta { font-size: 12px; color: #6b7280; }
-.cardLink { margin-top: 6px; font-weight: 700; color: var(--primary-700, #b3161f); text-decoration: none; }
+.cardMeta { font-size: 12px; color: var(--text-muted); }
+.cardLink { margin-top: 6px; font-weight: 700; color: var(--accent-text); text-decoration: none; }
 
 /* Several turfs too close to show as separate price pins */
 .cluster {

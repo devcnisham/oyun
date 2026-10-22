@@ -27,7 +27,7 @@ export default function LoginForm({ role }: LoginFormProps) {
       </div>
 
       {error && (
-        <p role="alert" style={{ color: '#b00020', fontSize: '14px', margin: 0 }}>{error}</p>
+        <p role="alert" style={{ color: 'var(--err)', fontSize: '14px', margin: 0 }}>{error}</p>
       )}
 
       <button type="submit" className={styles.loginBtn} disabled={loginPending}>

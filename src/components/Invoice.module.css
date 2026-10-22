@@ -1,5 +1,5 @@
 .invoice {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 32px;
@@ -14,7 +14,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  border-bottom: 2px solid #111;
+  border-bottom: 2px solid var(--text-primary);
   padding-bottom: 16px;
 }
 
@@ -33,7 +33,7 @@
   font-family: var(--font-wordmark-family);
   font-weight: 800;
   font-size: 18px;
-  color: var(--primary-700);
+  color: var(--accent-text);
 }
 
 .parties {
@@ -87,7 +87,7 @@
   font-weight: 800;
   color: var(--text-primary);
   font-size: 16px;
-  border-bottom: 2px solid #111;
+  border-bottom: 2px solid var(--text-primary);
 }
 
 .footer {

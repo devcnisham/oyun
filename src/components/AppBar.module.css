@@ -1,0 +1,33 @@
+.bar { display: none; }
+@media (max-width: 768px) {
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: calc(56px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 8px 0;
+    background: color-mix(in srgb, var(--bg-secondary) 88%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .back, .search {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: none;
+    color: var(--text-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back:active, .search:active { background: var(--bg-muted); }
+  .gap { width: 8px; }
+  .title { flex: 1; margin: 0; font-size: 18px; font-weight: 800; color: var(--text-primary); }
+}
+@media print { .bar { display: none !important; } }

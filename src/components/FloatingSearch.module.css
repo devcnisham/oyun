@@ -9,7 +9,7 @@
 }
 .sheet {
   width: 100%;
-  background: #fff;
+  background: var(--bg-card);
   padding: calc(12px + env(safe-area-inset-top)) 16px 20px;
   border-radius: 0 0 22px 22px;
   box-shadow: var(--shadow-lg);
@@ -26,10 +26,10 @@
   color: var(--text-muted);
 }
 .bar input { flex: 1; border: none; outline: none; background: transparent; font: inherit; font-size: 16px; padding: 14px 0; color: var(--text-primary); }
-.close { font: inherit; font-weight: 700; color: var(--primary-700); background: none; border: none; cursor: pointer; }
+.close { font: inherit; font-weight: 700; color: var(--accent-text); background: none; border: none; cursor: pointer; }
 .label { margin: 16px 0 8px; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { font: inherit; font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 99px; border: 1px solid var(--border); background: #fff; color: var(--text-primary); cursor: pointer; }
+.chip { font: inherit; font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); cursor: pointer; }
 .all { margin-top: 16px; width: 100%; font: inherit; font-weight: 800; padding: 12px; border-radius: 12px; border: none; background: var(--primary-700); color: #fff; cursor: pointer; }
 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }

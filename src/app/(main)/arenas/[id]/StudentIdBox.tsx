@@ -71,7 +71,7 @@ export default function StudentIdBox({ name, phone }: { name: string; phone: str
           <button type="button" className={styles.input} onClick={send} disabled={busy || !file} style={{ marginTop: 8, cursor: 'pointer', fontWeight: 700 }}>
             {busy ? 'Sending…' : 'Send student ID'}
           </button>
-          {message && <p role="alert" style={{ color: '#b91c1c', fontSize: 13, marginTop: 6 }}>{message}</p>}
+          {message && <p role="alert" style={{ color: 'var(--err)', fontSize: 13, marginTop: 6 }}>{message}</p>}
         </>
       )}
     </section>

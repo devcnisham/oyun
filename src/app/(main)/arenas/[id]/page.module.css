@@ -1,7 +1,7 @@
 .page {
   position: relative;
   min-height: 100vh;
-  background: #fff;
+  background: var(--bg-card);
   padding-bottom: 90px; /* Space for sticky bottom bar */
 }
 
@@ -49,8 +49,8 @@
 }
 
 .midBadge {
-  background: #fff;
-  color: #222;
+  background: var(--bg-card);
+  color: var(--text-primary);
   font-size: 11px;
   font-weight: 700;
   padding: 4px 10px;
@@ -194,7 +194,7 @@
 
 .mapLink {
   display: inline-block;
-  color: #0a5fb4;
+  color: var(--info);
   text-decoration: none;
   font-weight: 500;
   margin-top: 4px;
@@ -240,7 +240,7 @@
 }
 
 .slotBtn {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 10px;
@@ -269,7 +269,7 @@
 
 .slotPrice {
   font-size: 12px;
-  color: #1ab64f;
+  color: var(--ok);
   font-weight: 600;
   margin-top: 4px;
 }
@@ -384,19 +384,19 @@
 }
 
 .errorText {
-  color: #d31027;
+  color: var(--accent-text);
   font-size: 13px;
   font-weight: 500;
 }
 
 .successText {
-  color: #2e7d32;
+  color: var(--ok);
   font-size: 13px;
   font-weight: 600;
 }
 
 .walletBox {
-  background: #f8f9fa;
+  background: var(--bg-muted);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px;
@@ -425,7 +425,7 @@
 }
 
 .walletAppliedText {
-  color: #2e7d32;
+  color: var(--ok);
   font-weight: 600;
   font-size: 13px;
 }
@@ -444,7 +444,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
 }
@@ -488,7 +488,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--bg-card);
   border-top: 1px solid var(--border);
   padding: 12px 24px;
   display: flex;
@@ -529,8 +529,8 @@
 }
 
 .compactInput:focus {
-  border-color: #111;
-  background: #fff;
+  border-color: var(--text-primary);
+  background: var(--bg-card);
 }
 
 .compactPaymentOptions {
@@ -586,7 +586,7 @@
 
 .priceTaxes {
   font-size: 12px;
-  color: #0a5fb4;
+  color: var(--info);
   font-weight: 500;
 }
 
@@ -604,7 +604,7 @@
 }
 
 .bookBtn:disabled {
-  background: #ccc;
+  background: var(--bg-muted);
   cursor: not-allowed;
 }
 
@@ -627,7 +627,7 @@
 .aggregateScore {
   font-size: 16px;
   font-weight: 800;
-  color: #d31027;
+  color: var(--accent-text);
 }
 
 .aggregateCount {
@@ -642,7 +642,7 @@
 }
 
 .reviewCard {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   padding: 16px;
   border-radius: var(--radius-md);
@@ -658,8 +658,8 @@
 .reviewerAvatar {
   width: 40px;
   height: 40px;
-  background: #f0f0f0;
-  color: #333;
+  background: var(--bg-muted);
+  color: var(--text-secondary);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -680,7 +680,7 @@
 }
 
 .reviewStars {
-  color: #d31027;
+  color: var(--accent-text);
   font-size: 14px;
   margin-bottom: 8px;
   letter-spacing: 2px;
@@ -689,7 +689,7 @@
 .reviewText {
   font-size: 14px;
   line-height: 1.5;
-  color: #444;
+  color: var(--text-secondary);
 }
 
 /* Tablet / Desktop Overrides */
@@ -707,7 +707,7 @@
   .content {
     max-width: 900px;
     margin: 0 auto;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     margin-top: -60px;
@@ -740,9 +740,9 @@
 }
 
 .offerChip {
-  background: #ecfdf3;
-  color: #067647;
-  border: 1px solid #abefc6;
+  background: var(--ok-bg);
+  color: var(--ok);
+  border: 1px solid var(--ok-border);
   border-radius: var(--radius-full);
   padding: 6px 12px;
   font-size: 13px;
@@ -757,7 +757,7 @@
 
 .dateChip {
   flex: 0 0 auto;
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   padding: 8px 16px;
@@ -768,9 +768,9 @@
 }
 
 .dateChipActive {
-  background: #111;
-  border-color: #111;
-  color: #fff;
+  background: var(--bg-inverse);
+  border-color: var(--text-primary);
+  color: var(--on-inverse);
 }
 
 .slotTag {
@@ -787,9 +787,9 @@
 }
 
 .notice {
-  background: #fffaeb;
-  border: 1px solid #fedf89;
-  color: #93370d;
+  background: var(--warn-bg);
+  border: 1px solid var(--border);
+  color: var(--warn);
   border-radius: var(--radius-md);
   padding: 14px 16px;
   font-size: 14px;
@@ -811,7 +811,7 @@
 }
 
 .textInput:focus {
-  border-color: #111;
+  border-color: var(--text-primary);
 }
 
 .addOnList {
@@ -855,7 +855,7 @@
   height: 30px;
   border-radius: 50%;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   font-size: 16px;
   cursor: pointer;
 }
@@ -870,7 +870,7 @@
   padding: 16px;
   margin: 16px 0;
   font-size: 14px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   transition: box-shadow 0.2s ease;
 }
@@ -887,7 +887,7 @@
 }
 
 .discount {
-  color: #067647;
+  color: var(--ok);
 }
 
 .breakdownTotal {
@@ -958,7 +958,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
-    background: #fff;
+    background: var(--bg-card);
   }
 
   .bookingPanel .slotsGrid {
@@ -980,7 +980,7 @@
     bottom: -24px;
     margin: 16px -24px -24px;
     padding: 24px;
-    background: #fff;
+    background: var(--bg-card);
     border-top: 1px solid var(--border);
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -1002,7 +1002,7 @@
 .reviewSummary > div { display: flex; flex-direction: column; gap: 2px; }
 .reviewSummary span { font-size: 13px; color: var(--text-muted); }
 .reviewList { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.reviewList li { padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: #fff; }
+.reviewList li { padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
 .reviewHead { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
 .reviewHead b { font-size: 15px; }
 .reviewHead time { margin-left: auto; font-size: 12px; color: var(--text-muted); }
@@ -1032,7 +1032,7 @@
 .detailsSection,
 .amenitiesSection,
 .reviewsSection {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -1055,7 +1055,7 @@
   .amenitiesSection,
   .reviewsSection { padding: 18px; border-radius: 16px; }
   .info { margin-bottom: 16px; }
-  .bookingPanel { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: #fff; border-radius: 16px; padding: 18px; margin: 0 0 16px; }
+  .bookingPanel { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg-card); border-radius: 16px; padding: 18px; margin: 0 0 16px; }
 }
 
 /* Booking panel only groups the step cards, so it drops its own frame */
@@ -1070,7 +1070,7 @@
   .panelFooter { margin: 12px 0 0; border: 1px solid var(--border); border-radius: 16px; bottom: 0; }
 }
 .bookingPanel .panelTitle {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 14px 16px;
@@ -1096,7 +1096,7 @@
   height: 40px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
 }
 @media (max-width: 1023px) {
   /* Visually hidden, not display:none: the h2 keeps the heading order h1, h2, h3 for screen readers */

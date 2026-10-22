@@ -1,11 +1,11 @@
 /* Cinema-style booking: date strip, slot map, sticky selection bar, checkout sheet */
 
 .flow {
-  --open: #0e7a3d;
-  --open-bg: #ecfdf3;
-  --held: #d97706;
-  --held-bg: #fffbeb;
-  --taken: #c9ccd1;
+  --open: var(--ok);
+  --open-bg: var(--ok-bg);
+  --held: var(--warn);
+  --held-bg: var(--warn-bg);
+  --taken: var(--border);
   --brand: var(--primary-700);
   position: relative;
 }
@@ -39,7 +39,7 @@
   padding: 8px 0;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,7 +62,7 @@
   text-align: center;
   font-size: 12px;
   font-weight: 700;
-  color: #0f6b38;
+  color: var(--ok);
   letter-spacing: 0.02em;
 }
 .pitch::before {
@@ -84,7 +84,7 @@
   padding: 12px;
   border-radius: 14px;
   border: 1.5px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -111,7 +111,7 @@
   padding: 8px 4px;
   border-radius: 12px;
   border: 1.5px solid var(--open);
-  background: #fff;
+  background: var(--bg-card);
   color: var(--open);
   display: flex;
   flex-direction: column;
@@ -144,25 +144,25 @@
 }
 .seat.taken, .legend .taken {
   border-color: var(--taken);
-  color: #9aa0a6;
+  color: var(--text-muted);
   cursor: not-allowed;
   background: repeating-linear-gradient(135deg, #f4f5f6 0 6px, #eceef0 6px 12px);
 }
-.seat.past { border-color: #eceef0; color: #c3c6ca; background: #fafafa; cursor: not-allowed; }
+.seat.past { border-color: var(--border); color: var(--text-muted); background: var(--bg-muted); cursor: not-allowed; }
 .seat.taken .seatTime, .seat.past .seatTime { text-decoration: line-through; }
 
 .deal {
   position: absolute;
   top: -8px;
   right: -4px;
-  background: #fde68a;
-  color: #7c4a03;
+  background: var(--warn-bg);
+  color: var(--warn);
   font-size: 10px;
   font-weight: 800;
   padding: 1px 5px;
   border-radius: 6px;
 }
-.peak { position: absolute; top: 6px; left: 6px; width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; }
+.peak { position: absolute; top: 6px; left: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); }
 
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 14px; font-size: 12px; color: var(--text-secondary); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
@@ -179,7 +179,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--bg-card);
   border-top: 1px solid var(--border);
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
   transform: translateY(calc(110% + var(--bottom-nav-h))); /* fully below the tab bar while hidden */
@@ -229,8 +229,8 @@
   bottom: calc(96px + var(--bottom-nav-h));
   transform: translateX(-50%);
   z-index: 1300;
-  background: #1f2328;
-  color: #fff;
+  background: var(--bg-inverse);
+  color: var(--on-inverse);
   font-size: 13px;
   font-weight: 600;
   padding: 10px 16px;
@@ -256,7 +256,7 @@
   width: 100%;
   max-width: 560px;
   max-height: 92dvh;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 22px 22px 0 0;
   display: flex;
   flex-direction: column;
@@ -274,9 +274,9 @@
   border-bottom: 1px solid var(--border);
 }
 .sheetHead h2 { flex: 1; font-size: 18px; font-weight: 800; }
-.back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: #fff; font-size: 18px; cursor: pointer; }
-.timer { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 14px; background: var(--open-bg); color: #0f6b38; padding: 6px 10px; border-radius: 99px; }
-.timerLow { background: #fef2f2; color: var(--brand); animation: pulse 1s infinite; }
+.back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg-card); font-size: 18px; cursor: pointer; }
+.timer { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 14px; background: var(--open-bg); color: var(--ok); padding: 6px 10px; border-radius: 99px; }
+.timerLow { background: var(--err-bg); color: var(--brand); animation: pulse 1s infinite; }
 
 .sheetBody { overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 18px; overscroll-behavior: contain; }
 .sheetBody h3 { font-size: 14px; font-weight: 800; margin-bottom: 8px; display: flex; gap: 8px; align-items: baseline; }
@@ -306,7 +306,7 @@
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   color: var(--text-primary);
 }
 .input:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
@@ -323,7 +323,7 @@
   padding: 12px;
   border-radius: 12px;
   border: 1.5px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -359,11 +359,11 @@
 }
 
 /* Pay-at-venue note in checkout */
-.venueNote p { font-size: 14px; color: var(--text-secondary); background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px 14px; }
+.venueNote p { font-size: 14px; color: var(--text-secondary); background: var(--ok-bg); border: 1px solid var(--ok-border); border-radius: 12px; padding: 12px 14px; }
 
 /* Each step is its own card */
 .stepCard {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
@@ -399,7 +399,7 @@
     display: block;
     position: sticky;
     top: 96px;
-    background: #fff;
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 24px;
@@ -423,15 +423,15 @@
 /* Checkout: bottom sheet on phones; on desktop a two-column page of separate cards */
 .footDesktop { display: none; }
 @media (min-width: 1024px) {
-  .overlay { align-items: flex-start; padding: 0; background: #f4f5f7; overflow-y: auto; }
+  .overlay { align-items: flex-start; padding: 0; background: var(--bg-muted); overflow-y: auto; }
   .sheet { max-width: 1120px; width: 100%; max-height: none; background: transparent; border-radius: 0; margin: 0 auto; animation: fade 0.2s ease-out; }
-  .sheetHead { background: #fff; border: 1px solid var(--border); border-radius: 16px; margin: 24px 0 20px; padding: 16px 20px; }
+  .sheetHead { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; margin: 24px 0 20px; padding: 16px 20px; }
   .sheetBody { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; overflow: visible; padding: 0 0 48px; }
   .coLeft { display: flex; flex-direction: column; gap: 20px; }
-  .coLeft > section { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); }
+  .coLeft > section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); }
   .coLeft > section h3 { font-size: 18px; margin-bottom: 14px; }
   .coLeft .fields { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .coRight { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 16px; background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-md); }
+  .coRight { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-md); }
   .footMobile { display: none; }
   .footDesktop { display: flex; flex-direction: column; align-items: stretch; border-top: 1px solid var(--border); padding: 16px 0 0; }
   .footDesktop .primary { width: 100%; padding: 16px; }
@@ -469,7 +469,7 @@
   .stepCard .map { margin-left: -46px; }
   .sheetBody { background: var(--bg-muted); }
   .coLeft > section,
-  .sheetBody .bill { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .sheetBody .bill { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
   .sheetBody .bill { gap: 8px; }
 }
 

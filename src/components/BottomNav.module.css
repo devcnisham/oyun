@@ -4,20 +4,23 @@
   .spacer { display: block; height: var(--bottom-nav-h); }
   .nav {
     box-sizing: border-box;
-    height: var(--bottom-nav-h);
-    --nav-bg: #f7f7f8;
+    height: 70px;
+    --nav-bg: color-mix(in srgb, var(--bg-card) 90%, transparent);
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 12px;
+    right: 12px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
     z-index: 1050;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    align-items: start;
-    padding: 8px 4px calc(6px + env(safe-area-inset-bottom));
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    padding: 6px 4px;
+    border-radius: 26px;
     background: var(--nav-bg);
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.1);
   }
   .tab {
     display: flex;
@@ -25,7 +28,7 @@
     align-items: center;
     gap: 3px;
     padding: 2px 0;
-    color: #555b63;
+    color: var(--text-secondary);
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
@@ -33,7 +36,8 @@
   }
   .tab svg { transition: transform 0.15s ease; }
   .tab:active svg { transform: scale(0.88); }
-  .active { color: var(--primary-700); }
+  .active { color: var(--accent-text); }
+  .active svg { animation: tabPop 0.4s var(--ease-spring); }
   /* Signed-in player's picture on the Profile tab; red ring when the tab is open */
   .avatar {
     width: 26px;
@@ -51,23 +55,7 @@
     font-size: 13px;
     font-weight: 800;
   }
-  .search {
-    justify-self: center;
-    width: 58px;
-    height: 58px;
-    margin-top: -26px; /* rises out of the bar */
-    border-radius: 50%;
-    border: 4px solid var(--nav-bg);
-    background: var(--primary-700);
-    color: #fff;
-    display: grid;
-    place-items: center;
-    box-shadow: 0 8px 18px rgba(211, 16, 39, 0.35);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform 0.12s ease;
-  }
-  .search:active { transform: scale(0.92); }
 }
+@keyframes tabPop { 0% { transform: scale(0.8); } 100% { transform: scale(1); } }
 @media print { .nav, .spacer { display: none !important; } }
-@media (prefers-reduced-motion: reduce) { .tab svg, .search { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .tab svg { transition: none; } }

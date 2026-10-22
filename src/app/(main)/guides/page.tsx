@@ -40,7 +40,7 @@ export default function GuidesIndexPage() {
           <article
             key={g.slug}
             style={{
-              background: '#fff',
+              background: 'var(--bg-card)',
               border: '1px solid var(--border)',
               borderRadius: '16px',
               overflow: 'hidden',

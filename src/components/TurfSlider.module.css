@@ -25,7 +25,7 @@
 .viewAll {
   font-size: 14px;
   font-weight: 700;
-  color: var(--primary-700);
+  color: var(--accent-text);
   text-decoration: none;
   transition: opacity 0.2s;
 }
@@ -57,7 +57,7 @@
 
 .arrowBtn:hover {
   border-color: var(--primary-500);
-  color: var(--primary-700);
+  color: var(--accent-text);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }

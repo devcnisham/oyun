@@ -3,7 +3,7 @@
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: #fffdf7;
+  background: var(--warn-bg);
   text-align: center;
 }
 .box h2 { font-size: 17px; font-weight: 800; margin-bottom: 10px; }
@@ -13,7 +13,7 @@
   line-height: 1;
   background: none;
   border: none;
-  color: #d6d6d6;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 2px;
   transition: transform 0.1s, color 0.1s;
@@ -45,8 +45,8 @@
 }
 .submit:disabled { opacity: 0.5; cursor: not-allowed; }
 .stars { font-size: 26px; color: var(--accent-gold); letter-spacing: 2px; }
-.stars span { color: #d6d6d6; }
+.stars span { color: var(--text-muted); }
 .comment { margin-top: 6px; font-size: 15px; color: var(--text-secondary); font-style: italic; }
-.thanks { margin-top: 8px; font-size: 14px; font-weight: 700; color: #0e7a3d; }
-.link { margin-top: 8px; background: none; border: none; color: var(--primary-700); font-weight: 700; cursor: pointer; }
-.error { margin-top: 8px; color: #b00020; font-size: 13px; font-weight: 600; }
+.thanks { margin-top: 8px; font-size: 14px; font-weight: 700; color: var(--ok); }
+.link { margin-top: 8px; background: none; border: none; color: var(--accent-text); font-weight: 700; cursor: pointer; }
+.error { margin-top: 8px; color: var(--err); font-size: 13px; font-weight: 600; }

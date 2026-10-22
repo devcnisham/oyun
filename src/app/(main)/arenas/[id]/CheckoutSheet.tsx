@@ -106,7 +106,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
                           type="button"
                           onClick={() => setAddOnQty(addon.id, Math.max(0, qty - 1))}
                           disabled={qty === 0}
-                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg-card)', cursor: 'pointer', fontWeight: 800 }}
                           aria-label={`Decrease ${addon.name}`}
                         >
                           −
@@ -115,7 +115,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
                         <button
                           type="button"
                           onClick={() => setAddOnQty(addon.id, qty + 1)}
-                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontWeight: 800 }}
+                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg-card)', cursor: 'pointer', fontWeight: 800 }}
                           aria-label={`Increase ${addon.name}`}
                         >
                           +

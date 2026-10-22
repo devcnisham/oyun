@@ -311,7 +311,7 @@ export default function ListTurfPage() {
 
                 <div className={styles.field}>
                   <label className={styles.label} htmlFor="address">Full Address *</label>
-                  <input id="address" name="address" type="text" required placeholder="Street, landmark, area, Mangalore" className={styles.input} value={formData.address} onChange={handleChange} />
+                  <input id="address" name="address" type="text" required placeholder="Street, landmark, area, city" className={styles.input} value={formData.address} onChange={handleChange} />
                 </div>
 
                 <div className={styles.field}>
@@ -439,7 +439,7 @@ export default function ListTurfPage() {
             )}
 
             {submitError && (
-              <p role="alert" style={{ color: '#b42318', background: '#fef3f2', border: '1px solid #fecdca', padding: '10px 12px', borderRadius: 8, fontSize: 14 }}>
+              <p role="alert" style={{ color: 'var(--err)', background: 'var(--err-bg)', border: '1px solid var(--err-border)', padding: '10px 12px', borderRadius: 8, fontSize: 14 }}>
                 {submitError}
               </p>
             )}

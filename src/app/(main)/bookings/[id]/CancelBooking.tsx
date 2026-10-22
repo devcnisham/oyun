@@ -31,7 +31,7 @@ export default function CancelBooking({ bookingId, cutoffHours, needsPhone }: { 
       <button
         type="button"
         className="btn btn--ghost btn--sm"
-        style={{ color: '#b00020' }}
+        style={{ color: 'var(--err)' }}
         disabled={pending}
         onClick={() => {
           if (!window.confirm('Cancel this booking? The slot will be released for others.')) return;
@@ -49,7 +49,7 @@ export default function CancelBooking({ bookingId, cutoffHours, needsPhone }: { 
         {pending ? 'Cancelling…' : 'Cancel booking'}
       </button>
       <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Free cancellation up to {cutoffHours} hours before your slot.</p>
-      {error && <p role="alert" style={{ color: '#b00020', fontSize: 13, marginTop: 4 }}>{error}</p>}
+      {error && <p role="alert" style={{ color: 'var(--err)', fontSize: 13, marginTop: 4 }}>{error}</p>}
     </div>
   );
 }

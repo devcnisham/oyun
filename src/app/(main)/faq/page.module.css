@@ -1,7 +1,7 @@
 .pageContainer {
   min-height: calc(100vh - 80px);
   padding: 80px 24px;
-  background: #f8f9fa;
+  background: var(--bg-muted);
   display: flex;
   justify-content: center;
 }
@@ -9,7 +9,7 @@
 .content {
   width: 100%;
   max-width: 800px;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 48px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.04);
@@ -18,14 +18,14 @@
 .title {
   font-size: 36px;
   font-weight: 800;
-  color: #111;
+  color: var(--text-primary);
   margin-bottom: 12px;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
   font-size: 16px;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 48px;
   line-height: 1.6;
 }
@@ -40,26 +40,26 @@
 .faqItem h3 {
   font-size: 18px;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
   margin-bottom: 12px;
 }
 
 .faqItem p {
   font-size: 15px;
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
 .textBlock {
   font-size: 15px;
-  color: #444;
+  color: var(--text-secondary);
   line-height: 1.8;
 }
 
 .textBlock h2 {
   font-size: 22px;
   font-weight: 700;
-  color: #111;
+  color: var(--text-primary);
   margin: 32px 0 16px;
 }
 

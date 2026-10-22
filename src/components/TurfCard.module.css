@@ -133,7 +133,7 @@
 }
 
 /* Save (heart) button sits on the photo, outside the card link */
-.cardWrap { position: relative; height: 100%; }
+.cardWrap { position: relative; height: 100%; min-width: 0; }
 .cardWrap > .card { height: 100%; }
 .fav {
   position: absolute;
@@ -147,7 +147,7 @@
   display: grid;
   place-items: center;
   background: rgba(255, 255, 255, 0.9);
-  color: #222;
+  color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   cursor: pointer;
   transition: transform 0.12s;
@@ -171,4 +171,21 @@
   font-weight: 700;
   padding: 6px 16px;
   border-radius: var(--radius-sm);
+}
+
+/* Phones: list cards are compact rows (photo left, details right) so several fit on a screen */
+@media (max-width: 768px) {
+  .cardWrap:not(.compact) .card { flex-direction: row; align-items: stretch; border-radius: 18px; min-height: 124px; }
+  .cardWrap:not(.compact) .imageWrap { flex: 0 0 116px; width: 116px; padding-top: 0; }
+  .cardWrap:not(.compact) .content { padding: 12px 12px 12px 14px; min-width: 0; }
+  .cardWrap:not(.compact) .title { font-size: 16px; padding-right: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cardWrap:not(.compact) .location { font-size: 12.5px; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cardWrap:not(.compact) .amenities { flex-wrap: nowrap; overflow: hidden; gap: 6px; margin-bottom: 10px; }
+  .cardWrap:not(.compact) .amenity { white-space: nowrap; flex: none; }
+  .cardWrap:not(.compact) .amenity:nth-child(n + 3) { display: none; }
+  .cardWrap:not(.compact) .price { font-size: 18px; }
+  .cardWrap:not(.compact) .price::after { content: '/hr'; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 2px; }
+  .cardWrap:not(.compact) .bookBtn { padding: 6px 14px; border-radius: 10px; }
+  .cardWrap:not(.compact) .badgeTop { top: 8px; font-size: 9px; padding: 3px 7px; }
+  .cardWrap:not(.compact) .fav { top: 8px; right: 8px; width: 32px; height: 32px; }
 }

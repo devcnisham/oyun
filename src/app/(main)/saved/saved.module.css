@@ -4,4 +4,4 @@
 .empty { text-align: center; padding: 48px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .empty h2 { font-size: 20px; }
 .empty p { color: var(--text-muted); margin-bottom: 8px; }
-.icon { font-size: 44px; color: var(--primary-700); }
+.icon { font-size: 44px; color: var(--accent-text); }
