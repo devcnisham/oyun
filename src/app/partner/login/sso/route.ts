@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   const primary = user?.emailAddresses.find((e) => e.id === user.primaryEmailAddressId);
   if (!primary || primary.verification?.status !== 'verified') return go('/partner/login/unlinked');
 
-  const subject = partnerSubjectForEmail(await getDb(), primary.emailAddress);
+  const subject = partnerSubjectForEmail(await getDb(), primary.emailAddress, process.env.OPS_GOOGLE_EMAILS);
   if (!subject) return go('/partner/login/unlinked');
   await createSession('partner', subject);
   return go('/partner');
