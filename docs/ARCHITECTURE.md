@@ -56,4 +56,6 @@ Unique indexes on bookings, blocks and holds are the backstop that stops a doubl
 
 All writes share one revision counter, so two writes on different turfs still conflict (task P10-02). Relationships live inside the JSON, so the database cannot enforce them beyond the CHECK constraints in `supabase/setup/7-check-constraints.sql`. The target design (resources, bookables, exclusion constraints, payments) is in `docs/SLOT-BOOKING-DB.md`.
 
+Interactive map of every page, API, booking flow, double-booking defence, money path, auth, database and release: open `docs/architecture-map.html` in a browser (also published as the "OYUN workflow" artifact). Keep it current when routes or flows change.
+
 More: `docs/adr/` (why things are this way), `docs/ENVIRONMENTS.md`, `docs/SECURITY.md`, and the Architecture and Database tabs of `docs/build-tracker.html`.

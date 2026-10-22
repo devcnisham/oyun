@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OYUN workflow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout: stacked cards, like a notebook of interactive diagrams. Dark first, light as the override.
+   Color: ink ground, raised card, hairline, text, muted, accent blue for the active path, hub indigo.
+   Type: Roboto for names, Roboto Mono (italic) for sub-labels, tags and legend. */
+:root {
+  --bg: #0f1012; --card: #1a1b1e; --raise: #24262a; --line: #34373d; --fg: #e8eaed; --muted: #9aa0a6;
+  --accent: #8ab4f8; --hub: #1c2a6b; --hubline: #5c7cfa; --dim: .22;
+  --client: #c4c7c5; --edge: #8ab4f8; --logic: #81c995; --data: #f6aea9; --ext: #fdd663; --ops: #c58af9;
+  --pill: #2a2c31; color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f3f4f7; --card: #ffffff; --raise: #eef0f4; --line: #d5d9e0; --fg: #1d2127; --muted: #5a6270;
+  --accent: #1a56c8; --hub: #dbe4ff; --hubline: #3b5bdb; --pill: #eef0f4;
+  --client: #4a5260; --edge: #1a56c8; --logic: #1e7a3c; --data: #b3261e; --ext: #8a6100; --ops: #7a2ec2; color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f3f4f7; --card: #ffffff; --raise: #eef0f4; --line: #d5d9e0; --fg: #1d2127; --muted: #5a6270;
+    --accent: #1a56c8; --hub: #dbe4ff; --hubline: #3b5bdb; --pill: #eef0f4;
+    --client: #4a5260; --edge: #1a56c8; --logic: #1e7a3c; --data: #b3261e; --ext: #8a6100; --ops: #7a2ec2; color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 16px/1.55 Roboto, system-ui, sans-serif;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+main { max-width: 1120px; margin: 0 auto; display: grid; gap: 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px; min-width: 0; }
+h1 { margin: 0; font-weight: 400; font-size: clamp(30px, 5vw, 44px); line-height: 1.1; letter-spacing: -.01em; text-wrap: balance; }
+h2 { margin: 0; font-weight: 400; font-size: clamp(22px, 3.4vw, 30px); line-height: 1.15; text-wrap: balance; }
+.mono { font-family: "Roboto Mono", ui-monospace, monospace; }
+.kicker { margin: 10px 0 0; font: 400 clamp(15px, 2.2vw, 20px)/1.3 "Roboto Mono", monospace; color: var(--muted); }
+.lead { margin: 12px 0 0; color: var(--muted); font-size: 18px; max-width: 70ch; }
+.tabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; scrollbar-width: thin; }
+.tabs .grp { flex: none; align-self: center; margin-left: 10px; padding-left: 12px; border-left: 1px solid var(--line); font: 500 11px "Roboto Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tabs .grp:first-child { margin-left: 0; padding-left: 0; border: 0; }
+.tab { flex: none; min-height: 40px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--fg); font: 400 14px Roboto, sans-serif; cursor: pointer; }
+.tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #0b1220; font-weight: 500; }
+.vhead { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 24px; }
+.vsub { margin: 6px 0 0; color: var(--muted); max-width: 72ch; }
+.stepper { display: flex; gap: 8px; align-items: center; }
+.btn { min-height: 40px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--raise); color: var(--fg); font: 400 14px Roboto, sans-serif; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.stage { margin-top: 16px; overflow-x: auto; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); }
+.stage svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.legend label { display: inline-flex; align-items: center; gap: 10px; min-height: 32px; font: 400 14px "Roboto Mono", monospace; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.legend input { appearance: none; width: 22px; height: 22px; margin: 0; border: 2px solid var(--c); border-radius: 6px; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.legend input:checked::after { content: ""; width: 10px; height: 6px; border-left: 2px solid var(--c); border-bottom: 2px solid var(--c); transform: rotate(-45deg) translate(1px,-1px); }
+.legend input:focus-visible, .tab:focus-visible, .btn:focus-visible, .chip:focus-visible, .q:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+/* diagram */
+.edge { fill: none; stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 2 5; stroke-linecap: round; opacity: .75; transition: opacity .25s, stroke .25s; }
+.edge.async { stroke-dasharray: 8 6; }
+.edge.on { stroke: var(--accent); stroke-width: 2.4; stroke-dasharray: none; opacity: 1; }
+.edge.dim { opacity: .12; }
+.edge.quiet:not(.on) { opacity: 0; }
+.elabel rect { fill: var(--pill); stroke: var(--line); }
+.elabel text { fill: var(--fg); font: italic 400 11.5px "Roboto Mono", monospace; text-anchor: middle; dominant-baseline: central; }
+.elabel { transition: opacity .25s; } .elabel.dim { opacity: .1; } .elabel.on text { font-weight: 500; }
+.node { cursor: pointer; transition: opacity .25s; outline: none; }
+.node rect { fill: var(--card); stroke: var(--lc); stroke-width: 1.5; transition: stroke-width .2s, fill .2s; }
+.node.hub rect { fill: var(--hub); stroke: var(--hubline); }
+.node .t { fill: var(--fg); font: 400 14.5px Roboto, sans-serif; text-anchor: middle; }
+.node .s { fill: var(--muted); font: italic 400 11px "Roboto Mono", monospace; text-anchor: middle; }
+.node:hover rect, .node:focus-visible rect { stroke-width: 2.6; }
+.node.sel rect { stroke: var(--accent); stroke-width: 3; }
+.node:focus-visible rect { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 6 3; }
+.node.dim { opacity: var(--dim); }
+.node.off { opacity: .14; }
+.badge circle { fill: var(--accent); } .badge text { fill: #0b1220; font: 700 11px Roboto, sans-serif; text-anchor: middle; dominant-baseline: central; }
+/* detail */
+.dhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; }
+.tag { padding: 8px 16px; border-radius: 999px; background: var(--pill); color: var(--muted); font: 400 13px "Roboto Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
+.dtext { margin: 12px 0 0; font-size: 18px; color: var(--muted); max-width: 75ch; }
+.cols { display: grid; gap: 20px 32px; margin-top: 20px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.cols h3 { margin: 0 0 8px; font: 500 12px "Roboto Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cols ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.cols li { font-size: 15px; } .cols code { font: 400 13px "Roboto Mono", monospace; color: var(--fg); background: var(--raise); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { min-height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--fg); font: 400 13.5px Roboto, sans-serif; cursor: pointer; }
+.chip:hover { border-color: var(--accent); } .chip em { font: italic 400 12px "Roboto Mono", monospace; color: var(--muted); margin-left: 6px; }
+/* routes */
+.q { width: 100%; max-width: 420px; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--fg); font: 400 15px Roboto, sans-serif; }
+.rgroup { margin-top: 22px; } .rgroup h3 { margin: 0 0 8px; font: 500 13px "Roboto Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.rtable { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; } table { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 14.5px; }
+th { text-align: left; font: 500 11.5px "Roboto Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px 14px; background: var(--raise); }
+td { padding: 10px 14px; border-top: 1px solid var(--line); vertical-align: top; } td:first-child { font: 400 13px "Roboto Mono", monospace; min-width: 180px; max-width: 300px; overflow-wrap: anywhere; }
+td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted); margin: 14px 0 0; }
+.foot { color: var(--muted); font-size: 13.5px; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .edge, .node, .elabel { transition: none; } }
+
+.tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; margin-top: 18px; }
+.searchwrap { position: relative; flex: 1 1 320px; max-width: 520px; }
+.gres { position: absolute; z-index: 5; left: 0; right: 0; top: 50px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.35); max-height: 340px; overflow: auto; }
+.gres button { display: flex; width: 100%; justify-content: space-between; gap: 12px; align-items: center; min-height: 44px; padding: 8px 12px; border: 0; background: transparent; color: var(--fg); border-radius: 10px; font: 400 14.5px Roboto, sans-serif; text-align: left; cursor: pointer; }
+.gres button:hover, .gres button:focus-visible { background: var(--raise); outline: 2px solid var(--accent); }
+.gres em { font: italic 400 12px "Roboto Mono", monospace; color: var(--muted); white-space: nowrap; }
+.sim .ctl { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-top: 16px; }
+.sim select { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--fg); font: 400 15px Roboto, sans-serif; }
+.sim label { display: inline-flex; gap: 10px; align-items: center; min-height: 44px; font-size: 15px; cursor: pointer; }
+.sim input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
+.run { min-height: 48px; padding: 0 24px; border: 0; border-radius: 999px; background: var(--accent); color: #0b1220; font: 500 15px Roboto, sans-serif; cursor: pointer; }
+.run:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+.lanes { display: grid; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.lanes li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); animation: pop .35s both; }
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.who { display: grid; place-items: center; height: 32px; border-radius: 999px; font: 500 13px "Roboto Mono", monospace; background: var(--raise); }
+.who.A { background: #1e3a8a; color: #dbe4ff; } .who.B { background: #7c2d12; color: #ffe4d6; } .who.both { background: var(--raise); color: var(--fg); }
+:root[data-theme="light"] .who.A { background: #dbe4ff; color: #1e3a8a; } :root[data-theme="light"] .who.B { background: #ffe4d6; color: #7c2d12; }
+.lanes .lay { font: 500 11px "Roboto Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.lanes p { margin: 2px 0 0; font-size: 15px; }
+.verdict { margin-top: 16px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--accent); font-size: 16px; }
+@media (prefers-reduced-motion: reduce) { .lanes li { animation: none; } }
+</style>
+
+<main>
+  <section class="card">
+    <h1>OYUN workflow</h1>
+    <p class="kicker">Pages · APIs · bookings · money · database · release</p>
+    <div class="tools">
+      <div class="searchwrap"><input id="gq" class="q" type="search" placeholder="Search any component, file or rule" aria-label="Search components" autocomplete="off"><div id="gres" class="gres" hidden></div></div>
+      <button class="btn" id="theme" type="button" aria-label="Switch colour theme">Theme: auto</button>
+    </div>
+    <p class="lead">One interactive map of how OYUN works. Pick a view, then hover or tap any component to see what it does, the code it lives in, and what it talks to. Every view is drawn from the code in <span class="mono">src/</span> and <span class="mono">supabase/</span>.</p>
+  </section>
+
+  <section class="card">
+    <div class="tabs" id="tabs" role="group" aria-label="Views"></div>
+    <div class="vhead">
+      <div><h2 id="vtitle"></h2><p class="vsub" id="vsub"></p></div>
+      <div class="stepper" id="stepper" hidden><button class="btn" id="prev" type="button">&#9664; Back</button><button class="btn" id="next" type="button">Next step &#9654;</button></div>
+    </div>
+    <div id="diagram" hidden><div class="stage"><svg id="svg" role="img" aria-labelledby="vtitle"></svg></div>
+      <div class="legend" id="legend"></div></div>
+    <div id="routes" hidden></div>
+    <div id="sim" hidden></div>
+  </section>
+
+  <section class="card" id="detail" aria-live="polite"></section>
+  <p class="foot">Sample counts and limits come from the code at the time of writing. The code wins if the two ever disagree. Same file lives in the repo as <span class="mono">docs/architecture-map.html</span>.</p>
+</main>
+
+<script>
+(function () {
+  var LAYERS = { client: 'Client', edge: 'Edge & routing', logic: 'Server logic', data: 'Database', ext: 'External service', ops: 'Release & ops' };
+  var COL = 262, ROW = 112, NW = 198, NH = 64, PAD = 28;
+  var V = [], byId = {};
+
+  function node(id, c, r, t, s, layer, desc, o) { o = o || {}; return { id: id, c: c, r: r, t: t, s: s, layer: layer, desc: desc, files: o.files || [], rules: o.rules || [], hub: !!o.hub, step: o.step || 0 }; }
+  function edge(a, b, label, o) { o = o || {}; return { a: a, b: b, label: label || '', async: !!o.async, bend: o.bend || 0 }; }
+  function view(id, group, tab, title, sub, nodes, edges) { var v = { id: id, group: group, tab: tab, title: title, sub: sub, nodes: nodes, edges: edges, type: 'flow' }; V.push(v); return v; }
+
+  /* 1 SYSTEM */
+  view('sys', 'Overview', 'System', 'The whole system on one page', 'One Next.js 16 app on Vercel and one Supabase Postgres. The website and the backend are the same code. There is no separate API server, mobile app or job runner.', [
+    node('player', 0, 0, 'Player site', 'web + PWA', 'client', 'Where players browse venues, hold slots, book and keep tickets. It installs as a PWA (public/sw.js).', { files: ['src/app/(main)', 'src/app/(auth)', 'src/app/(launch)', 'src/components', 'public/sw.js'] }),
+    node('owner', 2, 0, 'Owner dashboard', 'partner.oyun.co.in', 'client', 'Venue owners and their staff run the day here: calendar, check-in, slots, pricing, payouts. Every page and action checks a permission.', { files: ['src/app/partner'] }),
+    node('admin', 4, 0, 'Admin console', 'admin.oyun.co.in', 'client', 'OYUN staff approve venues, manage owners and players, review student IDs and issue refunds.', { files: ['src/app/admin'] }),
+    node('clerk', 0, 1, 'Clerk', 'player sign-in', 'ext', 'Hosted sign-in for players, and Google or Apple for partners. Optional: with no keys, a name and phone are kept on the device (ADR-0004).', { files: ['src/lib/clerk.ts', 'src/app/(auth)'] }),
+    node('proxy', 2, 1, 'Edge proxy', 'src/proxy.ts', 'edge', 'Runs first on every request. HTTPS redirect, hostname to role routing, the launch gate, the dashboard cookie guard, a per-request CSP nonce and Clerk.', { hub: true, files: ['src/proxy.ts', 'src/lib/hosts.ts', 'src/lib/csp.ts'], rules: ['Prerendered pages skip the nonce so the CDN can serve them', 'Old subdomains app., book., help. 301 to www'] }),
+    node('pages', 0, 2, 'Pages', 'server components', 'logic', 'Server-rendered pages read data through the data layer and send the browser narrow shapes such as PublicTurf, never full internal records.', { files: ['src/app/**/page.tsx'] }),
+    node('actions', 2, 2, 'Server actions', 'src/lib/*-actions.ts', 'logic', 'Every change a person makes. Each one checks who is calling, validates input, rate limits where public, then writes.', { files: ['booking-actions.ts', 'partner-actions.ts', 'admin-actions.ts', 'auth-actions.ts', 'availability-actions.ts'], rules: ['A test fails if an action skips its check (authorization-audit.test.ts)'] }),
+    node('api', 4, 2, 'API routes', 'src/app/api', 'logic', 'Small HTTP endpoints for things a form cannot do: health, tab-close hold release, payment webhooks, privacy export and erase, student ID upload, cron jobs.', { files: ['src/app/api/**/route.ts'] }),
+    node('domain', 1, 3, 'Domain rules', 'pricing · wallet · payouts', 'logic', 'Pure logic that decides money and eligibility: one pricing function for quote and charge, wallet, cancel policy, check-in window, payouts.', { files: ['pricing.ts', 'wallet.ts', 'cancel-policy.ts', 'checkin-window.ts', 'payouts.ts'] }),
+    node('store', 3, 3, 'Data layer', 'store.ts · v2-*.ts', 'logic', 'getDb() and mutate() for the legacy store. With OYUN_V2_SLOTS=1, slot reads and writes go through the v2 functions and Postgres RPCs instead.', { files: ['src/lib/store.ts', 'src/lib/v2-slots.ts', 'src/lib/v2-bookings.ts', 'src/lib/v2-checkout.ts'] }),
+    node('razorpay', 4, 1, 'Razorpay', 'orders · webhooks', 'ext', 'Payment gateway. Order creation and a signed webhook are built; online payment is not yet wired into checkout (docs/V2-CUTOVER.md).', { files: ['src/lib/payments.ts', 'src/app/api/webhooks/razorpay/route.ts'] }),
+    node('legacy', 2, 4, 'public.* tables', '19 jsonb collections', 'data', 'The original store: one row per record as jsonb, plus app_meta.rev, rate_limits and deleted_rows. Writes are guarded by one global revision.', { files: ['supabase/migrations/20261006000000_oyun_store.sql'] }),
+    node('v2', 3, 4, 'oyun schema', 'v2 slot booking', 'data', 'Venues, resources, bookables and slot_claims with a Postgres exclusion constraint that makes double booking impossible.', { files: ['supabase/migrations/20261011000000_slot_booking_v2.sql', 'docs/SLOT-BOOKING-DB.md'] }),
+    node('realtime', 4, 4, 'Realtime', 'slot pings', 'data', 'After a write the server posts an anonymous ping on slots:{turf}:{date}. Open pages refetch through a server action. A 10 second poll is the safety net.', { files: ['src/lib/realtime.ts', 'docs/adr/0006-realtime-broadcast.md'], rules: ['Pings carry no data, so public topics are safe'] }),
+    node('cron', 4, 3, 'Vercel cron', 'daily jobs', 'ops', 'Two daily calls with a secret: retention purge at 21:30 UTC and payout settlement at 06:00 UTC.', { files: ['vercel.json', 'src/lib/cron-auth.ts'] })
+  ], [
+    edge('player', 'proxy', 'HTTPS'), edge('owner', 'proxy', 'cookie session'), edge('admin', 'proxy', 'cookie session'), edge('player', 'clerk', 'sign in'),
+    edge('proxy', 'pages', 'render'), edge('proxy', 'actions', 'form posts'), edge('proxy', 'api', 'requests'),
+    edge('pages', 'store', 'read'), edge('actions', 'domain', 'rules'), edge('actions', 'store', 'write'), edge('api', 'store', 'read / write'),
+    edge('razorpay', 'api', 'signed webhook', { async: true }), edge('cron', 'api', 'daily', { async: true }),
+    edge('store', 'legacy', 'apply_changes'), edge('store', 'v2', 'RPCs'), edge('store', 'realtime', 'slot ping', { async: true })
+  ]);
+
+  /* 2 JOURNEY */
+  view('journey', 'Flows', 'Booking journey', 'From browsing to a checked-in game', 'Follow one booking. Tap Next step to walk it in order. The side branches are what can happen to a ticket afterwards.', [
+    node('browse', 0, 0, 'Browse venues', '/arenas · /turfs', 'client', 'Search, filter and map of venues. Area, sport and price-band pages are prerendered and cached by the CDN.', { step: 1, files: ['src/app/(main)/arenas/page.tsx', 'src/app/(main)/turfs/[area]', 'src/lib/search.ts'] }),
+    node('pick', 1, 0, 'Pick day and hours', '/arenas/[id]', 'client', 'The venue page shows each hour as available, held, booked, blocked or past. The date is today or up to a week ahead.', { step: 2, files: ['src/app/(main)/arenas/[id]/page.tsx', 'src/lib/availability-actions.ts'], rules: ['getSlotsForDate returns active turfs only'] }),
+    node('hold', 2, 0, 'Hold slots', 'holdSlots · 8 min', 'logic', 'Proceed holds the chosen hours for 8 minutes, tied to a hashed device cookie. Leaving checkout or closing the tab releases them.', { step: 3, files: ['src/lib/booking-actions.ts', 'src/lib/device-holder.ts', 'src/app/api/holds/release/route.ts'], rules: ['Rate limit: 60 per IP and 15 per device per 10 minutes', 'A second device cannot hold the same hour'] }),
+    node('checkout', 3, 0, 'Checkout', 'name · phone · promo', 'client', 'Name, a 10 digit phone, optional promo code, add-ons and wallet credit. Signed-in only when Clerk is on.', { step: 4, files: ['src/app/(main)/arenas/[id]', 'src/components/SignInGate.tsx'] }),
+    node('quote', 4, 0, 'Price quote', 'quoteSelection', 'logic', 'Prices a throwaway copy of the database and writes nothing. The same function builds the quote and the charge, so they cannot differ.', { step: 5, files: ['src/lib/pricing.ts', 'src/lib/booking-actions.ts'] }),
+    node('create', 4, 1, 'Create bookings', 'createBookings', 'logic', 'Validates, rate limits (30 per IP, 10 per device), then plans and writes one booking row per hour. v2 uses v2Checkout instead of planBooking.', { step: 6, files: ['src/lib/booking-actions.ts', 'src/lib/booking-plan.ts', 'src/lib/v2-checkout.ts'], rules: ['Refused when bookings would not be saved', 'Banned players are refused'] }),
+    node('db', 3, 1, 'Write and confirm', 'mutate or RPC', 'data', 'Legacy: apply_changes only if the revision still matches. v2: confirm_hold_priced turns the hold into a booking. Either way the database refuses an overlap.', { step: 7, files: ['supabase/migrations/20261017000000_v2_priced_confirm.sql', 'src/lib/store.ts'] }),
+    node('ticket', 2, 1, 'Ticket and QR', '/bookings/[id]', 'client', 'The ticket page shows the check-in code and QR, an .ics calendar file and an invoice. Anyone with the unguessable id can see it.', { step: 8, files: ['src/app/(main)/bookings/[id]/page.tsx', 'src/app/(main)/bookings/[id]/calendar/route.ts', 'src/app/(main)/bookings/[id]/invoice/page.tsx', 'src/lib/qr.ts'] }),
+    node('checkin', 1, 1, 'Check-in', 'partner scans code', 'client', 'The owner scans the QR or types the code on the day. The booking must be for this venue, confirmed and for today. Cashback and referral rewards are paid here.', { step: 9, files: ['src/app/partner/(dashboard)/check-in', 'src/lib/partner-actions.ts', 'src/lib/checkin-window.ts'] }),
+    node('review', 0, 1, 'Review', 'after the game', 'client', 'A player can review only after check-in, and only as the booking owner.', { step: 10, files: ['src/lib/reviews.ts', 'src/lib/booking-actions.ts'] }),
+    node('cancel', 2, 2, 'Cancel', 'up to 2 h before', 'logic', 'Self-cancel needs a confirmed booking at least 2 hours before the slot. Closer than that, the player calls the venue. The slot reopens for others live.', { files: ['src/lib/cancel-policy.ts', 'src/lib/booking-actions.ts'] }),
+    node('resched', 3, 2, 'Reschedule', 'same 2 h cutoff', 'logic', 'Moves a confirmed booking to another free slot. v2 does it in one database call (move_booking) so the old slot is released and the new one claimed together.', { files: ['src/lib/booking-actions.ts', 'supabase/migrations/20261019000000_v2_book_and_move.sql'] }),
+    node('noshow', 1, 2, 'No-show', 'after the slot starts', 'logic', 'The owner can mark a confirmed booking no-show only once the slot has started. It still occupies the hour.', { files: ['src/lib/partner-actions.ts'] }),
+    node('refund', 2, 3, 'Refund to wallet', 'wallet credit', 'logic', 'Wallet credit used plus any amount really paid is credited back. An advance that was only recorded is not refunded because nothing was charged (ADR-0003).', { files: ['src/lib/wallet.ts', 'docs/adr/0003-advance-recorded-not-charged.md'] })
+  ], [
+    edge('browse', 'pick', 'choose'), edge('pick', 'hold', 'Proceed'), edge('hold', 'checkout', '8 min'), edge('checkout', 'quote', 'price'),
+    edge('quote', 'create', 'Confirm'), edge('create', 'db', 'write'), edge('db', 'ticket', 'ids'), edge('ticket', 'checkin', 'QR'), edge('checkin', 'review', 'played'),
+    edge('ticket', 'cancel', 'if plans change'), edge('ticket', 'resched', 'or move it'), edge('checkin', 'noshow', 'player absent'), edge('cancel', 'refund', 'money back')
+  ]);
+
+  /* 3 STATES */
+  view('states', 'Flows', 'Booking states', 'What a slot and a booking can be', 'Booking statuses are TypeScript unions, not database enums. confirmed, checked_in and no_show occupy the hour; cancelled and refunded free it.', [
+    node('free', 0, 1, 'Free', 'slot available', 'logic', 'No live booking, no owner block, not in the past, and at least one free pitch part. Pitch halves: a full pitch needs both halves free.', { files: ['src/lib/pricing.ts (getSlots)'] }),
+    node('held', 1.2, 1, 'Held', '8 minutes', 'logic', 'Someone is checking out. Expired holds are ignored and purged. Your own device still sees the slot as yours.', { files: ['src/lib/booking-actions.ts', 'supabase/migrations/20261013000000_pg_cron_expire_holds.sql'] }),
+    node('confirmed', 2.4, 1, 'Confirmed', 'pay at venue', 'data', 'The booking exists and occupies the slot. The advance is recorded, not charged online (ADR-0003).', { files: ['src/lib/types.ts'] }),
+    node('checked', 3.6, 1, 'Checked in', 'QR or code', 'data', 'The owner confirmed the player turned up. Cashback is paid and any balance is collected at the desk.', { files: ['src/lib/partner-actions.ts'] }),
+    node('reviewed', 4.8, 1, 'Reviewed', 'player rating', 'data', 'The player left a rating. Admin can hide a review or ban its author.', { files: ['src/lib/reviews.ts'] }),
+    node('blocked', 0, 0, 'Blocked', 'owner closes hour', 'logic', 'The owner closed the hour for maintenance or a private game, one hour or a range. Rain-out days can be marked per venue or city-wide.', { files: ['src/lib/availability.ts', 'src/lib/rain.ts'] }),
+    node('cancelled', 1.8, 2, 'Cancelled', 'no money back', 'data', 'Ended without a refund, for example a walk-in or nothing was paid in. The slot opens again.', { files: ['src/lib/cancel-policy.ts'] }),
+    node('noshow', 3, 2, 'No-show', 'still occupies', 'data', 'Marked after the slot started. It keeps the hour occupied.', { files: ['src/lib/partner-actions.ts'] }),
+    node('refunded', 4.2, 2, 'Refunded', 'wallet credited', 'data', 'Cancelled with money to return, or refunded by admin. Wallet is credited and any cashback given at check-in is taken back, never below zero.', { files: ['src/lib/admin-actions.ts', 'src/lib/wallet.ts'] })
+  ], [
+    edge('free', 'held', 'holdSlots'), edge('held', 'free', 'expires / released', { bend: 46 }), edge('held', 'confirmed', 'createBookings'), edge('confirmed', 'checked', 'QR, today'), edge('checked', 'reviewed', 'submitReview'),
+    edge('free', 'blocked', 'owner blocks'), edge('blocked', 'free', 'unblock', { bend: 40 }),
+    edge('confirmed', 'cancelled', 'cancel, no refund'), edge('confirmed', 'noshow', 'slot started'), edge('confirmed', 'refunded', 'cancel with refund'), edge('checked', 'refunded', 'admin refund')
+  ]);
+
+  /* 4 WRITE PATH */
+  view('write', 'Flows', 'Write path', 'How a change reaches the database', 'The flag OYUN_V2_SLOTS picks the lane. Legacy writes share one revision counter. v2 writes lock only the resource being booked.', [
+    node('action', 0, 1, 'Server action', 'check · validate', 'logic', 'Checks the caller first, validates input, rate limits where the action is public, then writes.', { files: ['src/lib/action-utils.ts', 'src/lib/shared-rate-limit.ts'] }),
+    node('flag', 1.1, 1, 'OYUN_V2_SLOTS', 'which lane?', 'edge', 'isV2SlotsActive() in each booking action. Off keeps the legacy store. On sends slot reads and writes to the oyun schema. Unset the flag to roll back.', { hub: true, files: ['src/lib/v2-slots.ts', 'src/lib/store.ts', 'docs/V2-CUTOVER.md'] }),
+    node('mutate', 2.2, 0, 'mutate(fn)', 'legacy lane', 'logic', 'Loads only rows changed since the revision the server already has, runs fn on a private copy and diffs it into upserts and deletes.', { files: ['src/lib/store.ts', 'docs/adr/0007-delta-sync.md'] }),
+    node('diff', 3.3, 0, 'load_changes', 'delta sync', 'data', 'A cold start loads everything; afterwards only the rows changed since the last revision.', { files: ['supabase/migrations/20261007000000_delta_sync.sql'] }),
+    node('apply', 4.4, 0, 'apply_changes', 'expected_rev', 'data', 'Writes in one transaction only if the global revision still equals expected_rev. Otherwise it raises store_conflict and mutate retries up to 5 times with jitter.', { files: ['supabase/migrations/20261006000000_oyun_store.sql', 'docs/adr/0002-global-revision-lock.md'], rules: ['Unique indexes on bookings, blocks and holds are the backstop', 'Known limit: two writes on different turfs still conflict (P10-02)'] }),
+    node('hs', 2.2, 2, 'hold_slots', 'v2 lane', 'data', 'Creates a held booking and one slot_claim per resource it occupies.', { files: ['supabase/migrations/20261011000000_slot_booking_v2.sql'] }),
+    node('conf', 3.3, 2, 'confirm_hold_priced', 'price + confirm', 'data', 'Turns a hold into a priced booking inside the database. book_ranges and move_booking do the same for walk-ins and reschedules.', { files: ['supabase/migrations/20261017000000_v2_priced_confirm.sql', 'supabase/migrations/20261019000000_v2_book_and_move.sql'] }),
+    node('excl', 4.4, 2, 'slot_claims', 'exclusion constraint', 'data', 'exclude using gist (resource_id with =, during with &&) where released_at is null. No two live claims on a resource can overlap, whatever the app does.', { files: ['supabase/migrations/20261016000000_row_level_conflicts.sql'], rules: ['Cancelled and expired bookings set released_at, which frees the slot'] }),
+    node('ping', 4.4, 1, 'Ping and refresh', 'slots:{turf}:{date}', 'ext', 'After a commit the server broadcasts an anonymous ping and revalidates pages, so other viewers see the slot change.', { files: ['src/lib/realtime.ts', 'src/lib/action-utils.ts (refreshAll)'] })
+  ], [
+    edge('action', 'flag', 'write'), edge('flag', 'mutate', 'off: legacy'), edge('flag', 'hs', 'on: v2'),
+    edge('mutate', 'diff', 'delta'), edge('diff', 'apply', 'upserts + deletes'), edge('hs', 'conf', 'pay and confirm'), edge('conf', 'excl', 'claim resources'),
+    edge('apply', 'ping', 'committed', { async: true }), edge('excl', 'ping', 'committed', { async: true })
+  ]);
+
+  /* 5 DOUBLE BOOKING */
+  view('double', 'Flows', 'Double booking', 'Why two people cannot book the same hour', 'Five layers, each one a backstop for the one before. Two players race for one slot; follow what stops the second one.', [
+    node('see', 0, 1, 'Slot shows free', 'status + live ping', 'client', 'Both players see the hour as available. Realtime pings and a 10 second poll keep the picker fresh, but the screen is never trusted for correctness.', { files: ['src/lib/pricing.ts (getSlots)', 'src/lib/realtime.ts'] }),
+    node('a', 1.3, 0, 'Player A', 'taps Proceed', 'client', 'A asks to hold the hour.', { files: ['src/lib/booking-actions.ts (holdSlots)'] }),
+    node('b', 1.3, 2, 'Player B', 'taps Proceed', 'client', 'B asks for the same hour a moment later.', { files: ['src/lib/booking-actions.ts (holdSlots)'] }),
+    node('holdc', 2.7, 1, 'Hold check', 'layer 1: hold', 'logic', 'Inside one write, expired holds are purged, the device\'s earlier holds are dropped, and each hour must be available with a free part. The loser gets "slot taken or being booked" and nothing is held.', { hub: true, files: ['src/lib/booking-actions.ts', 'src/lib/v2-slots.ts'], rules: ['Legacy: the revision lock makes the second write conflict, reload and find the slot gone', 'v2: hold_slots cannot claim an occupied resource'] }),
+    node('conf', 4.1, 1, 'Confirm', 'layer 2: planBooking', 'logic', 'createBookings re-prices and re-checks every hour against the database copy before inserting. Any slot or promo error throws and nothing is written.', { files: ['src/lib/booking-plan.ts', 'src/lib/v2-checkout.ts'] }),
+    node('back', 5.5, 1, 'Database backstop', 'layer 3: constraint', 'data', 'Legacy: unique indexes on bookings, blocks and holds plus the revision check. v2: the gist exclusion constraint on slot_claims. This holds even if the app has a bug or a retry races.', { hub: true, files: ['supabase/migrations/20261009000000_check_constraints.sql', 'supabase/migrations/20261016000000_row_level_conflicts.sql', 'scripts/sql-race-test.sh'], rules: ['scripts/sql-race-test.sh proves both guards'] }),
+    node('late', 2.7, 2, 'Paid but lost', 'layer 4: auto-refund', 'logic', 'If a payment lands for a slot someone else already won, autoRefundRaceLostPayment returns the money and tells the customer.', { files: ['src/lib/payments.ts'] }),
+    node('detect', 3.4, 3, 'detectDoubleBookings', 'layer 5: monitor', 'ops', 'Scans bookings for overlaps and pages on-call. Exposed at /api/monitoring/double-bookings and checked by the daily post-deploy smoke test.', { files: ['src/lib/alerts.ts', 'src/app/api/monitoring/double-bookings/route.ts', '.github/workflows/post-deploy-check.yml'] }),
+    node('parity', 5.5, 3, 'Backfill checks', 'claimConflicts', 'ops', 'When moving old bookings to v2, two overlapping live bookings are copied but only one holds the slot. The dry run lists each pair so the old double booking can be fixed.', { files: ['scripts/v2-backfill.mjs', 'docs/V2-CUTOVER.md'] })
+  ], [
+    edge('see', 'a', 'sees open'), edge('see', 'b', 'sees open'), edge('a', 'holdc', 'holdSlots (wins)'), edge('b', 'holdc', 'holdSlots (loses)'),
+    edge('holdc', 'conf', 'winner'), edge('conf', 'back', 'insert'), edge('conf', 'late', 'payment arrives late', { async: true }),
+    edge('back', 'detect', 'audit', { async: true }), edge('back', 'parity', 'cutover check', { async: true })
+  ]);
+
+  /* 6 MONEY */
+  view('money', 'Flows', 'Money', 'How a price is built, paid and paid out', 'Top: the price. Middle: online payment, built but not yet in checkout. Bottom: owner payouts, settled T+2.', [
+    node('rate', 0, 0, 'Hourly rate', 'full or half pitch', 'logic', 'The venue\'s hourly rate. A half pitch is a percentage of the full price.', { step: 1, files: ['src/lib/pricing.ts (buildQuote)'] }),
+    node('peak', 1, 0, 'Peak window', '+ peak percent', 'logic', 'Adds the venue\'s peak percent when the hour falls inside its peak window.', { step: 2, files: ['src/lib/pricing.ts'] }),
+    node('wknd', 2, 0, 'Weekend', '+ weekend percent', 'logic', 'Adds the weekend percent on weekend days.', { step: 3, files: ['src/lib/pricing.ts'] }),
+    node('last', 3, 0, 'Last minute', '- percent, today only', 'logic', 'Takes a percent off the marked-up price for today\'s slots inside the last-minute window.', { step: 4, files: ['src/lib/pricing.ts'] }),
+    node('offer', 4, 0, 'Offer', 'best single', 'logic', 'Online bookings get the best single offer (happy hour, first booking, platform or student). Offers never stack. Walk-ins skip this.', { step: 5, files: ['src/lib/platform-offers.ts', 'src/lib/offers-list.ts'] }),
+    node('promo', 4, 1, 'Promo code', 'rules checked', 'logic', 'Must be active, in date, with uses left, matching the weekend rule and per-player limit. A bad code gives a promoError and no discount.', { step: 6, files: ['src/lib/pricing.ts'] }),
+    node('addons', 3, 1, 'Add-ons', 'max 20 each', 'logic', 'Add-ons are added after discounts. The subtotal never goes below the add-ons.', { step: 7, files: ['src/lib/pricing.ts'] }),
+    node('wallet', 2, 1, 'Wallet', 'min(balance, subtotal)', 'logic', 'Wallet credit is deducted up to the subtotal. Every wallet change goes through walletTxn so the history always sums to the balance.', { step: 8, files: ['src/lib/wallet.ts'] }),
+    node('adv', 1, 1, 'Total and advance', 'percent within min/max', 'logic', 'The total is what is due. The advance is a percent of it between the venue\'s min and max. Today it is recorded, not charged (ADR-0003).', { step: 9, files: ['src/lib/pricing.ts', 'docs/adr/0003-advance-recorded-not-charged.md'] }),
+    node('order', 0, 2, 'Razorpay order', 'createRazorpayOrder', 'ext', 'Creates a payment order for the advance. Built and tested; not yet called from checkout.', { files: ['src/lib/payments.ts'] }),
+    node('hook', 1, 2, 'Webhook', '/api/webhooks/razorpay', 'edge', 'Rejects empty or over 100 KB bodies, rate limits to 120 per minute per IP, and verifies the x-razorpay-signature before doing anything.', { files: ['src/app/api/webhooks/razorpay/route.ts'] }),
+    node('proc', 2, 2, 'processPaymentWebhook', 'dedupe by event id', 'logic', 'claim_payment_event makes each event run once. A failed run calls release_payment_event so Razorpay can retry (a retryable error returns 503).', { files: ['src/lib/payments.ts', 'supabase/migrations/20261021000000_release_payment_event.sql'] }),
+    node('confp', 3, 2, 'confirm_payment', 'database', 'data', 'Marks the payment and the booking paid in the database.', { files: ['supabase/tests/payment_events_test.sql'] }),
+    node('lost', 3, 3, 'Race lost', 'auto-refund', 'logic', 'If the slot was taken by someone else, the payment is refunded automatically.', { files: ['src/lib/payments.ts (autoRefundRaceLostPayment)'] }),
+    node('settle', 1, 4, 'Settle cron', '06:00 UTC daily', 'ops', 'Vercel calls /api/cron/payouts/settle with the cron secret.', { files: ['vercel.json', 'src/app/api/cron/payouts/settle/route.ts'] }),
+    node('batch', 2, 4, 'Settlement batch', 'T+2 period', 'logic', 'createSettlementBatch gathers each owner\'s bookings for the settlement period. Reports compute owner revenue and online collected.', { files: ['src/lib/payouts.ts', 'src/lib/reports.ts'] }),
+    node('xfer', 3, 4, 'Payout transfer', 'executePayoutTransfer', 'logic', 'Moves the money and reconciles settlements.', { files: ['src/lib/payouts.ts'] }),
+    node('stmt', 4, 4, 'Statement', 'HTML + CSV', 'client', 'Owners download a payout statement and CSV exports. Only the payouts permission, and only their own payout.', { files: ['src/app/api/partner/payouts/[id]/statement/route.ts', 'src/app/partner/(dashboard)/payouts/export/route.ts'] })
+  ], [
+    edge('rate', 'peak'), edge('peak', 'wknd'), edge('wknd', 'last'), edge('last', 'offer'), edge('offer', 'promo'), edge('promo', 'addons'), edge('addons', 'wallet'), edge('wallet', 'adv'),
+    edge('adv', 'order', 'advance'), edge('order', 'hook', 'webhook', { async: true }), edge('hook', 'proc', 'signed'), edge('proc', 'confp', 'paid'), edge('proc', 'lost', 'slot gone'),
+    edge('settle', 'batch', 'daily'), edge('batch', 'xfer', 'approved'), edge('xfer', 'stmt', 'statement')
+  ]);
+
+  /* 7 ACCESS */
+  view('access', 'Flows', 'Access and auth', 'Who can reach what', 'Players, owners and admin each have their own door. The proxy checks hostname and cookie, then every page and action checks again on the server.', [
+    node('visitor', 0, 0, 'Visitor', 'any browser', 'client', 'Anyone on the internet.', {}),
+    node('host', 1.4, 0, 'Host routing', 'hosts.ts', 'edge', 'www and the bare domain serve the whole public site. partner. and admin. serve their dashboards. Old app., book. and help. hosts 301 to www.', { hub: true, files: ['src/lib/hosts.ts', 'src/proxy.ts'] }),
+    node('gate', 2.8, 0, 'Launch gate', 'until 31 Oct 2026', 'edge', 'Before launch, booking pages redirect to /countdown. The team can open them with ?preview=<key> (a 30 day cookie) or LAUNCH_OPEN. Dashboards are not gated.', { files: ['src/lib/hosts.ts (LAUNCH_AT)', 'src/lib/launch-checks.ts'] }),
+    node('pauth', 0, 1, 'Player sign-in', 'Clerk or device', 'client', 'Clerk when its keys are set, otherwise a name and phone kept on the device. Booking needs sign-in when Clerk is on.', { files: ['src/lib/clerk.ts', 'src/lib/current-account.ts'] }),
+    node('oauth', 2, 1, 'Partner login', 'password or Google/Apple', 'client', 'Password login, or Google and Apple through Clerk. /partner/login/sso only admits a verified email that belongs to an approved active owner or staff member; anyone else lands on "No partner account yet".', { files: ['src/app/partner/login', 'src/lib/partner-social.ts', 'src/lib/partner-auth.ts'] }),
+    node('aauth', 4, 1, 'Admin login', 'password + optional TOTP', 'client', 'Admin password with an optional authenticator code. Repeated failures lock the account, and the lock is checked before the password.', { files: ['src/lib/auth-actions.ts', 'src/lib/totp.ts', 'src/lib/login-throttle.ts'] }),
+    node('sess', 3, 2, 'Signed session', 'SESSION_SECRET cookie', 'logic', 'Owners, staff and admin get a cookie signed with SESSION_SECRET, one cookie name per role. The proxy reads it optimistically.', { files: ['src/lib/session.ts'] }),
+    node('guard', 1, 2, 'Route guard', 'proxy + layout', 'edge', 'The proxy bounces anyone without a session to the right login. Each dashboard layout verifies the session again on the server.', { files: ['src/proxy.ts (dashboardGuard)', 'src/app/partner/(dashboard)/layout.tsx', 'src/app/admin/(dashboard)/layout.tsx'] }),
+    node('perm', 3, 3, 'Permission check', 'requirePartner(p)', 'logic', 'Every partner page calls requirePartner(permission) and every action requirePartnerAction. Admin uses requireAdmin. A test fails if one is missing.', { files: ['src/lib/partner-auth.ts', 'src/lib/authorization.test.ts', 'src/lib/authorization-audit.test.ts', 'docs/AUTHORIZATION.md'] }),
+    node('scope', 0, 3, 'Data scope', 'own venue only', 'data', 'Owners see only their own venues and bookings. Players act on a booking only with its unguessable id plus the owning account or booking phone.', { files: ['src/lib/tenant-isolation.test.ts', 'src/lib/booking-actions.ts (proveBookingOwner)'] })
+  ], [
+    edge('visitor', 'host', 'request'), edge('host', 'gate', 'booking'), edge('visitor', 'pauth', 'play'), edge('host', 'oauth', 'partner.'), edge('host', 'aauth', 'admin.'),
+    edge('oauth', 'sess', 'sets cookie'), edge('aauth', 'sess', 'sets cookie'), edge('sess', 'guard', 'checked'), edge('guard', 'perm', 'page / action'), edge('perm', 'scope', 'filters data'), edge('pauth', 'scope', 'booking id + owner')
+  ]);
+
+  /* 7b VENUE ONBOARDING */
+  view('onboard', 'Flows', 'Venue onboarding', 'How a venue joins OYUN', 'An owner applies, an admin approves, and the venue goes live with its own login. Tap Next step to walk it.', [
+    node('form', 0, 1, 'Application form', '/list-turf', 'client', 'A four-step form with validation in the browser. Anyone can open it.', { step: 1, files: ['src/app/(main)/list-turf/page.tsx'] }),
+    node('bot', 1, 1, 'Bot check', 'honeypot + 4 s', 'logic', 'A filled hidden field or a submit in under 4 seconds gets a fake success page and nothing is stored.', { step: 2, files: ['src/lib/booking-actions.ts (submitApplication)'], rules: ['The bot is never told it was caught'] }),
+    node('fake', 1, 0, 'Pretend success', 'nothing stored', 'logic', 'What a bot sees, so it does not retry with a different trick.', {}),
+    node('rate', 2, 1, 'Rate limit', '5 per hour per IP', 'logic', 'Too many applications from one address gets "try again in an hour".', { step: 3, files: ['src/lib/shared-rate-limit.ts'] }),
+    node('valid', 3, 1, 'Validate', 'server side + duplicates', 'logic', 'Fields are validated and length-capped on the server. A duplicate pending application, or 3 pending for one phone, is refused with "we already have your application".', { step: 4, files: ['src/lib/validation'] }),
+    node('pend', 4, 1, 'Pending application', 'stored', 'data', 'Saved in the applications collection until an admin decides.', { step: 5, files: ['src/lib/types.ts'] }),
+    node('rev', 4, 2, 'Admin review', '/admin/turfs', 'client', 'An admin reads the application and approves or rejects it.', { step: 6, files: ['src/app/admin/(dashboard)/turfs'] }),
+    node('dec', 3, 2, 'Approve or reject', 'approveApplication', 'logic', 'Admin session required. Rejecting ends the application. Approving continues below.', { step: 7, files: ['src/lib/admin-actions.ts'] }),
+    node('rej', 3, 3, 'Rejected', 'application closed', 'data', 'The application is marked rejected.', {}),
+    node('owner', 2, 2, 'Owner account', 'reuse or create', 'logic', 'If the owner email is already a partner, that login is reused; a suspended partner must be reactivated first. Otherwise a partner is created with a temporary password shown once to the admin.', { step: 8, files: ['src/lib/admin-actions.ts', 'src/lib/password.ts'] }),
+    node('turf', 1, 2, 'Create venue', 'status active', 'data', 'The turf is created active. Its resources and bookables are mapped to the oyun schema by sync_turf_to_venue.', { step: 9, files: ['supabase/migrations/20261012000000_map_turfs_to_venues.sql'] }),
+    node('live', 0, 2, 'Live for booking', 'owner logs in', 'client', 'Players can book it, and the owner signs in at partner.oyun.co.in to set pricing, hours and staff.', { step: 10, files: ['src/app/partner'] })
+  ], [
+    edge('form', 'bot', 'submit'), edge('bot', 'fake', 'bot', { async: true }), edge('bot', 'rate', 'human'), edge('rate', 'valid', 'ok'), edge('valid', 'pend', 'new'),
+    edge('pend', 'rev', 'review'), edge('rev', 'dec', 'decide'), edge('dec', 'rej', 'reject'), edge('dec', 'owner', 'approve'), edge('owner', 'turf', 'create'), edge('turf', 'live', 'go live')
+  ]);
+
+  /* 7c CANCEL AND REFUND */
+  view('cancel', 'Flows', 'Cancel and refund', 'What happens when a player cancels', 'The checks run in this order. Any failed check ends with a plain message and changes nothing. Tap Next step to walk the happy path.', [
+    node('click', 0, 1, 'Cancel clicked', 'from the ticket', 'client', 'The player opens their ticket and taps Cancel.', { step: 1, files: ['src/app/(main)/bookings/[id]/page.tsx'] }),
+    node('fmt', 1, 1, 'Booking id', 'bk_ + 12 hex', 'logic', 'An id that does not look right gets "booking not found" with no lookup.', { step: 2, files: ['src/lib/booking-actions.ts (cancelMyBooking)'] }),
+    node('rate', 2, 1, 'Rate limit', '20 per IP', 'logic', 'Stops guessing of booking ids.', { step: 3, files: ['src/lib/shared-rate-limit.ts'] }),
+    node('own', 3, 1, 'Owner proof', 'account or phone', 'logic', 'A booking made while signed in can only be cancelled from that account; otherwise the booking phone is checked.', { step: 4, files: ['src/lib/booking-actions.ts (proveBookingOwner)'] }),
+    node('stat', 4, 1, 'Status confirmed?', 'else cannot cancel', 'logic', 'Only a confirmed booking can be cancelled.', { step: 5 }),
+    node('cut', 4, 2, '2 hour cutoff', 'online bookings', 'logic', 'Online bookings can be self-cancelled at least 2 hours before the slot starts. Later, the player is asked to call the venue.', { step: 6, files: ['src/lib/cancel-policy.ts', 'src/lib/rain.ts'], rules: ['Rain-out rules are decided on the server, never from a flag sent by the browser'] }),
+    node('due', 3, 2, 'Refund due?', 'wallet used + paid in', 'logic', 'Wallet credit used at booking plus any amount really paid in. An advance that was only recorded is not refunded because nothing was charged.', { step: 7, files: ['src/lib/wallet.ts', 'docs/adr/0003-advance-recorded-not-charged.md'] }),
+    node('wal', 2, 2, 'Wallet credited', 'status refunded', 'data', 'The wallet is credited through walletTxn and the booking becomes refunded.', { step: 8, files: ['src/lib/wallet.ts'] }),
+    node('can', 3, 3, 'Cancelled', 'no money back', 'data', 'Nothing to return, so the booking becomes cancelled.', {}),
+    node('free', 1, 2, 'Slot reopens', 'live for others', 'client', 'The hold on the resource is released, a ping goes out so other pages update, and the waitlist can be notified (waitlist.ts).', { step: 9, files: ['src/lib/realtime.ts', 'src/lib/waitlist.ts'] }),
+    node('ref', 2, 0, 'Refused', 'plain message', 'logic', 'Not found, too many attempts, wrong account, can no longer be cancelled, or please call the venue. Nothing changes.', {}),
+    node('adm', 1, 3, 'Admin refund', 'any live booking', 'logic', 'An admin can refund a booking that is not already cancelled or refunded. Online bookings credit the wallet; walk-ins paid at the desk credit nothing; check-in cashback is taken back, never below zero.', { files: ['src/lib/admin-actions.ts (refundBooking)'] })
+  ], [
+    edge('click', 'fmt', 'cancel'), edge('fmt', 'rate', 'valid'), edge('rate', 'own', 'ok'), edge('own', 'stat', 'owner'), edge('stat', 'cut', 'yes'), edge('cut', 'due', 'in time'),
+    edge('due', 'wal', 'yes'), edge('due', 'can', 'no'), edge('wal', 'free', 'done'), edge('can', 'free', 'done'),
+    edge('fmt', 'ref', 'bad'), edge('rate', 'ref', 'limit'), edge('own', 'ref', 'wrong'), edge('adm', 'wal', 'same rules')
+  ]);
+
+  /* 7d CHECK-IN */
+  view('checkin', 'Flows', 'Check-in and rewards', 'What happens at the venue desk', 'The owner or front desk confirms the player turned up. Tap Next step to walk it.', [
+    node('scan', 0, 1, 'Scan or type code', 'QR or short code', 'client', 'The check-in page accepts a QR scan or the code printed on the ticket.', { step: 1, files: ['src/app/partner/(dashboard)/check-in', 'src/lib/qr.ts'] }),
+    node('perm', 1, 1, 'Permission', 'checkin', 'logic', 'The caller must have the checkin permission; front desk does.', { step: 2, files: ['src/lib/partner-auth.ts'] }),
+    node('find', 2, 1, 'Find booking', 'by code or id', 'logic', 'No match gives "no booking found".', { step: 3, files: ['src/lib/partner-actions.ts (checkInBooking)'] }),
+    node('turf', 3, 1, 'Right venue?', 'not another turf', 'logic', 'A booking for another venue is refused. Tenant isolation is tested.', { step: 4, files: ['src/lib/tenant-isolation.test.ts'] }),
+    node('stat', 4, 1, 'Confirmed?', 'else refused', 'logic', 'Already checked in, cancelled, refunded or no-show bookings are refused with the reason.', { step: 5 }),
+    node('day', 4, 2, 'Today?', 'date must match', 'logic', 'A booking for another day is refused.', { step: 6, files: ['src/lib/checkin-window.ts'] }),
+    node('ok', 3, 2, 'Checked in', 'time stored', 'data', 'Status becomes checked_in with the time.', { step: 7 }),
+    node('rew', 2, 2, 'Rewards', 'cashback + referral', 'logic', 'Cashback is credited (capped). If the player was referred and this is their first game, the referrer is credited too.', { step: 8, files: ['src/lib/wallet.ts'] }),
+    node('pay', 1, 2, 'Pay at venue?', 'collect balance', 'logic', 'If it was pay-at-venue, the desk marks it paid in full; otherwise it shows the balance still to collect.', { step: 9, files: ['src/lib/partner-actions.ts'] }),
+    node('rv', 0, 2, 'Review unlocked', 'player can rate', 'client', 'Only now can the player review the venue.', { step: 10, files: ['src/lib/reviews.ts'] }),
+    node('err', 2, 0, 'Refused', 'with the reason', 'logic', 'Access denied, no booking found, another turf, already checked in, cancelled, or another day.', {}),
+    node('ns', 4, 3, 'No-show', 'after slot starts', 'logic', 'A confirmed booking can be marked no-show only after the slot has started. It still occupies the hour.', { files: ['src/lib/partner-actions.ts (markNoShow)'] })
+  ], [
+    edge('scan', 'perm', 'submit'), edge('perm', 'find', 'allowed'), edge('find', 'turf', 'found'), edge('turf', 'stat', 'mine'), edge('stat', 'day', 'yes'), edge('day', 'ok', 'today'),
+    edge('ok', 'rew', 'reward'), edge('rew', 'pay', 'then'), edge('pay', 'rv', 'done'),
+    edge('perm', 'err', 'denied'), edge('find', 'err', 'none'), edge('turf', 'err', 'other'), edge('stat', 'err', 'no'), edge('day', 'ns', 'absent', { async: true })
+  ]);
+
+  /* 7e SIGN-IN */
+  view('login', 'Flows', 'Sign-in', 'How owners and admins sign in', 'Password sign-in with lockouts, or Google and Apple for owners. Both end in a signed httpOnly cookie.', [
+    node('sub', 0, 0, 'Submit', 'email + password', 'client', 'The login form on /admin/login or /partner/login.', { step: 1, files: ['src/app/admin/login', 'src/app/partner/login'] }),
+    node('cfg', 1, 0, 'Configured?', 'role + SESSION_SECRET', 'logic', 'A valid role and SESSION_SECRET must exist, otherwise "login not configured".', { step: 2, files: ['src/lib/auth-actions.ts', 'src/lib/session.ts'] }),
+    node('fields', 2, 0, 'Fields filled?', 'both required', 'logic', 'Empty fields give "enter your email and password".', { step: 3 }),
+    node('lock', 3, 0, 'Lockout check', 'before the password', 'logic', 'Locked after 5 failures per role, email and IP, or 20 per role and IP, for 15 minutes. The lock is checked before the password so locked accounts reveal nothing.', { hub: true, step: 4, files: ['src/lib/login-throttle.ts', 'src/lib/shared-rate-limit.ts'] }),
+    node('cred', 4, 0, 'Credentials', 'env or scrypt hash', 'logic', 'Admin uses the ADMIN_EMAIL and ADMIN_PASSWORD environment values (with an optional authenticator code). Partners use the OYUN operations login from the environment, or a scrypt hash for owners and staff.', { step: 5, files: ['src/lib/password.ts', 'src/lib/totp.ts', 'src/lib/partner-auth.ts'] }),
+    node('fail', 4, 1, 'Record failure', 'counts toward lock', 'data', 'A wrong password adds a failure to the shared counters.', {}),
+    node('bad', 4, 2, 'Invalid email or password', 'same message', 'client', 'One message for every wrong credential so nobody can tell which part was wrong.', {}),
+    node('clr', 3, 1, 'Clear failures', 'on success', 'logic', 'A correct login resets the counters.', { step: 6 }),
+    node('cookie', 2, 1, 'Signed cookie', 'httpOnly, per role', 'logic', 'A cookie signed with SESSION_SECRET. The proxy checks it optimistically; layouts and actions verify it again.', { step: 7, files: ['src/lib/session.ts', 'src/proxy.ts'] }),
+    node('go', 1, 1, 'Redirect', '/admin or /partner', 'client', 'The dashboard opens.', { step: 8 }),
+    node('sso', 2, 2, 'Google or Apple', 'Clerk, owners only', 'ext', 'A verified Clerk email is mapped to an approved owner or staff member by partnerSubjectForEmail, then the same cookie is set. Anyone else sees "no partner account yet".', { files: ['src/app/partner/login/sso/route.ts', 'src/lib/partner-social.ts'] })
+  ], [
+    edge('sub', 'cfg', 'submit'), edge('cfg', 'fields', 'ok'), edge('fields', 'lock', 'ok'), edge('lock', 'cred', 'open'), edge('cred', 'fail', 'wrong'), edge('fail', 'bad', 'show'),
+    edge('cred', 'clr', 'match'), edge('clr', 'cookie', 'sign'), edge('cookie', 'go', 'redirect'), edge('sso', 'cookie', 'verified email')
+  ]);
+
+  /* 7f RACE SIMULATOR */
+  V.push({ id: 'sim', group: 'Flows', tab: 'Race simulator', title: 'Two players, one slot', sub: 'Run the race yourself. Pick how the booking is stored and what goes wrong, then see which layer stops the second player.', type: 'sim' });
+
+  /* hub helper for feature views */
+  function hubView(id, tab, title, sub, hubNode, leaves, perRow, group) {
+    var nodes = [hubNode], edges = [], w = perRow || 5;
+    leaves.forEach(function (l, i) {
+      var col = i % w, row = 1 + Math.floor(i / w);
+      nodes.push(node(l[0], col, row, l[1], l[2], l[3], l[4], { files: l[5] || [], rules: l[6] || [] }));
+      var he = edge(hubNode.id, l[0], ''); he.quiet = row > 1; edges.push(he);
+    });
+    return view(id, group || 'Features', tab, title, sub, nodes, edges);
+  }
+
+  /* 8 PLAYER FEATURES */
+  var ph = node('p', 2, 0, 'Player', 'what players can do', 'client', 'Everything a player can reach, from discovery to privacy controls.', { hub: true });
+  hubView('pf', 'Player features', 'What a player can do', 'Tap a feature to see where it lives in the code.', ph, [
+    ['search', 'Search and map', 'search.ts · TurfMap', 'client', 'Search suggestions, filters and a Leaflet map with clustering of nearby venues.', ['src/lib/search.ts', 'src/lib/map-cluster.ts', 'src/components/TurfMap.tsx']],
+    ['saved', 'Saved venues', '/saved', 'client', 'Favourite a venue and find it again. Not indexed by search engines.', ['src/app/(main)/saved', 'src/components/FavouriteButton.tsx']],
+    ['book', 'Book and hold', 'see booking journey', 'logic', 'Hold for 8 minutes, then confirm. Pay at the venue; the advance is recorded.', ['src/lib/booking-actions.ts']],
+    ['wallet', 'Wallet and referrals', 'wallet.ts', 'logic', 'Cashback on check-in, referral rewards, refunds and admin adjustments all go through one ledger function.', ['src/lib/wallet.ts']],
+    ['offers', 'Offers and promos', '/offers', 'logic', 'Platform offers, student price, happy hour, first booking and promo codes. Offers never stack.', ['src/lib/platform-offers.ts', 'src/lib/offers-list.ts']],
+    ['student', 'Student price', 'ID check', 'logic', 'Upload a student ID (JPEG, PNG or similar, up to 5 MB). Admin approves or rejects; an unreviewed photo is deleted after 30 days.', ['src/lib/student-id.ts', 'src/app/api/student-id/route.ts']],
+    ['wait', 'Waitlist', 'waitlist.ts', 'logic', 'Join the waitlist for a full slot and get notified when it frees up.', ['src/lib/waitlist.ts']],
+    ['recur', 'Recurring bookings', 'weekly', 'logic', 'Book the same slot for several weeks in a row.', ['src/lib/recurring.ts']],
+    ['split', 'Split with friends', 'UPI link', 'logic', 'Splits the total between players and builds a UPI payment link and share message.', ['src/lib/split-payment.ts']],
+    ['match', 'Matches and tournaments', '/matches · /tournaments', 'client', 'Find open matches to join and tournaments to enter.', ['src/lib/community.ts', 'src/lib/tournaments.ts']],
+    ['rain', 'Rain policy', 'rain.ts · weather.ts', 'logic', 'Outdoor turfs on a rained-out day can be cancelled or rescheduled; indoor and covered ones never qualify.', ['src/lib/rain.ts', 'src/lib/weather.ts']],
+    ['rev', 'Reviews', 'after check-in', 'logic', 'Rate a venue after you have played there.', ['src/lib/reviews.ts']],
+    ['lang', 'English, Kannada, Hindi', '/kn · /hi', 'client', 'Localized home pages. They stay noindex until reviewed.', ['src/lib/i18n.ts', 'src/app/(main)/kn', 'src/app/(main)/hi']],
+    ['priv', 'Privacy controls', 'export · erase · consent', 'logic', 'Download your data, erase your account, and choose essential or all cookies. Rate limited and same-origin protected.', ['src/lib/dpdp.ts', 'src/app/api/privacy']],
+    ['pwa', 'Install and offline', 'service worker', 'client', 'Installable PWA with icons and a service worker.', ['public/sw.js', 'src/components/ServiceWorkerRegister.tsx']]
+  ], 5);
+
+  /* 9 OWNER FEATURES */
+  var oh = node('o', 2, 0, 'Owner dashboard', 'partner.oyun.co.in', 'client', 'Owners and staff. Each page needs a permission; staff get only the ones the owner grants.', { hub: true, files: ['src/app/partner/(dashboard)'] });
+  hubView('of', 'Owner features', 'What a venue owner can do', 'Each leaf shows the permission it needs.', oh, [
+    ['o1', 'Overview', 'any signed-in', 'client', 'Today at a glance. Open to any signed-in owner or staff member.', ['src/app/partner/(dashboard)/page.tsx']],
+    ['o2', 'Bookings', 'bookings', 'client', 'List, cancel, create walk-ins and export CSV.', ['partner/(dashboard)/bookings', 'bookings/export/route.ts']],
+    ['o3', 'Calendar', 'bookings', 'client', 'Week and day views that move between days and weeks.', ['partner/(dashboard)/calendar']],
+    ['o4', 'Check-in', 'checkin', 'client', 'Enter a code or scan a QR. Mark no-shows after the slot starts.', ['partner/(dashboard)/check-in', 'src/lib/checkin-window.ts']],
+    ['o5', 'Slots and blocks', 'slots', 'client', 'Block an hour or a range, unblock, and mark a rain-out.', ['partner/(dashboard)/slots', 'src/lib/availability.ts']],
+    ['o6', 'Pricing', 'pricing', 'client', 'Hourly rate, peak, weekend and last-minute rules, and the advance.', ['partner/(dashboard)/pricing']],
+    ['o7', 'Offers', 'offers', 'client', 'Happy hour and first-booking offers for this venue.', ['partner/(dashboard)/offers']],
+    ['o8', 'Add-ons', 'addons', 'client', 'Extras players can add at checkout.', ['partner/(dashboard)/add-ons']],
+    ['o9', 'Courts', 'turf', 'client', 'Add courts or pitch parts that can be booked separately.', ['partner/(dashboard)/courts']],
+    ['o10', 'Venue profile', 'turf', 'client', 'Photos, amenities and hours. Uploads go through /api/partner/upload.', ['partner/(dashboard)/turf', 'src/app/api/partner/upload/route.ts']],
+    ['o11', 'Staff', 'staff', 'client', 'Create staff logins with chosen permissions and reset their passwords.', ['partner/(dashboard)/staff']],
+    ['o12', 'Reviews', 'any signed-in', 'client', 'Read player reviews for your venue.', ['partner/(dashboard)/reviews']],
+    ['o13', 'Payouts', 'payouts', 'client', 'Weekly payouts, statements and CSV export.', ['partner/(dashboard)/payouts']],
+    ['o14', 'Analytics', 'payouts', 'client', 'Revenue and booking trends.', ['partner/(dashboard)/analytics']],
+    ['o15', 'Invoices', 'bookings', 'client', 'Printable invoice per booking.', ['partner/(dashboard)/invoices/[id]']]
+  ], 5);
+
+  /* 10 ADMIN FEATURES */
+  var ah = node('a', 2, 0, 'Admin console', 'admin.oyun.co.in', 'client', 'OYUN staff only. Every page sits under a layout that checks the admin session; the login screen is the only page outside it.', { hub: true, files: ['src/app/admin/(dashboard)'] });
+  hubView('af', 'Admin features', 'What an admin can do', 'Approvals, money and moderation.', ah, [
+    ['a1', 'Overview', 'dashboard', 'client', 'Platform summary.', ['admin/(dashboard)/page.tsx']],
+    ['a2', 'Turf applications', 'approve or reject', 'logic', 'A /list-turf application is reviewed here. Approval creates a partner with a temporary password shown once (or reuses an existing owner) and a live turf; a suspended owner must be reactivated first.', ['admin/(dashboard)/turfs', 'src/lib/admin-actions.ts (approveApplication)']],
+    ['a3', 'Turfs', 'edit and manage', 'client', 'Edit any venue, quick toggles, and venue detail.', ['admin/(dashboard)/turfs/[id]']],
+    ['a4', 'Partners', 'owners', 'client', 'Suspend or reactivate, reset a password, update details.', ['admin/(dashboard)/partners']],
+    ['a5', 'Players', 'users', 'client', 'Ban a player or adjust their wallet.', ['admin/(dashboard)/users']],
+    ['a6', 'Student IDs', 'review queue', 'client', 'Approve or reject uploaded IDs. The route only acts on pending ones.', ['admin/(dashboard)/students', 'src/app/api/admin/student-id/[playerId]/route.ts']],
+    ['a7', 'Reviews', 'moderation', 'client', 'Hide a review or ban its author.', ['admin/(dashboard)/reviews']],
+    ['a8', 'Transactions', 'refunds', 'logic', 'Refund a booking. Online refunds credit the wallet; walk-ins paid at the desk credit nothing; check-in cashback is taken back.', ['admin/(dashboard)/transactions', 'src/lib/admin-actions.ts (refundBooking)']],
+    ['a9', 'Analytics', 'platform numbers', 'client', 'Bookings and revenue across all venues.', ['admin/(dashboard)/analytics', 'src/lib/analytics.ts']],
+    ['a10', 'Customization', 'site content', 'client', 'Promo cards, sponsor ads, site content and platform offers.', ['admin/(dashboard)/customization']],
+    ['a11', 'Settings', 'platform settings', 'client', 'Support details, rain days and promo codes.', ['admin/(dashboard)/settings']]
+  ], 5);
+
+  /* 11 DATA */
+  view('data', 'Data & ops', 'Database', 'What is stored where', 'Two sets of tables sit side by side. Legacy public.* holds everything today; the oyun schema takes over slots and bookings when the flag is on.', [
+    node('legacy', 1.0, 0, 'Legacy store', 'public.* · 19 collections', 'data', 'turfs, partners, staff, players, bookings, blocks, offers, add_ons, applications, wallet_txns, holds, promo_codes, pricing, app_config, waitlist, payouts, open_matches, tournaments, activity. One jsonb row each, read through load_changes and written through apply_changes.', { hub: true, files: ['supabase/migrations/20261006000000_oyun_store.sql', 'supabase/migrations/20261020000000_persist_remaining_collections.sql'], rules: ['app_meta.rev is the one global revision', 'Relationships live inside the JSON, so only CHECK constraints enforce them'] }),
+    node('meta', 0, 1, 'app_meta · deleted_rows', 'revision + tombstones', 'data', 'The revision counter and tombstones that delta sync uses.', { files: ['supabase/migrations/20261007000000_delta_sync.sql'] }),
+    node('rl', 1.0, 1, 'rate_limits', 'rl_hit · rl_get', 'data', 'Counters shared by every server instance, so a burst across instances is still limited.', { files: ['supabase/migrations/20261010000000_rate_limits.sql', 'src/lib/shared-rate-limit.ts'] }),
+    node('pe', 2.0, 1, 'processed_payment_events', 'webhook dedupe', 'data', 'Each Razorpay event id is claimed once.', { files: ['supabase/tests/payment_events_test.sql'] }),
+    node('venues', 2.6, 0, 'venues', 'partner-owned', 'data', 'A venue belongs to a partner and has areas, sports and opening hours.', { files: ['supabase/migrations/20261012000000_map_turfs_to_venues.sql'] }),
+    node('res', 4.6, 0, 'resources', 'Half A, Court 1', 'data', 'A physical thing one group can use at a time.', { files: ['docs/SLOT-BOOKING-DB.md'] }),
+    node('bk', 3.4, 1, 'bookables', 'what a player picks', 'data', 'Sport, slot length and base price. It occupies one or more resources: Full pitch takes Half A and Half B.', { files: ['supabase/migrations/20261011000000_slot_booking_v2.sql'] }),
+    node('book', 2.6, 2, 'bookings', 'the order', 'data', 'The order, with booking_items below it, one per slot.', { files: ['supabase/migrations/20261018000000_v2_booking_updates.sql'] }),
+    node('items', 3.2, 3, 'booking_items', 'one per slot', 'data', 'Each hour or slot in an order.', {}),
+    node('claims', 4.6, 3, 'slot_claims', 'no overlaps allowed', 'data', 'One row per resource a booking item, hold or owner block occupies. The exclusion constraint makes overlap impossible.', { hub: true, files: ['supabase/migrations/20261016000000_row_level_conflicts.sql'] }),
+    node('blocks', 4.6, 2, 'blocks', 'owner closes hour', 'data', 'Owner blocks also take claims, so a blocked hour cannot be booked.', {}),
+    node('pay', 2.6, 4, 'payments · refunds', 'payment_events', 'data', 'Payments, a deduped event log and refunds.', { files: ['supabase/migrations/20261021000000_release_payment_event.sql'] }),
+    node('players', 1.6, 4, 'players · wallet_ledger', 'ledger is truth', 'data', 'Players and a wallet ledger. The balance is derived from the ledger, so it cannot drift.', { files: ['supabase/migrations/20261023000000_v2_erase_account.sql'] }),
+    node('payouts', 1.0, 2, 'payouts · invoices', 'owner money', 'data', 'Payouts and their items, and invoices with counters.', {}),
+    node('bucket', 0, 4, 'student_ids bucket', 'Supabase Storage', 'data', 'Private storage for student ID photos.', { files: ['supabase/migrations/20261015020000_student_ids_bucket.sql'] })
+  ], [
+    edge('legacy', 'meta', 'revision'), edge('legacy', 'rl', ''), edge('legacy', 'pe', ''),
+    edge('venues', 'res', 'has'), edge('venues', 'bk', 'sells'), edge('bk', 'res', 'occupies'), edge('venues', 'book', 'booked at'), edge('book', 'items', 'one per slot'), edge('items', 'claims', 'one per resource'), edge('blocks', 'claims', 'blocks claim'), edge('book', 'pay', 'paid by'), edge('players', 'book', 'makes'), edge('book', 'payouts', 'settled in')
+  ]);
+
+  /* 12 RELEASE */
+  view('release', 'Data & ops', 'Release and ops', 'From a commit to production and how it is watched', 'A pull request must pass every check. Git auto-deploy is off in vercel.json; production is promoted by the pipeline or the 12:00 IST scheduled deploy.', [
+    node('branch', 0, 0, 'Feature branch', 'one task each', 'ops', 'Work happens on a branch. Direct pushes to main are blocked.', { files: ['docs/BRANCHING.md', 'scripts/configure-branch-protection.sh'] }),
+    node('hooks', 1, 0, 'Git hooks', '.githooks', 'ops', 'Installed by npm install. pre-commit runs type-check and lint. pre-push refuses a direct push to main.', { files: ['.githooks', 'scripts/install-hooks.mjs'] }),
+    node('pr', 2, 0, 'Pull request', 'into main', 'ops', 'Opened for review. Auto-fix watches CI, conflicts and comments.', {}),
+    node('ci', 3, 0, 'CI checks', '5 jobs', 'ops', 'Lint, type-check, unit tests and build; Playwright e2e with axe on desktop and mobile; Lighthouse on home, arenas and a turf page (90 or more); SQL migrations and tests on Postgres 17; Gitleaks secret scan.', { hub: true, files: ['.github/workflows/ci.yml'] }),
+    node('main', 4, 0, 'Merge to main', 'green', 'ops', 'Merged only when every check passes.', {}),
+    node('pipe', 4, 1, 'Release pipeline', 'build once · gates', 'ops', 'Builds once, runs a staging smoke and load gate, waits for owner approval, then a canary at 10% with an automatic rollback check.', { files: ['.github/workflows/release-pipeline.yml'] }),
+    node('vercel', 3, 1, 'Vercel production', 'region sin1', 'ops', 'Serves the app from Singapore. Git deployment is disabled; deploys come from the pipeline or the scheduled job.', { files: ['vercel.json'] }),
+    node('post', 2, 1, 'Post-deploy check', '13:00 IST', 'ops', 'Smoke tests health, home, arenas and double bookings, checks that cached pages come from the CDN, and opens an issue if the live site is unhealthy.', { files: ['.github/workflows/post-deploy-check.yml', 'scripts/smoke-test.mjs'] }),
+    node('live', 1, 1, 'Live site', 'www.oyun.co.in', 'client', 'What visitors see.', {}),
+    node('sched', 4, 2, 'Scheduled deploy', '12:00 IST daily', 'ops', 'If main changed since the last deploy, triggers the production deploy.', { files: ['.github/workflows/scheduled-deploy.yml', 'docs/DEPLOY-SCHEDULE.md'] }),
+    node('health', 1, 3, 'Health and errors', '/api/health', 'ops', 'The health endpoint returns status only, never keys or data. Browser errors post to /api/client-error, are logged as JSON lines and optionally forwarded to ERROR_WEBHOOK_URL.', { files: ['src/app/api/health/route.ts', 'src/app/api/client-error/route.ts', 'src/lib/monitoring.ts'] }),
+    node('dbl', 2.1, 3, 'Double-booking monitor', '/api/monitoring/...', 'ops', 'Scans for overlapping bookings and can page on-call.', { files: ['src/lib/alerts.ts', 'src/app/api/monitoring/double-bookings/route.ts'] }),
+    node('crons', 3.2, 3, 'Scheduled jobs', 'cron + pg_cron', 'ops', 'Retention purge 21:30 UTC, payout settlement 06:00 UTC, and pg_cron expire_holds in the database.', { files: ['vercel.json', 'supabase/migrations/20261013000000_pg_cron_expire_holds.sql'] }),
+    node('backup', 4.3, 3, 'Backup check', '02:00 UTC', 'ops', 'Takes a database snapshot and tests that it restores, then uploads it as an artifact.', { files: ['.github/workflows/database-backup.yml'] }),
+    node('weekly', 0, 3, 'Weekly routine', 'Monday 06:30 IST', 'ops', 'Reports outdated dependencies, unused code and merged branches that can be deleted.', { files: ['.github/workflows/weekly-routine.yml'] })
+  ], [
+    edge('branch', 'hooks', 'commit'), edge('hooks', 'pr', 'push'), edge('pr', 'ci', 'checks'), edge('ci', 'main', 'green'), edge('main', 'pipe', 'push to main'),
+    edge('pipe', 'vercel', 'promote'), edge('sched', 'vercel', 'deploy if changed'), edge('vercel', 'post', 'verify'), edge('post', 'live', 'verified'),
+    edge('live', 'health', 'watched', { async: true }), edge('live', 'dbl', 'watched', { async: true }), edge('vercel', 'crons', 'calls', { async: true })
+  ]);
+
+  /* 12b PRIVACY */
+  hubView('privacy', 'Privacy', 'Privacy and personal data', 'What OYUN does with personal data and how people stay in control. Tap a node for the rule and the code.', node('pv', 2, 0, 'Personal data', 'DPDP controls', 'logic', 'Players can export or erase their data and choose cookies. Old records are anonymised on a schedule.', { hub: true, files: ['src/lib/dpdp.ts'] }), [
+    ['pvx', 'Export my data', 'GET /api/privacy/export', 'logic', 'Signed-in only and rate limited. extractUserData gathers the account\'s bookings, wallet history and profile; with v2 on, it also queries the oyun bookings by account.', ['src/app/api/privacy/export/route.ts', 'src/lib/dpdp.ts']],
+    ['pvd', 'Erase my account', 'POST /api/privacy/delete', 'logic', 'Signed-in, same-origin and rate limited. applyUserDeletion removes the legacy data, and erase_account() handles the v2 tables.', ['src/app/api/privacy/delete/route.ts', 'supabase/migrations/20261023000000_v2_erase_account.sql']],
+    ['pvc', 'Cookie choice', 'essential or all', 'client', 'The consent banner saves essential or all. Analytics only load with consent.', ['src/app/api/privacy/consent/route.ts', 'src/components/consent']],
+    ['pvr', 'Retention purge', '21:30 UTC daily', 'ops', 'A daily cron anonymises completed and cancelled bookings older than 8 years (the statutory limit). It currently works only on the per-request window; nothing is that old yet.', ['src/app/api/cron/retention-purge/route.ts', 'src/lib/dpdp.ts (applyRetentionPurge)']],
+    ['pvs', 'Student ID photos', 'deleted after 30 days', 'logic', 'IDs are stored in a private bucket. A photo nobody has reviewed after 30 days is deleted (expireStudentIds).', ['src/lib/student-id.ts', 'supabase/migrations/20261015020000_student_ids_bucket.sql']],
+    ['pvm', 'Masked phone numbers', 'public ticket pages', 'client', 'The phone number is masked on public ticket and invoice pages, and owner and commission details never reach the browser.', ['src/lib/public-turf.ts']],
+    ['pvn', 'No data in pings', 'slot pings are anonymous', 'data', 'Realtime topics carry no names, ids, phones or payment tokens (ADR-0006).', ['docs/adr/0006-realtime-broadcast.md']]
+  ], 4, 'Data & ops');
+
+  /* 12c SECURITY */
+  hubView('security', 'Security', 'Defence in depth', 'The controls an attacker has to get past, from the network to the database.', node('sc', 2, 0, 'Security controls', 'docs/SECURITY.md', 'logic', 'Each leaf is a control that exists in the code today.', { hub: true, files: ['docs/SECURITY.md', 'docs/AUTHORIZATION.md'] }), [
+    ['s1', 'Transport', 'HTTPS + HSTS', 'edge', 'The proxy redirects http to https on production hosts, and HSTS is sent.', ['src/proxy.ts (forceHttps)']],
+    ['s2', 'Browser headers', 'CSP nonce, COOP', 'edge', 'A per-request CSP nonce (skipped for prerendered pages), frame protection, nosniff, a referrer policy and COOP.', ['src/lib/csp.ts', 'src/proxy.ts']],
+    ['s3', 'Role checks', 'requirePartner / requireAdmin', 'logic', 'Every admin and partner action checks the caller first, and partner actions ask for the exact permission. A test fails if one does not.', ['src/lib/authorization.test.ts', 'src/lib/authorization-audit.test.ts']],
+    ['s4', 'Tenant isolation', 'owner A cannot touch B', 'logic', 'A test calls every partner action as one owner with another owner\'s ids and checks nothing changes.', ['src/lib/tenant-isolation.test.ts']],
+    ['s5', 'Input hygiene', 'validate, cap, sanitise', 'logic', 'Server validation and length caps, image links limited to safe forms, and CSV exports neutralise spreadsheet formulas.', ['src/lib/validation']],
+    ['s6', 'Abuse limits', 'shared rate limits', 'data', 'Counters in Postgres are shared by every server instance. Plus login lockouts, a honeypot on applications and a same-origin check on the hold-release beacon.', ['src/lib/shared-rate-limit.ts', 'src/lib/same-origin.ts']],
+    ['s7', 'Narrow data shapes', 'PublicTurf only', 'logic', 'The browser gets PublicTurf, never the full record. A test fails if a client component imports a full internal type.', ['src/lib/public-turf.ts']],
+    ['s8', 'No double booking', 'index or constraint', 'data', 'The revision lock with unique indexes, or the v2 exclusion constraint, with a parallel race test in CI.', ['scripts/sql-race-test.sh']],
+    ['s9', 'Secret hygiene', 'server-only key', 'logic', 'The Supabase secret-key client is server-only. Gitleaks scans every pull request.', ['src/utils/supabase/admin.ts', '.github/workflows/ci.yml']],
+    ['s10', 'Supply chain', 'audit + pinned actions', 'ops', 'npm audit on production packages, actions pinned by commit SHA with read-only tokens, and Dependabot.', ['.github/workflows/ci.yml']]
+  ], 5, 'Data & ops');
+
+  /* 12d TESTS */
+  hubView('tests', 'Tests', 'How the code is checked', 'Every layer has a test that fails loudly. Counts are from the repo at the time of writing.', node('tq', 2, 0, 'Quality gates', 'must pass to merge', 'ops', 'A pull request merges only when all of these are green.', { hub: true, files: ['.github/workflows/ci.yml', '.githooks'] }), [
+    ['t1', 'Unit tests', 'Vitest', 'ops', 'About 600 tests in 75 files for pricing, wallet, cancel rules, payments, hosts, SEO and more.', ['src/lib/*.test.ts']],
+    ['t2', 'Rule audits', 'authorization tests', 'ops', 'Fail when a new action, route or page is not classified, or when a public action loses its defence.', ['src/lib/authorization-audit.test.ts']],
+    ['t3', 'SQL tests', 'Postgres 17', 'ops', 'Each migration has a test (constraints, rate limits, payment events, v2 booking, erase, backfill).', ['supabase/tests', 'scripts/sql-tests.sh']],
+    ['t4', 'Race test', 'parallel bookings', 'ops', 'Fires parallel bookings at the database and proves only one wins, for both the revision lock and the unique indexes.', ['scripts/sql-race-test.sh']],
+    ['t5', 'End-to-end', 'Playwright', 'ops', 'Desktop and mobile: browse to book to cancel, a slot booked by one player shows as booked to another, owner lists a venue and admin approves, partner check-in and calendar.', ['e2e/booking.spec.ts', 'e2e/partner.spec.ts', 'e2e/admin.spec.ts', 'e2e/workflows.spec.ts']],
+    ['t6', 'Accessibility', 'axe + keyboard', 'ops', 'axe runs on public, partner and admin pages, and the booking path must work with the keyboard alone.', ['e2e/a11y.spec.ts']],
+    ['t7', 'Lighthouse', 'mobile, 90 or more', 'ops', 'Home, arenas and a venue page must score at least 90 on mobile.', ['scripts/lighthouse-check.mjs']],
+    ['t8', 'Load and smoke', 'k6 + smoke test', 'ops', 'A k6 browse test and a smoke test of health, home, arenas and double bookings run at the staging gate and after deploy.', ['scripts/k6/browse.js', 'scripts/smoke-test.mjs']],
+    ['t9', 'Static checks', 'lint, types, knip, dup', 'ops', 'Zero lint warnings, type-check, unused-code (knip) and duplicate-code (jscpd) checks.', ['package.json']],
+    ['t10', 'Git hooks', 'pre-commit, pre-push', 'ops', 'pre-commit runs type-check and lint; pre-push blocks a direct push to main.', ['.githooks', 'scripts/install-hooks.mjs']]
+  ], 5, 'Data & ops');
+
+  /* 12e RESILIENCE */
+  view('resilience', 'Data & ops', 'Errors and safety nets', 'What happens when something goes wrong', 'Actions turn expected problems into messages, report unexpected ones, and refuse to take bookings that could be lost.', [
+    node('act', 2, 0, 'Action runs', 'run() wrapper', 'logic', 'Server actions run inside a wrapper that catches known errors.', { files: ['src/lib/action-utils.ts', 'src/lib/errors.ts'] }),
+    node('okm', 0, 1, 'Success', 'refreshAll()', 'logic', 'On success the site layout is revalidated and an ok message returned.', { files: ['src/lib/action-utils.ts'] }),
+    node('exp', 2, 1, 'Expected error', 'Validation / Access', 'logic', 'A ValidationError or AccessError becomes an inline message the person can fix.', { files: ['src/lib/errors.ts'] }),
+    node('unx', 4, 1, 'Unexpected error', 'rethrown', 'logic', 'Anything else is rethrown to the error boundary.', {}),
+    node('bnd', 4, 2, 'Error boundary', 'error.tsx', 'client', 'Shows a safe page and posts a report.', { files: ['src/app/global-error.tsx'] }),
+    node('rep', 4, 3, 'Client error API', '/api/client-error', 'edge', 'Rate limited, bodies over 5,000 characters rejected, no cookies, headers or form data included.', { files: ['src/app/api/client-error/route.ts'] }),
+    node('log', 2, 3, 'JSON log line', 'Vercel Logs', 'ops', 'Every error is one JSON line.', { files: ['src/lib/monitoring.ts'] }),
+    node('wh', 4, 4, 'Error webhook', 'ERROR_WEBHOOK_URL', 'ext', 'Optional Slack or Discord message per error.', { files: ['src/lib/monitoring.ts'] }),
+    node('hb', 0, 2, 'Hold or book', 'holdSlots, createBookings', 'logic', 'Both check that bookings would be saved before doing anything.', { files: ['src/lib/booking-availability.ts'] }),
+    node('sb', 0, 3, 'Supabase connected?', 'shared storage', 'data', 'Storage must be shared across server instances, or tickets could vanish.', { files: ['src/lib/booking-availability.ts', 'src/lib/launch-checks.ts'] }),
+    node('open', 0, 4, 'Booking open', 'normal', 'logic', 'Supabase is connected: bookings are saved.', {}),
+    node('eph', 1, 4, 'Demo mode', 'ALLOW_EPHEMERAL_BOOKINGS', 'logic', 'Only with this flag: bookings open but tickets may vanish. For demos.', {}),
+    node('refd', 2, 4, 'Refused', 'database not connected', 'logic', 'Otherwise the action refuses rather than lose a booking.', {}),
+    node('hl', 2, 5, '/api/health', 'same state', 'edge', 'Returns status only and reports the same booking-open state, as does the admin banner.', { files: ['src/app/api/health/route.ts'] })
+  ], [
+    edge('act', 'okm', 'no error'), edge('act', 'exp', 'known'), edge('act', 'unx', 'other'), edge('unx', 'bnd', 'rethrow'), edge('bnd', 'rep', 'post'), edge('rep', 'log', 'log'), edge('rep', 'wh', 'optional', { async: true }),
+    edge('hb', 'sb', 'check'), edge('sb', 'open', 'yes'), edge('sb', 'eph', 'no + flag'), edge('sb', 'refd', 'no flag'), edge('refd', 'hl', 'reported', { async: true })
+  ]);
+
+  /* 13 ROUTES */
+  var ROUTES = [
+    ['Public pages', [
+      ['/', 'Home: search, featured venues, stats. Phones are rewritten to /m.', 'Anyone', 'queries, home-stats'],
+      ['/m', 'Phone version of the home page; canonical points at /.', 'Anyone', 'queries'],
+      ['/arenas', 'Venue list with filters and map.', 'Anyone', 'search, listPublicTurfs'],
+      ['/arenas/[id]', 'Venue page: slot picker, quote, hold, checkout.', 'Anyone (sign in to book if Clerk is on)', 'getSlotsForDate, holdSlots, createBookings'],
+      ['/turfs/[area]', 'Venues in one area (SEO page).', 'Anyone', 'listAreas'],
+      ['/sports, /sports/[sport], /sports/[sport]/[area]', 'Sport index, sport page and sport in an area.', 'Anyone', 'sports, public-turf'],
+      ['/prices/[band]', 'Venues under a price per hour.', 'Anyone', 'price-bands'],
+      ['/curated/[slug]', 'Curated venue collections.', 'Anyone', 'curated-collections'],
+      ['/areas', 'All areas of the city.', 'Anyone', 'listAreas'],
+      ['/guides, /guides/[slug]', 'Sports guides, rules and venue tips.', 'Anyone', 'guides-content'],
+      ['/faq, /help', 'Questions and help centre.', 'Anyone', 'faq'],
+      ['/offers', 'Live platform and venue offers.', 'Anyone', 'offers-list'],
+      ['/events, /matches, /tournaments', 'Open matches and tournaments.', 'Anyone', 'community, tournaments'],
+      ['/membership', 'What a free account gives you.', 'Anyone', '-'],
+      ['/list-turf', 'Four-step venue application. Honeypot, 4 s minimum, 5 per hour per IP.', 'Anyone', 'submitApplication'],
+      ['/privacy, /terms', 'Legal pages.', 'Anyone', '-'],
+      ['/hi, /kn', 'Hindi and Kannada home pages, noindex until reviewed.', 'Anyone', 'localized-home']
+    ]],
+    ['Player pages (not indexed)', [
+      ['/login, /signup', 'Clerk sign-in and sign-up.', 'Anyone', 'Clerk'],
+      ['/bookings', 'My bookings.', 'Signed-in or this device', 'getBookingSummaries'],
+      ['/bookings/[id]', 'Ticket with QR; cancel, reschedule, review.', 'Booking owner (unguessable id)', 'cancelMyBooking, rescheduleBooking, submitReview'],
+      ['/bookings/[id]/invoice', 'Printable invoice.', 'Booking owner', 'Invoice'],
+      ['/bookings/[id]/calendar', '.ics calendar file (route).', 'Booking owner', 'calendar.ts'],
+      ['/saved, /profile, /settings', 'Saved venues, account, preferences and privacy controls.', 'Signed-in', 'dpdp, wallet']
+    ]],
+    ['Launch pages', [
+      ['/landing', 'Landing page. Redirects to /countdown until launch.', 'Anyone', '-'],
+      ['/countdown, /about', 'Countdown to 31 Oct 2026 and the about page.', 'Anyone', 'hosts'],
+      ['/welcome', 'Old link, redirects to /countdown.', 'Anyone', '-']
+    ]],
+    ['Owner dashboard (partner.)', [
+      ['/partner/login, /partner/signup', 'Password login and Clerk sign-up.', 'Anyone', 'login action, Clerk'],
+      ['/partner/login/sso', 'After Google or Apple: admits only an approved owner or staff email.', 'Verified Clerk email', 'partnerSubjectForEmail'],
+      ['/partner/login/unlinked', 'Shown when that email is not an approved partner.', 'Anyone', '-'],
+      ['/partner', 'Overview.', 'Any owner or staff', 'requirePartner()'],
+      ['/partner/bookings, /calendar, /invoices/[id]', 'Bookings, week and day calendar, invoices.', 'permission: bookings', 'requirePartner(bookings)'],
+      ['/partner/check-in', 'Scan or type a code.', 'permission: checkin', 'checkInBooking, markNoShow'],
+      ['/partner/slots', 'Block and unblock hours, rain-out.', 'permission: slots', 'blockSlot, blockRange, setRainOut'],
+      ['/partner/pricing, /offers, /add-ons', 'Pricing rules, offers and extras.', 'permissions: pricing, offers, addons', 'savePricing, createOffer, saveAddOn'],
+      ['/partner/turf, /courts', 'Venue profile and bookable courts.', 'permission: turf', 'updateTurfProfile, addCourtResource'],
+      ['/partner/staff', 'Staff logins and permissions.', 'permission: staff', 'createStaff'],
+      ['/partner/payouts, /analytics', 'Payouts and revenue.', 'permission: payouts', 'payouts, reports'],
+      ['/partner/reviews, /profile', 'Reviews and your account.', 'Any owner or staff', 'requirePartner()'],
+      ['/partner/bookings/export, /payouts/export', 'CSV downloads (routes).', 'bookings or payouts', 'requirePartner']
+    ]],
+    ['Admin console (admin.)', [
+      ['/admin/login', 'Admin login with optional TOTP and lockout.', 'Anyone', 'login'],
+      ['/admin', 'Overview.', 'Admin session', 'requireAdmin'],
+      ['/admin/turfs, /turfs/[id]', 'Applications, venues and venue detail.', 'Admin session', 'approveApplication, updateTurfAdmin'],
+      ['/admin/partners, /users', 'Owners and players.', 'Admin session', 'togglePartnerStatus, togglePlayerBan'],
+      ['/admin/students, /reviews', 'Student ID queue and review moderation.', 'Admin session', 'reviewStudentId, toggleReviewHidden'],
+      ['/admin/transactions', 'Refunds.', 'Admin session', 'refundBooking'],
+      ['/admin/analytics, /customization, /settings', 'Numbers, content and platform settings.', 'Admin session', 'saveSettings, savePromoCode']
+    ]],
+    ['API routes', [
+      ['GET /api/health', 'Status only; never keys or data.', 'Anyone', 'health'],
+      ['POST /api/client-error', 'Browser error report, up to 5,000 characters, rate limited.', 'Anyone', 'reportError'],
+      ['POST /api/holds/release', 'Tab-close beacon that releases this device\'s holds.', 'Same origin + device cookie', 'releaseHolds'],
+      ['POST /api/webhooks/razorpay', 'Signed payment events, max 100 KB, 120 per minute per IP.', 'Razorpay signature', 'processPaymentWebhook'],
+      ['GET /api/monitoring/double-bookings', 'Reports overlapping bookings.', 'Rate limited', 'detectDoubleBookings'],
+      ['GET /api/cron/retention-purge', 'Daily 21:30 UTC purge of old records.', 'Cron secret', 'runRetentionPurge'],
+      ['GET /api/cron/payouts/settle', 'Daily 06:00 UTC payout settlement.', 'Cron secret', 'createSettlementBatch'],
+      ['GET /api/privacy/export', 'Download your data.', 'Signed-in, rate limited', 'exportUserData'],
+      ['POST /api/privacy/delete', 'Erase your account.', 'Signed-in, same origin', 'deleteUserData, erase_account'],
+      ['POST /api/privacy/consent', 'Save essential or all cookies.', 'Anyone, rate limited', 'consent'],
+      ['POST /api/student-id', 'Upload a student ID.', 'Signed-in, same origin', 'student-id'],
+      ['POST /api/admin/student-id/[playerId]', 'Approve or reject a pending ID.', 'Admin session', 'applyStudentDecision'],
+      ['POST /api/partner/upload', 'Upload venue photos.', 'Owner or admin session', 'getPartnerContext'],
+      ['GET /api/partner/payouts/[id]/statement', 'Payout statement HTML.', 'payouts permission, own payout', 'generatePayoutStatementHtml']
+    ]],
+    ['Server actions (public, checked in tests)', [
+      ['getSlotsForDate', 'Public availability for active venues only.', 'Anyone', 'bookableTurf'],
+      ['holdSlots', 'Hold hours for 8 minutes. Rate limited.', 'Anyone', 'throttle, assertBookingsAreSaved'],
+      ['releaseHolds', 'Release only this device\'s holds.', 'Device cookie', 'deviceHolder'],
+      ['quoteSelection', 'Price a throwaway copy, writes nothing.', 'Anyone, rate limited', 'structuredClone(db)'],
+      ['createBookings', 'Create the booking.', 'Signed-in when Clerk is on', 'planBooking / v2Checkout'],
+      ['cancelMyBooking, rescheduleBooking', 'Change a booking at least 2 hours ahead.', 'Booking owner', 'proveBookingOwner, canSelfCancel'],
+      ['submitReview', 'Review after check-in.', 'Booking owner', 'proveBookingOwner'],
+      ['getBookingSummaries', 'Only the ids given, or the account\'s own bookings.', 'Id or account', 'currentAccountId'],
+      ['checkReferralCode', 'Does this phone belong to a player? Rate limited.', 'Anyone', 'throttle'],
+      ['submitApplication', 'Venue application.', 'Anyone', 'validateApplication'],
+      ['login, logout', 'Admin and partner sessions.', 'Anyone', 'throttle.isLocked']
+    ]]
+  ];
+  V.push({ id: 'routes', group: 'Data & ops', tab: 'Pages and APIs', title: 'Every page, API and action', sub: 'Search by path, what it does or who can use it. Access is taken from the guard each page or route actually calls.', type: 'routes' });
+
+  V.forEach(function (v) { byId[v.id] = v; if (v.nodes) { v.map = {}; v.nodes.forEach(function (n) { v.map[n.id] = n; }); } });
+
+  /* ---------- state + dom ---------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { view: 'sys', sel: null, hover: null, off: {}, step: 0 };
+
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function h(tag, attrs, html) { var e = document.createElement(tag); for (var k in (attrs || {})) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function buildTabs() {
+    var t = $('tabs'), last = '';
+    V.forEach(function (v) {
+      if (v.group !== last) { last = v.group; t.appendChild(h('span', { 'class': 'grp' }, esc(v.group))); }
+      var b = h('button', { 'class': 'tab', type: 'button', 'data-v': v.id, 'aria-pressed': 'false' }, esc(v.tab));
+      b.addEventListener('click', function () { setView(v.id); try { history.replaceState(null, '', '#' + v.id); } catch (e) {} });
+      t.appendChild(b);
+    });
+  }
+  function buildLegend() {
+    var lg = $('legend'); lg.innerHTML = '';
+    Object.keys(LAYERS).forEach(function (k) {
+      var l = h('label', {}), i = h('input', { type: 'checkbox', checked: '' });
+      i.style.setProperty('--c', 'var(--' + k + ')'); i.checked = true;
+      i.addEventListener('change', function () { state.off[k] = !i.checked; paint(); });
+      l.appendChild(i); l.appendChild(document.createTextNode(LAYERS[k])); lg.appendChild(l);
+    });
+  }
+
+  function geo(v) {
+    v.nodes.forEach(function (n) { n.x = PAD + n.c * COL; n.y = PAD + n.r * ROW; n.cx = n.x + NW / 2; n.cy = n.y + NH / 2; });
+    var maxX = 0, maxY = 0; v.nodes.forEach(function (n) { maxX = Math.max(maxX, n.x + NW); maxY = Math.max(maxY, n.y + NH); });
+    v.W = maxX + PAD; v.H = maxY + PAD + 8;
+    // port spreading: edges that share a side of a node fan out
+    var sides = {};
+    v.edges.forEach(function (e, i) {
+      var a = v.map[e.a], b = v.map[e.b]; e.ai = i;
+      var dy = b.cy - a.cy, dx = b.cx - a.cx, horiz = Math.abs(dy) < 20;
+      var sa = horiz ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'b' : 't'), sb = horiz ? (dx > 0 ? 'l' : 'r') : (dy > 0 ? 't' : 'b');
+      e.sa = sa; e.sb = sb; e.horiz = horiz;
+      (sides[a.id + sa] = sides[a.id + sa] || []).push({ e: e, end: 'a', other: b });
+      (sides[b.id + sb] = sides[b.id + sb] || []).push({ e: e, end: 'b', other: a });
+    });
+    Object.keys(sides).forEach(function (k) {
+      var list = sides[k]; list.sort(function (p, q) { return (p.other.cx + p.other.cy * .01) - (q.other.cx + q.other.cy * .01); });
+      var n = list.length; list.forEach(function (it, i) { it.e[it.end + 'off'] = n === 1 ? 0 : (i - (n - 1) / 2) * Math.min(46, (NW - 56) / (n - 1)); });
+    });
+  }
+  function port(n, side, off) {
+    if (side === 't') return [n.cx + off, n.y]; if (side === 'b') return [n.cx + off, n.y + NH];
+    if (side === 'l') return [n.x, n.cy + off * .5]; return [n.x + NW, n.cy + off * .5];
+  }
+  function pathFor(v, e) {
+    var a = v.map[e.a], b = v.map[e.b], p1 = port(a, e.sa, e.aoff || 0), p2 = port(b, e.sb, e.boff || 0), x1 = p1[0], y1 = p1[1], x2 = p2[0], y2 = p2[1], d, mx, my;
+    var bend = e.bend || 0;
+    if (e.horiz) {
+      var k = Math.max(30, Math.abs(x2 - x1) / 2);
+      if (bend) { var by = y1 - bend; d = 'M' + x1 + ' ' + y1 + ' C' + (x1) + ' ' + by + ',' + (x2) + ' ' + by + ',' + x2 + ' ' + y2; mx = (x1 + x2) / 2; my = y1 - bend * .75; }
+      else { var s = x2 > x1 ? 1 : -1; d = 'M' + x1 + ' ' + y1 + ' C' + (x1 + s * k) + ' ' + y1 + ',' + (x2 - s * k) + ' ' + y2 + ',' + x2 + ' ' + y2; mx = (x1 + x2) / 2; my = (y1 + y2) / 2; }
+    } else {
+      var kk = Math.max(28, Math.abs(y2 - y1) / 2), sg = y2 > y1 ? 1 : -1;
+      d = 'M' + x1 + ' ' + y1 + ' C' + x1 + ' ' + (y1 + sg * kk) + ',' + x2 + ' ' + (y2 - sg * kk) + ',' + x2 + ' ' + y2; mx = (x1 + x2) / 2; my = (y1 + y2) / 2;
+    }
+    return { d: d, mx: mx, my: my };
+  }
+
+  function draw() {
+    var v = byId[state.view], svg = $('svg'); svg.innerHTML = '';
+    geo(v);
+    svg.setAttribute('viewBox', '0 0 ' + v.W + ' ' + v.H);
+    svg.setAttribute('aria-label', v.title + '. ' + v.nodes.length + ' components and ' + v.edges.length + ' connections.');
+    var defs = el('defs', {}, svg);
+    [['ar', 'var(--muted)'], ['arOn', 'var(--accent)']].forEach(function (a) {
+      var m = el('marker', { id: a[0], viewBox: '0 0 10 10', refX: 8.5, refY: 5, markerWidth: 8, markerHeight: 8, orient: 'auto' }, defs);
+      var pth = el('path', { d: 'M1 1 L9 5 L1 9', fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, m); pth.style.stroke = a[1];
+    });
+    var eg = el('g', {}, svg), ng = el('g', {}, svg), lg = el('g', {}, svg);
+    v.edges.forEach(function (e) {
+      var p = pathFor(v, e);
+      e.el = el('path', { 'class': 'edge' + (e.async ? ' async' : '') + (e.quiet ? ' quiet' : ''), d: p.d, 'marker-end': 'url(#ar)' }, eg);
+      if (e.label) {
+        var g = el('g', { 'class': 'elabel' }, lg), t = el('text', { x: p.mx, y: p.my }, g); t.textContent = e.label;
+        e.lel = g; e.lp = p; e.lt = t;
+      }
+    });
+    v.nodes.forEach(function (n) {
+      var g = el('g', { 'class': 'node' + (n.hub ? ' hub' : ''), tabindex: 0, role: 'button', 'aria-label': n.t + ', ' + n.s + ', ' + LAYERS[n.layer] }, ng);
+      g.style.setProperty('--lc', 'var(--' + n.layer + ')');
+      el('rect', { x: n.x, y: n.y, width: NW, height: NH, rx: 18 }, g);
+      el('text', { 'class': 't', x: n.cx, y: n.cy - 4 }, g).textContent = n.t;
+      el('text', { 'class': 's', x: n.cx, y: n.cy + 15 }, g).textContent = n.s;
+      if (n.step) { var bg = el('g', { 'class': 'badge' }, g); el('circle', { cx: n.x + 6, cy: n.y + 6, r: 11 }, bg); el('text', { x: n.x + 6, y: n.y + 6.5 }, bg).textContent = n.step; }
+      g.addEventListener('click', function () { select(n.id); });
+      g.addEventListener('mouseenter', function () { state.hover = n.id; paint(); });
+      g.addEventListener('mouseleave', function () { state.hover = null; paint(); });
+      g.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select(n.id); } });
+      n.el = g;
+    });
+    // label pills sized to their text
+    v.edges.forEach(function (e) { if (e.lel) { var b = e.lt.getBBox(), r = el('rect', { x: b.x - 9, y: b.y - 4, width: b.width + 18, height: b.height + 8, rx: 12 }); e.lel.insertBefore(r, e.lt); } });
+    paint();
+  }
+
+  function paint() {
+    var v = byId[state.view]; if (!v.nodes) return;
+    var focus = state.hover || state.sel, linked = {};
+    if (focus) { linked[focus] = 1; v.edges.forEach(function (e) { if (e.a === focus || e.b === focus) { linked[e.a] = 1; linked[e.b] = 1; } }); }
+    v.nodes.forEach(function (n) {
+      var c = 'node' + (n.hub ? ' hub' : '');
+      if (n.id === state.sel) c += ' sel';
+      if (focus && !linked[n.id]) c += ' dim';
+      if (state.off[n.layer]) c += ' off';
+      n.el.setAttribute('class', c);
+    });
+    v.edges.forEach(function (e) {
+      var on = focus && (e.a === focus || e.b === focus), dim = focus && !on;
+      e.el.setAttribute('class', 'edge' + (e.async ? ' async' : '') + (e.quiet ? ' quiet' : '') + (on ? ' on' : '') + (dim ? ' dim' : ''));
+      e.el.setAttribute('marker-end', on ? 'url(#arOn)' : 'url(#ar)');
+      if (e.lel) e.lel.setAttribute('class', 'elabel' + (on ? ' on' : '') + (dim ? ' dim' : ''));
+    });
+  }
+
+  function select(id) {
+    var v = byId[state.view]; state.sel = id; var n = v.map[id]; if (n && n.step) state.step = n.step; paint(); detail(n, v);
+    try { history.replaceState(null, '', '#' + v.id + '~' + id); } catch (e) {}
+  }
+  function detail(n, v) {
+    var d = $('detail'); d.innerHTML = '';
+    if (!n) {
+      d.appendChild(h('div', { 'class': 'dhead' }, '<h2>Component details</h2><span class="tag">Hover / tap a node</span>'));
+      d.appendChild(h('p', { 'class': 'dtext' }, v && v.type === 'routes' ? 'Use the search box above to find a page, API or action.' : 'Hover or tap any component in the diagram above to see what it does, which code it lives in, the rules it follows and what it connects to.'));
+      return;
+    }
+    d.appendChild(h('div', { 'class': 'dhead' }, '<h2>' + esc(n.t) + '</h2><span class="tag">' + esc(LAYERS[n.layer]) + '</span>'));
+    d.appendChild(h('p', { 'class': 'dtext' }, esc(n.desc)));
+    var cols = h('div', { 'class': 'cols' });
+    if (n.files.length) cols.appendChild(h('div', {}, '<h3>Where in the code</h3><ul>' + n.files.map(function (f) { return '<li><code>' + esc(f) + '</code></li>'; }).join('') + '</ul>'));
+    if (n.rules.length) cols.appendChild(h('div', {}, '<h3>Rules it follows</h3><ul>' + n.rules.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>'));
+    var conn = h('div', {}); conn.appendChild(h('h3', {}, 'Connects to')); var chips = h('div', { 'class': 'chips' });
+    v.edges.forEach(function (e) {
+      var other = e.a === n.id ? v.map[e.b] : e.b === n.id ? v.map[e.a] : null; if (!other) return;
+      var b = h('button', { 'class': 'chip', type: 'button' }, (e.a === n.id ? '&rarr; ' : '&larr; ') + esc(other.t) + (e.label ? '<em>' + esc(e.label) + '</em>' : ''));
+      b.addEventListener('click', function () { select(other.id); }); chips.appendChild(b);
+    });
+    if (!chips.children.length) chips.appendChild(h('span', { 'class': 'dtext', style: 'margin:0;font-size:15px' }, 'Nothing else in this view.'));
+    conn.appendChild(chips); cols.appendChild(conn); d.appendChild(cols);
+  }
+
+  function setupStepper(v) {
+    var steps = (v.nodes || []).filter(function (n) { return n.step; }).sort(function (a, b) { return a.step - b.step; });
+    $('stepper').hidden = steps.length === 0; v.steps = steps; state.step = 0;
+  }
+  function go(dir) {
+    var v = byId[state.view], s = v.steps || []; if (!s.length) return;
+    state.step = Math.min(s.length, Math.max(1, (state.step || (dir > 0 ? 0 : s.length + 1)) + dir));
+    select(s[state.step - 1].id);
+  }
+
+  function renderRoutes() {
+    var box = $('routes'); box.innerHTML = '';
+    var q = h('input', { 'class': 'q', type: 'search', id: 'rq', placeholder: 'Search pages, APIs, who can use them', 'aria-label': 'Search pages and APIs' });
+    box.appendChild(q); var list = h('div', {}); box.appendChild(list);
+    function render() {
+      var term = q.value.trim().toLowerCase(); list.innerHTML = ''; var any = false;
+      ROUTES.forEach(function (g) {
+        var rows = g[1].filter(function (r) { return !term || r.join(' ').toLowerCase().indexOf(term) > -1; }); if (!rows.length) return; any = true;
+        var wrap = h('div', { 'class': 'rgroup' }, '<h3>' + esc(g[0]) + ' &middot; ' + rows.length + '</h3>');
+        var t = h('div', { 'class': 'rtable' }, '<table><thead><tr><th>Path</th><th>What it does</th><th>Who can use it</th><th>Calls</th></tr></thead><tbody>' +
+          rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td class="who">' + esc(r[2]) + '</td><td><code class="mono" style="font-size:12.5px">' + esc(r[3]) + '</code></td></tr>'; }).join('') + '</tbody></table>');
+        wrap.appendChild(t); list.appendChild(wrap);
+      });
+      if (!any) list.appendChild(h('p', { 'class': 'none' }, 'Nothing matches "' + esc(q.value) + '". Try a path such as /partner or a word such as refund.'));
+    }
+    q.addEventListener('input', render); render();
+  }
+
+
+  /* ---------- race simulator ---------- */
+  function renderSim() {
+    var box = $('sim'); box.innerHTML = ''; box.className = 'sim';
+    var ctl = h('div', { 'class': 'ctl' });
+    ctl.innerHTML = '<label>Storage <select id="sm"><option value="legacy">Legacy store (revision lock)</option><option value="v2">v2 slots (exclusion constraint)</option></select></label>' +
+      '<label><input type="checkbox" id="sb"> Skip the app checks (simulate a bug)</label>' +
+      '<label><input type="checkbox" id="sl"> Player B already paid online</label>';
+    var run = h('button', { 'class': 'run', type: 'button' }, 'Both tap Proceed now');
+    ctl.appendChild(run); box.appendChild(ctl);
+    var list = h('ol', { 'class': 'lanes', 'aria-live': 'polite' }); box.appendChild(list);
+    var verdict = h('div', { 'class': 'verdict', hidden: '' }); box.appendChild(verdict);
+    var timer = [];
+    function steps() {
+      var v2 = $('sm').value === 'v2', bug = $('sb').checked, late = $('sl').checked, o = [];
+      o.push(['both', 'Screen', 'Both players see the 7 PM hour as Open. Realtime pings and a 10 second poll keep it fresh, but the screen is never trusted.']);
+      if (!bug) {
+        if (!v2) {
+          o.push(['A', 'Hold check', 'holdSlots runs mutate(): loads the rows changed since revision N and adds A\'s hold on a private copy.']);
+          o.push(['B', 'Hold check', 'The same on a second server instance, also at revision N.']);
+          o.push(['A', 'Database', 'apply_changes(expected_rev = N) succeeds. Revision becomes N+1 and a slot ping goes out.']);
+          o.push(['B', 'Database', 'apply_changes(expected_rev = N) raises store_conflict: the revision has moved.']);
+          o.push(['B', 'Hold check', 'mutate() retries (up to 5 times, with jitter), reloads, sees A\'s hold and throws "slot taken or being booked". Nothing is held for B.']);
+        } else {
+          o.push(['A', 'Database', 'hold_slots inserts a slot_claim for the resource and the 7 to 8 PM range.']);
+          o.push(['B', 'Database', 'hold_slots tries the same resource and range. The gist exclusion constraint rejects the overlap.']);
+          o.push(['B', 'Hold check', 'The function returns "slot taken or being booked". Nothing is held for B.']);
+        }
+      } else {
+        o.push(['A', 'App', 'Holds and books normally. A confirmed booking exists for 7 PM.']);
+        o.push(['B', 'App', 'The app-level availability check is skipped (the simulated bug), so B tries to insert a second booking for the same hour.']);
+        if (!v2) o.push(['B', 'Database backstop', 'The unique index on bookings rejects the duplicate, and the revision check would raise store_conflict as well.']);
+        else o.push(['B', 'Database backstop', 'The exclusion constraint on slot_claims rejects the overlapping claim. The booking insert fails.']);
+      }
+      o.push(['A', 'Confirm', 'createBookings re-checks, prices the hour and writes the booking as confirmed. A gets a ticket.']);
+      if (late) {
+        o.push(['B', 'Payment', 'Razorpay\'s webhook arrives for B: signature verified, event claimed once.']);
+        o.push(['B', 'Auto-refund', 'The slot already belongs to A, so autoRefundRaceLostPayment returns B\'s money and tells B.']);
+      }
+      o.push(['both', 'Monitor', 'detectDoubleBookings and the daily post-deploy check look for overlaps. There should be none.']);
+      return { list: o, text: 'One booking exists for the hour. A has a confirmed ticket. B was refused' + (late ? ' and automatically refunded.' : '.') + (bug ? ' The database refused the bug, so no double booking happened.' : '') };
+    }
+    function runIt() {
+      timer.forEach(clearTimeout); timer = []; list.innerHTML = ''; verdict.hidden = true;
+      var r = steps(), calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      r.list.forEach(function (st, i) {
+        timer.push(setTimeout(function () {
+          var li = h('li', {}, '<span class="who ' + st[0] + '">' + (st[0] === 'both' ? 'A + B' : st[0]) + '</span><div><span class="lay">' + esc(st[1]) + '</span><p>' + esc(st[2]) + '</p></div>');
+          list.appendChild(li);
+          if (i === r.list.length - 1) { verdict.textContent = r.text; verdict.hidden = false; }
+        }, calm ? 0 : i * 650));
+      });
+    }
+    run.addEventListener('click', runIt);
+    ['sm', 'sb', 'sl'].forEach(function (id) { $(id).addEventListener('change', runIt); });
+    runIt();
+  }
+
+  /* ---------- global search ---------- */
+  function setupSearch() {
+    var q = $('gq'), res = $('gres'), idx = [];
+    V.forEach(function (v) { (v.nodes || []).forEach(function (n) { idx.push({ v: v, n: n, hay: (n.t + ' ' + n.s + ' ' + n.desc + ' ' + n.files.join(' ') + ' ' + n.rules.join(' ')).toLowerCase() }); }); });
+    function close() { res.hidden = true; res.innerHTML = ''; }
+    q.addEventListener('input', function () {
+      var t = q.value.trim().toLowerCase(); res.innerHTML = ''; if (t.length < 2) { res.hidden = true; return; }
+      var hit = idx.filter(function (e) { return e.hay.indexOf(t) > -1; }).slice(0, 8);
+      if (!hit.length) { res.appendChild(h('p', { 'class': 'none', style: 'margin:10px 12px' }, 'No component matches "' + esc(q.value) + '".')); res.hidden = false; return; }
+      hit.forEach(function (e) {
+        var b = h('button', { type: 'button' }, '<span>' + esc(e.n.t) + '</span><em>' + esc(e.v.tab) + '</em>');
+        b.addEventListener('click', function () { setView(e.v.id); select(e.n.id); q.value = ''; close(); $('diagram').scrollIntoView({ block: 'start' }); });
+        res.appendChild(b);
+      }); res.hidden = false;
+    });
+    q.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') close(); });
+    document.addEventListener('click', function (ev) { if (!ev.target.closest || !ev.target.closest('.searchwrap')) close(); });
+  }
+  function setupTheme() {
+    var b = $('theme'), modes = ['auto', 'light', 'dark'], i = 0;
+    b.addEventListener('click', function () {
+      i = (i + 1) % 3; var m = modes[i];
+      if (m === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', m);
+      b.textContent = 'Theme: ' + m;
+    });
+  }
+
+  function setView(id) {
+    var v = byId[id] || byId.sys; state.view = v.id; state.sel = null; state.hover = null;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-v') === v.id ? 'true' : 'false'); });
+    $('vtitle').textContent = v.title; $('vsub').textContent = v.sub;
+    $('sim').hidden = true;
+    if (v.type === 'routes') { $('diagram').hidden = true; $('routes').hidden = false; $('stepper').hidden = true; renderRoutes(); detail(null, v); }
+    else if (v.type === 'sim') { $('diagram').hidden = true; $('routes').hidden = true; $('stepper').hidden = true; $('sim').hidden = false; renderSim(); $('detail').innerHTML = ''; $('detail').appendChild(h('div', { 'class': 'dhead' }, '<h2>What this shows</h2><span class="tag">Simulation</span>')); $('detail').appendChild(h('p', { 'class': 'dtext' }, 'This replays the real order of checks from the code. The first layer that can stop the second player does; the later layers are there in case an earlier one has a bug.')); }
+    else { $('routes').hidden = true; $('diagram').hidden = false; setupStepper(v); draw(); detail(null, v); }
+  }
+
+  buildTabs(); buildLegend();
+  $('prev').addEventListener('click', function () { go(-1); });
+  $('next').addEventListener('click', function () { go(1); });
+  setupSearch(); setupTheme();
+  var start = (location.hash || '').replace('#', '').split('~'); setView(byId[start[0]] ? start[0] : 'sys');
+  if (start[1] && byId[state.view].map && byId[state.view].map[start[1]]) select(start[1]);
+})();
+</script>
+
+</html>
