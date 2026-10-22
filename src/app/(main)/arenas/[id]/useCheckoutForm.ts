@@ -115,6 +115,16 @@ export function useCheckoutForm({ turfId, date, hours, size, side, active, refer
     });
   }, []);
 
+  /** Puts back what the player had typed and chosen before a page refresh. */
+  const restore = useCallback((d: { name: string; phone: string; code: string; promo: string | null; useWallet: boolean; addOns: { id: string; qty: number }[] }) => {
+    setName((n) => n || d.name);
+    setPhone((n) => n || d.phone);
+    setCodeValue(d.code);
+    setPromo(d.promo);
+    setUseWallet(d.useWallet);
+    setSelectedAddOns(d.addOns);
+  }, []);
+
   /** Clears the priced quote and any message when the sheet closes. */
   const reset = useCallback(() => {
     setQuote(null);
@@ -130,6 +140,7 @@ export function useCheckoutForm({ turfId, date, hours, size, side, active, refer
     selectedAddOns, setAddOnQty,
     quote, error, setError,
     base,
+    restore,
     reset,
   };
 }

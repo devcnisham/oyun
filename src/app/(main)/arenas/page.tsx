@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ogBase } from '@/lib/seo';
 import { Suspense } from 'react';
 import { listAreas, listPublicTurfs } from '@/lib/queries';
+import EntryLoginPrompt from '@/components/EntryLoginPrompt';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
 import ArenasClient from './ArenasClient';
@@ -27,6 +28,7 @@ export default async function ArenasPage() {
     <Suspense fallback={<div className={styles.loading}>Loading arenas...</div>}>
       <ArenasClient turfs={turfs} areaNames={listAreas(turfs)} />
     </Suspense>
+    <EntryLoginPrompt />
     </>
   );
 }

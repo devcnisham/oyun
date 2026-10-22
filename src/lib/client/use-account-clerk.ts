@@ -18,3 +18,8 @@ export function useClerkOpenSignIn() {
   const clerk = useClerk();
   return () => clerk.openSignIn({ forceRedirectUrl: window.location.href, signUpForceRedirectUrl: window.location.href });
 }
+
+export function useClerkOpenSignUp() {
+  const clerk = useClerk();
+  return () => clerk.openSignUp({ forceRedirectUrl: window.location.href, signInForceRedirectUrl: window.location.href });
+}

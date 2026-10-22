@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { createBookings, getSlotsForDate, holdSlots, releaseHolds } from '@/lib/booking-actions';
+import { clearDraft, loadDraft, saveDraft } from '@/lib/client/booking-draft';
 import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
 import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
 import { useSlotUpdates } from '@/lib/client/use-slot-updates';
@@ -40,6 +41,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const { bookables } = mapTurfToResourcesAndBookables(turf);
   const [selectedBookable, setSelectedBookable] = useState<Bookable | undefined>(() => bookables?.[0]);
   const [date, setDate] = useState(initialDate);
+  const dateRef = useRef(initialDate); // the day on screen, for replies that arrive late
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [selected, setSelected] = useState<number[]>([]);
   const [size, setSize] = useState<PitchSize>('full'); // whole pitch or one half (turfs that split)
@@ -54,6 +56,13 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [now, setNow] = useState(() => Date.now());
   const [paying, startPaying] = useTransition();
   const [showGate, setShowGate] = useState(false);
+  const [gateFor, setGateFor] = useState<'proceed' | 'pay'>('pay'); // which step asked the player to sign in
+  const pendingProceed = useRef(false); // Clerk's sign-in is open and Proceed should continue once it is done
+  const proceedRef = useRef<(force?: boolean) => Promise<void>>(async () => {});
+  useEffect(() => {
+    dateRef.current = date;
+  }, [date]);
+  const draftReady = useRef(false); // false until a saved draft has been put back, so the first render cannot overwrite it
   const account = useAccount();
   const openClerkSignIn = useOpenClerkSignIn();
   const form = useCheckoutForm({
@@ -86,6 +95,8 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const refreshSlots = useCallback(
     async (forDate: string) => {
       const fresh = await getSlotsForDate(turf.id, forDate, size, side);
+      // A reply for a day the player has since left (or a saved pick restored on top of) must not replace the day on screen
+      if (forDate !== dateRef.current) return;
       setSlots(fresh);
       setSelected((prev) => {
         const still = prev.filter((h) => fresh.find((s) => s.hour === h)?.available);
@@ -111,6 +122,83 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       if (ref) form.setCode(ref);
     });
   }, [dates, date, refreshSlots, form]);
+
+  // A refresh keeps what the player had picked: the date, court, slots and, if they were in checkout, the held slots and their details
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
+    const draft = loadDraft(turf.id);
+    const dateInUrl = new URLSearchParams(window.location.search).get('date');
+    if (!draft || dateInUrl || !dates.some((d) => d.date === draft.date)) {
+      if (draft && !dateInUrl) clearDraft(turf.id);
+      draftReady.current = true;
+      return;
+    }
+    getSlotsForDate(turf.id, draft.date, draft.size, draft.side)
+      .then((fresh) => {
+        const open = (h: number) => fresh.find((s) => s.hour === h)?.available;
+        const hours = draft.hours.filter(open);
+        const bookable = bookables?.find((b) => b.id === draft.bookableId);
+        setDate(draft.date);
+        setSize(draft.size);
+        setSide(draft.side);
+        if (bookable) setSelectedBookable(bookable);
+        setSlots(fresh);
+        setSelected(hours);
+        form.restore(draft);
+        // Back in checkout if they were in it. Leaving the page frees the held slots, so a refresh holds them again (for another 8 minutes)
+        // when they are still free; if someone else took one meanwhile the player just keeps the rest of the picks
+        const wasInCheckout = draft.holdUntil !== null && draft.holdUntil > Date.now() && hours.length === draft.hours.length && hours.length > 0;
+        if (!wasInCheckout) {
+          if (hours.length < draft.hours.length) flash('Some slots you picked are no longer available');
+          return;
+        }
+        const stillHeld = hours.every((h) => fresh.find((s) => s.hour === h)?.heldByYou);
+        if (stillHeld) {
+          setNow(Date.now());
+          setHoldUntil(draft.holdUntil);
+          return;
+        }
+        return holdSlots(turf.id, draft.date, hours, draft.size, draft.side).then((held) => {
+          setSlots(held.slots);
+          if (held.ok) {
+            const t = Date.now();
+            setNow(t);
+            setHoldUntil(t + held.expiresInMs);
+          } else flash(held.error);
+        });
+      })
+      .catch(() => {})
+      .finally(() => {
+        draftReady.current = true;
+      });
+  }, [turf.id, dates, bookables, form, flash]);
+
+  // Save the picks as they change (nothing picked and not in checkout: nothing to keep)
+  useEffect(() => {
+    if (!draftReady.current) return;
+    if (selected.length === 0 && holdUntil === null) {
+      clearDraft(turf.id);
+      return;
+    }
+    saveDraft({
+      turfId: turf.id,
+      date,
+      hours: selected,
+      size,
+      side,
+      bookableId: selectedBookable?.id,
+      holdUntil,
+      name: form.name,
+      phone: form.phone,
+      code: form.code,
+      promo: form.promo,
+      useWallet: form.useWallet,
+      addOns: form.selectedAddOns,
+      savedAt: Date.now(),
+    });
+  }, [turf.id, date, selected, size, side, selectedBookable, holdUntil, form.name, form.phone, form.code, form.promo, form.useWallet, form.selectedAddOns]);
 
   // Live seat map: other players' holds and bookings show up within a second
   const refreshCurrent = useCallback(() => {
@@ -213,8 +301,17 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     });
   };
 
-  const proceed = async () => {
+  const proceed = async (force = false) => {
     if (selected.length === 0 || holding) return;
+    // Booking needs an account: ask to sign in or sign up before the checkout step, keeping what was picked
+    if (!force && account.ready && !account.signedIn) {
+      setGateFor('proceed');
+      if (clerkEnabled) {
+        pendingProceed.current = true;
+        openClerkSignIn();
+      } else setShowGate(true);
+      return;
+    }
     setHolding(true);
     try {
       const result = await holdSlots(turf.id, date, selected, size, side);
@@ -233,10 +330,22 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
     }
   };
 
+  // Continue to checkout as soon as a sign-in that was opened from Proceed finishes
+  useEffect(() => {
+    proceedRef.current = proceed;
+  });
+  useEffect(() => {
+    if (account.signedIn && pendingProceed.current) {
+      pendingProceed.current = false;
+      void proceedRef.current(true);
+    }
+  }, [account.signedIn]);
+
   const pay = () => {
     form.setError('');
     // Booking needs an account: sign in or sign up first, without losing the held slots
     if (!account.signedIn) {
+      setGateFor('pay');
       if (clerkEnabled) openClerkSignIn();
       else setShowGate(true);
       return;
@@ -263,6 +372,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       }
       saveProfile({ name: playerName.trim(), phone: playerPhone });
       addMyBookingIds(result.ids);
+      clearDraft(turf.id);
       router.push(result.ids.length === 1 ? `/bookings/${result.ids[0]}` : `/bookings?new=${result.ids.join(',')}`);
     });
   };
@@ -354,7 +464,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
             {selected.length > 0 ? rupees(estimate) : '₹0'}
           </b>
         </div>
-        <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
+        <button className={styles.primary} onClick={() => proceed()} disabled={holding || selected.length === 0}>
           {holding ? 'Holding…' : 'Proceed to checkout'}
         </button>
         <p className={styles.summaryNote}>Nothing is charged online. Pay at the turf.</p>
@@ -370,7 +480,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
           </b>
           <span>{dateInfo?.label} · {describeHours(selected, parseHour(turf.openTime))}</span>
         </div>
-        <button className={styles.primary} onClick={proceed} disabled={holding || selected.length === 0}>
+        <button className={styles.primary} onClick={() => proceed()} disabled={holding || selected.length === 0}>
           {holding ? 'Holding…' : 'Proceed'}
         </button>
       </div>
@@ -401,6 +511,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       {showGate &&
         createPortal(
           <SignInGate
+            note={gateFor === 'proceed' ? 'The slots you picked are saved while you sign in.' : undefined}
             onClose={() => setShowGate(false)}
             onDone={() => {
               const p = getProfile();
@@ -408,6 +519,10 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
               form.setName(p.name);
               form.setPhone(p.phone);
               form.setError('');
+              if (gateFor === 'proceed') {
+                void proceed(true);
+                return;
+              }
               reserve(p.name, p.phone);
             }}
           />,
