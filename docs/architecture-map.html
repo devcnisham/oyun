@@ -119,6 +119,16 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
 .lanes p { margin: 2px 0 0; font-size: 15px; }
 .verdict { margin-top: 16px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--accent); font-size: 16px; }
 @media (prefers-reduced-motion: reduce) { .lanes li { animation: none; } }
+
+.subs { display: flex; gap: 0; overflow-x: auto; padding: 4px 0 8px; align-items: stretch; }
+.sub { flex: none; width: 230px; padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); display: grid; gap: 6px; align-content: start; }
+.sub b { font: 500 15px Roboto, sans-serif; } .sub p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; } .sub code { font: 400 12px "Roboto Mono", monospace; background: var(--raise); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.sub .n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; background: var(--accent); color: #0b1220; font: 700 12px Roboto, sans-serif; }
+.subarrow { flex: none; align-self: center; width: 28px; height: 2px; background: var(--muted); position: relative; opacity: .7; margin: 0 4px; }
+.subarrow::after { content: ""; position: absolute; right: -1px; top: -4px; border: 5px solid transparent; border-left: 8px solid var(--muted); }
+.subhead { margin: 24px 0 8px; font: 500 12px "Roboto Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.go { margin-top: 16px; }
+.node .cnt { fill: var(--accent); font: 500 11px "Roboto Mono", monospace; text-anchor: end; }
 </style>
 
 <main>
@@ -551,6 +561,62 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     edge('hb', 'sb', 'check'), edge('sb', 'open', 'yes'), edge('sb', 'eph', 'no + flag'), edge('sb', 'refd', 'no flag'), edge('refd', 'hl', 'reported', { async: true })
   ]);
 
+  /* sub-features: every feature expands into the steps and parts it is made of */
+  var SUBS = {
+    pf: {
+      search: [['Type a query', 'Suggestions come from a search index built on the server (getSearchIndex, buildSuggestions).', 'src/lib/search.ts'], ['Set filters', 'Sport, price cap and extras become URL parameters (filtersToParams, parseMaxPrice), so a filtered view can be shared.', 'src/lib/search.ts'], ['Match venues', 'matchesQuery and matchesExtras decide which venues stay in the list.', 'src/lib/search.ts'], ['Open the map', 'locateTurfs places venues on a Leaflet map and nearby pins are clustered.', 'src/lib/map-actions.ts'], ['Find by place', 'geocode and parseCoordinates turn an area or address into coordinates.', 'src/lib/geocode.ts']],
+      saved: [['Tap the heart', 'FavouriteButton toggles a venue through the useFavourites hook.', 'src/components/FavouriteButton.tsx'], ['Open the list', '/saved shows your saved venues. It is not indexed by search engines.', 'src/app/(main)/saved']],
+      book: [['Pick hours', 'Each hour shows as available, held, booked, blocked or past.'], ['Hold', 'The hours are held for 8 minutes, tied to your device.'], ['Quote', 'One price function builds the quote and the charge.'], ['Confirm', 'createBookings writes one booking per hour.'], ['Ticket', 'QR code, calendar file and invoice.']],
+      wallet: [['Earn cashback', 'rewardCheckIn pays cashback on check-in, capped by cashbackFor.', 'src/lib/wallet.ts'], ['Get a referral code', 'Every player gets a code (newReferralCode). A friend signs up with it (findByReferralCode).', 'src/lib/wallet.ts'], ['Referral reward', 'On the friend\'s first checked-in game the referrer is credited and the friend gets a welcome bonus, when the referral setting is on.', 'src/lib/wallet.ts'], ['Spend', 'Wallet credit is deducted at checkout, up to the subtotal.'], ['Refunds', 'Cancels and admin refunds credit back through walletTxn, so history always sums to the balance.']],
+      offers: [['Platform offers', 'Admin sets them (savePlatformOffers); platformOffersFor picks those that apply to you.', 'src/lib/platform-offers.ts'], ['Venue offers', 'Happy hour and first-booking offers set by each owner.'], ['Best one wins', 'Only the best single offer applies. Offers never stack.'], ['Promo code', 'Checked for dates, uses left, weekend rule and a per-player limit.'], ['Live list', 'listLiveOffers feeds the /offers page.', 'src/lib/offers-list.ts']],
+      student: [['Upload', 'POST /api/student-id: same-origin, rate limited, type and size checked (up to 5 MB).', 'src/app/api/student-id/route.ts'], ['Pending', 'The photo goes to the private student_ids bucket and the status is pending.'], ['Admin decides', 'Approve or reject with a note (reviewStudentId).', 'src/lib/admin-actions.ts'], ['Get the price', 'An approved student gets the student offer (isApprovedStudent).', 'src/lib/platform-offers.ts'], ['Clean up', 'A photo nobody reviews is deleted after 30 days.', 'src/lib/student-id.ts']],
+      wait: [['Join', 'A name and a 10 digit phone; limited to 20 per minute per phone (joinWaitlist).', 'src/lib/waitlist.ts'], ['Count', 'getSlotWaitlistCount shows how many are waiting for a slot.'], ['Notify', 'notifyWaitlistWhenSlotFreed alerts waiting players when the slot frees. Messages are simulated until a provider is connected.'], ['Leave', 'cancelWaitlist with the phone removes the entry.']],
+      recur: [['Choose weeks', 'Between 2 and 12 weeks (calculateRecurringDates).', 'src/lib/recurring.ts'], ['Dates', 'The same weekday and hour for each week.'], ['Book', 'createRecurringBookings books each date and reports any that are taken.'], ['Advance', 'Per booking: 10% of the price, within the min and max advance settings.']],
+      split: [['Players', 'Choose how many are playing.'], ['Split', 'calculateSplit gives the amount per person.', 'src/lib/split-payment.ts'], ['UPI link', 'generateUpiLink builds a link with payee, amount and a note.'], ['Share', 'generateSplitShareMessage writes the text to send to friends.']],
+      match: [['Browse', 'listOpenMatches shows games looking for players.', 'src/lib/community.ts'], ['Post a game', 'createOpenMatch.'], ['Join', 'joinOpenMatch adds you to a game.'], ['Tournaments', 'getTournaments lists them and registerTournamentTeam enters a team, refusing once maxTeams is reached.', 'src/lib/tournaments.ts']],
+      rain: [['Mark a day', 'An owner (setRainOut) or the admin (setRainDay, city-wide) marks a rained-out date.'], ['Check', 'isRainDisruption: only outdoor turfs on a marked date qualify.', 'src/lib/rain.ts'], ['Warn', 'getWeatherAlert shows a weather warning for outdoor turfs.', 'src/lib/weather.ts'], ['Act', 'Cancel and reschedule use the same check on the server.']],
+      rev: [['Unlock', 'Only after check-in, and only for the booking owner.'], ['Rate', 'submitReview stores the rating.', 'src/lib/reviews.ts'], ['Average', 'recomputeTurfRating updates the venue rating.'], ['Moderate', 'Admin can hide a review or ban its author.']],
+      lang: [['Choose', 'LanguageSelector switches between English, Kannada and Hindi.', 'src/components/LanguageSelector.tsx'], ['Render', '/kn and /hi use LocalizedHomeView and localized-home.ts.'], ['Index rule', 'Both stay noindex until reviewed.']],
+      priv: [['Export', 'GET /api/privacy/export (signed-in, rate limited).'], ['Erase', 'POST /api/privacy/delete (signed-in, same-origin).'], ['Cookies', 'Essential or all, saved by /api/privacy/consent.'], ['Retention', 'A daily cron anonymises old completed and cancelled bookings.']],
+      pwa: [['Register', 'ServiceWorkerRegister registers public/sw.js.', 'src/components/ServiceWorkerRegister.tsx'], ['Cache', 'Network first with a cache fallback (cache oyun-v1).', 'public/sw.js'], ['Update', 'Old caches are deleted when a new version activates.'], ['Install', 'Icons in public/ let it be added to a home screen.']]
+    },
+    of: {
+      o1: [['Summary', 'An overview of the current venue.'], ['Switch venue', 'switchTurf changes the venue when an owner has more than one.', 'src/lib/partner-actions.ts']],
+      o2: [['List', 'Bookings for this venue.'], ['Walk-in', 'getWalkInSlots lists free hours and createWalkIn books a desk customer.', 'src/lib/partner-actions.ts'], ['Cancel', 'cancelBooking by the owner or staff.'], ['Export', 'CSV download, with spreadsheet formulas neutralised.', 'bookings/export/route.ts']],
+      o3: [['Week view', 'Bookings and blocks across the week.'], ['Day view', 'Open a day from its header to see each hour.'], ['Move', 'Previous and next move between weeks and days.']],
+      o4: [['Code or QR', 'Enter the printed code or scan the QR.'], ['Checks', 'Venue, status and date are verified.'], ['Rewards', 'Cashback and referral credit are paid.'], ['Desk payment', 'Mark paid in full or show the balance to collect.'], ['No-show', 'markNoShow, once the slot has started.']],
+      o5: [['Block an hour', 'blockSlot closes one hour.', 'src/lib/partner-actions.ts'], ['Block a range', 'blockRange closes a range.'], ['Unblock', 'unblockSlot opens it again.'], ['Rain-out', 'setRainOut marks a date for an outdoor turf.']],
+      o6: [['Base rate', 'The hourly rate. A half pitch is a percent of it.'], ['Peak and weekend', 'Percent additions for the peak window and weekends.'], ['Last minute', 'A percent off for same-day slots.'], ['Advance', 'Minimum and maximum advance.'], ['Save', 'savePricing validates and saves.', 'src/lib/partner-actions.ts']],
+      o7: [['Create', 'createOffer: happy hour or first booking.', 'src/lib/partner-actions.ts'], ['Turn on or off', 'toggleOffer.'], ['Remove', 'deleteOffer.'], ['How it applies', 'Online bookings get the best single offer.']],
+      o8: [['Create', 'saveAddOn adds an extra with a price.', 'src/lib/partner-actions.ts'], ['Turn on or off', 'toggleAddOn.'], ['Remove', 'deleteAddOn.'], ['At checkout', 'Players pick quantities, capped at 20 each.']],
+      o9: [['Add a court', 'addCourtResource adds a physical court or pitch part.', 'src/lib/partner-actions.ts'], ['Add what players book', 'addBookableOffering defines a sport, slot length and price over one or more courts.'], ['Remove', 'deleteCourtResource and deleteBookableOffering.']],
+      o10: [['Profile', 'updateTurfProfile: name, photos and amenities.', 'src/lib/partner-actions.ts'], ['Business', 'updateBusiness: business details.'], ['Photos', 'Uploads go through /api/partner/upload.', 'src/app/api/partner/upload/route.ts']],
+      o11: [['Add staff', 'createStaff with a chosen role.', 'src/lib/partner-actions.ts'], ['Reset password', 'resetStaffPassword.'], ['Remove', 'deleteStaff.'], ['Roles', 'Front desk cannot change prices, offers, add-ons, the venue profile, staff or payouts.']],
+      o12: [['Read', 'Player reviews for your venue.'], ['Rating', 'The venue rating is recomputed after every review.']],
+      o13: [['Weeks', 'payoutWeeks summarises recent weeks.', 'src/lib/reports.ts'], ['Settlement', 'A daily job creates a T+2 settlement batch.', 'src/lib/payouts.ts'], ['Statement', 'An HTML statement for each payout.', 'src/app/api/partner/payouts/[id]/statement/route.ts'], ['Export', 'CSV download.', 'payouts/export/route.ts']],
+      o14: [['Revenue', 'bookingRevenue and onlineCollected add up what the venue earns.', 'src/lib/reports.ts']],
+      o15: [['Open', '/partner/invoices/[id] shows the invoice for a booking.'], ['Print', 'PrintButton prints it.', 'src/components/PrintButton.tsx'], ['Numbering', 'Invoice numbers come from per-venue counters (oyun.invoice_counters).']]
+    },
+    af: {
+      a1: [['Summary', 'Platform overview.'], ['Health banner', 'Shows whether booking is open (Supabase connected).']],
+      a2: [['Review', 'Read the application at /admin/turfs.'], ['Reject', 'rejectApplication closes it.', 'src/lib/admin-actions.ts'], ['Approve', 'approveApplication creates or reuses the owner login and creates the venue.'], ['Hand over', 'A temporary password is shown once to the admin.']],
+      a3: [['Edit', 'updateTurfAdmin changes any field of a venue.', 'src/lib/admin-actions.ts'], ['Quick toggles', 'quickUpdateTurf for quick one-field changes.'], ['Detail page', '/admin/turfs/[id] shows one venue.']],
+      a4: [['Suspend or reactivate', 'togglePartnerStatus. A suspended owner cannot be reused for a new application.', 'src/lib/admin-actions.ts'], ['Reset password', 'resetPartnerPassword.'], ['Update details', 'updatePartner.']],
+      a5: [['Ban or unban', 'togglePlayerBan. Banned players cannot book.', 'src/lib/admin-actions.ts'], ['Adjust wallet', 'adjustWallet writes a ledger entry.']],
+      a6: [['Queue', 'Pending IDs listed at /admin/students.'], ['View', '/api/admin/student-id/[playerId] is admin-only and acts only on pending IDs.'], ['Decide', 'reviewStudentId approves or rejects with a note.', 'src/lib/admin-actions.ts'], ['Expire', 'Unreviewed photos are deleted after 30 days.']],
+      a7: [['Hide a review', 'toggleReviewHidden.', 'src/lib/admin-actions.ts'], ['Ban the author', 'banReviewAuthor.']],
+      a8: [['Find the booking', 'Transactions list.'], ['Refund', 'refundBooking marks it refunded.', 'src/lib/admin-actions.ts'], ['Wallet', 'Online bookings credit the wallet; walk-ins paid at the desk credit nothing.'], ['Cashback', 'Cashback given at check-in is taken back, never below zero.']],
+      a9: [['Platform numbers', 'computePlatformAnalytics totals bookings and revenue across venues.', 'src/lib/analytics.ts']],
+      a10: [['Site content', 'saveSiteContent.', 'src/lib/admin-actions.ts'], ['Promo cards', 'savePromoCard and deletePromoCard.'], ['Sponsor ads', 'saveSponsorAd and deleteSponsorAd.'], ['Platform offers', 'savePlatformOffers.']],
+      a11: [['Settings', 'saveSettings: support details and platform options.', 'src/lib/admin-actions.ts'], ['Rain day', 'setRainDay marks a city-wide rain day.'], ['Promo codes', 'savePromoCode, togglePromoCode and deletePromoCode.']]
+    }
+  };
+  var GOTO = { pf: { book: 'journey', wallet: 'money', priv: 'privacy', offers: 'money', rain: 'cancel' }, of: { o4: 'checkin', o13: 'money', o5: 'states' }, af: { a2: 'onboard', a8: 'cancel' } };
+  Object.keys(SUBS).forEach(function (vid) {
+    var vv = V.filter(function (x) { return x.id === vid; })[0];
+    vv.nodes.forEach(function (n) { if (SUBS[vid][n.id]) n.subs = SUBS[vid][n.id]; if (GOTO[vid][n.id]) n.go = GOTO[vid][n.id]; });
+  });
+
   /* 13 ROUTES */
   var ROUTES = [
     ['Public pages', [
@@ -733,6 +799,7 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
       el('rect', { x: n.x, y: n.y, width: NW, height: NH, rx: 18 }, g);
       el('text', { 'class': 't', x: n.cx, y: n.cy - 4 }, g).textContent = n.t;
       el('text', { 'class': 's', x: n.cx, y: n.cy + 15 }, g).textContent = n.s;
+      if (n.subs) el('text', { 'class': 'cnt', x: n.x + NW - 14, y: n.y + NH - 8 }, g).textContent = '\u25B8 ' + n.subs.length;
       if (n.step) { var bg = el('g', { 'class': 'badge' }, g); el('circle', { cx: n.x + 6, cy: n.y + 6, r: 11 }, bg); el('text', { x: n.x + 6, y: n.y + 6.5 }, bg).textContent = n.step; }
       g.addEventListener('click', function () { select(n.id); });
       g.addEventListener('mouseenter', function () { state.hover = n.id; paint(); });
@@ -788,6 +855,16 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     });
     if (!chips.children.length) chips.appendChild(h('span', { 'class': 'dtext', style: 'margin:0;font-size:15px' }, 'Nothing else in this view.'));
     conn.appendChild(chips); cols.appendChild(conn); d.appendChild(cols);
+    if (n.subs) {
+      d.appendChild(h('div', { 'class': 'subhead' }, 'Sub-features &middot; ' + n.subs.length + ' parts, in order'));
+      var row = h('div', { 'class': 'subs' });
+      n.subs.forEach(function (sf, i) {
+        if (i) row.appendChild(h('span', { 'class': 'subarrow', 'aria-hidden': 'true' }));
+        row.appendChild(h('div', { 'class': 'sub' }, '<span class="n">' + (i + 1) + '</span><b>' + esc(sf[0]) + '</b><p>' + esc(sf[1]) + '</p>' + (sf[2] ? '<code>' + esc(sf[2]) + '</code>' : '')));
+      });
+      d.appendChild(row);
+    }
+    if (n.go && byId[n.go]) { var gb = h('button', { 'class': 'btn go', type: 'button' }, 'Open the full flow: ' + esc(byId[n.go].tab) + ' &rarr;'); gb.addEventListener('click', function () { setView(n.go); $('diagram').scrollIntoView({ block: 'start' }); }); d.appendChild(gb); }
   }
 
   function setupStepper(v) {
@@ -879,7 +956,7 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
   /* ---------- global search ---------- */
   function setupSearch() {
     var q = $('gq'), res = $('gres'), idx = [];
-    V.forEach(function (v) { (v.nodes || []).forEach(function (n) { idx.push({ v: v, n: n, hay: (n.t + ' ' + n.s + ' ' + n.desc + ' ' + n.files.join(' ') + ' ' + n.rules.join(' ')).toLowerCase() }); }); });
+    V.forEach(function (v) { (v.nodes || []).forEach(function (n) { idx.push({ v: v, n: n, hay: (n.t + ' ' + n.s + ' ' + n.desc + ' ' + n.files.join(' ') + ' ' + n.rules.join(' ') + ' ' + (n.subs || []).map(function (x) { return x[0] + ' ' + x[1]; }).join(' ')).toLowerCase() }); }); });
     function close() { res.hidden = true; res.innerHTML = ''; }
     q.addEventListener('input', function () {
       var t = q.value.trim().toLowerCase(); res.innerHTML = ''; if (t.length < 2) { res.hidden = true; return; }
