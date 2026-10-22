@@ -3,7 +3,10 @@ import { TURF, asPlayer, seats, selectDay } from './helpers';
 
 // A visitor with no account (no Clerk keys in tests, so the device sign-in form is used)
 async function asVisitor(page: Page) {
-  await page.context().addCookies([{ name: 'oyun_consent', value: 'essential', domain: 'localhost', path: '/' }]);
+  await page.context().addCookies([
+    { name: 'oyun_consent', value: 'essential', domain: 'localhost', path: '/' },
+    { name: 'oyun_desktop', value: '1', domain: 'localhost', path: '/' },
+  ]);
 }
 
 const openSlots = (page: Page) => seats(page).and(page.locator('[aria-disabled="false"][aria-pressed="false"]'));

@@ -21,6 +21,11 @@ Market: Mangalore only (launch 31 Oct 2026). Canonical host: `https://www.oyun.c
 | `/list-turf` | list your turf | turf management software India, turf owner booking app |
 | `/faq`, `/help` | how to book a turf online | turf cancellation policy, rain refund turf |
 
+## Desktop vs phone (22 Oct 2026)
+- Booking is phone-first. On wide windows (min-width 769px) `/` shows a landing page (what OYUN is, app demo, QR to open the phone site); the `/m` phone feed is unchanged.
+- `/arenas*`, `/bookings*`, `/saved`, `/profile`, `/settings` still return 200 with full content for crawlers and link previews. `DesktopGate` only covers them with a "scan to open on your phone" screen on wide windows (presentation, not a redirect; no cloaking). Bypass cookie `oyun_desktop=1` (or `?desktop=1`) is for staff and tests.
+- Content pages (guides, faq, help, terms, privacy, list-turf) and owner pages are never gated. Sitemap, robots and canonicals did not change.
+
 ## KPIs (review weekly in Search Console and GA4)
 1. Indexed pages vs sitemap pages (target 95%+ within 4 weeks of launch).
 2. Impressions and clicks for the head terms above; average position per term.

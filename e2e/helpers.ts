@@ -6,7 +6,11 @@ export const PARTNER_TURF = 'oyun-club-test';
 
 // Skip the cookie banner and sign in with the device profile (no Clerk in tests)
 export async function asPlayer(page: Page, name = 'E2E Player', phone = '9876500001') {
-  await page.context().addCookies([{ name: 'oyun_consent', value: 'essential', domain: 'localhost', path: '/' }]);
+  await page.context().addCookies([
+    { name: 'oyun_consent', value: 'essential', domain: 'localhost', path: '/' },
+    // Booking pages sit behind the "scan to open on your phone" screen on wide windows; tests skip it
+    { name: 'oyun_desktop', value: '1', domain: 'localhost', path: '/' },
+  ]);
   await page.addInitScript(([n, p]) => localStorage.setItem('oyun_profile', JSON.stringify({ name: n, phone: p })), [name, phone]);
 }
 
