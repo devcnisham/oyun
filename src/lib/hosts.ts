@@ -1,5 +1,5 @@
 // Which part of OYUN each hostname serves (oyun.co.in is the public landing page, each audience has its own subdomain):
-//   www.oyun.co.in (and oyun.co.in)  the whole public site (the countdown page at / before launch, everything after): the one SEO host
+//   www.oyun.co.in (and oyun.co.in)  the whole public site (landing page before launch, everything after): the one SEO host
 //   app., book., help.               old subdomains, permanent redirects to the same path on www
 //   partner.oyun.co.in               turf owner dashboard
 //   admin.oyun.co.in                 OYUN admin dashboard
@@ -43,7 +43,7 @@ export function roleForHost(hostHeader: string | null | undefined): HostRole | n
 
 export type HostRoute = { kind: 'next' } | { kind: 'rewrite'; path: string } | { kind: 'redirect'; host: string; path: string; permanent?: boolean };
 
-// Pages the www host serves before launch. After launch it serves the whole public site (one canonical host for SEO).
+// Pages the landing host serves before launch. After launch it serves the whole public site (one canonical host for SEO).
 const LANDING_PAGES = new Set(['/countdown', '/about', '/privacy', '/terms', '/faq']);
 // Help content: booking guides, FAQs and legal pages. Public even before launch, on www.
 const HELP_AREAS = ['/help', '/faq', '/guides', '/privacy', '/terms'];
@@ -55,7 +55,7 @@ const inArea = (path: string, area: string) => path === area || path.startsWith(
 export interface Access {
   // Past launch, or LAUNCH_OPEN=true: the player site is public
   launched: boolean;
-  // A team member with the preview cookie: sees the player site before launch (the countdown page still shows at /)
+  // A team member with the preview cookie: sees the player site before launch (the landing page still shows at /)
   preview: boolean;
 }
 
@@ -82,7 +82,7 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
         if (pathname === '/countdown') return to('landing', '/', true);
         return { kind: 'next' };
       }
-      if (pathname === '/') return { kind: 'rewrite', path: '/countdown' };
+      if (pathname === '/') return { kind: 'rewrite', path: '/landing' };
       if (LANDING_PAGES.has(pathname) || isHelp(pathname)) return { kind: 'next' };
       return playerSiteOpen ? { kind: 'next' } : toLanding();
     case 'app':

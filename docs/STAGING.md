@@ -64,6 +64,6 @@ node scripts/smoke-test.mjs https://slot-arena-git-staging-devcnisham.vercel.app
 
 Endpoints verified:
 - `/api/health`: Database and realtime status
-- `/`: Home page (the countdown page on www before launch)
+- `/`: Public landing page
 - `/arenas`: Turf directory
 - `/api/monitoring/double-bookings`: Double booking count equals 0

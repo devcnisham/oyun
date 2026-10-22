@@ -66,5 +66,5 @@ Why a fourth pass: the 3D, photo and editorial versions were all rejected. v4 dr
 - **Sections.** Hero, three steps drawn as the three states of one booking (pick, hold, play), venue areas from live data, owners with a sample partner calendar, FAQ, closing.
 - **Rules kept.** No photos, 3D, emoji, invented numbers or venues. Reduced motion shows everything at once. Passes axe on desktop and phone, Lighthouse mobile 93 / 100 / 100 / 100, no horizontal scroll at 375px.
 
-## 22 Oct 2026: the landing page is gone
-All four designs were rejected, so `/landing` and `/welcome` were removed. Before launch www serves the countdown page at `/` (it carries the home page's title, canonical and schema), `/welcome` redirects to `/countdown` (and to `/` after launch), and the header and footer link to guides, FAQ and about instead of landing-page sections. After launch `/` is the booking home. The `docs/` history above is kept for reference only.
+## 22 Oct 2026: /welcome removed, landing kept
+`/welcome` (an old redirect page) is gone: the address now 301s to `/countdown`, or to `/` after launch. The landing page stays at `/` on www until launch.

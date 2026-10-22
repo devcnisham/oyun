@@ -7,6 +7,7 @@ import { TURF, asPlayer, seats } from './helpers';
 
 const PAGES = [
   { name: 'home', path: '/' },
+  { name: 'landing page', path: '/landing' },
   { name: 'launch countdown', path: '/countdown' },
   { name: 'about', path: '/about' },
   { name: 'sports index', path: '/sports' },
