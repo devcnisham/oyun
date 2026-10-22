@@ -71,7 +71,7 @@ export default async function LandingPage() {
               <p className={`${styles.lead} ${styles.rise}`} style={{ ['--d' as string]: '240ms' }}>See what is open at football, box cricket, badminton and pickleball venues across the city, hold the hours you want, and walk in with a ticket.</p>
               <div className={`${styles.actions} ${styles.rise}`} style={{ ['--d' as string]: '340ms' }}>
                 <a href={BROWSE_URL} className={styles.btn}>Browse &amp; book <IconArrow size={16} /></a>
-                <Link href="/countdown" className={styles.btnGhost}>Launch countdown</Link>
+                <Link href="/countdown" className={styles.btnGhost}>Launching soon</Link>
               </div>
             </div>
             <div className={`${styles.heroBoard} ${styles.rise}`} style={{ ['--d' as string]: '200ms' }}>
@@ -202,7 +202,7 @@ export default async function LandingPage() {
             <h2 id="close-title" className={styles.closeTitle}>Your hour is waiting.</h2>
             <div className={styles.actions}>
               <a href={BROWSE_URL} className={styles.btnLight}>Browse &amp; book <IconArrow size={16} /></a>
-              <Link href="/countdown" className={styles.btnGhostLight}>Launch countdown</Link>
+              <Link href="/countdown" className={styles.btnGhostLight}>Launching soon</Link>
             </div>
           </div>
         </section>

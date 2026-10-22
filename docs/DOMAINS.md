@@ -7,7 +7,7 @@
 | Host | Shows | Notes |
 |---|---|---|
 | `oyun.co.in` | redirects to `www` | Vercel domain setting (308) |
-| `www.oyun.co.in` | marketing landing page (`/` is rewritten to `/landing`), the launch countdown (`/countdown`; `/welcome` redirects there), `/about`, `/privacy`, `/terms`, `/faq`. Browse & book buttons open `app.` | after launch it hands over to `app.` |
+| `www.oyun.co.in` | marketing landing page (`/` is rewritten to `/landing`), the "Launching soon" countdown page (`/countdown`; `/welcome` redirects there), `/about`, `/privacy`, `/terms`, `/faq`. Browse & book buttons open `app.` | after launch it hands over to `app.` |
 | `app.oyun.co.in` | main customer application: home, turf list, sports, profile, saved, bookings list, matches, tournaments | turf pages go to `book.`, guides and FAQs to `help.` |
 | `book.oyun.co.in` | booking interface: a turf's page (slot picker, checkout), tickets (`/bookings/<id>`), player sign-in | everything else goes to `app.` |
 | `help.oyun.co.in` | booking guides and FAQs: `/help`, `/faq`, `/guides`, `/privacy`, `/terms` | `/` goes to `/help`; public even before launch |

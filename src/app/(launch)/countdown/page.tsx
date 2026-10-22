@@ -11,7 +11,7 @@ import Countdown from './Countdown';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-  title: 'Launch countdown',
+  title: 'Launching soon',
   description: `OYUN launches in ${SITE_CITY} on 31 October 2026. Count down to the day you can book turfs and courts.`,
   alternates: { canonical: '/countdown' },
 };
