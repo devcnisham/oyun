@@ -27,8 +27,22 @@ describe('partnerSubjectForEmail (Google / Apple partner sign-in)', () => {
     expect(partnerSubjectForEmail(db, '')).toBeNull();
   });
 
-  test('the OYUN operations account and its staff never sign in through Google or Apple', () => {
+  test('the OYUN operations account and its staff never sign in through Google or Apple unless the email is listed', () => {
     expect(partnerSubjectForEmail(db, 'ops@oyun.co.in')).toBeNull();
     expect(partnerSubjectForEmail(db, 'opsdesk@example.com')).toBeNull();
+    expect(partnerSubjectForEmail(db, 'ops@oyun.co.in', 'someone@else.com')).toBeNull();
+  });
+
+  test('a listed operations email signs in as the operations account, whatever the casing or spacing', () => {
+    expect(partnerSubjectForEmail(db, 'boss@example.com', 'a@b.com, Boss@Example.com')).toBe('p:partner_oyun');
+    expect(partnerSubjectForEmail(db, '  BOSS@example.com ', 'boss@example.com')).toBe('p:partner_oyun');
+  });
+
+  test('the allowlist never admits a suspended or missing operations account, and an empty list admits nobody', () => {
+    const suspended = { ...db, partners: db.partners.map((p) => (p.id === 'partner_oyun' ? { ...p, status: 'suspended' as const } : p)) };
+    expect(partnerSubjectForEmail(suspended, 'boss@example.com', 'boss@example.com')).toBeNull();
+    expect(partnerSubjectForEmail({ partners: [], staff: [] }, 'boss@example.com', 'boss@example.com')).toBeNull();
+    expect(partnerSubjectForEmail(db, 'boss@example.com', '')).toBeNull();
+    expect(partnerSubjectForEmail(db, 'boss@example.com', ' , ')).toBeNull();
   });
 });
