@@ -57,8 +57,8 @@
   --info: #0a5fb4; --info-bg: #e6efff;
   --bg-inverse: #111111; --on-inverse: #ffffff;
   --skeleton-a: #e8eaed; --skeleton-b: #f5f6f8;
-  --hero-bg: linear-gradient(180deg, #a60d20 0%, #d31027 42%, #8d0b1c 100%);
-  --tab-off: rgba(0, 0, 0, 0.22); --tab-on: rgba(255, 255, 255, 0.14);
+  --hero-bg: linear-gradient(170deg, var(--logo-from) 0%, #6e0606 48%, var(--logo-to) 100%); /* OYUN logo red, dark shaded */
+  --tab-off: rgba(0, 0, 0, 0.3); --tab-on: rgba(255, 255, 255, 0.1);
 }
 
 * {
