@@ -96,12 +96,39 @@ td { padding: 10px 14px; border-top: 1px solid var(--line); vertical-align: top;
 td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted); margin: 14px 0 0; }
 .foot { color: var(--muted); font-size: 13.5px; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .edge, .node, .elabel { transition: none; } }
+
+.tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; margin-top: 18px; }
+.searchwrap { position: relative; flex: 1 1 320px; max-width: 520px; }
+.gres { position: absolute; z-index: 5; left: 0; right: 0; top: 50px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.35); max-height: 340px; overflow: auto; }
+.gres button { display: flex; width: 100%; justify-content: space-between; gap: 12px; align-items: center; min-height: 44px; padding: 8px 12px; border: 0; background: transparent; color: var(--fg); border-radius: 10px; font: 400 14.5px Roboto, sans-serif; text-align: left; cursor: pointer; }
+.gres button:hover, .gres button:focus-visible { background: var(--raise); outline: 2px solid var(--accent); }
+.gres em { font: italic 400 12px "Roboto Mono", monospace; color: var(--muted); white-space: nowrap; }
+.sim .ctl { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-top: 16px; }
+.sim select { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--fg); font: 400 15px Roboto, sans-serif; }
+.sim label { display: inline-flex; gap: 10px; align-items: center; min-height: 44px; font-size: 15px; cursor: pointer; }
+.sim input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
+.run { min-height: 48px; padding: 0 24px; border: 0; border-radius: 999px; background: var(--accent); color: #0b1220; font: 500 15px Roboto, sans-serif; cursor: pointer; }
+.run:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+.lanes { display: grid; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.lanes li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); animation: pop .35s both; }
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.who { display: grid; place-items: center; height: 32px; border-radius: 999px; font: 500 13px "Roboto Mono", monospace; background: var(--raise); }
+.who.A { background: #1e3a8a; color: #dbe4ff; } .who.B { background: #7c2d12; color: #ffe4d6; } .who.both { background: var(--raise); color: var(--fg); }
+:root[data-theme="light"] .who.A { background: #dbe4ff; color: #1e3a8a; } :root[data-theme="light"] .who.B { background: #ffe4d6; color: #7c2d12; }
+.lanes .lay { font: 500 11px "Roboto Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.lanes p { margin: 2px 0 0; font-size: 15px; }
+.verdict { margin-top: 16px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--accent); font-size: 16px; }
+@media (prefers-reduced-motion: reduce) { .lanes li { animation: none; } }
 </style>
 
 <main>
   <section class="card">
     <h1>OYUN workflow</h1>
     <p class="kicker">Pages · APIs · bookings · money · database · release</p>
+    <div class="tools">
+      <div class="searchwrap"><input id="gq" class="q" type="search" placeholder="Search any component, file or rule" aria-label="Search components" autocomplete="off"><div id="gres" class="gres" hidden></div></div>
+      <button class="btn" id="theme" type="button" aria-label="Switch colour theme">Theme: auto</button>
+    </div>
     <p class="lead">One interactive map of how OYUN works. Pick a view, then hover or tap any component to see what it does, the code it lives in, and what it talks to. Every view is drawn from the code in <span class="mono">src/</span> and <span class="mono">supabase/</span>.</p>
   </section>
 
@@ -114,6 +141,7 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     <div id="diagram" hidden><div class="stage"><svg id="svg" role="img" aria-labelledby="vtitle"></svg></div>
       <div class="legend" id="legend"></div></div>
     <div id="routes" hidden></div>
+    <div id="sim" hidden></div>
   </section>
 
   <section class="card" id="detail" aria-live="polite"></section>
@@ -271,15 +299,95 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     edge('oauth', 'sess', 'sets cookie'), edge('aauth', 'sess', 'sets cookie'), edge('sess', 'guard', 'checked'), edge('guard', 'perm', 'page / action'), edge('perm', 'scope', 'filters data'), edge('pauth', 'scope', 'booking id + owner')
   ]);
 
+  /* 7b VENUE ONBOARDING */
+  view('onboard', 'Flows', 'Venue onboarding', 'How a venue joins OYUN', 'An owner applies, an admin approves, and the venue goes live with its own login. Tap Next step to walk it.', [
+    node('form', 0, 1, 'Application form', '/list-turf', 'client', 'A four-step form with validation in the browser. Anyone can open it.', { step: 1, files: ['src/app/(main)/list-turf/page.tsx'] }),
+    node('bot', 1, 1, 'Bot check', 'honeypot + 4 s', 'logic', 'A filled hidden field or a submit in under 4 seconds gets a fake success page and nothing is stored.', { step: 2, files: ['src/lib/booking-actions.ts (submitApplication)'], rules: ['The bot is never told it was caught'] }),
+    node('fake', 1, 0, 'Pretend success', 'nothing stored', 'logic', 'What a bot sees, so it does not retry with a different trick.', {}),
+    node('rate', 2, 1, 'Rate limit', '5 per hour per IP', 'logic', 'Too many applications from one address gets "try again in an hour".', { step: 3, files: ['src/lib/shared-rate-limit.ts'] }),
+    node('valid', 3, 1, 'Validate', 'server side + duplicates', 'logic', 'Fields are validated and length-capped on the server. A duplicate pending application, or 3 pending for one phone, is refused with "we already have your application".', { step: 4, files: ['src/lib/validation'] }),
+    node('pend', 4, 1, 'Pending application', 'stored', 'data', 'Saved in the applications collection until an admin decides.', { step: 5, files: ['src/lib/types.ts'] }),
+    node('rev', 4, 2, 'Admin review', '/admin/turfs', 'client', 'An admin reads the application and approves or rejects it.', { step: 6, files: ['src/app/admin/(dashboard)/turfs'] }),
+    node('dec', 3, 2, 'Approve or reject', 'approveApplication', 'logic', 'Admin session required. Rejecting ends the application. Approving continues below.', { step: 7, files: ['src/lib/admin-actions.ts'] }),
+    node('rej', 3, 3, 'Rejected', 'application closed', 'data', 'The application is marked rejected.', {}),
+    node('owner', 2, 2, 'Owner account', 'reuse or create', 'logic', 'If the owner email is already a partner, that login is reused; a suspended partner must be reactivated first. Otherwise a partner is created with a temporary password shown once to the admin.', { step: 8, files: ['src/lib/admin-actions.ts', 'src/lib/password.ts'] }),
+    node('turf', 1, 2, 'Create venue', 'status active', 'data', 'The turf is created active. Its resources and bookables are mapped to the oyun schema by sync_turf_to_venue.', { step: 9, files: ['supabase/migrations/20261012000000_map_turfs_to_venues.sql'] }),
+    node('live', 0, 2, 'Live for booking', 'owner logs in', 'client', 'Players can book it, and the owner signs in at partner.oyun.co.in to set pricing, hours and staff.', { step: 10, files: ['src/app/partner'] })
+  ], [
+    edge('form', 'bot', 'submit'), edge('bot', 'fake', 'bot', { async: true }), edge('bot', 'rate', 'human'), edge('rate', 'valid', 'ok'), edge('valid', 'pend', 'new'),
+    edge('pend', 'rev', 'review'), edge('rev', 'dec', 'decide'), edge('dec', 'rej', 'reject'), edge('dec', 'owner', 'approve'), edge('owner', 'turf', 'create'), edge('turf', 'live', 'go live')
+  ]);
+
+  /* 7c CANCEL AND REFUND */
+  view('cancel', 'Flows', 'Cancel and refund', 'What happens when a player cancels', 'The checks run in this order. Any failed check ends with a plain message and changes nothing. Tap Next step to walk the happy path.', [
+    node('click', 0, 1, 'Cancel clicked', 'from the ticket', 'client', 'The player opens their ticket and taps Cancel.', { step: 1, files: ['src/app/(main)/bookings/[id]/page.tsx'] }),
+    node('fmt', 1, 1, 'Booking id', 'bk_ + 12 hex', 'logic', 'An id that does not look right gets "booking not found" with no lookup.', { step: 2, files: ['src/lib/booking-actions.ts (cancelMyBooking)'] }),
+    node('rate', 2, 1, 'Rate limit', '20 per IP', 'logic', 'Stops guessing of booking ids.', { step: 3, files: ['src/lib/shared-rate-limit.ts'] }),
+    node('own', 3, 1, 'Owner proof', 'account or phone', 'logic', 'A booking made while signed in can only be cancelled from that account; otherwise the booking phone is checked.', { step: 4, files: ['src/lib/booking-actions.ts (proveBookingOwner)'] }),
+    node('stat', 4, 1, 'Status confirmed?', 'else cannot cancel', 'logic', 'Only a confirmed booking can be cancelled.', { step: 5 }),
+    node('cut', 4, 2, '2 hour cutoff', 'online bookings', 'logic', 'Online bookings can be self-cancelled at least 2 hours before the slot starts. Later, the player is asked to call the venue.', { step: 6, files: ['src/lib/cancel-policy.ts', 'src/lib/rain.ts'], rules: ['Rain-out rules are decided on the server, never from a flag sent by the browser'] }),
+    node('due', 3, 2, 'Refund due?', 'wallet used + paid in', 'logic', 'Wallet credit used at booking plus any amount really paid in. An advance that was only recorded is not refunded because nothing was charged.', { step: 7, files: ['src/lib/wallet.ts', 'docs/adr/0003-advance-recorded-not-charged.md'] }),
+    node('wal', 2, 2, 'Wallet credited', 'status refunded', 'data', 'The wallet is credited through walletTxn and the booking becomes refunded.', { step: 8, files: ['src/lib/wallet.ts'] }),
+    node('can', 3, 3, 'Cancelled', 'no money back', 'data', 'Nothing to return, so the booking becomes cancelled.', {}),
+    node('free', 1, 2, 'Slot reopens', 'live for others', 'client', 'The hold on the resource is released, a ping goes out so other pages update, and the waitlist can be notified (waitlist.ts).', { step: 9, files: ['src/lib/realtime.ts', 'src/lib/waitlist.ts'] }),
+    node('ref', 2, 0, 'Refused', 'plain message', 'logic', 'Not found, too many attempts, wrong account, can no longer be cancelled, or please call the venue. Nothing changes.', {}),
+    node('adm', 1, 3, 'Admin refund', 'any live booking', 'logic', 'An admin can refund a booking that is not already cancelled or refunded. Online bookings credit the wallet; walk-ins paid at the desk credit nothing; check-in cashback is taken back, never below zero.', { files: ['src/lib/admin-actions.ts (refundBooking)'] })
+  ], [
+    edge('click', 'fmt', 'cancel'), edge('fmt', 'rate', 'valid'), edge('rate', 'own', 'ok'), edge('own', 'stat', 'owner'), edge('stat', 'cut', 'yes'), edge('cut', 'due', 'in time'),
+    edge('due', 'wal', 'yes'), edge('due', 'can', 'no'), edge('wal', 'free', 'done'), edge('can', 'free', 'done'),
+    edge('fmt', 'ref', 'bad'), edge('rate', 'ref', 'limit'), edge('own', 'ref', 'wrong'), edge('adm', 'wal', 'same rules')
+  ]);
+
+  /* 7d CHECK-IN */
+  view('checkin', 'Flows', 'Check-in and rewards', 'What happens at the venue desk', 'The owner or front desk confirms the player turned up. Tap Next step to walk it.', [
+    node('scan', 0, 1, 'Scan or type code', 'QR or short code', 'client', 'The check-in page accepts a QR scan or the code printed on the ticket.', { step: 1, files: ['src/app/partner/(dashboard)/check-in', 'src/lib/qr.ts'] }),
+    node('perm', 1, 1, 'Permission', 'checkin', 'logic', 'The caller must have the checkin permission; front desk does.', { step: 2, files: ['src/lib/partner-auth.ts'] }),
+    node('find', 2, 1, 'Find booking', 'by code or id', 'logic', 'No match gives "no booking found".', { step: 3, files: ['src/lib/partner-actions.ts (checkInBooking)'] }),
+    node('turf', 3, 1, 'Right venue?', 'not another turf', 'logic', 'A booking for another venue is refused. Tenant isolation is tested.', { step: 4, files: ['src/lib/tenant-isolation.test.ts'] }),
+    node('stat', 4, 1, 'Confirmed?', 'else refused', 'logic', 'Already checked in, cancelled, refunded or no-show bookings are refused with the reason.', { step: 5 }),
+    node('day', 4, 2, 'Today?', 'date must match', 'logic', 'A booking for another day is refused.', { step: 6, files: ['src/lib/checkin-window.ts'] }),
+    node('ok', 3, 2, 'Checked in', 'time stored', 'data', 'Status becomes checked_in with the time.', { step: 7 }),
+    node('rew', 2, 2, 'Rewards', 'cashback + referral', 'logic', 'Cashback is credited (capped). If the player was referred and this is their first game, the referrer is credited too.', { step: 8, files: ['src/lib/wallet.ts'] }),
+    node('pay', 1, 2, 'Pay at venue?', 'collect balance', 'logic', 'If it was pay-at-venue, the desk marks it paid in full; otherwise it shows the balance still to collect.', { step: 9, files: ['src/lib/partner-actions.ts'] }),
+    node('rv', 0, 2, 'Review unlocked', 'player can rate', 'client', 'Only now can the player review the venue.', { step: 10, files: ['src/lib/reviews.ts'] }),
+    node('err', 2, 0, 'Refused', 'with the reason', 'logic', 'Access denied, no booking found, another turf, already checked in, cancelled, or another day.', {}),
+    node('ns', 4, 3, 'No-show', 'after slot starts', 'logic', 'A confirmed booking can be marked no-show only after the slot has started. It still occupies the hour.', { files: ['src/lib/partner-actions.ts (markNoShow)'] })
+  ], [
+    edge('scan', 'perm', 'submit'), edge('perm', 'find', 'allowed'), edge('find', 'turf', 'found'), edge('turf', 'stat', 'mine'), edge('stat', 'day', 'yes'), edge('day', 'ok', 'today'),
+    edge('ok', 'rew', 'reward'), edge('rew', 'pay', 'then'), edge('pay', 'rv', 'done'),
+    edge('perm', 'err', 'denied'), edge('find', 'err', 'none'), edge('turf', 'err', 'other'), edge('stat', 'err', 'no'), edge('day', 'ns', 'absent', { async: true })
+  ]);
+
+  /* 7e SIGN-IN */
+  view('login', 'Flows', 'Sign-in', 'How owners and admins sign in', 'Password sign-in with lockouts, or Google and Apple for owners. Both end in a signed httpOnly cookie.', [
+    node('sub', 0, 0, 'Submit', 'email + password', 'client', 'The login form on /admin/login or /partner/login.', { step: 1, files: ['src/app/admin/login', 'src/app/partner/login'] }),
+    node('cfg', 1, 0, 'Configured?', 'role + SESSION_SECRET', 'logic', 'A valid role and SESSION_SECRET must exist, otherwise "login not configured".', { step: 2, files: ['src/lib/auth-actions.ts', 'src/lib/session.ts'] }),
+    node('fields', 2, 0, 'Fields filled?', 'both required', 'logic', 'Empty fields give "enter your email and password".', { step: 3 }),
+    node('lock', 3, 0, 'Lockout check', 'before the password', 'logic', 'Locked after 5 failures per role, email and IP, or 20 per role and IP, for 15 minutes. The lock is checked before the password so locked accounts reveal nothing.', { hub: true, step: 4, files: ['src/lib/login-throttle.ts', 'src/lib/shared-rate-limit.ts'] }),
+    node('cred', 4, 0, 'Credentials', 'env or scrypt hash', 'logic', 'Admin uses the ADMIN_EMAIL and ADMIN_PASSWORD environment values (with an optional authenticator code). Partners use the OYUN operations login from the environment, or a scrypt hash for owners and staff.', { step: 5, files: ['src/lib/password.ts', 'src/lib/totp.ts', 'src/lib/partner-auth.ts'] }),
+    node('fail', 4, 1, 'Record failure', 'counts toward lock', 'data', 'A wrong password adds a failure to the shared counters.', {}),
+    node('bad', 4, 2, 'Invalid email or password', 'same message', 'client', 'One message for every wrong credential so nobody can tell which part was wrong.', {}),
+    node('clr', 3, 1, 'Clear failures', 'on success', 'logic', 'A correct login resets the counters.', { step: 6 }),
+    node('cookie', 2, 1, 'Signed cookie', 'httpOnly, per role', 'logic', 'A cookie signed with SESSION_SECRET. The proxy checks it optimistically; layouts and actions verify it again.', { step: 7, files: ['src/lib/session.ts', 'src/proxy.ts'] }),
+    node('go', 1, 1, 'Redirect', '/admin or /partner', 'client', 'The dashboard opens.', { step: 8 }),
+    node('sso', 2, 2, 'Google or Apple', 'Clerk, owners only', 'ext', 'A verified Clerk email is mapped to an approved owner or staff member by partnerSubjectForEmail, then the same cookie is set. Anyone else sees "no partner account yet".', { files: ['src/app/partner/login/sso/route.ts', 'src/lib/partner-social.ts'] })
+  ], [
+    edge('sub', 'cfg', 'submit'), edge('cfg', 'fields', 'ok'), edge('fields', 'lock', 'ok'), edge('lock', 'cred', 'open'), edge('cred', 'fail', 'wrong'), edge('fail', 'bad', 'show'),
+    edge('cred', 'clr', 'match'), edge('clr', 'cookie', 'sign'), edge('cookie', 'go', 'redirect'), edge('sso', 'cookie', 'verified email')
+  ]);
+
+  /* 7f RACE SIMULATOR */
+  V.push({ id: 'sim', group: 'Flows', tab: 'Race simulator', title: 'Two players, one slot', sub: 'Run the race yourself. Pick how the booking is stored and what goes wrong, then see which layer stops the second player.', type: 'sim' });
+
   /* hub helper for feature views */
-  function hubView(id, tab, title, sub, hubNode, leaves, perRow) {
+  function hubView(id, tab, title, sub, hubNode, leaves, perRow, group) {
     var nodes = [hubNode], edges = [], w = perRow || 5;
     leaves.forEach(function (l, i) {
       var col = i % w, row = 1 + Math.floor(i / w);
       nodes.push(node(l[0], col, row, l[1], l[2], l[3], l[4], { files: l[5] || [], rules: l[6] || [] }));
       var he = edge(hubNode.id, l[0], ''); he.quiet = row > 1; edges.push(he);
     });
-    return view(id, 'Features', tab, title, sub, nodes, edges);
+    return view(id, group || 'Features', tab, title, sub, nodes, edges);
   }
 
   /* 8 PLAYER FEATURES */
@@ -381,6 +489,66 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     edge('branch', 'hooks', 'commit'), edge('hooks', 'pr', 'push'), edge('pr', 'ci', 'checks'), edge('ci', 'main', 'green'), edge('main', 'pipe', 'push to main'),
     edge('pipe', 'vercel', 'promote'), edge('sched', 'vercel', 'deploy if changed'), edge('vercel', 'post', 'verify'), edge('post', 'live', 'verified'),
     edge('live', 'health', 'watched', { async: true }), edge('live', 'dbl', 'watched', { async: true }), edge('vercel', 'crons', 'calls', { async: true })
+  ]);
+
+  /* 12b PRIVACY */
+  hubView('privacy', 'Privacy', 'Privacy and personal data', 'What OYUN does with personal data and how people stay in control. Tap a node for the rule and the code.', node('pv', 2, 0, 'Personal data', 'DPDP controls', 'logic', 'Players can export or erase their data and choose cookies. Old records are anonymised on a schedule.', { hub: true, files: ['src/lib/dpdp.ts'] }), [
+    ['pvx', 'Export my data', 'GET /api/privacy/export', 'logic', 'Signed-in only and rate limited. extractUserData gathers the account\'s bookings, wallet history and profile; with v2 on, it also queries the oyun bookings by account.', ['src/app/api/privacy/export/route.ts', 'src/lib/dpdp.ts']],
+    ['pvd', 'Erase my account', 'POST /api/privacy/delete', 'logic', 'Signed-in, same-origin and rate limited. applyUserDeletion removes the legacy data, and erase_account() handles the v2 tables.', ['src/app/api/privacy/delete/route.ts', 'supabase/migrations/20261023000000_v2_erase_account.sql']],
+    ['pvc', 'Cookie choice', 'essential or all', 'client', 'The consent banner saves essential or all. Analytics only load with consent.', ['src/app/api/privacy/consent/route.ts', 'src/components/consent']],
+    ['pvr', 'Retention purge', '21:30 UTC daily', 'ops', 'A daily cron anonymises completed and cancelled bookings older than 8 years (the statutory limit). It currently works only on the per-request window; nothing is that old yet.', ['src/app/api/cron/retention-purge/route.ts', 'src/lib/dpdp.ts (applyRetentionPurge)']],
+    ['pvs', 'Student ID photos', 'deleted after 30 days', 'logic', 'IDs are stored in a private bucket. A photo nobody has reviewed after 30 days is deleted (expireStudentIds).', ['src/lib/student-id.ts', 'supabase/migrations/20261015020000_student_ids_bucket.sql']],
+    ['pvm', 'Masked phone numbers', 'public ticket pages', 'client', 'The phone number is masked on public ticket and invoice pages, and owner and commission details never reach the browser.', ['src/lib/public-turf.ts']],
+    ['pvn', 'No data in pings', 'slot pings are anonymous', 'data', 'Realtime topics carry no names, ids, phones or payment tokens (ADR-0006).', ['docs/adr/0006-realtime-broadcast.md']]
+  ], 4, 'Data & ops');
+
+  /* 12c SECURITY */
+  hubView('security', 'Security', 'Defence in depth', 'The controls an attacker has to get past, from the network to the database.', node('sc', 2, 0, 'Security controls', 'docs/SECURITY.md', 'logic', 'Each leaf is a control that exists in the code today.', { hub: true, files: ['docs/SECURITY.md', 'docs/AUTHORIZATION.md'] }), [
+    ['s1', 'Transport', 'HTTPS + HSTS', 'edge', 'The proxy redirects http to https on production hosts, and HSTS is sent.', ['src/proxy.ts (forceHttps)']],
+    ['s2', 'Browser headers', 'CSP nonce, COOP', 'edge', 'A per-request CSP nonce (skipped for prerendered pages), frame protection, nosniff, a referrer policy and COOP.', ['src/lib/csp.ts', 'src/proxy.ts']],
+    ['s3', 'Role checks', 'requirePartner / requireAdmin', 'logic', 'Every admin and partner action checks the caller first, and partner actions ask for the exact permission. A test fails if one does not.', ['src/lib/authorization.test.ts', 'src/lib/authorization-audit.test.ts']],
+    ['s4', 'Tenant isolation', 'owner A cannot touch B', 'logic', 'A test calls every partner action as one owner with another owner\'s ids and checks nothing changes.', ['src/lib/tenant-isolation.test.ts']],
+    ['s5', 'Input hygiene', 'validate, cap, sanitise', 'logic', 'Server validation and length caps, image links limited to safe forms, and CSV exports neutralise spreadsheet formulas.', ['src/lib/validation']],
+    ['s6', 'Abuse limits', 'shared rate limits', 'data', 'Counters in Postgres are shared by every server instance. Plus login lockouts, a honeypot on applications and a same-origin check on the hold-release beacon.', ['src/lib/shared-rate-limit.ts', 'src/lib/same-origin.ts']],
+    ['s7', 'Narrow data shapes', 'PublicTurf only', 'logic', 'The browser gets PublicTurf, never the full record. A test fails if a client component imports a full internal type.', ['src/lib/public-turf.ts']],
+    ['s8', 'No double booking', 'index or constraint', 'data', 'The revision lock with unique indexes, or the v2 exclusion constraint, with a parallel race test in CI.', ['scripts/sql-race-test.sh']],
+    ['s9', 'Secret hygiene', 'server-only key', 'logic', 'The Supabase secret-key client is server-only. Gitleaks scans every pull request.', ['src/utils/supabase/admin.ts', '.github/workflows/ci.yml']],
+    ['s10', 'Supply chain', 'audit + pinned actions', 'ops', 'npm audit on production packages, actions pinned by commit SHA with read-only tokens, and Dependabot.', ['.github/workflows/ci.yml']]
+  ], 5, 'Data & ops');
+
+  /* 12d TESTS */
+  hubView('tests', 'Tests', 'How the code is checked', 'Every layer has a test that fails loudly. Counts are from the repo at the time of writing.', node('tq', 2, 0, 'Quality gates', 'must pass to merge', 'ops', 'A pull request merges only when all of these are green.', { hub: true, files: ['.github/workflows/ci.yml', '.githooks'] }), [
+    ['t1', 'Unit tests', 'Vitest', 'ops', 'About 600 tests in 75 files for pricing, wallet, cancel rules, payments, hosts, SEO and more.', ['src/lib/*.test.ts']],
+    ['t2', 'Rule audits', 'authorization tests', 'ops', 'Fail when a new action, route or page is not classified, or when a public action loses its defence.', ['src/lib/authorization-audit.test.ts']],
+    ['t3', 'SQL tests', 'Postgres 17', 'ops', 'Each migration has a test (constraints, rate limits, payment events, v2 booking, erase, backfill).', ['supabase/tests', 'scripts/sql-tests.sh']],
+    ['t4', 'Race test', 'parallel bookings', 'ops', 'Fires parallel bookings at the database and proves only one wins, for both the revision lock and the unique indexes.', ['scripts/sql-race-test.sh']],
+    ['t5', 'End-to-end', 'Playwright', 'ops', 'Desktop and mobile: browse to book to cancel, a slot booked by one player shows as booked to another, owner lists a venue and admin approves, partner check-in and calendar.', ['e2e/booking.spec.ts', 'e2e/partner.spec.ts', 'e2e/admin.spec.ts', 'e2e/workflows.spec.ts']],
+    ['t6', 'Accessibility', 'axe + keyboard', 'ops', 'axe runs on public, partner and admin pages, and the booking path must work with the keyboard alone.', ['e2e/a11y.spec.ts']],
+    ['t7', 'Lighthouse', 'mobile, 90 or more', 'ops', 'Home, arenas and a venue page must score at least 90 on mobile.', ['scripts/lighthouse-check.mjs']],
+    ['t8', 'Load and smoke', 'k6 + smoke test', 'ops', 'A k6 browse test and a smoke test of health, home, arenas and double bookings run at the staging gate and after deploy.', ['scripts/k6/browse.js', 'scripts/smoke-test.mjs']],
+    ['t9', 'Static checks', 'lint, types, knip, dup', 'ops', 'Zero lint warnings, type-check, unused-code (knip) and duplicate-code (jscpd) checks.', ['package.json']],
+    ['t10', 'Git hooks', 'pre-commit, pre-push', 'ops', 'pre-commit runs type-check and lint; pre-push blocks a direct push to main.', ['.githooks', 'scripts/install-hooks.mjs']]
+  ], 5, 'Data & ops');
+
+  /* 12e RESILIENCE */
+  view('resilience', 'Data & ops', 'Errors and safety nets', 'What happens when something goes wrong', 'Actions turn expected problems into messages, report unexpected ones, and refuse to take bookings that could be lost.', [
+    node('act', 2, 0, 'Action runs', 'run() wrapper', 'logic', 'Server actions run inside a wrapper that catches known errors.', { files: ['src/lib/action-utils.ts', 'src/lib/errors.ts'] }),
+    node('okm', 0, 1, 'Success', 'refreshAll()', 'logic', 'On success the site layout is revalidated and an ok message returned.', { files: ['src/lib/action-utils.ts'] }),
+    node('exp', 2, 1, 'Expected error', 'Validation / Access', 'logic', 'A ValidationError or AccessError becomes an inline message the person can fix.', { files: ['src/lib/errors.ts'] }),
+    node('unx', 4, 1, 'Unexpected error', 'rethrown', 'logic', 'Anything else is rethrown to the error boundary.', {}),
+    node('bnd', 4, 2, 'Error boundary', 'error.tsx', 'client', 'Shows a safe page and posts a report.', { files: ['src/app/global-error.tsx'] }),
+    node('rep', 4, 3, 'Client error API', '/api/client-error', 'edge', 'Rate limited, bodies over 5,000 characters rejected, no cookies, headers or form data included.', { files: ['src/app/api/client-error/route.ts'] }),
+    node('log', 2, 3, 'JSON log line', 'Vercel Logs', 'ops', 'Every error is one JSON line.', { files: ['src/lib/monitoring.ts'] }),
+    node('wh', 4, 4, 'Error webhook', 'ERROR_WEBHOOK_URL', 'ext', 'Optional Slack or Discord message per error.', { files: ['src/lib/monitoring.ts'] }),
+    node('hb', 0, 2, 'Hold or book', 'holdSlots, createBookings', 'logic', 'Both check that bookings would be saved before doing anything.', { files: ['src/lib/booking-availability.ts'] }),
+    node('sb', 0, 3, 'Supabase connected?', 'shared storage', 'data', 'Storage must be shared across server instances, or tickets could vanish.', { files: ['src/lib/booking-availability.ts', 'src/lib/launch-checks.ts'] }),
+    node('open', 0, 4, 'Booking open', 'normal', 'logic', 'Supabase is connected: bookings are saved.', {}),
+    node('eph', 1, 4, 'Demo mode', 'ALLOW_EPHEMERAL_BOOKINGS', 'logic', 'Only with this flag: bookings open but tickets may vanish. For demos.', {}),
+    node('refd', 2, 4, 'Refused', 'database not connected', 'logic', 'Otherwise the action refuses rather than lose a booking.', {}),
+    node('hl', 2, 5, '/api/health', 'same state', 'edge', 'Returns status only and reports the same booking-open state, as does the admin banner.', { files: ['src/app/api/health/route.ts'] })
+  ], [
+    edge('act', 'okm', 'no error'), edge('act', 'exp', 'known'), edge('act', 'unx', 'other'), edge('unx', 'bnd', 'rethrow'), edge('bnd', 'rep', 'post'), edge('rep', 'log', 'log'), edge('rep', 'wh', 'optional', { async: true }),
+    edge('hb', 'sb', 'check'), edge('sb', 'open', 'yes'), edge('sb', 'eph', 'no + flag'), edge('sb', 'refd', 'no flag'), edge('refd', 'hl', 'reported', { async: true })
   ]);
 
   /* 13 ROUTES */
@@ -598,6 +766,7 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
 
   function select(id) {
     var v = byId[state.view]; state.sel = id; var n = v.map[id]; if (n && n.step) state.step = n.step; paint(); detail(n, v);
+    try { history.replaceState(null, '', '#' + v.id + '~' + id); } catch (e) {}
   }
   function detail(n, v) {
     var d = $('detail'); d.innerHTML = '';
@@ -649,18 +818,107 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     q.addEventListener('input', render); render();
   }
 
+
+  /* ---------- race simulator ---------- */
+  function renderSim() {
+    var box = $('sim'); box.innerHTML = ''; box.className = 'sim';
+    var ctl = h('div', { 'class': 'ctl' });
+    ctl.innerHTML = '<label>Storage <select id="sm"><option value="legacy">Legacy store (revision lock)</option><option value="v2">v2 slots (exclusion constraint)</option></select></label>' +
+      '<label><input type="checkbox" id="sb"> Skip the app checks (simulate a bug)</label>' +
+      '<label><input type="checkbox" id="sl"> Player B already paid online</label>';
+    var run = h('button', { 'class': 'run', type: 'button' }, 'Both tap Proceed now');
+    ctl.appendChild(run); box.appendChild(ctl);
+    var list = h('ol', { 'class': 'lanes', 'aria-live': 'polite' }); box.appendChild(list);
+    var verdict = h('div', { 'class': 'verdict', hidden: '' }); box.appendChild(verdict);
+    var timer = [];
+    function steps() {
+      var v2 = $('sm').value === 'v2', bug = $('sb').checked, late = $('sl').checked, o = [];
+      o.push(['both', 'Screen', 'Both players see the 7 PM hour as Open. Realtime pings and a 10 second poll keep it fresh, but the screen is never trusted.']);
+      if (!bug) {
+        if (!v2) {
+          o.push(['A', 'Hold check', 'holdSlots runs mutate(): loads the rows changed since revision N and adds A\'s hold on a private copy.']);
+          o.push(['B', 'Hold check', 'The same on a second server instance, also at revision N.']);
+          o.push(['A', 'Database', 'apply_changes(expected_rev = N) succeeds. Revision becomes N+1 and a slot ping goes out.']);
+          o.push(['B', 'Database', 'apply_changes(expected_rev = N) raises store_conflict: the revision has moved.']);
+          o.push(['B', 'Hold check', 'mutate() retries (up to 5 times, with jitter), reloads, sees A\'s hold and throws "slot taken or being booked". Nothing is held for B.']);
+        } else {
+          o.push(['A', 'Database', 'hold_slots inserts a slot_claim for the resource and the 7 to 8 PM range.']);
+          o.push(['B', 'Database', 'hold_slots tries the same resource and range. The gist exclusion constraint rejects the overlap.']);
+          o.push(['B', 'Hold check', 'The function returns "slot taken or being booked". Nothing is held for B.']);
+        }
+      } else {
+        o.push(['A', 'App', 'Holds and books normally. A confirmed booking exists for 7 PM.']);
+        o.push(['B', 'App', 'The app-level availability check is skipped (the simulated bug), so B tries to insert a second booking for the same hour.']);
+        if (!v2) o.push(['B', 'Database backstop', 'The unique index on bookings rejects the duplicate, and the revision check would raise store_conflict as well.']);
+        else o.push(['B', 'Database backstop', 'The exclusion constraint on slot_claims rejects the overlapping claim. The booking insert fails.']);
+      }
+      o.push(['A', 'Confirm', 'createBookings re-checks, prices the hour and writes the booking as confirmed. A gets a ticket.']);
+      if (late) {
+        o.push(['B', 'Payment', 'Razorpay\'s webhook arrives for B: signature verified, event claimed once.']);
+        o.push(['B', 'Auto-refund', 'The slot already belongs to A, so autoRefundRaceLostPayment returns B\'s money and tells B.']);
+      }
+      o.push(['both', 'Monitor', 'detectDoubleBookings and the daily post-deploy check look for overlaps. There should be none.']);
+      return { list: o, text: 'One booking exists for the hour. A has a confirmed ticket. B was refused' + (late ? ' and automatically refunded.' : '.') + (bug ? ' The database refused the bug, so no double booking happened.' : '') };
+    }
+    function runIt() {
+      timer.forEach(clearTimeout); timer = []; list.innerHTML = ''; verdict.hidden = true;
+      var r = steps(), calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      r.list.forEach(function (st, i) {
+        timer.push(setTimeout(function () {
+          var li = h('li', {}, '<span class="who ' + st[0] + '">' + (st[0] === 'both' ? 'A + B' : st[0]) + '</span><div><span class="lay">' + esc(st[1]) + '</span><p>' + esc(st[2]) + '</p></div>');
+          list.appendChild(li);
+          if (i === r.list.length - 1) { verdict.textContent = r.text; verdict.hidden = false; }
+        }, calm ? 0 : i * 650));
+      });
+    }
+    run.addEventListener('click', runIt);
+    ['sm', 'sb', 'sl'].forEach(function (id) { $(id).addEventListener('change', runIt); });
+    runIt();
+  }
+
+  /* ---------- global search ---------- */
+  function setupSearch() {
+    var q = $('gq'), res = $('gres'), idx = [];
+    V.forEach(function (v) { (v.nodes || []).forEach(function (n) { idx.push({ v: v, n: n, hay: (n.t + ' ' + n.s + ' ' + n.desc + ' ' + n.files.join(' ') + ' ' + n.rules.join(' ')).toLowerCase() }); }); });
+    function close() { res.hidden = true; res.innerHTML = ''; }
+    q.addEventListener('input', function () {
+      var t = q.value.trim().toLowerCase(); res.innerHTML = ''; if (t.length < 2) { res.hidden = true; return; }
+      var hit = idx.filter(function (e) { return e.hay.indexOf(t) > -1; }).slice(0, 8);
+      if (!hit.length) { res.appendChild(h('p', { 'class': 'none', style: 'margin:10px 12px' }, 'No component matches "' + esc(q.value) + '".')); res.hidden = false; return; }
+      hit.forEach(function (e) {
+        var b = h('button', { type: 'button' }, '<span>' + esc(e.n.t) + '</span><em>' + esc(e.v.tab) + '</em>');
+        b.addEventListener('click', function () { setView(e.v.id); select(e.n.id); q.value = ''; close(); $('diagram').scrollIntoView({ block: 'start' }); });
+        res.appendChild(b);
+      }); res.hidden = false;
+    });
+    q.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') close(); });
+    document.addEventListener('click', function (ev) { if (!ev.target.closest || !ev.target.closest('.searchwrap')) close(); });
+  }
+  function setupTheme() {
+    var b = $('theme'), modes = ['auto', 'light', 'dark'], i = 0;
+    b.addEventListener('click', function () {
+      i = (i + 1) % 3; var m = modes[i];
+      if (m === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', m);
+      b.textContent = 'Theme: ' + m;
+    });
+  }
+
   function setView(id) {
     var v = byId[id] || byId.sys; state.view = v.id; state.sel = null; state.hover = null;
     Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-v') === v.id ? 'true' : 'false'); });
     $('vtitle').textContent = v.title; $('vsub').textContent = v.sub;
+    $('sim').hidden = true;
     if (v.type === 'routes') { $('diagram').hidden = true; $('routes').hidden = false; $('stepper').hidden = true; renderRoutes(); detail(null, v); }
+    else if (v.type === 'sim') { $('diagram').hidden = true; $('routes').hidden = true; $('stepper').hidden = true; $('sim').hidden = false; renderSim(); $('detail').innerHTML = ''; $('detail').appendChild(h('div', { 'class': 'dhead' }, '<h2>What this shows</h2><span class="tag">Simulation</span>')); $('detail').appendChild(h('p', { 'class': 'dtext' }, 'This replays the real order of checks from the code. The first layer that can stop the second player does; the later layers are there in case an earlier one has a bug.')); }
     else { $('routes').hidden = true; $('diagram').hidden = false; setupStepper(v); draw(); detail(null, v); }
   }
 
   buildTabs(); buildLegend();
   $('prev').addEventListener('click', function () { go(-1); });
   $('next').addEventListener('click', function () { go(1); });
-  var start = (location.hash || '').replace('#', ''); setView(byId[start] ? start : 'sys');
+  setupSearch(); setupTheme();
+  var start = (location.hash || '').replace('#', '').split('~'); setView(byId[start[0]] ? start[0] : 'sys');
+  if (start[1] && byId[state.view].map && byId[state.view].map[start[1]]) select(start[1]);
 })();
 </script>
 
