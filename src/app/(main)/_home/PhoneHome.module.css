@@ -33,9 +33,9 @@
 .avatar { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); font-weight: 800; font-size: 15px; }
 
 /* ---------- tabs: three slanted cards, the open one joins the stage ---------- */
-.tabs { position: relative; display: flex; padding: 0 0 0 4px; margin-top: 4px; }
+.tabs { position: relative; display: flex; padding: 0 8px; margin-top: 4px; }
 .tab {
-  position: relative; flex: 1 1 0; min-width: 0; margin-left: -10px; padding: 14px 8px 12px; min-height: 112px;
+  position: relative; flex: 1 1 0; min-width: 0; margin-left: 6px; padding: 14px 8px 12px; min-height: 112px;
   display: grid; justify-items: center; align-content: start; gap: 4px;
   border: 0; font: inherit; color: rgba(255, 255, 255, 0.78); background: var(--tab-off); cursor: pointer; z-index: 1;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100 L6 24 Q8 8 22 8 L78 8 Q92 8 94 24 L100 100 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;

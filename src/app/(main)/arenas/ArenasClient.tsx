@@ -351,7 +351,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
               {filtered.map((turf, i) => (
                 // Above-the-fold cards paint at once: a fade-in starts at opacity 0 and would hold back the LCP image
                 <div key={turf.id} className={i < 4 ? undefined : 'animate-fadeInUp'} style={i < 4 ? undefined : { animationDelay: `${Math.min(i - 4, 6) * 0.06}s` }}>
-                  <TurfCard turf={turf} eager={i < 1} date={date || undefined} />
+                  <TurfCard turf={turf} eager={i < 4} date={date || undefined} />
                 </div>
               ))}
             </div>
