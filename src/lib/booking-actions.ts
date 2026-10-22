@@ -189,6 +189,19 @@ export async function quoteSelection(req: SelectionRequest): Promise<SelectionQu
   }
 }
 
+// Confirmation to the player and an alert to the owner. Never lets a messaging problem fail a booking that is already saved.
+async function notifyNewBooking(turfId: string, ids: string[] | undefined) {
+  try {
+    const db = await getDb();
+    const turf = db.turfs.find((t) => t.id === turfId);
+    const booking = db.bookings.find((b) => ids?.includes(b.id));
+    if (turf && booking) {
+      sendBookingConfirmation(booking, turf).catch(() => {});
+      sendOwnerAlert(booking, turf, 'new_booking').catch(() => {});
+    }
+  } catch {}
+}
+
 export async function createBookings(req: BookingRequest): Promise<{ ids?: string[]; error?: string }> {
   try {
     assertBookingsAreSaved();
@@ -204,6 +217,7 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
     if (isV2SlotsActive()) {
       const { ids } = await v2Checkout(req, holder, accountId);
       refreshAll();
+      await notifyNewBooking(req.turfId, ids);
       return { ids };
     }
 
@@ -223,15 +237,7 @@ export async function createBookings(req: BookingRequest): Promise<{ ids?: strin
     });
 
     refreshAll();
-    try {
-      const db = await getDb();
-      const turf = db.turfs.find((t) => t.id === req.turfId);
-      const booking = db.bookings.find((b) => ids?.includes(b.id));
-      if (turf && booking) {
-        sendBookingConfirmation(booking, turf).catch(() => {});
-        sendOwnerAlert(booking, turf, 'new_booking').catch(() => {});
-      }
-    } catch {}
+    await notifyNewBooking(req.turfId, ids);
     return { ids };
   } catch (err) {
     if (err instanceof ValidationError) return { error: err.message };
