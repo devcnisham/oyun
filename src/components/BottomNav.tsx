@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSyncExternalStore } from 'react';
-import { roleForHost } from '@/lib/hosts';
+import { LAUNCH_AT, roleForHost } from '@/lib/hosts';
 import FloatingSearch from './FloatingSearch';
 import ProfileTabIcon from './ProfileTabIcon';
 import styles from './BottomNav.module.css';
@@ -35,9 +35,10 @@ export default function BottomNav() {
   // The phone home page is prebuilt at /m while the address bar says /
   const raw = usePathname() ?? '/';
   const path = raw === '/m' ? '/' : raw;
-  // The landing host shows the landing page at / (the address bar does not change), so the host tells us too
-  const onLandingHost = useSyncExternalStore(subscribeNever, () => roleForHost(window.location.host) === 'landing', () => false);
-  if (onLandingHost || path.startsWith('/admin') || path.startsWith('/partner') || ['/landing', '/countdown', '/about'].includes(path)) return null;
+  // Before launch the www host shows the landing page at / (the address bar does not change), so the host and the date tell us too.
+  // After launch www is the whole booking site and keeps the tab bar.
+  const onPreLaunchHome = useSyncExternalStore(subscribeNever, () => path === '/' && roleForHost(window.location.host) === 'landing' && Date.now() < LAUNCH_AT, () => false);
+  if (onPreLaunchHome || path.startsWith('/admin') || path.startsWith('/partner') || ['/landing', '/countdown', '/about'].includes(path)) return null;
 
   return (
     <>
