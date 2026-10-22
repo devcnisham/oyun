@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import AppBar from "@/components/AppBar";
+import DesktopGate from "@/components/DesktopGate";
 import Footer from "@/components/Footer";
 import { getSettings, getSiteContent } from "@/lib/queries";
 
@@ -26,6 +27,7 @@ export default async function MainLayout({
       <AppBar />
       <main id="main" tabIndex={-1} className="appMain">{children}</main>
       <Footer supportEmail={settings.supportEmail} />
+      <DesktopGate />
     </div>
   );
 }
