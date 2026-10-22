@@ -8,6 +8,7 @@ import { SITE_CITY, SITE_DESCRIPTION, areaSlug } from '@/lib/site';
 import { IconArrow, IconPlus } from '../_ui/icons';
 import { BROWSE_URL } from '../_ui/links';
 import Reveal from '../_ui/Reveal';
+import { isLaunched } from '@/lib/hosts';
 import SiteFooter from '../_ui/SiteFooter';
 import SiteHeader from '../_ui/SiteHeader';
 import { display } from './fonts';
@@ -56,7 +57,7 @@ export default async function LandingPage() {
   return (
     <div className={`${display.variable} ${styles.page}`}>
       <JsonLd data={[organizationSchema(supportEmail, supportPhone), websiteSchema()]} />
-      <SiteHeader />
+      <SiteHeader waiting={!isLaunched()} />
       <main id="content">
         {/* hero: the promise and a board you can use */}
         <section className={styles.hero} aria-labelledby="hero-title">

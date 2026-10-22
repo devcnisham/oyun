@@ -8,9 +8,9 @@
 export const ROOT_DOMAIN = 'oyun.co.in';
 export type HostRole = 'landing' | 'app' | 'book' | 'help' | 'partner' | 'admin' | 'preview';
 
-// The booking site opens to the public at launch (31 October 2026, 12:00 am India time, same moment as the countdown).
-// Before then the player pages are closed. LAUNCH_OPEN=true opens them early. Dashboards are never gated.
-export const LAUNCH_AT = new Date('2026-10-31T00:00:00+05:30').getTime();
+// The booking site opened to the public on 22 October 2026 (12:00 am India time), nine days ahead of the planned 31 October.
+// To close it again set LAUNCH_AT to a future moment; LAUNCH_OPEN=true opens it regardless. Dashboards are never gated.
+export const LAUNCH_AT = new Date('2026-10-22T00:00:00+05:30').getTime();
 export const isLaunched = (now: number = Date.now(), open: string | undefined = process.env.LAUNCH_OPEN) => open === 'true' || now >= LAUNCH_AT;
 
 // Cookie that lets the team see the booking site before launch (set by visiting any page with ?preview=<LAUNCH_PREVIEW_KEY>)
@@ -78,8 +78,8 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
     case 'landing':
       if (dashboard()) return dashboard()!;
       if (access.launched) {
-        // The countdown has no purpose after launch
-        if (pathname === '/countdown') return to('landing', '/', true);
+        // The countdown and the pre-launch landing page have no purpose after launch: / is the booking home
+        if (pathname === '/countdown' || pathname === '/landing') return to('landing', '/', true);
         return { kind: 'next' };
       }
       if (pathname === '/') return { kind: 'rewrite', path: '/landing' };

@@ -2,13 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SITE_CITY } from '@/lib/site';
 import { getSettings } from '@/lib/queries';
+import { isLaunched } from '@/lib/hosts';
 import SiteFooter from '../_ui/SiteFooter';
 import SiteHeader from '../_ui/SiteHeader';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
   title: 'About us',
-  description: `OYUN is a turf and court booking platform built for ${SITE_CITY}. Launching soon.`,
+  description: `OYUN is a turf and court booking platform built for ${SITE_CITY}.`,
   alternates: { canonical: '/about' },
 };
 
@@ -22,7 +23,7 @@ export default async function AboutPage() {
   const { supportEmail } = await getSettings();
   return (
     <div className={styles.page}>
-      <SiteHeader current="about" />
+      <SiteHeader current="about" waiting={!isLaunched()} />
       <main id="content" className={styles.main}>
         <p className={styles.eyebrow}>About us</p>
         <h1 className={styles.title}>
@@ -33,8 +34,7 @@ export default async function AboutPage() {
         </p>
         <p className={styles.text}>
           We want finding a place to play to take a minute, not a round of phone calls. Players see what is free and
-          book it. Turf owners get a simple way to fill their hours. Everything is being set up now and will be
-          revealed when we launch.
+          book it. Turf owners get a simple way to fill their hours.
         </p>
 
         <ul className={styles.pillars}>

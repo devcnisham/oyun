@@ -8,14 +8,15 @@ import { BROWSE_URL } from './links';
 import styles from './site.module.css';
 
 const SECTIONS = [
-  { href: '/#how', label: 'How it works' },
-  { href: '/#owners', label: 'For venue owners' },
-  { href: '/#faq', label: 'FAQ' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/list-turf', label: 'For venue owners' },
+  { href: '/faq', label: 'FAQ' },
 ];
 
 // Header shared by the landing, countdown and about pages. Frosted bar, a menu panel on phones, and the one primary
 // action everywhere: Browse & book (/arenas on www).
-export default function SiteHeader({ current }: { current?: 'about' | 'countdown' }) {
+// `waiting` is true only before launch: it adds the Launching soon button (once the site is open there is nothing to count down to)
+export default function SiteHeader({ current, waiting = false }: { current?: 'about' | 'countdown'; waiting?: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -51,7 +52,7 @@ export default function SiteHeader({ current }: { current?: 'about' | 'countdown
         </nav>
 
         <div className={styles.actions}>
-          <Link href="/countdown" className={styles.ghost} aria-current={current === 'countdown' ? 'page' : undefined}>Launching soon</Link>
+          {waiting && <Link href="/countdown" className={styles.ghost} aria-current={current === 'countdown' ? 'page' : undefined}>Launching soon</Link>}
           <a href={BROWSE_URL} className={styles.primary}>Browse &amp; book <IconArrow size={16} /></a>
           <button type="button" className={styles.menuBtn} aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen((v) => !v)}>
             {open ? <IconClose /> : <IconMenu />}
@@ -65,7 +66,7 @@ export default function SiteHeader({ current }: { current?: 'about' | 'countdown
           <Link key={s.href} href={s.href} className={styles.panelLink} onClick={() => setOpen(false)}>{s.label}</Link>
         ))}
         <Link href="/about" className={styles.panelLink} onClick={() => setOpen(false)}>About</Link>
-        <Link href="/countdown" className={styles.panelLink} onClick={() => setOpen(false)}>Launching soon</Link>
+        {waiting && <Link href="/countdown" className={styles.panelLink} onClick={() => setOpen(false)}>Launching soon</Link>}
         <a href={BROWSE_URL} className={`${styles.primary} ${styles.panelCta}`}>Browse &amp; book <IconArrow size={16} /></a>
       </div>
     </header>

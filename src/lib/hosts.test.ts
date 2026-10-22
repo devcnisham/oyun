@@ -56,6 +56,7 @@ describe('landing host (www)', () => {
   test('after launch www serves the whole public site (the single SEO host)', () => {
     for (const p of ['/', '/arenas', '/arenas/x', '/guides/padel', '/sports/football', '/turfs/kodialbail', '/login']) expect(routeForHost('landing', p, LIVE)).toEqual(next);
     expect(routeForHost('landing', '/countdown', LIVE)).toEqual(perm('/'));
+    expect(routeForHost('landing', '/landing', LIVE)).toEqual(perm('/'));
     expect(routeForHost('landing', '/admin', LIVE)).toEqual(go('admin', '/admin'));
   });
   test('the old /welcome address redirects to the countdown before launch and to / after', () => {
@@ -119,12 +120,12 @@ describe('launch gate', () => {
   test('after launch the vercel.app address is just the site', () => {
     expect(routeForHost('preview', '/', LIVE)).toEqual(next);
   });
-  test('isLaunched opens at 31 Oct 2026 00:00 IST or with LAUNCH_OPEN=true', () => {
+  test('isLaunched opens at 22 Oct 2026 00:00 IST or with LAUNCH_OPEN=true', () => {
     expect(isLaunched(LAUNCH_AT - 1, undefined)).toBe(false);
     expect(isLaunched(LAUNCH_AT, undefined)).toBe(true);
     expect(isLaunched(LAUNCH_AT - 86_400_000, 'true')).toBe(true);
     expect(isLaunched(LAUNCH_AT - 86_400_000, 'false')).toBe(false);
-    expect(new Date(LAUNCH_AT).toISOString()).toBe('2026-10-30T18:30:00.000Z');
+    expect(new Date(LAUNCH_AT).toISOString()).toBe('2026-10-21T18:30:00.000Z');
   });
   test('previewAllowed needs a key of 16+ characters and an exact cookie match', () => {
     const key = 'a-long-preview-key-123';
