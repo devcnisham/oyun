@@ -8,9 +8,8 @@ import { BROWSE_URL } from './links';
 import styles from './site.module.css';
 
 const SECTIONS = [
-  { href: '/#how', label: 'How it works' },
-  { href: '/#owners', label: 'For venue owners' },
-  { href: '/#faq', label: 'FAQ' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/faq', label: 'FAQ' },
 ];
 
 // Header shared by the landing, countdown and about pages. Frosted bar, a menu panel on phones, and the one primary

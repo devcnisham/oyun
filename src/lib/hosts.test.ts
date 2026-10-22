@@ -41,15 +41,15 @@ describe('shared endpoints', () => {
 const perm = (path: string) => ({ kind: 'redirect', host: 'www.oyun.co.in', path, permanent: true });
 
 describe('landing host (www)', () => {
-  test('shows the landing page at / and its pages before launch; sends closed player pages to the countdown', () => {
-    expect(routeForHost('landing', '/')).toEqual({ kind: 'rewrite', path: '/landing' });
-    for (const p of ['/countdown', '/welcome', '/about', '/privacy', '/terms', '/faq', '/help', '/guides/padel']) expect(routeForHost('landing', p)).toEqual(next);
+  test('shows the countdown page at / and its pages before launch; sends closed player pages to the countdown', () => {
+    expect(routeForHost('landing', '/')).toEqual({ kind: 'rewrite', path: '/countdown' });
+    for (const p of ['/countdown', '/about', '/privacy', '/terms', '/faq', '/help', '/guides/padel']) expect(routeForHost('landing', p)).toEqual(next);
     expect(routeForHost('landing', '/arenas/perfect-pass-kodialbail')).toEqual(go('www', '/countdown'));
     expect(routeForHost('landing', '/partner/calendar')).toEqual(go('partner', '/partner/calendar'));
     expect(routeForHost('landing', '/admin')).toEqual(go('admin', '/admin'));
   });
-  test('a team member with the preview cookie sees the player site on www; the landing page still shows at /', () => {
-    expect(routeForHost('landing', '/', TEAM)).toEqual({ kind: 'rewrite', path: '/landing' });
+  test('a team member with the preview cookie sees the player site on www; the countdown page still shows at /', () => {
+    expect(routeForHost('landing', '/', TEAM)).toEqual({ kind: 'rewrite', path: '/countdown' });
     expect(routeForHost('landing', '/arenas', TEAM)).toEqual(next);
     expect(routeForHost('landing', '/arenas/x', TEAM)).toEqual(next);
   });
@@ -57,6 +57,10 @@ describe('landing host (www)', () => {
     for (const p of ['/', '/arenas', '/arenas/x', '/guides/padel', '/sports/football', '/turfs/kodialbail', '/login']) expect(routeForHost('landing', p, LIVE)).toEqual(next);
     expect(routeForHost('landing', '/countdown', LIVE)).toEqual(perm('/'));
     expect(routeForHost('landing', '/admin', LIVE)).toEqual(go('admin', '/admin'));
+  });
+  test('the old /welcome address redirects to the countdown before launch and to / after', () => {
+    expect(routeForHost('landing', '/welcome')).toEqual(perm('/countdown'));
+    expect(routeForHost('landing', '/welcome', LIVE)).toEqual(perm('/'));
   });
 });
 

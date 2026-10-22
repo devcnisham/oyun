@@ -395,7 +395,7 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
   view('access', 'Flows', 'Access and auth', 'Who can reach what', 'Players, owners and admin each have their own door. The proxy checks hostname and cookie, then every page and action checks again on the server.', [
     node('visitor', 0, 0, 'Visitor', 'any browser', 'client', 'Anyone on the internet.', {}),
     node('host', 1.4, 0, 'Host routing', 'hosts.ts', 'edge', 'www and the bare domain serve the whole public site. partner. and admin. serve their dashboards. Old app., book. and help. hosts 301 to www.', { hub: true, files: ['src/lib/hosts.ts', 'src/proxy.ts'] }),
-    node('gate', 2.8, 0, 'Launch gate', 'until 31 Oct 2026', 'edge', 'Before launch, booking pages redirect to /countdown. The team can open them with ?preview=<key> (a 30 day cookie) or LAUNCH_OPEN. Dashboards are not gated.', { files: ['src/lib/hosts.ts (LAUNCH_AT)', 'src/lib/launch-checks.ts'] }),
+    node('gate', 2.8, 0, 'Launch gate', 'until 31 Oct 2026', 'edge', 'Before launch, / shows the countdown page and booking pages redirect to /countdown. The team can open them with ?preview=<key> (a 30 day cookie) or LAUNCH_OPEN. Dashboards are not gated.', { files: ['src/lib/hosts.ts (LAUNCH_AT)', 'src/lib/launch-checks.ts'] }),
     node('pauth', 0, 1, 'Player sign-in', 'Clerk or device', 'client', 'Clerk when its keys are set, otherwise a name and phone kept on the device. Booking needs sign-in when Clerk is on.', { files: ['src/lib/clerk.ts', 'src/lib/current-account.ts'] }),
     node('oauth', 2, 1, 'Partner login', 'password or Google/Apple', 'client', 'Password login, or Google and Apple through Clerk. /partner/login/sso only admits a verified email that belongs to an approved active owner or staff member; anyone else lands on "No partner account yet".', { files: ['src/app/partner/login', 'src/lib/partner-social.ts', 'src/lib/partner-auth.ts'] }),
     node('aauth', 4, 1, 'Admin login', 'password + optional TOTP', 'client', 'Admin password with an optional authenticator code. Repeated failures lock the account, and the lock is checked before the password.', { files: ['src/lib/auth-actions.ts', 'src/lib/totp.ts', 'src/lib/login-throttle.ts'] }),
@@ -800,9 +800,9 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
       ['/saved, /profile, /settings', 'Saved venues, account, preferences and privacy controls.', 'Signed-in', 'dpdp, wallet']
     ]],
     ['Launch pages', [
-      ['/landing', 'Landing page. Redirects to /countdown until launch.', 'Anyone', '-'],
-      ['/countdown, /about', 'Countdown to 31 Oct 2026 and the about page.', 'Anyone', 'hosts'],
-      ['/welcome', 'Old link, redirects to /countdown.', 'Anyone', '-']
+      ['/countdown', 'Countdown to 31 Oct 2026. Before launch www rewrites / to this page, so it is the home page for now.', 'Anyone', 'hosts'],
+      ['/about', 'About OYUN.', 'Anyone', '-'],
+      ['/welcome', 'Old name of the countdown page: 301 to /countdown before launch and to / after.', 'Anyone', 'hosts']
     ]],
     ['Owner dashboard (partner.)', [
       ['/partner/login, /partner/signup', 'Password login and Clerk sign-up.', 'Anyone', 'login action, Clerk'],

@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SITE_CITY } from '@/lib/site';
+import JsonLd from '@/components/JsonLd';
+import { SITE_CITY, SITE_DESCRIPTION } from '@/lib/site';
 import { SPORTS } from '@/lib/sports';
 import { getSettings } from '@/lib/queries';
+import { organizationSchema, websiteSchema } from '@/lib/schema';
+import { localeAlternates, ogBase } from '@/lib/seo';
 import { IconArrow } from '../_ui/icons';
 import { BROWSE_URL } from '../_ui/links';
 import SiteFooter from '../_ui/SiteFooter';
@@ -10,18 +13,21 @@ import SiteHeader from '../_ui/SiteHeader';
 import Countdown from './Countdown';
 import styles from './page.module.css';
 
+// Before launch this page is the home page: www rewrites / to it, so it carries the home page's title, canonical and schema
 export const metadata: Metadata = {
-  title: 'Launch countdown',
-  description: `OYUN launches in ${SITE_CITY} on 31 October 2026. Count down to the day you can book turfs and courts.`,
-  alternates: { canonical: '/countdown' },
+  title: 'Book Football, Box Cricket, Badminton & Pickleball Turfs in Mangalore',
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/', languages: localeAlternates() },
+  openGraph: { ...ogBase('/'), title: 'OYUN | Book Sports Turfs & Courts in Mangalore Online', description: `OYUN launches in ${SITE_CITY} on 31 October 2026. Count down to the day you can book turfs and courts.` },
 };
 
 export default async function CountdownPage() {
-  const { supportEmail } = await getSettings();
+  const { supportEmail, supportPhone } = await getSettings();
   // Repeated so the ticker loops without a visible jump
   const ticker = [...SPORTS, ...SPORTS, ...SPORTS, ...SPORTS];
   return (
     <div className={styles.shell}>
+      <JsonLd data={[organizationSchema(supportEmail, supportPhone), websiteSchema()]} />
       <SiteHeader current="countdown" />
       <main id="content" className={styles.page}>
         <div className={styles.glow} aria-hidden="true" />
