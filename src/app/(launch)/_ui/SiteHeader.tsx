@@ -51,7 +51,7 @@ export default function SiteHeader({ current }: { current?: 'about' | 'countdown
         </nav>
 
         <div className={styles.actions}>
-          <Link href="/countdown" className={styles.ghost} aria-current={current === 'countdown' ? 'page' : undefined}>Launch countdown</Link>
+          <Link href="/countdown" className={styles.ghost} aria-current={current === 'countdown' ? 'page' : undefined}>Launching soon</Link>
           <a href={BROWSE_URL} className={styles.primary}>Browse &amp; book <IconArrow size={16} /></a>
           <button type="button" className={styles.menuBtn} aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen((v) => !v)}>
             {open ? <IconClose /> : <IconMenu />}
@@ -65,7 +65,7 @@ export default function SiteHeader({ current }: { current?: 'about' | 'countdown
           <Link key={s.href} href={s.href} className={styles.panelLink} onClick={() => setOpen(false)}>{s.label}</Link>
         ))}
         <Link href="/about" className={styles.panelLink} onClick={() => setOpen(false)}>About</Link>
-        <Link href="/countdown" className={styles.panelLink} onClick={() => setOpen(false)}>Launch countdown</Link>
+        <Link href="/countdown" className={styles.panelLink} onClick={() => setOpen(false)}>Launching soon</Link>
         <a href={BROWSE_URL} className={`${styles.primary} ${styles.panelCta}`}>Browse &amp; book <IconArrow size={16} /></a>
       </div>
     </header>

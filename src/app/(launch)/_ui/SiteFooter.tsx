@@ -19,7 +19,7 @@ export default function SiteFooter({ supportEmail }: { supportEmail: string }) {
               <li><a href={BROWSE_URL}>Browse &amp; book</a></li>
               <li><Link href="/#sports">Sports</Link></li>
               <li><Link href="/#how">How it works</Link></li>
-              <li><Link href="/countdown">Launch countdown</Link></li>
+              <li><Link href="/countdown">Launching soon</Link></li>
             </ul>
           </nav>
           <nav className={styles.footCol} aria-label="For venue owners">
