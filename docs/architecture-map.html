@@ -119,6 +119,16 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
 .lanes p { margin: 2px 0 0; font-size: 15px; }
 .verdict { margin-top: 16px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--accent); font-size: 16px; }
 @media (prefers-reduced-motion: reduce) { .lanes li { animation: none; } }
+
+.subs { display: flex; gap: 0; overflow-x: auto; padding: 4px 0 8px; align-items: stretch; }
+.sub { flex: none; width: 230px; padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); display: grid; gap: 6px; align-content: start; }
+.sub b { font: 500 15px Roboto, sans-serif; } .sub p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; } .sub code { font: 400 12px "Roboto Mono", monospace; background: var(--raise); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.sub .n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; background: var(--accent); color: #0b1220; font: 700 12px Roboto, sans-serif; }
+.subarrow { flex: none; align-self: center; width: 28px; height: 2px; background: var(--muted); position: relative; opacity: .7; margin: 0 4px; }
+.subarrow::after { content: ""; position: absolute; right: -1px; top: -4px; border: 5px solid transparent; border-left: 8px solid var(--muted); }
+.subhead { margin: 24px 0 8px; font: 500 12px "Roboto Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.go { margin-top: 16px; }
+.node .cnt { fill: var(--accent); font: 500 11px "Roboto Mono", monospace; text-anchor: end; }
 </style>
 
 <main>
@@ -181,6 +191,78 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     edge('pages', 'store', 'read'), edge('actions', 'domain', 'rules'), edge('actions', 'store', 'write'), edge('api', 'store', 'read / write'),
     edge('razorpay', 'api', 'signed webhook', { async: true }), edge('cron', 'api', 'daily', { async: true }),
     edge('store', 'legacy', 'apply_changes'), edge('store', 'v2', 'RPCs'), edge('store', 'realtime', 'slot ping', { async: true })
+  ]);
+
+  /* B1 HOW BOOKING WORKS (swimlane) */
+  var bv = view('book', 'Booking', 'How booking works', 'One booking, across everyone who touches it', 'Five lanes: the player, the owner, the OYUN server, the database and money. Read left to right; arrows crossing a lane are a request or a write. Tap Next step to follow it.', [
+    node('pick', 0, 0, 'Pick day and hours', 'slot picker', 'client', 'The venue page asks the server for the day\'s slots and shows each hour as available, held, booked, blocked or past.', { step: 1, files: ['src/app/(main)/arenas/[id]/BookingFlow.tsx'] }),
+    node('proceed', 1, 0, 'Proceed', 'starts the hold', 'client', 'Taps Proceed. A countdown of 8 minutes starts.', { step: 3, files: ['src/app/(main)/arenas/[id]/BookingFlow.tsx'] }),
+    node('checkout', 2, 0, 'Checkout', 'details + promo', 'client', 'Name, phone, promo, add-ons and wallet credit. The price shown is a live quote from the server.', { step: 5 }),
+    node('confirm', 3, 0, 'Confirm', 'one tap', 'client', 'Sends the booking. The same screen shows an error message if anything was taken meanwhile.', { step: 7 }),
+    node('ticket', 4, 0, 'Ticket and QR', '/bookings/[id]', 'client', 'Shows the check-in code and QR, a calendar file and an invoice.', { step: 10, files: ['src/app/(main)/bookings/[id]/page.tsx'] }),
+    node('arrive', 5, 0, 'Arrive and show QR', 'on the day', 'client', 'The player shows the ticket at the venue.', { step: 12 }),
+    node('owner', 3.5, 1, 'Owner sees it', 'alert + dashboard', 'client', 'The partner dashboard reads bookings from a snapshot that is refreshed within about 2 seconds of any write. An owner alert is also created (simulated until a messaging provider is connected).', { step: 11, files: ['src/lib/store.ts (withV2)', 'src/lib/notifications.ts'] }),
+    node('desk', 5, 1, 'Desk scans QR', 'owner or front desk', 'client', 'The partner opens check-in and scans or types the code.', { step: 13, files: ['src/app/partner/(dashboard)/check-in'] }),
+    node('slots', 0, 2, 'getSlotsForDate', 'public availability', 'logic', 'Returns slot status for active venues only. Realtime pings and a 10 second poll refresh it while the page is open.', { step: 2, files: ['src/lib/booking-actions.ts', 'src/lib/client/use-slot-updates.ts'] }),
+    node('hold', 1, 2, 'holdSlots', 'rate limited', 'logic', 'Limits 60 per IP and 15 per device per 10 minutes. Refuses to run if bookings would not be saved. Holds the hours for 8 minutes against a device cookie.', { step: 4, files: ['src/lib/booking-actions.ts'] }),
+    node('quote', 2, 2, 'quoteSelection', 'price, writes nothing', 'logic', 'Prices a throwaway copy of the database with the same function used for the charge.', { step: 6, files: ['src/lib/pricing.ts'] }),
+    node('create', 3, 2, 'createBookings', 'validate + write', 'logic', 'Checks sign-in (when Clerk is on), name, phone and date, rate limits, then writes one booking per hour. With OYUN_V2_SLOTS on it uses v2Checkout.', { hub: true, step: 8, files: ['src/lib/booking-actions.ts', 'src/lib/booking-plan.ts', 'src/lib/v2-checkout.ts'] }),
+    node('notify', 4, 2, 'Confirmation', 'ticket + messages', 'logic', 'Revalidates pages and, on the legacy path, sends the confirmation and an owner alert. The v2 path returns before the message step today, so confirmation messages are not sent on v2 yet.', { files: ['src/lib/booking-actions.ts', 'src/lib/notifications.ts'], rules: ['Messages are simulated: a log buffer, no provider connected', 'The ticket page and calendar file always work'] }),
+    node('checkin', 5, 2, 'checkInBooking', 'permission: checkin', 'logic', 'Verifies the caller, venue, status and date, then marks the booking checked in and pays rewards.', { step: 14, files: ['src/lib/partner-actions.ts'] }),
+    node('read', 0, 3, 'Availability read', 'bookings, holds, blocks', 'data', 'Reads current bookings, holds and owner blocks for the day.', { files: ['src/lib/v2-slots.ts', 'src/lib/store.ts'] }),
+    node('claim', 1, 3, 'Hold claim', 'expires in 8 min', 'data', 'Legacy: a hold row. v2: hold_slots creates a held booking and a slot_claim per resource. Nobody else can claim an overlapping range.', { files: ['supabase/migrations/20261011000000_slot_booking_v2.sql'] }),
+    node('write', 3, 3, 'Write and backstop', 'one winner only', 'data', 'Legacy: apply_changes(expected_rev) plus unique indexes. v2: confirm_hold_priced inside the database with the exclusion constraint on slot_claims. If anything overlaps, the write fails and nothing is saved.', { hub: true, step: 9, files: ['supabase/migrations/20261017000000_v2_priced_confirm.sql', 'supabase/migrations/20261016000000_row_level_conflicts.sql'] }),
+    node('upd', 5, 3, 'Status update', 'apply_booking_updates', 'data', 'Check-in, no-show, cancel and refund edits go through this RPC. It cannot create a booking, so it cannot skip the slot claims.', { files: ['supabase/migrations/20261018000000_v2_booking_updates.sql'] }),
+    node('adv', 2, 4, 'Advance recorded', 'not charged online', 'ext', 'The advance (a percent of the price within the venue\'s min and max) is stored on the booking. The player pays at the venue today (ADR-0003).', { files: ['docs/adr/0003-advance-recorded-not-charged.md', 'src/lib/pricing.ts'] }),
+    node('bal', 5, 4, 'Balance at desk', 'cash collected', 'ext', 'The desk confirms the money taken at check-in, stored as cashCollected, and the booking can be marked paid in full.', { files: ['src/lib/types.ts (cashCollected)'] })
+  ], [
+    edge('pick', 'slots', 'asks'), edge('slots', 'read', 'reads'), edge('pick', 'proceed', 'choose'), edge('proceed', 'hold', 'hold'), edge('hold', 'claim', 'claims'),
+    edge('proceed', 'checkout', '8 min'), edge('checkout', 'quote', 'price'), edge('quote', 'adv', 'advance'), edge('checkout', 'confirm', 'confirm'), edge('confirm', 'create', 'create'),
+    edge('create', 'write', 'one winner'), edge('create', 'notify', 'then'), edge('notify', 'ticket', 'ticket'), edge('notify', 'owner', 'alert', { async: true }),
+    edge('ticket', 'arrive', 'on the day'), edge('arrive', 'desk', 'show QR'), edge('desk', 'checkin', 'scan'), edge('checkin', 'upd', 'update'), edge('upd', 'bal', 'cash')
+  ]);
+  bv.lanes = [{ r: 0, label: 'PLAYER' }, { r: 1, label: 'PARTNER' }, { r: 2, label: 'OYUN SERVER' }, { r: 3, label: 'DATABASE' }, { r: 4, label: 'MONEY' }];
+
+  /* B2 PARTNER SIDE */
+  view('partner', 'Booking', 'Partner side', 'How an owner sees and checks bookings', 'The partner dashboard does not poll the player site. It reads the same bookings snapshot, and every write refreshes it. The desk cannot double-book either.', [
+    node('new', 0, 0, 'Booking written', 'by checkout', 'data', 'A player\'s booking is saved by the legacy write or the v2 database functions.', { step: 1 }),
+    node('inv', 1, 0, 'Cache dropped', 'invalidate + revalidate', 'logic', 'After v2 RPCs the server drops its booking snapshot (invalidateV2Snapshot) and refreshAll revalidates pages, so the next read is fresh on the same server.', { step: 2, files: ['src/lib/store.ts', 'src/lib/action-utils.ts'] }),
+    node('snap', 2, 0, 'Booking snapshot', 'last 90 days, 2 s cache', 'logic', 'getDb() merges the legacy data with a snapshot of oyun bookings, holds and blocks for the last 90 days, cached for 2 seconds. If a read fails, the last good copy is used and the error is logged.', { hub: true, step: 3, files: ['src/lib/store.ts (withV2)', 'src/lib/v2-bookings.ts (loadV2Snapshot)'] }),
+    node('pages', 3, 0, 'Bookings and calendar', '/partner/bookings', 'client', 'Server-rendered list, week and day calendar. Every page needs the bookings permission; the venue scope comes from the session.', { step: 4, files: ['src/app/partner/(dashboard)/bookings', 'src/app/partner/(dashboard)/calendar'] }),
+    node('alert', 0, 1, 'Owner alert', 'simulated', 'ext', 'sendOwnerAlert builds a new-booking or cancellation message. No provider is connected yet, so it is logged, not delivered.', { files: ['src/lib/notifications.ts'] }),
+    node('walk', 1, 1, 'Walk-in booking', 'createWalkIn', 'client', 'The desk books a customer in person. getWalkInSlots lists free hours; with v2 on, v2WalkIn calls book_ranges.', { files: ['src/lib/partner-actions.ts', 'src/lib/v2-slots.ts'] }),
+    node('block', 2, 1, 'Block hours', 'blockSlot / blockRange', 'client', 'Closes hours for maintenance or private games. A block takes slot claims like a booking does.', { files: ['src/lib/partner-actions.ts'] }),
+    node('chk', 3, 1, 'Check-in and edits', 'apply_booking_updates', 'logic', 'Check-in, no-show, cancel and cash collected are saved as updates to existing bookings.', { files: ['src/lib/store.ts (writeBackV2Bookings)'] }),
+    node('desk', 4, 1, 'Desk cash', 'cashCollected', 'client', 'Records the balance taken at the desk.', { files: ['src/lib/types.ts'] }),
+    node('pay', 4, 2, 'Payouts', 'T+2', 'logic', 'Settled for each owner by a daily job.', { files: ['src/lib/payouts.ts'] }),
+    node('claims', 1.5, 2, 'Slot claims', 'no overlap allowed', 'data', 'Walk-ins and owner blocks create claims in the same table as player bookings. The database refuses an overlap, so the desk cannot double-book a slot a player already holds.', { hub: true, files: ['supabase/migrations/20261016000000_row_level_conflicts.sql'] }),
+    node('guard', 3, 2, 'Edits cannot add bookings', 'refused', 'logic', 'If a mutate() callback adds a booking while v2 is on, the write is refused before anything is saved, because it would skip the slot claims.', { files: ['src/lib/store.ts (writeBackV2Bookings)'] })
+  ], [
+    edge('new', 'inv', 'after write'), edge('inv', 'snap', 'next read'), edge('snap', 'pages', 'renders'), edge('new', 'alert', 'owner alert', { async: true }),
+    edge('walk', 'claims', 'claims hours'), edge('block', 'claims', 'claims hours'), edge('chk', 'guard', 'update only'), edge('chk', 'snap', 'refresh'), edge('desk', 'pay', 'settled')
+  ]);
+
+  /* B3 PAYMENT AND CONFIRMATION */
+  view('payconf', 'Booking', 'Payment and confirmation', 'What is paid, when, and what the player gets', 'Top: what happens today (pay at the venue). Bottom: online payment, built and tested but not yet called from checkout.', [
+    node('tot', 0, 0, 'Total and advance', 'from the quote', 'logic', 'The total after offer, promo, add-ons and wallet. The advance is a percent within the venue\'s min and max.', { step: 1, files: ['src/lib/pricing.ts'] }),
+    node('mode', 1, 0, 'Pay at venue', 'paymentMode: venue', 'logic', 'New online bookings are stored with paymentMode venue: reserved online, paid at the turf. The advance is recorded, not charged.', { step: 2, files: ['src/lib/booking-plan.ts', 'src/lib/types.ts'] }),
+    node('conf', 2, 0, 'Booking confirmed', 'status confirmed', 'data', 'The booking now occupies the slot. Only confirmed, checked-in and no-show bookings hold an hour.', { step: 3, files: ['src/lib/types.ts'] }),
+    node('out', 3, 0, 'Confirmation', 'what the player gets', 'logic', 'A ticket page with the check-in code, plus a calendar file and an invoice. Messages go through notifications.ts.', { step: 4, files: ['src/lib/notifications.ts'] }),
+    node('msg', 4, 0, 'Messages', 'WhatsApp, SMS, email, push', 'ext', 'Confirmation, reminder, owner alert, email receipt and push are built as simulated sends into a log. No provider is connected. On v2 the confirmation call is skipped today.', { files: ['src/lib/notifications.ts', 'src/lib/booking-actions.ts'] }),
+    node('tk', 4, 1, 'Ticket page', 'QR + code', 'client', 'Anyone with the unguessable booking id can open it. The phone number is masked.', { step: 5, files: ['src/app/(main)/bookings/[id]/page.tsx'] }),
+    node('ics', 3, 1, 'Calendar file', '.ics', 'client', 'A route that serves the booking as a calendar event.', { files: ['src/app/(main)/bookings/[id]/calendar/route.ts'] }),
+    node('inv', 2, 1, 'Invoice', 'per booking', 'client', 'Printable invoice for the player and the owner.', { files: ['src/app/(main)/bookings/[id]/invoice/page.tsx'] }),
+    node('bal', 1, 1, 'Balance at desk', 'collected on the day', 'client', 'The desk collects what is due. check-in records cashCollected and the booking can be marked paid in full.', { step: 6, files: ['src/lib/partner-actions.ts'] }),
+    node('ref', 0, 1, 'Refund path', 'wallet credit', 'logic', 'Cancelling returns wallet credit used plus any amount really paid in. A recorded-only advance is not refunded.', { files: ['src/lib/wallet.ts'] }),
+    node('ord', 0, 2, 'Razorpay order', 'createRazorpayOrder', 'ext', 'Creates an order for the advance. Built; not called from checkout yet (docs/V2-CUTOVER.md).', { files: ['src/lib/payments.ts'] }),
+    node('rzp', 1, 2, 'Razorpay checkout', 'player pays', 'ext', 'The gateway collects the payment.', {}),
+    node('hook', 2, 2, 'Webhook', '/api/webhooks/razorpay', 'edge', 'Rejects empty or over 100 KB bodies, limits to 120 per minute per IP, verifies x-razorpay-signature.', { files: ['src/app/api/webhooks/razorpay/route.ts'] }),
+    node('proc', 3, 2, 'Process once', 'claim_payment_event', 'logic', 'Each event id is claimed once. A failed run calls release_payment_event and returns 503 so Razorpay retries.', { files: ['src/lib/payments.ts', 'supabase/migrations/20261021000000_release_payment_event.sql'] }),
+    node('cp', 4, 2, 'confirm_payment', 'booking paid', 'data', 'Marks the payment and the booking as paid in the database.', { files: ['supabase/tests/payment_events_test.sql'] }),
+    node('lost', 4, 3, 'Race lost', 'auto-refund', 'logic', 'If the slot was taken before the payment landed, the money is returned and the customer told.', { files: ['src/lib/payments.ts (autoRefundRaceLostPayment)'] })
+  ], [
+    edge('tot', 'mode', 'advance'), edge('mode', 'conf', 'reserve'), edge('conf', 'out', 'confirm'), edge('out', 'msg', 'notify', { async: true }), edge('msg', 'tk', 'link'), edge('tk', 'ics', 'also'), edge('ics', 'inv', 'also'), edge('inv', 'bal', 'on the day'), edge('bal', 'ref', 'if cancelled'),
+    edge('ord', 'rzp', 'redirect', { async: true }), edge('rzp', 'hook', 'signed event', { async: true }), edge('hook', 'proc', 'verified'), edge('proc', 'cp', 'paid'), edge('cp', 'lost', 'slot gone')
   ]);
 
   /* 2 JOURNEY */
@@ -551,6 +633,62 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     edge('hb', 'sb', 'check'), edge('sb', 'open', 'yes'), edge('sb', 'eph', 'no + flag'), edge('sb', 'refd', 'no flag'), edge('refd', 'hl', 'reported', { async: true })
   ]);
 
+  /* sub-features: every feature expands into the steps and parts it is made of */
+  var SUBS = {
+    pf: {
+      search: [['Type a query', 'Suggestions come from a search index built on the server (getSearchIndex, buildSuggestions).', 'src/lib/search.ts'], ['Set filters', 'Sport, price cap and extras become URL parameters (filtersToParams, parseMaxPrice), so a filtered view can be shared.', 'src/lib/search.ts'], ['Match venues', 'matchesQuery and matchesExtras decide which venues stay in the list.', 'src/lib/search.ts'], ['Open the map', 'locateTurfs places venues on a Leaflet map and nearby pins are clustered.', 'src/lib/map-actions.ts'], ['Find by place', 'geocode and parseCoordinates turn an area or address into coordinates.', 'src/lib/geocode.ts']],
+      saved: [['Tap the heart', 'FavouriteButton toggles a venue through the useFavourites hook.', 'src/components/FavouriteButton.tsx'], ['Open the list', '/saved shows your saved venues. It is not indexed by search engines.', 'src/app/(main)/saved']],
+      book: [['Pick hours', 'Each hour shows as available, held, booked, blocked or past.'], ['Hold', 'The hours are held for 8 minutes, tied to your device.'], ['Quote', 'One price function builds the quote and the charge.'], ['Confirm', 'createBookings writes one booking per hour.'], ['Ticket', 'QR code, calendar file and invoice.']],
+      wallet: [['Earn cashback', 'rewardCheckIn pays cashback on check-in, capped by cashbackFor.', 'src/lib/wallet.ts'], ['Get a referral code', 'Every player gets a code (newReferralCode). A friend signs up with it (findByReferralCode).', 'src/lib/wallet.ts'], ['Referral reward', 'On the friend\'s first checked-in game the referrer is credited and the friend gets a welcome bonus, when the referral setting is on.', 'src/lib/wallet.ts'], ['Spend', 'Wallet credit is deducted at checkout, up to the subtotal.'], ['Refunds', 'Cancels and admin refunds credit back through walletTxn, so history always sums to the balance.']],
+      offers: [['Platform offers', 'Admin sets them (savePlatformOffers); platformOffersFor picks those that apply to you.', 'src/lib/platform-offers.ts'], ['Venue offers', 'Happy hour and first-booking offers set by each owner.'], ['Best one wins', 'Only the best single offer applies. Offers never stack.'], ['Promo code', 'Checked for dates, uses left, weekend rule and a per-player limit.'], ['Live list', 'listLiveOffers feeds the /offers page.', 'src/lib/offers-list.ts']],
+      student: [['Upload', 'POST /api/student-id: same-origin, rate limited, type and size checked (up to 5 MB).', 'src/app/api/student-id/route.ts'], ['Pending', 'The photo goes to the private student_ids bucket and the status is pending.'], ['Admin decides', 'Approve or reject with a note (reviewStudentId).', 'src/lib/admin-actions.ts'], ['Get the price', 'An approved student gets the student offer (isApprovedStudent).', 'src/lib/platform-offers.ts'], ['Clean up', 'A photo nobody reviews is deleted after 30 days.', 'src/lib/student-id.ts']],
+      wait: [['Join', 'A name and a 10 digit phone; limited to 20 per minute per phone (joinWaitlist).', 'src/lib/waitlist.ts'], ['Count', 'getSlotWaitlistCount shows how many are waiting for a slot.'], ['Notify', 'notifyWaitlistWhenSlotFreed alerts waiting players when the slot frees. Messages are simulated until a provider is connected.'], ['Leave', 'cancelWaitlist with the phone removes the entry.']],
+      recur: [['Choose weeks', 'Between 2 and 12 weeks (calculateRecurringDates).', 'src/lib/recurring.ts'], ['Dates', 'The same weekday and hour for each week.'], ['Book', 'createRecurringBookings books each date and reports any that are taken.'], ['Advance', 'Per booking: 10% of the price, within the min and max advance settings.']],
+      split: [['Players', 'Choose how many are playing.'], ['Split', 'calculateSplit gives the amount per person.', 'src/lib/split-payment.ts'], ['UPI link', 'generateUpiLink builds a link with payee, amount and a note.'], ['Share', 'generateSplitShareMessage writes the text to send to friends.']],
+      match: [['Browse', 'listOpenMatches shows games looking for players.', 'src/lib/community.ts'], ['Post a game', 'createOpenMatch.'], ['Join', 'joinOpenMatch adds you to a game.'], ['Tournaments', 'getTournaments lists them and registerTournamentTeam enters a team, refusing once maxTeams is reached.', 'src/lib/tournaments.ts']],
+      rain: [['Mark a day', 'An owner (setRainOut) or the admin (setRainDay, city-wide) marks a rained-out date.'], ['Check', 'isRainDisruption: only outdoor turfs on a marked date qualify.', 'src/lib/rain.ts'], ['Warn', 'getWeatherAlert shows a weather warning for outdoor turfs.', 'src/lib/weather.ts'], ['Act', 'Cancel and reschedule use the same check on the server.']],
+      rev: [['Unlock', 'Only after check-in, and only for the booking owner.'], ['Rate', 'submitReview stores the rating.', 'src/lib/reviews.ts'], ['Average', 'recomputeTurfRating updates the venue rating.'], ['Moderate', 'Admin can hide a review or ban its author.']],
+      lang: [['Choose', 'LanguageSelector switches between English, Kannada and Hindi.', 'src/components/LanguageSelector.tsx'], ['Render', '/kn and /hi use LocalizedHomeView and localized-home.ts.'], ['Index rule', 'Both stay noindex until reviewed.']],
+      priv: [['Export', 'GET /api/privacy/export (signed-in, rate limited).'], ['Erase', 'POST /api/privacy/delete (signed-in, same-origin).'], ['Cookies', 'Essential or all, saved by /api/privacy/consent.'], ['Retention', 'A daily cron anonymises old completed and cancelled bookings.']],
+      pwa: [['Register', 'ServiceWorkerRegister registers public/sw.js.', 'src/components/ServiceWorkerRegister.tsx'], ['Cache', 'Network first with a cache fallback (cache oyun-v1).', 'public/sw.js'], ['Update', 'Old caches are deleted when a new version activates.'], ['Install', 'Icons in public/ let it be added to a home screen.']]
+    },
+    of: {
+      o1: [['Summary', 'An overview of the current venue.'], ['Switch venue', 'switchTurf changes the venue when an owner has more than one.', 'src/lib/partner-actions.ts']],
+      o2: [['List', 'Bookings for this venue.'], ['Walk-in', 'getWalkInSlots lists free hours and createWalkIn books a desk customer.', 'src/lib/partner-actions.ts'], ['Cancel', 'cancelBooking by the owner or staff.'], ['Export', 'CSV download, with spreadsheet formulas neutralised.', 'bookings/export/route.ts']],
+      o3: [['Week view', 'Bookings and blocks across the week.'], ['Day view', 'Open a day from its header to see each hour.'], ['Move', 'Previous and next move between weeks and days.']],
+      o4: [['Code or QR', 'Enter the printed code or scan the QR.'], ['Checks', 'Venue, status and date are verified.'], ['Rewards', 'Cashback and referral credit are paid.'], ['Desk payment', 'Mark paid in full or show the balance to collect.'], ['No-show', 'markNoShow, once the slot has started.']],
+      o5: [['Block an hour', 'blockSlot closes one hour.', 'src/lib/partner-actions.ts'], ['Block a range', 'blockRange closes a range.'], ['Unblock', 'unblockSlot opens it again.'], ['Rain-out', 'setRainOut marks a date for an outdoor turf.']],
+      o6: [['Base rate', 'The hourly rate. A half pitch is a percent of it.'], ['Peak and weekend', 'Percent additions for the peak window and weekends.'], ['Last minute', 'A percent off for same-day slots.'], ['Advance', 'Minimum and maximum advance.'], ['Save', 'savePricing validates and saves.', 'src/lib/partner-actions.ts']],
+      o7: [['Create', 'createOffer: happy hour or first booking.', 'src/lib/partner-actions.ts'], ['Turn on or off', 'toggleOffer.'], ['Remove', 'deleteOffer.'], ['How it applies', 'Online bookings get the best single offer.']],
+      o8: [['Create', 'saveAddOn adds an extra with a price.', 'src/lib/partner-actions.ts'], ['Turn on or off', 'toggleAddOn.'], ['Remove', 'deleteAddOn.'], ['At checkout', 'Players pick quantities, capped at 20 each.']],
+      o9: [['Add a court', 'addCourtResource adds a physical court or pitch part.', 'src/lib/partner-actions.ts'], ['Add what players book', 'addBookableOffering defines a sport, slot length and price over one or more courts.'], ['Remove', 'deleteCourtResource and deleteBookableOffering.']],
+      o10: [['Profile', 'updateTurfProfile: name, photos and amenities.', 'src/lib/partner-actions.ts'], ['Business', 'updateBusiness: business details.'], ['Photos', 'Uploads go through /api/partner/upload.', 'src/app/api/partner/upload/route.ts']],
+      o11: [['Add staff', 'createStaff with a chosen role.', 'src/lib/partner-actions.ts'], ['Reset password', 'resetStaffPassword.'], ['Remove', 'deleteStaff.'], ['Roles', 'Front desk cannot change prices, offers, add-ons, the venue profile, staff or payouts.']],
+      o12: [['Read', 'Player reviews for your venue.'], ['Rating', 'The venue rating is recomputed after every review.']],
+      o13: [['Weeks', 'payoutWeeks summarises recent weeks.', 'src/lib/reports.ts'], ['Settlement', 'A daily job creates a T+2 settlement batch.', 'src/lib/payouts.ts'], ['Statement', 'An HTML statement for each payout.', 'src/app/api/partner/payouts/[id]/statement/route.ts'], ['Export', 'CSV download.', 'payouts/export/route.ts']],
+      o14: [['Revenue', 'bookingRevenue and onlineCollected add up what the venue earns.', 'src/lib/reports.ts']],
+      o15: [['Open', '/partner/invoices/[id] shows the invoice for a booking.'], ['Print', 'PrintButton prints it.', 'src/components/PrintButton.tsx'], ['Numbering', 'Invoice numbers come from per-venue counters (oyun.invoice_counters).']]
+    },
+    af: {
+      a1: [['Summary', 'Platform overview.'], ['Health banner', 'Shows whether booking is open (Supabase connected).']],
+      a2: [['Review', 'Read the application at /admin/turfs.'], ['Reject', 'rejectApplication closes it.', 'src/lib/admin-actions.ts'], ['Approve', 'approveApplication creates or reuses the owner login and creates the venue.'], ['Hand over', 'A temporary password is shown once to the admin.']],
+      a3: [['Edit', 'updateTurfAdmin changes any field of a venue.', 'src/lib/admin-actions.ts'], ['Quick toggles', 'quickUpdateTurf for quick one-field changes.'], ['Detail page', '/admin/turfs/[id] shows one venue.']],
+      a4: [['Suspend or reactivate', 'togglePartnerStatus. A suspended owner cannot be reused for a new application.', 'src/lib/admin-actions.ts'], ['Reset password', 'resetPartnerPassword.'], ['Update details', 'updatePartner.']],
+      a5: [['Ban or unban', 'togglePlayerBan. Banned players cannot book.', 'src/lib/admin-actions.ts'], ['Adjust wallet', 'adjustWallet writes a ledger entry.']],
+      a6: [['Queue', 'Pending IDs listed at /admin/students.'], ['View', '/api/admin/student-id/[playerId] is admin-only and acts only on pending IDs.'], ['Decide', 'reviewStudentId approves or rejects with a note.', 'src/lib/admin-actions.ts'], ['Expire', 'Unreviewed photos are deleted after 30 days.']],
+      a7: [['Hide a review', 'toggleReviewHidden.', 'src/lib/admin-actions.ts'], ['Ban the author', 'banReviewAuthor.']],
+      a8: [['Find the booking', 'Transactions list.'], ['Refund', 'refundBooking marks it refunded.', 'src/lib/admin-actions.ts'], ['Wallet', 'Online bookings credit the wallet; walk-ins paid at the desk credit nothing.'], ['Cashback', 'Cashback given at check-in is taken back, never below zero.']],
+      a9: [['Platform numbers', 'computePlatformAnalytics totals bookings and revenue across venues.', 'src/lib/analytics.ts']],
+      a10: [['Site content', 'saveSiteContent.', 'src/lib/admin-actions.ts'], ['Promo cards', 'savePromoCard and deletePromoCard.'], ['Sponsor ads', 'saveSponsorAd and deleteSponsorAd.'], ['Platform offers', 'savePlatformOffers.']],
+      a11: [['Settings', 'saveSettings: support details and platform options.', 'src/lib/admin-actions.ts'], ['Rain day', 'setRainDay marks a city-wide rain day.'], ['Promo codes', 'savePromoCode, togglePromoCode and deletePromoCode.']]
+    }
+  };
+  var GOTO = { pf: { book: 'journey', wallet: 'money', priv: 'privacy', offers: 'money', rain: 'cancel' }, of: { o4: 'checkin', o13: 'money', o5: 'states' }, af: { a2: 'onboard', a8: 'cancel' } };
+  Object.keys(SUBS).forEach(function (vid) {
+    var vv = V.filter(function (x) { return x.id === vid; })[0];
+    vv.nodes.forEach(function (n) { if (SUBS[vid][n.id]) n.subs = SUBS[vid][n.id]; if (GOTO[vid][n.id]) n.go = GOTO[vid][n.id]; });
+  });
+
   /* 13 ROUTES */
   var ROUTES = [
     ['Public pages', [
@@ -718,6 +856,13 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
       var m = el('marker', { id: a[0], viewBox: '0 0 10 10', refX: 8.5, refY: 5, markerWidth: 8, markerHeight: 8, orient: 'auto' }, defs);
       var pth = el('path', { d: 'M1 1 L9 5 L1 9', fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, m); pth.style.stroke = a[1];
     });
+    if (v.lanes) {
+      v.lanes.forEach(function (ln, i) {
+        var top = PAD + ln.r * ROW - 26;
+        el('rect', { x: 6, y: top, width: v.W - 12, height: NH + 40, rx: 16, fill: i % 2 ? 'none' : 'var(--raise)', 'fill-opacity': i % 2 ? 0 : .45, stroke: 'var(--line)', 'stroke-dasharray': '3 5' }, svg);
+        var lt = el('text', { x: 18, y: top + 14, fill: 'var(--muted)', 'font-size': 10.5, 'letter-spacing': '1.5' }, svg); lt.style.font = '500 10.5px "Roboto Mono", monospace'; lt.textContent = ln.label;
+      });
+    }
     var eg = el('g', {}, svg), ng = el('g', {}, svg), lg = el('g', {}, svg);
     v.edges.forEach(function (e) {
       var p = pathFor(v, e);
@@ -733,6 +878,7 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
       el('rect', { x: n.x, y: n.y, width: NW, height: NH, rx: 18 }, g);
       el('text', { 'class': 't', x: n.cx, y: n.cy - 4 }, g).textContent = n.t;
       el('text', { 'class': 's', x: n.cx, y: n.cy + 15 }, g).textContent = n.s;
+      if (n.subs) el('text', { 'class': 'cnt', x: n.x + NW - 14, y: n.y + NH - 8 }, g).textContent = '\u25B8 ' + n.subs.length;
       if (n.step) { var bg = el('g', { 'class': 'badge' }, g); el('circle', { cx: n.x + 6, cy: n.y + 6, r: 11 }, bg); el('text', { x: n.x + 6, y: n.y + 6.5 }, bg).textContent = n.step; }
       g.addEventListener('click', function () { select(n.id); });
       g.addEventListener('mouseenter', function () { state.hover = n.id; paint(); });
@@ -788,6 +934,16 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     });
     if (!chips.children.length) chips.appendChild(h('span', { 'class': 'dtext', style: 'margin:0;font-size:15px' }, 'Nothing else in this view.'));
     conn.appendChild(chips); cols.appendChild(conn); d.appendChild(cols);
+    if (n.subs) {
+      d.appendChild(h('div', { 'class': 'subhead' }, 'Sub-features &middot; ' + n.subs.length + ' parts, in order'));
+      var row = h('div', { 'class': 'subs' });
+      n.subs.forEach(function (sf, i) {
+        if (i) row.appendChild(h('span', { 'class': 'subarrow', 'aria-hidden': 'true' }));
+        row.appendChild(h('div', { 'class': 'sub' }, '<span class="n">' + (i + 1) + '</span><b>' + esc(sf[0]) + '</b><p>' + esc(sf[1]) + '</p>' + (sf[2] ? '<code>' + esc(sf[2]) + '</code>' : '')));
+      });
+      d.appendChild(row);
+    }
+    if (n.go && byId[n.go]) { var gb = h('button', { 'class': 'btn go', type: 'button' }, 'Open the full flow: ' + esc(byId[n.go].tab) + ' &rarr;'); gb.addEventListener('click', function () { setView(n.go); $('diagram').scrollIntoView({ block: 'start' }); }); d.appendChild(gb); }
   }
 
   function setupStepper(v) {
@@ -879,7 +1035,7 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
   /* ---------- global search ---------- */
   function setupSearch() {
     var q = $('gq'), res = $('gres'), idx = [];
-    V.forEach(function (v) { (v.nodes || []).forEach(function (n) { idx.push({ v: v, n: n, hay: (n.t + ' ' + n.s + ' ' + n.desc + ' ' + n.files.join(' ') + ' ' + n.rules.join(' ')).toLowerCase() }); }); });
+    V.forEach(function (v) { (v.nodes || []).forEach(function (n) { idx.push({ v: v, n: n, hay: (n.t + ' ' + n.s + ' ' + n.desc + ' ' + n.files.join(' ') + ' ' + n.rules.join(' ') + ' ' + (n.subs || []).map(function (x) { return x[0] + ' ' + x[1]; }).join(' ')).toLowerCase() }); }); });
     function close() { res.hidden = true; res.innerHTML = ''; }
     q.addEventListener('input', function () {
       var t = q.value.trim().toLowerCase(); res.innerHTML = ''; if (t.length < 2) { res.hidden = true; return; }
