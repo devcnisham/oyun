@@ -193,6 +193,78 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
     edge('store', 'legacy', 'apply_changes'), edge('store', 'v2', 'RPCs'), edge('store', 'realtime', 'slot ping', { async: true })
   ]);
 
+  /* B1 HOW BOOKING WORKS (swimlane) */
+  var bv = view('book', 'Booking', 'How booking works', 'One booking, across everyone who touches it', 'Five lanes: the player, the owner, the OYUN server, the database and money. Read left to right; arrows crossing a lane are a request or a write. Tap Next step to follow it.', [
+    node('pick', 0, 0, 'Pick day and hours', 'slot picker', 'client', 'The venue page asks the server for the day\'s slots and shows each hour as available, held, booked, blocked or past.', { step: 1, files: ['src/app/(main)/arenas/[id]/BookingFlow.tsx'] }),
+    node('proceed', 1, 0, 'Proceed', 'starts the hold', 'client', 'Taps Proceed. A countdown of 8 minutes starts.', { step: 3, files: ['src/app/(main)/arenas/[id]/BookingFlow.tsx'] }),
+    node('checkout', 2, 0, 'Checkout', 'details + promo', 'client', 'Name, phone, promo, add-ons and wallet credit. The price shown is a live quote from the server.', { step: 5 }),
+    node('confirm', 3, 0, 'Confirm', 'one tap', 'client', 'Sends the booking. The same screen shows an error message if anything was taken meanwhile.', { step: 7 }),
+    node('ticket', 4, 0, 'Ticket and QR', '/bookings/[id]', 'client', 'Shows the check-in code and QR, a calendar file and an invoice.', { step: 10, files: ['src/app/(main)/bookings/[id]/page.tsx'] }),
+    node('arrive', 5, 0, 'Arrive and show QR', 'on the day', 'client', 'The player shows the ticket at the venue.', { step: 12 }),
+    node('owner', 3.5, 1, 'Owner sees it', 'alert + dashboard', 'client', 'The partner dashboard reads bookings from a snapshot that is refreshed within about 2 seconds of any write. An owner alert is also created (simulated until a messaging provider is connected).', { step: 11, files: ['src/lib/store.ts (withV2)', 'src/lib/notifications.ts'] }),
+    node('desk', 5, 1, 'Desk scans QR', 'owner or front desk', 'client', 'The partner opens check-in and scans or types the code.', { step: 13, files: ['src/app/partner/(dashboard)/check-in'] }),
+    node('slots', 0, 2, 'getSlotsForDate', 'public availability', 'logic', 'Returns slot status for active venues only. Realtime pings and a 10 second poll refresh it while the page is open.', { step: 2, files: ['src/lib/booking-actions.ts', 'src/lib/client/use-slot-updates.ts'] }),
+    node('hold', 1, 2, 'holdSlots', 'rate limited', 'logic', 'Limits 60 per IP and 15 per device per 10 minutes. Refuses to run if bookings would not be saved. Holds the hours for 8 minutes against a device cookie.', { step: 4, files: ['src/lib/booking-actions.ts'] }),
+    node('quote', 2, 2, 'quoteSelection', 'price, writes nothing', 'logic', 'Prices a throwaway copy of the database with the same function used for the charge.', { step: 6, files: ['src/lib/pricing.ts'] }),
+    node('create', 3, 2, 'createBookings', 'validate + write', 'logic', 'Checks sign-in (when Clerk is on), name, phone and date, rate limits, then writes one booking per hour. With OYUN_V2_SLOTS on it uses v2Checkout.', { hub: true, step: 8, files: ['src/lib/booking-actions.ts', 'src/lib/booking-plan.ts', 'src/lib/v2-checkout.ts'] }),
+    node('notify', 4, 2, 'Confirmation', 'ticket + messages', 'logic', 'Revalidates pages and, on the legacy path, sends the confirmation and an owner alert. The v2 path returns before the message step today, so confirmation messages are not sent on v2 yet.', { files: ['src/lib/booking-actions.ts', 'src/lib/notifications.ts'], rules: ['Messages are simulated: a log buffer, no provider connected', 'The ticket page and calendar file always work'] }),
+    node('checkin', 5, 2, 'checkInBooking', 'permission: checkin', 'logic', 'Verifies the caller, venue, status and date, then marks the booking checked in and pays rewards.', { step: 14, files: ['src/lib/partner-actions.ts'] }),
+    node('read', 0, 3, 'Availability read', 'bookings, holds, blocks', 'data', 'Reads current bookings, holds and owner blocks for the day.', { files: ['src/lib/v2-slots.ts', 'src/lib/store.ts'] }),
+    node('claim', 1, 3, 'Hold claim', 'expires in 8 min', 'data', 'Legacy: a hold row. v2: hold_slots creates a held booking and a slot_claim per resource. Nobody else can claim an overlapping range.', { files: ['supabase/migrations/20261011000000_slot_booking_v2.sql'] }),
+    node('write', 3, 3, 'Write and backstop', 'one winner only', 'data', 'Legacy: apply_changes(expected_rev) plus unique indexes. v2: confirm_hold_priced inside the database with the exclusion constraint on slot_claims. If anything overlaps, the write fails and nothing is saved.', { hub: true, step: 9, files: ['supabase/migrations/20261017000000_v2_priced_confirm.sql', 'supabase/migrations/20261016000000_row_level_conflicts.sql'] }),
+    node('upd', 5, 3, 'Status update', 'apply_booking_updates', 'data', 'Check-in, no-show, cancel and refund edits go through this RPC. It cannot create a booking, so it cannot skip the slot claims.', { files: ['supabase/migrations/20261018000000_v2_booking_updates.sql'] }),
+    node('adv', 2, 4, 'Advance recorded', 'not charged online', 'ext', 'The advance (a percent of the price within the venue\'s min and max) is stored on the booking. The player pays at the venue today (ADR-0003).', { files: ['docs/adr/0003-advance-recorded-not-charged.md', 'src/lib/pricing.ts'] }),
+    node('bal', 5, 4, 'Balance at desk', 'cash collected', 'ext', 'The desk confirms the money taken at check-in, stored as cashCollected, and the booking can be marked paid in full.', { files: ['src/lib/types.ts (cashCollected)'] })
+  ], [
+    edge('pick', 'slots', 'asks'), edge('slots', 'read', 'reads'), edge('pick', 'proceed', 'choose'), edge('proceed', 'hold', 'hold'), edge('hold', 'claim', 'claims'),
+    edge('proceed', 'checkout', '8 min'), edge('checkout', 'quote', 'price'), edge('quote', 'adv', 'advance'), edge('checkout', 'confirm', 'confirm'), edge('confirm', 'create', 'create'),
+    edge('create', 'write', 'one winner'), edge('create', 'notify', 'then'), edge('notify', 'ticket', 'ticket'), edge('notify', 'owner', 'alert', { async: true }),
+    edge('ticket', 'arrive', 'on the day'), edge('arrive', 'desk', 'show QR'), edge('desk', 'checkin', 'scan'), edge('checkin', 'upd', 'update'), edge('upd', 'bal', 'cash')
+  ]);
+  bv.lanes = [{ r: 0, label: 'PLAYER' }, { r: 1, label: 'PARTNER' }, { r: 2, label: 'OYUN SERVER' }, { r: 3, label: 'DATABASE' }, { r: 4, label: 'MONEY' }];
+
+  /* B2 PARTNER SIDE */
+  view('partner', 'Booking', 'Partner side', 'How an owner sees and checks bookings', 'The partner dashboard does not poll the player site. It reads the same bookings snapshot, and every write refreshes it. The desk cannot double-book either.', [
+    node('new', 0, 0, 'Booking written', 'by checkout', 'data', 'A player\'s booking is saved by the legacy write or the v2 database functions.', { step: 1 }),
+    node('inv', 1, 0, 'Cache dropped', 'invalidate + revalidate', 'logic', 'After v2 RPCs the server drops its booking snapshot (invalidateV2Snapshot) and refreshAll revalidates pages, so the next read is fresh on the same server.', { step: 2, files: ['src/lib/store.ts', 'src/lib/action-utils.ts'] }),
+    node('snap', 2, 0, 'Booking snapshot', 'last 90 days, 2 s cache', 'logic', 'getDb() merges the legacy data with a snapshot of oyun bookings, holds and blocks for the last 90 days, cached for 2 seconds. If a read fails, the last good copy is used and the error is logged.', { hub: true, step: 3, files: ['src/lib/store.ts (withV2)', 'src/lib/v2-bookings.ts (loadV2Snapshot)'] }),
+    node('pages', 3, 0, 'Bookings and calendar', '/partner/bookings', 'client', 'Server-rendered list, week and day calendar. Every page needs the bookings permission; the venue scope comes from the session.', { step: 4, files: ['src/app/partner/(dashboard)/bookings', 'src/app/partner/(dashboard)/calendar'] }),
+    node('alert', 0, 1, 'Owner alert', 'simulated', 'ext', 'sendOwnerAlert builds a new-booking or cancellation message. No provider is connected yet, so it is logged, not delivered.', { files: ['src/lib/notifications.ts'] }),
+    node('walk', 1, 1, 'Walk-in booking', 'createWalkIn', 'client', 'The desk books a customer in person. getWalkInSlots lists free hours; with v2 on, v2WalkIn calls book_ranges.', { files: ['src/lib/partner-actions.ts', 'src/lib/v2-slots.ts'] }),
+    node('block', 2, 1, 'Block hours', 'blockSlot / blockRange', 'client', 'Closes hours for maintenance or private games. A block takes slot claims like a booking does.', { files: ['src/lib/partner-actions.ts'] }),
+    node('chk', 3, 1, 'Check-in and edits', 'apply_booking_updates', 'logic', 'Check-in, no-show, cancel and cash collected are saved as updates to existing bookings.', { files: ['src/lib/store.ts (writeBackV2Bookings)'] }),
+    node('desk', 4, 1, 'Desk cash', 'cashCollected', 'client', 'Records the balance taken at the desk.', { files: ['src/lib/types.ts'] }),
+    node('pay', 4, 2, 'Payouts', 'T+2', 'logic', 'Settled for each owner by a daily job.', { files: ['src/lib/payouts.ts'] }),
+    node('claims', 1.5, 2, 'Slot claims', 'no overlap allowed', 'data', 'Walk-ins and owner blocks create claims in the same table as player bookings. The database refuses an overlap, so the desk cannot double-book a slot a player already holds.', { hub: true, files: ['supabase/migrations/20261016000000_row_level_conflicts.sql'] }),
+    node('guard', 3, 2, 'Edits cannot add bookings', 'refused', 'logic', 'If a mutate() callback adds a booking while v2 is on, the write is refused before anything is saved, because it would skip the slot claims.', { files: ['src/lib/store.ts (writeBackV2Bookings)'] })
+  ], [
+    edge('new', 'inv', 'after write'), edge('inv', 'snap', 'next read'), edge('snap', 'pages', 'renders'), edge('new', 'alert', 'owner alert', { async: true }),
+    edge('walk', 'claims', 'claims hours'), edge('block', 'claims', 'claims hours'), edge('chk', 'guard', 'update only'), edge('chk', 'snap', 'refresh'), edge('desk', 'pay', 'settled')
+  ]);
+
+  /* B3 PAYMENT AND CONFIRMATION */
+  view('payconf', 'Booking', 'Payment and confirmation', 'What is paid, when, and what the player gets', 'Top: what happens today (pay at the venue). Bottom: online payment, built and tested but not yet called from checkout.', [
+    node('tot', 0, 0, 'Total and advance', 'from the quote', 'logic', 'The total after offer, promo, add-ons and wallet. The advance is a percent within the venue\'s min and max.', { step: 1, files: ['src/lib/pricing.ts'] }),
+    node('mode', 1, 0, 'Pay at venue', 'paymentMode: venue', 'logic', 'New online bookings are stored with paymentMode venue: reserved online, paid at the turf. The advance is recorded, not charged.', { step: 2, files: ['src/lib/booking-plan.ts', 'src/lib/types.ts'] }),
+    node('conf', 2, 0, 'Booking confirmed', 'status confirmed', 'data', 'The booking now occupies the slot. Only confirmed, checked-in and no-show bookings hold an hour.', { step: 3, files: ['src/lib/types.ts'] }),
+    node('out', 3, 0, 'Confirmation', 'what the player gets', 'logic', 'A ticket page with the check-in code, plus a calendar file and an invoice. Messages go through notifications.ts.', { step: 4, files: ['src/lib/notifications.ts'] }),
+    node('msg', 4, 0, 'Messages', 'WhatsApp, SMS, email, push', 'ext', 'Confirmation, reminder, owner alert, email receipt and push are built as simulated sends into a log. No provider is connected. On v2 the confirmation call is skipped today.', { files: ['src/lib/notifications.ts', 'src/lib/booking-actions.ts'] }),
+    node('tk', 4, 1, 'Ticket page', 'QR + code', 'client', 'Anyone with the unguessable booking id can open it. The phone number is masked.', { step: 5, files: ['src/app/(main)/bookings/[id]/page.tsx'] }),
+    node('ics', 3, 1, 'Calendar file', '.ics', 'client', 'A route that serves the booking as a calendar event.', { files: ['src/app/(main)/bookings/[id]/calendar/route.ts'] }),
+    node('inv', 2, 1, 'Invoice', 'per booking', 'client', 'Printable invoice for the player and the owner.', { files: ['src/app/(main)/bookings/[id]/invoice/page.tsx'] }),
+    node('bal', 1, 1, 'Balance at desk', 'collected on the day', 'client', 'The desk collects what is due. check-in records cashCollected and the booking can be marked paid in full.', { step: 6, files: ['src/lib/partner-actions.ts'] }),
+    node('ref', 0, 1, 'Refund path', 'wallet credit', 'logic', 'Cancelling returns wallet credit used plus any amount really paid in. A recorded-only advance is not refunded.', { files: ['src/lib/wallet.ts'] }),
+    node('ord', 0, 2, 'Razorpay order', 'createRazorpayOrder', 'ext', 'Creates an order for the advance. Built; not called from checkout yet (docs/V2-CUTOVER.md).', { files: ['src/lib/payments.ts'] }),
+    node('rzp', 1, 2, 'Razorpay checkout', 'player pays', 'ext', 'The gateway collects the payment.', {}),
+    node('hook', 2, 2, 'Webhook', '/api/webhooks/razorpay', 'edge', 'Rejects empty or over 100 KB bodies, limits to 120 per minute per IP, verifies x-razorpay-signature.', { files: ['src/app/api/webhooks/razorpay/route.ts'] }),
+    node('proc', 3, 2, 'Process once', 'claim_payment_event', 'logic', 'Each event id is claimed once. A failed run calls release_payment_event and returns 503 so Razorpay retries.', { files: ['src/lib/payments.ts', 'supabase/migrations/20261021000000_release_payment_event.sql'] }),
+    node('cp', 4, 2, 'confirm_payment', 'booking paid', 'data', 'Marks the payment and the booking as paid in the database.', { files: ['supabase/tests/payment_events_test.sql'] }),
+    node('lost', 4, 3, 'Race lost', 'auto-refund', 'logic', 'If the slot was taken before the payment landed, the money is returned and the customer told.', { files: ['src/lib/payments.ts (autoRefundRaceLostPayment)'] })
+  ], [
+    edge('tot', 'mode', 'advance'), edge('mode', 'conf', 'reserve'), edge('conf', 'out', 'confirm'), edge('out', 'msg', 'notify', { async: true }), edge('msg', 'tk', 'link'), edge('tk', 'ics', 'also'), edge('ics', 'inv', 'also'), edge('inv', 'bal', 'on the day'), edge('bal', 'ref', 'if cancelled'),
+    edge('ord', 'rzp', 'redirect', { async: true }), edge('rzp', 'hook', 'signed event', { async: true }), edge('hook', 'proc', 'verified'), edge('proc', 'cp', 'paid'), edge('cp', 'lost', 'slot gone')
+  ]);
+
   /* 2 JOURNEY */
   view('journey', 'Flows', 'Booking journey', 'From browsing to a checked-in game', 'Follow one booking. Tap Next step to walk it in order. The side branches are what can happen to a ticket afterwards.', [
     node('browse', 0, 0, 'Browse venues', '/arenas · /turfs', 'client', 'Search, filter and map of venues. Area, sport and price-band pages are prerendered and cached by the CDN.', { step: 1, files: ['src/app/(main)/arenas/page.tsx', 'src/app/(main)/turfs/[area]', 'src/lib/search.ts'] }),
@@ -784,6 +856,13 @@ td.who { white-space: nowrap; color: var(--muted); } .none { color: var(--muted)
       var m = el('marker', { id: a[0], viewBox: '0 0 10 10', refX: 8.5, refY: 5, markerWidth: 8, markerHeight: 8, orient: 'auto' }, defs);
       var pth = el('path', { d: 'M1 1 L9 5 L1 9', fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, m); pth.style.stroke = a[1];
     });
+    if (v.lanes) {
+      v.lanes.forEach(function (ln, i) {
+        var top = PAD + ln.r * ROW - 26;
+        el('rect', { x: 6, y: top, width: v.W - 12, height: NH + 40, rx: 16, fill: i % 2 ? 'none' : 'var(--raise)', 'fill-opacity': i % 2 ? 0 : .45, stroke: 'var(--line)', 'stroke-dasharray': '3 5' }, svg);
+        var lt = el('text', { x: 18, y: top + 14, fill: 'var(--muted)', 'font-size': 10.5, 'letter-spacing': '1.5' }, svg); lt.style.font = '500 10.5px "Roboto Mono", monospace'; lt.textContent = ln.label;
+      });
+    }
     var eg = el('g', {}, svg), ng = el('g', {}, svg), lg = el('g', {}, svg);
     v.edges.forEach(function (e) {
       var p = pathFor(v, e);
