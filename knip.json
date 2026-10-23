@@ -3,7 +3,7 @@
   "entry": [
     "scripts/**/*.{mjs,js}",
     "public/sw.js",
-    "src/lib/client/use-account-clerk.ts",
+    "src/modules/web/frontend/hooks/use-account-clerk.ts",
     "e2e/**/*.ts"
   ],
   "ignoreDependencies": [

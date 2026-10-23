@@ -1,20 +1,20 @@
-import { maskPhone } from '@/lib/phone';
+import { maskPhone } from '@/modules/shared/lib/phone';
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { qrSvg } from '@/lib/qr';
-import { getDb } from '@/lib/store';
-import { addDays, formatDate, formatDateTime, formatSlotRange } from '@/lib/time';
-import { WALLET_TXN_LABELS, cashbackFor } from '@/lib/wallet';
+import { qrSvg } from '@/modules/web/lib/qr';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, formatDate, formatDateTime, formatSlotRange } from '@/modules/shared/lib/time';
+import { WALLET_TXN_LABELS, cashbackFor } from '@/modules/shared/lib/wallet';
 import styles from './page.module.css';
-import BackButton from '@/components/BackButton';
-import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/lib/cancel-policy';
-import { isRainDisruption } from '@/lib/rain';
+import BackButton from '@/modules/web/frontend/BackButton';
+import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/modules/web/lib/cancel-policy';
+import { isRainDisruption } from '@/modules/shared/lib/rain';
 import CancelBooking from './CancelBooking';
 import RescheduleBooking from './RescheduleBooking';
 import ReviewForm from './ReviewForm';
 import SplitPayment from './SplitPayment';
-import { halfNote, turfHours } from '@/lib/pricing';
+import { halfNote, turfHours } from '@/modules/shared/lib/pricing';
 
 const STATUS_TEXT: Record<string, string> = {
   confirmed: 'Booking confirmed',

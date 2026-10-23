@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { LAUNCH_AT } from '@/lib/hosts';
+import { LAUNCH_AT } from '@/modules/shared/backend/hosts';
 import styles from './Countdown.module.css';
 
 const pad = (n: number) => String(n).padStart(2, '0');

@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-import { buildCsp } from "./src/lib/csp";
+import { buildCsp } from "./src/modules/shared/backend/csp";
 
 const isDev = process.env.NODE_ENV !== "production";
 

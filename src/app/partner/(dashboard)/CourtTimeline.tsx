@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import type { PartnerContext } from '@/lib/partner-auth';
-import { turfHours } from '@/lib/pricing';
-import { getDb } from '@/lib/store';
-import { formatDate, formatHour, istNow } from '@/lib/time';
+import type { PartnerContext } from '@/modules/shared/backend/partner-auth';
+import { turfHours } from '@/modules/shared/lib/pricing';
+import { getDb } from '@/modules/shared/database/store';
+import { formatDate, formatHour, istNow } from '@/modules/shared/lib/time';
 import styles from './PartnerDashboard.module.css';
 
 // Today's court timeline: one tile per open hour with its booking, block or availability

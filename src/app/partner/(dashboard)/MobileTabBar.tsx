@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import styles from './MobileTabBar.module.css';
 
 export interface TabItem {

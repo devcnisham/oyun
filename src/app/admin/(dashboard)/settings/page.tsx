@@ -1,8 +1,8 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, tableScroll } from '@/components/dash/ui';
-import { deletePromoCode, savePlatformOffers, savePromoCode, saveSettings, setRainDay, togglePromoCode } from '@/lib/admin-actions';
-import { platformOffersOf } from '@/lib/platform-offers';
-import { getDb } from '@/lib/store';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { deletePromoCode, savePlatformOffers, savePromoCode, saveSettings, setRainDay, togglePromoCode } from '@/modules/admin/backend/admin-actions';
+import { platformOffersOf } from '@/modules/shared/lib/platform-offers';
+import { getDb } from '@/modules/shared/database/store';
 
 export default async function AdminSettings() {
   const db = await getDb();

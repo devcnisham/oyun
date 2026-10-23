@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import BackButton from '@/components/BackButton';
-import { getTournaments } from '@/lib/tournaments';
+import BackButton from '@/modules/web/frontend/BackButton';
+import { getTournaments } from '@/modules/web/lib/tournaments';
 import TournamentsClient from './TournamentsClient';
 import styles from '../faq/page.module.css';
 

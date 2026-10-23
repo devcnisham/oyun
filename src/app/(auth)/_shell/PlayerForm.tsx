@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getProfile, saveProfile } from '@/lib/client/device';
+import { getProfile, saveProfile } from '@/modules/web/frontend/hooks/device';
 import styles from '../auth.module.css';
 
 const PHONE_RE = /^[6-9]\d{9}$/;

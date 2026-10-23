@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getBookingSummaries, type BookingSummary } from '@/lib/booking-actions';
-import { addMyBookingIds, getMyBookingIds } from '@/lib/client/device';
-import { canOptimize } from '@/lib/images';
+import { getBookingSummaries, type BookingSummary } from '@/modules/web/backend/booking-actions';
+import { addMyBookingIds, getMyBookingIds } from '@/modules/web/frontend/hooks/device';
+import { canOptimize } from '@/modules/shared/backend/images';
 import styles from './MyBookings.module.css';
-import { halfNote } from '@/lib/pricing';
+import { halfNote } from '@/modules/shared/lib/pricing';
 
 const STATUS: Record<BookingSummary['status'], string> = {
   confirmed: 'Confirmed',

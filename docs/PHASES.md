@@ -429,7 +429,7 @@ flowchart LR
 | P8-50 | Split BookingFlow into PitchPicker, SlotMap, CheckoutSheet and booking-format |
 | P8-51 | Move the booking planner and limits out of booking-actions.ts into booking-plan.ts and booking-types.ts |
 | P8-52 | Split list-turf options, form defaults and the success screen into their own files |
-| P8-53 | One shared rupee and short-hour formatter in src/lib/format.ts instead of seven copies |
+| P8-53 | One shared rupee and short-hour formatter in src/modules/shared/lib/format.ts instead of seven copies |
 | P8-54 | Move checkout form state into a useCheckoutForm hook; CheckoutSheet takes 12 props instead of about 25 |
 | P8-55 | Replace 14 copy-pasted scroll regions with one tableScroll props pattern; small cleanups in the welcome page and turf loading state |
 | P8-56 | CI runs duplicate-code and unused-code checks (npm run dup and npm run unused) |

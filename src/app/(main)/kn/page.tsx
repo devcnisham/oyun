@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import LocalizedHomeView from '@/components/LocalizedHomeView';
-import { LOCALIZED, localizedPagesIndexed } from '@/lib/localized-home';
-import { localeAlternates, ogBase } from '@/lib/seo';
+import LocalizedHomeView from '@/modules/web/frontend/LocalizedHomeView';
+import { LOCALIZED, localizedPagesIndexed } from '@/modules/web/lib/localized-home';
+import { localeAlternates, ogBase } from '@/modules/web/lib/seo';
 
 export const revalidate = 60;
 

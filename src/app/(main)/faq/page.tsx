@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import JsonLd from '@/components/JsonLd';
-import { buildFaqs } from '@/lib/faq';
-import { getSettings } from '@/lib/queries';
-import { faqSchema } from '@/lib/schema';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import { buildFaqs } from '@/modules/web/lib/faq';
+import { getSettings } from '@/modules/web/database/queries';
+import { faqSchema } from '@/modules/web/lib/schema';
 import styles from './page.module.css';
-import BackButton from '@/components/BackButton';
+import BackButton from '@/modules/web/frontend/BackButton';
 
 export const metadata: Metadata = {
   title: 'Turf Booking FAQ | Payments, Cancellations & Check-in',

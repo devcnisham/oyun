@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { IconArrow, IconClose, IconMenu } from './icons';
-import BrandMark from '@/components/BrandMark';
+import BrandMark from '@/modules/shared/frontend/BrandMark';
 import { BROWSE_URL } from './links';
 import styles from './site.module.css';
 

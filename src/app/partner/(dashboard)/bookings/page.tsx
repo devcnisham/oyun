@@ -1,14 +1,14 @@
 import Link from 'next/link';
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Tabs, dash, inr, tableScroll } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { cancelBooking } from '@/lib/partner-actions';
-import { getDb } from '@/lib/store';
-import { addDays, formatDate, istNow } from '@/lib/time';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, Tabs, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { cancelBooking } from '@/modules/partner/backend/partner-actions';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, formatDate, istNow } from '@/modules/shared/lib/time';
 import WalkInForm from './WalkInForm';
-import { halfNote } from '@/lib/pricing';
-import { paginate } from '@/lib/paginate';
-import Pager from '@/components/dash/Pager';
+import { halfNote } from '@/modules/shared/lib/pricing';
+import { paginate } from '@/modules/shared/lib/paginate';
+import Pager from '@/modules/shared/frontend/dash/Pager';
 import CourtTimeline from '../CourtTimeline';
 
 const VIEWS = [

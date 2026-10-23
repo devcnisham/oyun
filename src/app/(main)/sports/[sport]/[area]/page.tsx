@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
-import { isIndexableTurf, ogBase } from '@/lib/seo';
+import { isIndexableTurf, ogBase } from '@/modules/web/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import FaqList from '@/components/FaqList';
-import JsonLd from '@/components/JsonLd';
-import TurfGrid from '@/components/TurfGrid';
-import { rupees } from '@/lib/format';
-import { listAreas, listPublicTurfs } from '@/lib/queries';
-import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
-import { SITE_CITY, areaSlug } from '@/lib/site';
-import { getSportFaqs } from '@/lib/sport-faqs';
-import { SPORTS, sportFromSlug, sportSlug } from '@/lib/sports';
+import FaqList from '@/modules/web/frontend/FaqList';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import TurfGrid from '@/modules/web/frontend/TurfGrid';
+import { rupees } from '@/modules/shared/lib/format';
+import { listAreas, listPublicTurfs } from '@/modules/web/database/queries';
+import { breadcrumbSchema, faqSchema, itemListSchema } from '@/modules/web/lib/schema';
+import { SITE_CITY, areaSlug } from '@/modules/web/lib/site';
+import { getSportFaqs } from '@/modules/web/lib/sport-faqs';
+import { SPORTS, sportFromSlug, sportSlug } from '@/modules/web/lib/sports';
 import styles from '../../../turfs/[area]/page.module.css';
 
 export const revalidate = 60;

@@ -1,8 +1,8 @@
 import 'server-only';
 import { NextResponse } from 'next/server';
-import { getSessionSubject } from '@/lib/session';
-import { readStudentId } from '@/lib/student-id-storage';
-import { getDb } from '@/lib/store';
+import { getSessionSubject } from '@/modules/shared/backend/session';
+import { readStudentId } from '@/modules/shared/backend/student-id-storage';
+import { getDb } from '@/modules/shared/database/store';
 
 const TYPES: Record<string, string> = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
 

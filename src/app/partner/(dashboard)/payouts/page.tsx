@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { updateBusiness } from '@/lib/partner-actions';
-import { commissionFor, gstSplit } from '@/lib/pricing';
-import { bookingRevenue, payoutWeeks } from '@/lib/reports';
-import { getDb } from '@/lib/store';
-import { formatDate, istNow } from '@/lib/time';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { updateBusiness } from '@/modules/partner/backend/partner-actions';
+import { commissionFor, gstSplit } from '@/modules/shared/lib/pricing';
+import { bookingRevenue, payoutWeeks } from '@/modules/shared/lib/reports';
+import { getDb } from '@/modules/shared/database/store';
+import { formatDate, istNow } from '@/modules/shared/lib/time';
 
 export default async function PayoutsPage() {
   const ctx = await requirePartner('payouts');

@@ -1,12 +1,12 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, tableScroll } from '@/components/dash/ui';
-import Pager from '@/components/dash/Pager';
-import Stars from '@/components/Stars';
-import { banReviewAuthor, toggleReviewHidden } from '@/lib/admin-actions';
-import { paginate } from '@/lib/paginate';
-import { turfReviews } from '@/lib/reviews';
-import { getDb } from '@/lib/store';
-import { formatDateTime } from '@/lib/time';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import Pager from '@/modules/shared/frontend/dash/Pager';
+import Stars from '@/modules/shared/frontend/Stars';
+import { banReviewAuthor, toggleReviewHidden } from '@/modules/admin/backend/admin-actions';
+import { paginate } from '@/modules/shared/lib/paginate';
+import { turfReviews } from '@/modules/shared/lib/reviews';
+import { getDb } from '@/modules/shared/database/store';
+import { formatDateTime } from '@/modules/shared/lib/time';
 
 export default async function AdminReviews({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const { page: pageParam } = await searchParams;

@@ -1,11 +1,11 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
-import { adjustWallet, togglePlayerBan } from '@/lib/admin-actions';
-import { getDb } from '@/lib/store';
-import { formatDate, formatDateTime } from '@/lib/time';
-import { WALLET_TXN_LABELS } from '@/lib/wallet';
-import { paginate } from '@/lib/paginate';
-import Pager from '@/components/dash/Pager';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { adjustWallet, togglePlayerBan } from '@/modules/admin/backend/admin-actions';
+import { getDb } from '@/modules/shared/database/store';
+import { formatDate, formatDateTime } from '@/modules/shared/lib/time';
+import { WALLET_TXN_LABELS } from '@/modules/shared/lib/wallet';
+import { paginate } from '@/modules/shared/lib/paginate';
+import Pager from '@/modules/shared/frontend/dash/Pager';
 
 export default async function AdminPlayers({ searchParams }: { searchParams: Promise<{ q?: string; page?: string }> }) {
   const { q = '', page: pageParam } = await searchParams;

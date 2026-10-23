@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import BackButton from '@/components/BackButton';
-import { getSettings } from '@/lib/queries';
+import BackButton from '@/modules/web/frontend/BackButton';
+import { getSettings } from '@/modules/web/database/queries';
 import SettingsList from './SettingsList';
 import styles from './Settings.module.css';
 

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Reveal from '../../(launch)/_ui/Reveal';
-import { SITE_CITY } from '@/lib/site';
+import { SITE_CITY } from '@/modules/web/lib/site';
 import PhoneDemo, { type DemoTurf } from './PhoneDemo';
 import styles from './DesktopLanding.module.css';
 

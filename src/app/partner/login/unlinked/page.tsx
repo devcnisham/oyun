@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { SignOutButton } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 import { connection } from 'next/server';
-import { clerkEnabled } from '@/lib/clerk';
-import styles from '@/components/auth/LoginScreen.module.css';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
+import styles from '@/modules/shared/frontend/auth/LoginScreen.module.css';
 
 export const metadata: Metadata = { title: 'No partner account yet' };
 

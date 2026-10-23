@@ -1,12 +1,12 @@
 import type { MetadataRoute } from 'next';
-import { CURATED_COLLECTIONS } from '@/lib/curated-collections';
-import { GUIDES } from '@/lib/guides-content';
-import { listAreas, listPublicTurfs } from '@/lib/queries';
-import { localizedPagesIndexed } from '@/lib/localized-home';
-import { PRICE_BANDS, bandSlug } from '@/lib/price-bands';
-import { isIndexableTurf, showCountdownInSitemap } from '@/lib/seo';
-import { absoluteUrl, areaSlug } from '@/lib/site';
-import { SPORTS, sportSlug } from '@/lib/sports';
+import { CURATED_COLLECTIONS } from '@/modules/web/lib/curated-collections';
+import { GUIDES } from '@/modules/web/lib/guides-content';
+import { listAreas, listPublicTurfs } from '@/modules/web/database/queries';
+import { localizedPagesIndexed } from '@/modules/web/lib/localized-home';
+import { PRICE_BANDS, bandSlug } from '@/modules/web/lib/price-bands';
+import { isIndexableTurf, showCountdownInSitemap } from '@/modules/web/lib/seo';
+import { absoluteUrl, areaSlug } from '@/modules/web/lib/site';
+import { SPORTS, sportSlug } from '@/modules/web/lib/sports';
 
 // Built per request from the live database, so new turfs appear without a deploy
 export const dynamic = 'force-dynamic';

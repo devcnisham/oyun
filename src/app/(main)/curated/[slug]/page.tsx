@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { ogBase } from '@/lib/seo';
+import { ogBase } from '@/modules/web/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import FaqList from '@/components/FaqList';
-import JsonLd from '@/components/JsonLd';
-import TurfGrid from '@/components/TurfGrid';
-import { CURATED_COLLECTIONS, getCuratedCollection } from '@/lib/curated-collections';
-import { listPublicTurfs } from '@/lib/queries';
-import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
-import { SITE_CITY } from '@/lib/site';
+import FaqList from '@/modules/web/frontend/FaqList';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import TurfGrid from '@/modules/web/frontend/TurfGrid';
+import { CURATED_COLLECTIONS, getCuratedCollection } from '@/modules/web/lib/curated-collections';
+import { listPublicTurfs } from '@/modules/web/database/queries';
+import { breadcrumbSchema, faqSchema, itemListSchema } from '@/modules/web/lib/schema';
+import { SITE_CITY } from '@/modules/web/lib/site';
 import styles from '../../turfs/[area]/page.module.css';
 
 export const revalidate = 60;

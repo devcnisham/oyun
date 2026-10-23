@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 // End-to-end tests run against `next dev` on a throwaway data folder (DATA_DIR), never against a real database:
 // Supabase and Clerk variables are blanked, so bookings live in .e2e-data/ and sign-in uses the device name/phone gate.
-// In local dev the admin and partner dashboards skip their login (see devLoginSkipped in src/lib/session.ts).
+// In local dev the admin and partner dashboards skip their login (see devLoginSkipped in src/modules/shared/backend/session.ts).
 const PORT = 3210;
 const blank = { NEXT_PUBLIC_SUPABASE_URL: '', NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: '', SUPABASE_SECRET_KEY: '', NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: '', CLERK_SECRET_KEY: '' };
 

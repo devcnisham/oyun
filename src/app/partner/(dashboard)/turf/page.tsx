@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import ActionForm from '@/components/dash/ActionForm';
-import TurfProfileFields from '@/components/dash/TurfProfileFields';
-import { Badge, PageHeader, dash } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { setRainOut, updateTurfProfile } from '@/lib/partner-actions';
-import { isOutdoorTurf } from '@/lib/weather';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import TurfProfileFields from '@/modules/shared/frontend/dash/TurfProfileFields';
+import { Badge, PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { setRainOut, updateTurfProfile } from '@/modules/partner/backend/partner-actions';
+import { isOutdoorTurf } from '@/modules/shared/lib/weather';
 
 export default async function MyTurfPage() {
   const ctx = await requirePartner('turf');

@@ -1,13 +1,13 @@
-import JsonLd from '@/components/JsonLd';
-import { organizationSchema, websiteSchema } from '@/lib/schema';
-import { getSettings, getSiteContent, listPublicTurfs } from '@/lib/queries';
-import { shortHour } from '@/lib/format';
-import { getDb } from '@/lib/store';
-import { listOpenMatches } from '@/lib/community';
-import PopupAd from '@/components/PopupAdLazy';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import { organizationSchema, websiteSchema } from '@/modules/web/lib/schema';
+import { getSettings, getSiteContent, listPublicTurfs } from '@/modules/web/database/queries';
+import { shortHour } from '@/modules/shared/lib/format';
+import { getDb } from '@/modules/shared/database/store';
+import { listOpenMatches } from '@/modules/web/backend/community';
+import PopupAd from '@/modules/web/frontend/PopupAdLazy';
 import MobileHome from './_home/MobileHome';
 import DesktopLanding from './_landing/DesktopLanding';
-import { qrSvg } from '@/lib/qr';
+import { qrSvg } from '@/modules/web/lib/qr';
 import styles from './page.module.css';
 
 // A phone only needs the app feed, so the proxy sends phones to /m, which skips the desktop landing page.

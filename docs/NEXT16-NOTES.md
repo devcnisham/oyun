@@ -10,7 +10,7 @@ Read from `node_modules/next/dist/docs/` (Next 16.3.8, React 19.2.8) on 9 Oct 20
 | `params`, `searchParams`, `cookies()`, `headers()` are async; `await` them | all pages use `await params` | same guide (Async Request APIs) |
 | In `opengraph-image`, `twitter-image`, `icon`, `apple-icon` the props `params` and `id` are Promises | `src/app/opengraph-image.tsx`, `twitter-image.tsx` | same guide (Async parameters for icon) |
 | `connection()` from `next/server` marks a render as request-time | `src/app/(main)/layout.tsx` | `03-api-reference/04-functions/connection.md` |
-| `after()` runs work after the response is sent | `src/lib/store.ts` (slot broadcast after a write) | `03-api-reference/04-functions/after.md` |
+| `after()` runs work after the response is sent | `src/modules/shared/database/store.ts` (slot broadcast after a write) | `03-api-reference/04-functions/after.md` |
 | Turbopack is the default for `next dev` and `next build`; a custom `webpack` config fails the build | `next.config.ts` has none | upgrading guide (Turbopack by default) |
 | ESLint uses a flat config and `next lint` is gone; run `eslint` directly | `npm run lint` is `eslint` | upgrading guide (ESLint Flat Config) |
 

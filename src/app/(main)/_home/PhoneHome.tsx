@@ -1,15 +1,15 @@
 'use client';
 
-import { SITE_CITY } from '@/lib/site';
+import { SITE_CITY } from '@/modules/web/lib/site';
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import FavouriteButton from '@/components/FavouriteButton';
-import FloatingSearch from '@/components/FloatingSearch';
-import { getBookingSummaries, type BookingSummary } from '@/lib/booking-actions';
-import { getMyBookingIds, getProfile } from '@/lib/client/device';
-import { rupees } from '@/lib/format';
-import { canOptimize } from '@/lib/images';
+import FavouriteButton from '@/modules/web/frontend/FavouriteButton';
+import FloatingSearch from '@/modules/web/frontend/FloatingSearch';
+import { getBookingSummaries, type BookingSummary } from '@/modules/web/backend/booking-actions';
+import { getMyBookingIds, getProfile } from '@/modules/web/frontend/hooks/device';
+import { rupees } from '@/modules/shared/lib/format';
+import { canOptimize } from '@/modules/shared/backend/images';
 import type { HomeData, HomeTurf } from './types';
 import styles from './PhoneHome.module.css';
 

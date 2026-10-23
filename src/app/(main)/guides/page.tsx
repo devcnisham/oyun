@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { ogBase } from '@/lib/seo';
+import { ogBase } from '@/modules/web/lib/seo';
 import Link from 'next/link';
-import JsonLd from '@/components/JsonLd';
-import { GUIDES } from '@/lib/guides-content';
-import { breadcrumbSchema } from '@/lib/schema';
-import { SITE_CITY } from '@/lib/site';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import { GUIDES } from '@/modules/web/lib/guides-content';
+import { breadcrumbSchema } from '@/modules/web/lib/schema';
+import { SITE_CITY } from '@/modules/web/lib/site';
 import styles from '../turfs/[area]/page.module.css';
 
 export const metadata: Metadata = {

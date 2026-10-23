@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
-import LoginScreen from '@/components/auth/LoginScreen';
-import { PartnerSignUp } from '@/components/auth/PartnerSocial';
-import { clerkEnabled } from '@/lib/clerk';
+import LoginScreen from '@/modules/shared/frontend/auth/LoginScreen';
+import { PartnerSignUp } from '@/modules/partner/frontend/auth/PartnerSocial';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
 
 export default function PartnerSignupPage() {
   if (!clerkEnabled) notFound();

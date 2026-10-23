@@ -1,8 +1,8 @@
-import Navbar from "@/components/Navbar";
-import AppBar from "@/components/AppBar";
-import DesktopGate from "@/components/DesktopGate";
-import Footer from "@/components/Footer";
-import { getSettings, getSiteContent } from "@/lib/queries";
+import Navbar from "@/modules/web/frontend/Navbar";
+import AppBar from "@/modules/web/frontend/AppBar";
+import DesktopGate from "@/modules/web/frontend/DesktopGate";
+import Footer from "@/modules/web/frontend/Footer";
+import { getSettings, getSiteContent } from "@/modules/web/database/queries";
 
 export default async function MainLayout({
   children,

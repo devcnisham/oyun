@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import BackButton from '@/components/BackButton';
-import BrandMark from '@/components/BrandMark';
+import BackButton from '@/modules/web/frontend/BackButton';
+import BrandMark from '@/modules/shared/frontend/BrandMark';
 import styles from '../auth.module.css';
 
 const perks = [

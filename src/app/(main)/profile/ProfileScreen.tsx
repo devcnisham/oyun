@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getProfile, saveProfile, signOutDevice } from '@/lib/client/device';
-import { openConsentSettings } from '@/components/consent/consent';
-import { clerkEnabled } from '@/lib/clerk';
+import { getProfile, saveProfile, signOutDevice } from '@/modules/web/frontend/hooks/device';
+import { openConsentSettings } from '@/modules/web/frontend/consent/consent';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
 import AccountCard from './AccountCard';
 import ProfileIcon from './ProfileIcon';
 import ProfileMenu from './ProfileMenu';

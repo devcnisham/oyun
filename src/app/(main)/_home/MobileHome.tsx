@@ -1,7 +1,7 @@
-import { areaSlug } from '@/lib/site';
-import { CURATED_COLLECTIONS } from '@/lib/curated-collections';
-import { SPORTS, sportSlug } from '@/lib/sports';
-import type { OpenMatch, PromoCard, TurfSummary } from '@/lib/types';
+import { areaSlug } from '@/modules/web/lib/site';
+import { CURATED_COLLECTIONS } from '@/modules/web/lib/curated-collections';
+import { SPORTS, sportSlug } from '@/modules/web/lib/sports';
+import type { OpenMatch, PromoCard, TurfSummary } from '@/modules/shared/database/types';
 import PhoneHome from './PhoneHome';
 import type { HomeData } from './types';
 

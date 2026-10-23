@@ -3,19 +3,19 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { createBookings, getSlotsForDate, holdSlots, releaseHolds } from '@/lib/booking-actions';
-import { clearDraft, loadDraft, saveDraft } from '@/lib/client/booking-draft';
-import { addMyBookingIds, getProfile, saveProfile } from '@/lib/client/device';
-import { useAccount, useOpenClerkSignIn } from '@/lib/client/use-account';
-import { useSlotUpdates } from '@/lib/client/use-slot-updates';
-import { clerkEnabled } from '@/lib/clerk';
+import { createBookings, getSlotsForDate, holdSlots, releaseHolds } from '@/modules/web/backend/booking-actions';
+import { clearDraft, loadDraft, saveDraft } from '@/modules/web/frontend/hooks/booking-draft';
+import { addMyBookingIds, getProfile, saveProfile } from '@/modules/web/frontend/hooks/device';
+import { useAccount, useOpenClerkSignIn } from '@/modules/web/frontend/hooks/use-account';
+import { useSlotUpdates } from '@/modules/web/frontend/hooks/use-slot-updates';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
 import dynamic from 'next/dynamic';
-import type { AddOn, Bookable, PitchSide, PitchSize, PublicTurf, Slot } from '@/lib/types';
-import { isHalfBookable, mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
-import { MAX_SLOTS } from '@/lib/booking-types';
-import { rupees } from '@/lib/format';
-import { parseHour } from '@/lib/time';
-import { swapHours } from '@/lib/side-hint';
+import type { AddOn, Bookable, PitchSide, PitchSize, PublicTurf, Slot } from '@/modules/shared/database/types';
+import { isHalfBookable, mapTurfToResourcesAndBookables } from '@/modules/shared/lib/venue-mapping';
+import { MAX_SLOTS } from '@/modules/web/lib/booking-types';
+import { rupees } from '@/modules/shared/lib/format';
+import { parseHour } from '@/modules/shared/lib/time';
+import { swapHours } from '@/modules/web/lib/side-hint';
 import { describeHours } from './booking-format';
 import { useCheckoutForm } from './useCheckoutForm';
 import PitchPicker from './PitchPicker';
@@ -24,7 +24,7 @@ import styles from './BookingFlow.module.css';
 
 // Only needed once the player proceeds to checkout or sign-in
 const CheckoutSheet = dynamic(() => import('./CheckoutSheet'));
-const SignInGate = dynamic(() => import('@/components/SignInGate'));
+const SignInGate = dynamic(() => import('@/modules/web/frontend/SignInGate'));
 
 export interface BookingFlowProps {
   turf: PublicTurf;

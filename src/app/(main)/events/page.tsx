@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SITE_CITY } from '@/lib/site';
+import { SITE_CITY } from '@/modules/web/lib/site';
 import styles from '../hub.module.css';
 
 export const metadata: Metadata = {

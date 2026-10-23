@@ -1,0 +1,161 @@
+import { turfHours } from '@/modules/shared/lib/pricing';
+import { addDays, dayOfWeek, isSlotInPast, parseHour } from '@/modules/shared/lib/time';
+import type { Booking, Database, PublicTurf, Turf, VenueResource } from '@/modules/shared/database/types';
+import { mapTurfToResourcesAndBookables } from '@/modules/shared/lib/venue-mapping';
+
+// The partner calendar: one turf, seven days, every opening hour (task RQ-F3).
+
+export type CalendarState = 'past' | 'free' | 'booked' | 'blocked' | 'held';
+
+export interface CalendarBooking {
+  id: string;
+  code: string;
+  name: string;
+  phone: string;
+  status: Booking['status'];
+  source: Booking['source'];
+  part: 'full' | 'A' | 'B';
+}
+
+export interface CalendarCell {
+  date: string;
+  hour: number;
+  state: CalendarState;
+  bookings: CalendarBooking[];
+  blockReason: string | null;
+  blockId: string | null;
+}
+
+export interface CalendarDay {
+  date: string;
+  isToday: boolean;
+  cells: CalendarCell[];
+  booked: number; // bookings that day (a split hour counts two)
+}
+
+// Bookings that occupy the pitch (a no-show still held it)
+const TAKING = new Set<Booking['status']>(['confirmed', 'checked_in', 'no_show']);
+
+// The Monday on or before `date`
+export function weekStart(date: string) {
+  const dow = dayOfWeek(date); // 0 = Sunday
+  return addDays(date, dow === 0 ? -6 : 1 - dow);
+}
+
+export function buildWeek(db: Database, turf: PublicTurf, start: string, now: { date: string; hour: number }): { hours: number[]; days: CalendarDay[] } {
+  const hours = turfHours(turf);
+  const openHour = parseHour(turf.openTime);
+  const nowIso = new Date().toISOString();
+  const days: CalendarDay[] = Array.from({ length: 7 }, (_, i) => {
+    const date = addDays(start, i);
+    const dayBookings = db.bookings.filter((b) => b.turfId === turf.id && b.date === date && TAKING.has(b.status));
+    const dayBlocks = db.blocks.filter((b) => b.turfId === turf.id && b.date === date);
+    const dayHolds = (db.holds ?? []).filter((h) => h.turfId === turf.id && h.date === date && h.expiresAt > nowIso);
+
+    const cells: CalendarCell[] = hours.map((hour) => {
+      const bookings = dayBookings
+        .filter((b) => (b.hours && b.hours.length > 0 ? b.hours.includes(hour) : b.hour === hour))
+        .map((b) => ({ id: b.id, code: b.code, name: b.customerName, phone: b.customerPhone, status: b.status, source: b.source, part: b.pitch ?? 'full' }) as CalendarBooking);
+      const block = dayBlocks.find((b) => b.hour === hour) ?? null;
+      const past = isSlotInPast(date, hour, { date: now.date, hour: now.hour, minute: 0 }, openHour, true, 0, 60);
+      const state: CalendarState = bookings.length > 0 ? 'booked' : block ? 'blocked' : dayHolds.some((h) => h.hour === hour) ? 'held' : past ? 'past' : 'free';
+      return { date, hour, state, bookings, blockReason: block?.reason ?? null, blockId: block?.id ?? null };
+    });
+    return { date, isToday: date === now.date, cells, booked: cells.reduce((n, c) => n + c.bookings.length, 0) };
+  });
+  return { hours, days };
+}
+
+export interface CourtCalendarCell {
+  hour: number;
+  resourceId: string;
+  resourceName: string;
+  state: CalendarState;
+  bookings: CalendarBooking[];
+  blockReason: string | null;
+}
+
+/**
+ * Builds the day view across all courts / resources for a venue (P7-45).
+ */
+export function buildDayAcrossCourts(
+  db: Database,
+  turf: PublicTurf,
+  date: string,
+  now: { date: string; hour: number }
+): {
+  resources: VenueResource[];
+  hours: number[];
+  rows: { hour: number; cells: CourtCalendarCell[] }[];
+} {
+  const { resources } = mapTurfToResourcesAndBookables(turf as Turf);
+  const hours = turfHours(turf);
+  const openHour = parseHour(turf.openTime);
+  const nowIso = new Date().toISOString();
+
+  const dayBookings = db.bookings.filter(
+    (b) => b.turfId === turf.id && b.date === date && TAKING.has(b.status)
+  );
+  const dayBlocks = db.blocks.filter((b) => b.turfId === turf.id && b.date === date);
+  const dayHolds = (db.holds ?? []).filter(
+    (h) => h.turfId === turf.id && h.date === date && h.expiresAt > nowIso
+  );
+
+  const rows = hours.map((hour) => {
+    const past = isSlotInPast(date, hour, { date: now.date, hour: now.hour, minute: 0 }, openHour, true, 0, 60);
+    const block = dayBlocks.find((b) => b.hour === hour) ?? null;
+    const hourHolds = dayHolds.filter((h) => h.hour === hour);
+
+    const cells: CourtCalendarCell[] = resources.map((res) => {
+      const bookings = dayBookings
+        .filter((b) => {
+          if (b.hours && b.hours.length > 0 ? !b.hours.includes(hour) : b.hour !== hour) return false;
+          if (turf.halfPitch) {
+            if (b.pitch === 'full') return true;
+            if (b.pitch === 'A' && res.name.includes('Half A')) return true;
+            if (b.pitch === 'B' && res.name.includes('Half B')) return true;
+            return false;
+          }
+          return true;
+        })
+        .map(
+          (b) =>
+            ({
+              id: b.id,
+              code: b.code,
+              name: b.customerName,
+              phone: b.customerPhone,
+              status: b.status,
+              source: b.source,
+              part: b.pitch ?? 'full',
+            }) as CalendarBooking
+        );
+
+      const isHeld = hourHolds.length > 0;
+      const state: CalendarState =
+        bookings.length > 0
+          ? 'booked'
+          : block
+            ? 'blocked'
+            : isHeld
+              ? 'held'
+              : past
+                ? 'past'
+                : 'free';
+
+      return {
+        hour,
+        resourceId: res.id,
+        resourceName: res.name,
+        state,
+        bookings,
+        blockReason: block?.reason ?? null,
+      };
+    });
+
+    return { hour, cells };
+  });
+
+  return { resources, hours, rows };
+}
+

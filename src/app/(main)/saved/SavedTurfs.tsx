@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import BackButton from '@/components/BackButton';
-import TurfCard from '@/components/TurfCard';
-import { useFavourites } from '@/lib/client/favourites';
-import type { TurfSummary } from '@/lib/types';
+import BackButton from '@/modules/web/frontend/BackButton';
+import TurfCard from '@/modules/web/frontend/TurfCard';
+import { useFavourites } from '@/modules/web/frontend/hooks/favourites';
+import type { TurfSummary } from '@/modules/shared/database/types';
 import styles from './saved.module.css';
 
 export default function SavedTurfs({ turfs }: { turfs: TurfSummary[] }) {

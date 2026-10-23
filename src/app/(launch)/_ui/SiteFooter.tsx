@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { isLaunched } from '@/lib/hosts';
-import { SITE_CITY } from '@/lib/site';
-import BrandMark from '@/components/BrandMark';
+import { isLaunched } from '@/modules/shared/backend/hosts';
+import { SITE_CITY } from '@/modules/web/lib/site';
+import BrandMark from '@/modules/shared/frontend/BrandMark';
 import { BROWSE_URL, HELP_URL } from './links';
 import styles from './site.module.css';
 

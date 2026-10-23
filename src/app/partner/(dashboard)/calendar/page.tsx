@@ -1,10 +1,10 @@
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import Link from 'next/link';
-import { PageHeader, dash } from '@/components/dash/ui';
-import { buildDayAcrossCourts, buildWeek, weekStart, type CalendarCell } from '@/lib/calendar';
-import { requirePartner } from '@/lib/partner-auth';
-import { getDb } from '@/lib/store';
-import { addDays, formatDate, formatSlotRange, isValidDate, istNow } from '@/lib/time';
+import { PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import { buildDayAcrossCourts, buildWeek, weekStart, type CalendarCell } from '@/modules/partner/lib/calendar';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, formatDate, formatSlotRange, isValidDate, istNow } from '@/modules/shared/lib/time';
 import styles from './calendar.module.css';
 
 function stateClass(c: { state: string; bookings: { status: string }[] }) {

@@ -1,6 +1,6 @@
-import type { Slot } from '@/lib/types';
-import { rupees, shortHour } from '@/lib/format';
-import { formatTime } from '@/lib/time';
+import type { Slot } from '@/modules/shared/database/types';
+import { rupees, shortHour } from '@/modules/shared/lib/format';
+import { formatTime } from '@/modules/shared/lib/time';
 import { SESSIONS, slotTitle, unavailableInfo } from './booking-format';
 import styles from './BookingFlow.module.css';
 

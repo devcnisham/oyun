@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SignIn } from '@clerk/nextjs';
-import { clerkEnabled } from '@/lib/clerk';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
 import AuthShell from '../../_shell/AuthShell';
 import PlayerForm from '../../_shell/PlayerForm';
 import { clerkAppearance } from '../../_shell/appearance';

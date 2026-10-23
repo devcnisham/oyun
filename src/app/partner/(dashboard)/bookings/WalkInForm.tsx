@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ActionForm from '@/components/dash/ActionForm';
-import { dash } from '@/components/dash/ui';
-import { createWalkIn, getWalkInSlots } from '@/lib/partner-actions';
-import type { AddOn, Slot } from '@/lib/types';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { dash } from '@/modules/shared/frontend/dash/ui';
+import { createWalkIn, getWalkInSlots } from '@/modules/partner/backend/partner-actions';
+import type { AddOn, Slot } from '@/modules/shared/database/types';
 
 interface WalkInFormProps {
   turfId: string;

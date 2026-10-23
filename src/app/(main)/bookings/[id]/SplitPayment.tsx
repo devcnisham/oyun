@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { calculateSplit, generateSplitShareMessage, generateUpiLink, isValidUpiId } from '@/lib/split-payment';
+import { calculateSplit, generateSplitShareMessage, generateUpiLink, isValidUpiId } from '@/modules/web/lib/split-payment';
 
 interface SplitPaymentProps {
   turfName: string;

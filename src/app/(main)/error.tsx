@@ -1,7 +1,7 @@
 'use client';
 
-import StatusPage from '@/components/status/StatusPage';
-import styles from '@/components/status/StatusPage.module.css';
+import StatusPage from '@/modules/shared/frontend/status/StatusPage';
+import styles from '@/modules/shared/frontend/status/StatusPage.module.css';
 import Link from 'next/link';
 
 // Shown when a page fails to render. The server error is already reported by instrumentation.ts.

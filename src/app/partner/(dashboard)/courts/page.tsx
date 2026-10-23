@@ -1,8 +1,8 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { PageHeader, dash } from '@/components/dash/ui';
-import { addBookableOffering, addCourtResource, deleteBookableOffering, deleteCourtResource } from '@/lib/partner-actions';
-import { requirePartner } from '@/lib/partner-auth';
-import { mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import { addBookableOffering, addCourtResource, deleteBookableOffering, deleteCourtResource } from '@/modules/partner/backend/partner-actions';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { mapTurfToResourcesAndBookables } from '@/modules/shared/lib/venue-mapping';
 
 export default async function PartnerCourtsPage() {
   const ctx = await requirePartner('turf');

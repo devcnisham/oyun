@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
-import { quickUpdateTurf } from '@/lib/admin-actions';
-import { canOptimize } from '@/lib/images';
-import { commissionFor } from '@/lib/pricing';
-import { bookingRevenue } from '@/lib/reports';
-import { getDb } from '@/lib/store';
-import { istNow } from '@/lib/time';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { quickUpdateTurf } from '@/modules/admin/backend/admin-actions';
+import { canOptimize } from '@/modules/shared/backend/images';
+import { commissionFor } from '@/modules/shared/lib/pricing';
+import { bookingRevenue } from '@/modules/shared/lib/reports';
+import { getDb } from '@/modules/shared/database/store';
+import { istNow } from '@/modules/shared/lib/time';
 
 export default async function AdminTurfs({ searchParams }: { searchParams: Promise<{ q?: string; status?: string }> }) {
   const { q = '', status = '' } = await searchParams;

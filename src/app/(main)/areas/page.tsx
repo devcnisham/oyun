@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import JsonLd from '@/components/JsonLd';
-import { rupees } from '@/lib/format';
-import { PRICE_BANDS, bandSlug } from '@/lib/price-bands';
-import { listAreas, listPublicTurfs } from '@/lib/queries';
-import { breadcrumbSchema } from '@/lib/schema';
-import { isIndexableTurf, ogBase } from '@/lib/seo';
-import { SITE_CITY, areaSlug } from '@/lib/site';
-import { sportInfo } from '@/lib/sports';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import { rupees } from '@/modules/shared/lib/format';
+import { PRICE_BANDS, bandSlug } from '@/modules/web/lib/price-bands';
+import { listAreas, listPublicTurfs } from '@/modules/web/database/queries';
+import { breadcrumbSchema } from '@/modules/web/lib/schema';
+import { isIndexableTurf, ogBase } from '@/modules/web/lib/seo';
+import { SITE_CITY, areaSlug } from '@/modules/web/lib/site';
+import { sportInfo } from '@/modules/web/lib/sports';
 import styles from '../turfs/[area]/page.module.css';
 
 export const metadata: Metadata = {

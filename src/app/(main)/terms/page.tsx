@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getSettings } from '@/lib/queries';
+import { getSettings } from '@/modules/web/database/queries';
 import styles from '../faq/page.module.css';
-import BackButton from '@/components/BackButton';
+import BackButton from '@/modules/web/frontend/BackButton';
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions',

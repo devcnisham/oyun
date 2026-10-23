@@ -1,7 +1,7 @@
 'use client';
 
-import StatusPage from '@/components/status/StatusPage';
-import styles from '@/components/status/StatusPage.module.css';
+import StatusPage from '@/modules/shared/frontend/status/StatusPage';
+import styles from '@/modules/shared/frontend/status/StatusPage.module.css';
 import Link from 'next/link';
 
 // Root error boundary: catches unhandled page rendering errors across all routes

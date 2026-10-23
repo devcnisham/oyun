@@ -1,7 +1,7 @@
-import { hourlyRate } from '@/lib/pricing';
-import type { Bookable, PitchSize, PublicTurf } from '@/lib/types';
-import { rupees } from '@/lib/format';
-import { isHalfBookable, mapTurfToResourcesAndBookables } from '@/lib/venue-mapping';
+import { hourlyRate } from '@/modules/shared/lib/pricing';
+import type { Bookable, PitchSize, PublicTurf } from '@/modules/shared/database/types';
+import { rupees } from '@/modules/shared/lib/format';
+import { isHalfBookable, mapTurfToResourcesAndBookables } from '@/modules/shared/lib/venue-mapping';
 import styles from './BookingFlow.module.css';
 
 interface PitchPickerProps {

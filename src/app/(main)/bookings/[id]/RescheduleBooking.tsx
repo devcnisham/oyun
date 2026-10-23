@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { rescheduleBooking } from '@/lib/booking-actions';
-import { DEVICE_EVENT } from '@/lib/client/device';
-import { formatSlotRange } from '@/lib/time';
+import { rescheduleBooking } from '@/modules/web/backend/booking-actions';
+import { DEVICE_EVENT } from '@/modules/web/frontend/hooks/device';
+import { formatSlotRange } from '@/modules/shared/lib/time';
 
 interface RescheduleBookingProps {
   bookingId: string;

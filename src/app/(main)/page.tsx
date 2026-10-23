@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { localeAlternates } from '@/lib/seo';
-import { SITE_DESCRIPTION } from '@/lib/site';
+import { localeAlternates } from '@/modules/web/lib/seo';
+import { SITE_DESCRIPTION } from '@/modules/web/lib/site';
 import { HomeView } from './HomeView';
 
 export const metadata: Metadata = {

@@ -6,7 +6,7 @@ Contents: 1 slot status, 2 hold, 3 price, 4 create booking, 5 cancel, 6 check-in
 
 ## 1. What status does a slot show?
 
-`getSlots` in `src/lib/pricing.ts`. Order matters: the first rule that matches wins.
+`getSlots` in `src/modules/shared/lib/pricing.ts`. Order matters: the first rule that matches wins.
 
 ```mermaid
 flowchart TD

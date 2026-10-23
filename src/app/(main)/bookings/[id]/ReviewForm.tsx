@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { submitReview } from '@/lib/booking-actions';
+import { submitReview } from '@/modules/web/backend/booking-actions';
 import styles from './ReviewForm.module.css';
 
 const LABELS = ['', 'Poor', 'Okay', 'Good', 'Great', 'Excellent'];

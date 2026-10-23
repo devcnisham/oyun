@@ -1,5 +1,5 @@
-import { getPartnerContext } from '@/lib/partner-auth';
-import { getDb } from '@/lib/store';
+import { getPartnerContext } from '@/modules/shared/backend/partner-auth';
+import { getDb } from '@/modules/shared/database/store';
 
 export const dynamic = 'force-dynamic';
 

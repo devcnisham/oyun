@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { clientIpFrom } from '@/lib/client-ip';
-import { processPaymentWebhook, razorpayWebhookSecret, verifyRazorpaySignature } from '@/lib/payments';
-import { refreshAll } from '@/lib/action-utils';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
+import { clientIpFrom } from '@/modules/shared/backend/client-ip';
+import { processPaymentWebhook, razorpayWebhookSecret, verifyRazorpaySignature } from '@/modules/web/backend/payments';
+import { refreshAll } from '@/modules/shared/backend/action-utils';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
 
 export async function POST(req: Request) {
   const ip = clientIpFrom(req.headers);

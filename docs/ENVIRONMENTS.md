@@ -28,7 +28,7 @@ Never point local or preview at the production database with the secret key unle
 | `DATA_DIR`, `ALLOW_HTTP` | Local overrides | internal |
 | `ALLOW_EPHEMERAL_BOOKINGS` | Set to `true` only on a demo deployment with no database: it keeps booking open although bookings can vanish (see below) | internal |
 
-Rules: a secret never gets a `NEXT_PUBLIC_` prefix; `.env*` is git-ignored except `.env.example`, which lists names with no values. Add a new variable to `.env.example`, `src/lib/env.ts`, this file and `docs/GO-LIVE.md`.
+Rules: a secret never gets a `NEXT_PUBLIC_` prefix; `.env*` is git-ignored except `.env.example`, which lists names with no values. Add a new variable to `.env.example`, `src/modules/shared/backend/env.ts`, this file and `docs/GO-LIVE.md`.
 
 `/api/health` reports whether production is ready (durable storage, realtime, logins set and strong enough). Check it after every deploy.
 

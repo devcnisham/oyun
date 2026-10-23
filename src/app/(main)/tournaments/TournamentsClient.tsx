@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import type { Tournament } from '@/lib/types';
-import { registerTournamentTeam } from '@/lib/tournaments';
+import type { Tournament } from '@/modules/shared/database/types';
+import { registerTournamentTeam } from '@/modules/web/lib/tournaments';
 
 export default function TournamentsClient({
   tournaments: initialTournaments,

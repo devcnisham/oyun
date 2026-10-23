@@ -1,6 +1,6 @@
-import { reportError } from '@/lib/monitoring';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
-import { clientIpFrom } from '@/lib/client-ip';
+import { reportError } from '@/modules/shared/backend/monitoring';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
+import { clientIpFrom } from '@/modules/shared/backend/client-ip';
 
 // Receives browser error reports from instrumentation-client.ts
 export async function POST(req: Request) {

@@ -1,12 +1,12 @@
 'use client';
 
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import { useRef, useState } from 'react';
-import ActionForm from '@/components/dash/ActionForm';
-import { blockSlot, unblockSlot } from '@/lib/partner-actions';
-import { formatDate, formatHour } from '@/lib/time';
-import type { SlotBlock } from '@/lib/types';
-import { dash } from '@/components/dash/ui';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { blockSlot, unblockSlot } from '@/modules/partner/backend/partner-actions';
+import { formatDate, formatHour } from '@/modules/shared/lib/time';
+import type { SlotBlock } from '@/modules/shared/database/types';
+import { dash } from '@/modules/shared/frontend/dash/ui';
 import styles from './PartnerDashboard.module.css';
 
 interface QuickSlotBlockerProps {

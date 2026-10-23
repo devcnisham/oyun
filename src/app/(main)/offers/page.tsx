@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { listLiveOffers } from '@/lib/offers-list';
-import { listPublicTurfs } from '@/lib/queries';
-import { getDb } from '@/lib/store';
+import { listLiveOffers } from '@/modules/web/lib/offers-list';
+import { listPublicTurfs } from '@/modules/web/database/queries';
+import { getDb } from '@/modules/shared/database/store';
 import styles from '../hub.module.css';
 
 export const metadata: Metadata = {

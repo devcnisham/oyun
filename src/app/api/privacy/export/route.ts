@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { currentAccountId } from '@/lib/current-account';
-import { exportUserData } from '@/lib/dpdp';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
+import { currentAccountId } from '@/modules/web/backend/current-account';
+import { exportUserData } from '@/modules/web/backend/dpdp';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
 
 // Returns the signed-in player's own data. The account comes from the Clerk session, never from the request:
 // a phone number in the URL would let anyone download another person's bookings and wallet.

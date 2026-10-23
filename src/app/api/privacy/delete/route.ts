@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { currentAccountId } from '@/lib/current-account';
-import { deleteUserData } from '@/lib/dpdp';
-import { isSameOrigin } from '@/lib/same-origin';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
+import { currentAccountId } from '@/modules/web/backend/current-account';
+import { deleteUserData } from '@/modules/web/backend/dpdp';
+import { isSameOrigin } from '@/modules/shared/backend/same-origin';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
 
 // Erases the signed-in player's own data. The account comes from the Clerk session, never from the request body.
 export async function POST(req: NextRequest) {

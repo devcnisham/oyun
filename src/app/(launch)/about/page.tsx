@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SITE_CITY } from '@/lib/site';
-import { getSettings } from '@/lib/queries';
-import { isLaunched } from '@/lib/hosts';
+import { SITE_CITY } from '@/modules/web/lib/site';
+import { getSettings } from '@/modules/web/database/queries';
+import { isLaunched } from '@/modules/shared/backend/hosts';
 import SiteFooter from '../_ui/SiteFooter';
 import SiteHeader from '../_ui/SiteHeader';
 import styles from './page.module.css';

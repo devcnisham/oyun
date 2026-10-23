@@ -44,7 +44,8 @@ See [docs/GO-LIVE.md](docs/GO-LIVE.md) for the steps to take the site live, and 
 
 ## More docs
 
-- [FEATURE_LIST.md](FEATURE_LIST.md): what is built, partly built and still to do.
+- [docs/PROJECT-STRUCTURE.md](docs/PROJECT-STRUCTURE.md): where code lives per product and layer.
+- [docs/FEATURE-LIST.md](docs/FEATURE-LIST.md): what is built, partly built and still to do.
 - [docs/TASK-WORKFLOW.md](docs/TASK-WORKFLOW.md): ordered task queue and how to pick up the next task.
 - [docs/SLOT-BOOKING-DB.md](docs/SLOT-BOOKING-DB.md): slot booking and double-booking guard design.
 - [docs/NEXT16-NOTES.md](docs/NEXT16-NOTES.md): Next.js 16 conventions used in this repo.
@@ -52,7 +53,7 @@ See [docs/GO-LIVE.md](docs/GO-LIVE.md) for the steps to take the site live, and 
 
 ## How data is stored
 
-`src/lib/store.ts` is the only module that talks to storage. Pages call `await getDb()`; server actions call `await mutate(db => ...)`, which reloads the latest data, runs the change and writes only the rows that changed in one transaction (`apply_changes`). If another write landed in between, it retries on fresh data. Postgres enforces one live booking per turf slot, so two people can never book the same hour.
+`src/modules/shared/database/store.ts` is the only module that talks to storage. Pages call `await getDb()`; server actions call `await mutate(db => ...)`, which reloads the latest data, runs the change and writes only the rows that changed in one transaction (`apply_changes`). If another write landed in between, it retries on fresh data. Postgres enforces one live booking per turf slot, so two people can never book the same hour.
 
 All tables have row-level security on with no policies: only the server, using the secret key, can read or write them.
 

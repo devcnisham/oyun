@@ -1,9 +1,9 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { clerkEnabled } from '@/lib/clerk';
-import { partnerSubjectForEmail } from '@/lib/partner-social';
-import { createSession } from '@/lib/session';
-import { getDb } from '@/lib/store';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
+import { partnerSubjectForEmail } from '@/modules/partner/backend/partner-social';
+import { createSession } from '@/modules/shared/backend/session';
+import { getDb } from '@/modules/shared/database/store';
 
 // Where Clerk sends a partner after Google or Apple sign-in. If the verified email belongs to a partner an admin has
 // approved, the normal partner session starts; otherwise they are told how to apply. Never trusts an unverified email.

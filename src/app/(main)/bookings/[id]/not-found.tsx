@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import StatusPage from '@/components/status/StatusPage';
-import styles from '@/components/status/StatusPage.module.css';
+import StatusPage from '@/modules/shared/frontend/status/StatusPage';
+import styles from '@/modules/shared/frontend/status/StatusPage.module.css';
 
 export const metadata: Metadata = { title: 'Booking not found', robots: { index: false } };
 

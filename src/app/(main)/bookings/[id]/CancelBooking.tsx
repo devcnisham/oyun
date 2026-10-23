@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { cancelMyBooking } from '@/lib/booking-actions';
-import { DEVICE_EVENT } from '@/lib/client/device';
+import { cancelMyBooking } from '@/modules/web/backend/booking-actions';
+import { DEVICE_EVENT } from '@/modules/web/frontend/hooks/device';
 
 // Lets the player cancel their own upcoming booking (shown only while cancellation is still allowed)
 export default function CancelBooking({ bookingId, cutoffHours, needsPhone }: { bookingId: string; cutoffHours: number; needsPhone: boolean }) {

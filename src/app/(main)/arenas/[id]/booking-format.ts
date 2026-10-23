@@ -1,5 +1,5 @@
-import { rupees, shortHour } from '@/lib/format';
-import type { Slot } from '@/lib/types';
+import { rupees, shortHour } from '@/modules/shared/lib/format';
+import type { Slot } from '@/modules/shared/database/types';
 
 /** Day parts the slot map is grouped into; `to` is exclusive. */
 export const SESSIONS = [

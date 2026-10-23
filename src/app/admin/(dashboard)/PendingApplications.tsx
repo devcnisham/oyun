@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { dash } from '@/components/dash/ui';
-import { approveApplication, rejectApplication } from '@/lib/admin-actions';
-import type { ActionResult, Application } from '@/lib/types';
+import { dash } from '@/modules/shared/frontend/dash/ui';
+import { approveApplication, rejectApplication } from '@/modules/admin/backend/admin-actions';
+import type { ActionResult, Application } from '@/modules/shared/database/types';
 
 // Approved/rejected items leave this list, so the results (incl. each new partner's
 // temporary password) are kept here, newest first, rather than in each item's form.

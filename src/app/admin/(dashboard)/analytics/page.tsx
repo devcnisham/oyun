@@ -1,7 +1,7 @@
-import { PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
-import { computePlatformAnalytics } from '@/lib/analytics';
-import { getDb } from '@/lib/store';
-import { istNow } from '@/lib/time';
+import { PageHeader, Stat, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { computePlatformAnalytics } from '@/modules/admin/backend/analytics';
+import { getDb } from '@/modules/shared/database/store';
+import { istNow } from '@/modules/shared/lib/time';
 
 export default async function AdminAnalyticsPage() {
   const db = await getDb();

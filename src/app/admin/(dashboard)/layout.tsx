@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { hasSession } from '@/lib/session';
+import { hasSession } from '@/modules/shared/backend/session';
 import AdminShell from './AdminShell';
 import LaunchBanner from './LaunchBanner';
 

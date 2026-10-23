@@ -29,18 +29,18 @@ Every feature, small or large, passes through these steps. It sits on top of [TA
 2. **Write the test before the code and watch it fail.** A test written afterwards passes immediately and only proves what you built, not what was required. The most serious defect in `BUGS.md` produced no error, no warning and no failing build; only a test that checks the control actually engaged would have caught it.
 3. **Nothing is DONE** until tests, documentation and monitoring exist for it.
 4. **Every defect found goes in [BUGS.md](BUGS.md)**, including ones introduced and fixed in the same session.
-5. **Server actions** are added to `src/lib/authorization.test.ts`; partner and admin pages to `src/lib/authorization-audit.test.ts`.
+5. **Server actions** are added to `src/test/cross-cutting/authorization.test.ts`; partner and admin pages to `src/test/cross-cutting/authorization-audit.test.ts`.
 
 ## How the steps map onto this repo
 
 | Step | Where it lives here |
 |---|---|
 | 01 to 03 | PR description "What changed" and "Why"; screens checked at desktop and 375px |
-| 04 | `supabase/` SQL and `src/lib/store.ts`, `seed.ts` (`migrate()`), `types.ts`; RLS checked by `npm run test:sql` |
-| 05 | `src/lib/*-actions.ts` (`'use server'`), `src/app/api/**/route.ts` |
+| 04 | `supabase/` SQL and `src/modules/shared/database/store.ts`, `seed.ts` (`migrate()`), `types.ts`; RLS checked by `npm run test:sql` |
+| 05 | `src/modules/*/backend/*-actions.ts` (`'use server'`), `src/app/api/**/route.ts` |
 | 06 | pure functions in `src/lib/` with a `*.test.ts` beside them |
 | 07 | `src/app/**` and `src/components/**`, CSS Modules |
-| 08, 09 | `ValidationError`, the form helpers in `src/lib/action-utils.ts`, error states in the UI. Zod is not installed; add it only as a deliberate decision. |
+| 08, 09 | `ValidationError`, the form helpers in `src/modules/shared/backend/action-utils.ts`, error states in the UI. Zod is not installed; add it only as a deliberate decision. |
 | 10 | `npm test`, `npm run test:e2e`, axe in `e2e/a11y.spec.ts` |
 | 11 | `docs/`, the tracker (`docs/build-tracker.html`) |
 | 13 | GitHub Actions `CI` (lint, types, tests, build, e2e, Lighthouse, SQL, secret scan) |

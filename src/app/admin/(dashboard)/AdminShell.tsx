@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import BrandMark from '@/components/BrandMark';
+import BrandMark from '@/modules/shared/frontend/BrandMark';
 import { usePathname } from 'next/navigation';
-import { logout } from '@/lib/auth-actions';
-import NavIcon from '@/components/dash/NavIcon';
-import HeaderPageTitle from '@/components/dash/HeaderPageTitle';
-import SidebarToggle from '@/components/dash/SidebarToggle';
+import { logout } from '@/modules/shared/backend/auth-actions';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
+import HeaderPageTitle from '@/modules/shared/frontend/dash/HeaderPageTitle';
+import SidebarToggle from '@/modules/shared/frontend/dash/SidebarToggle';
 import AdminTabBar from './AdminTabBar';
 import styles from './layout.module.css';
 

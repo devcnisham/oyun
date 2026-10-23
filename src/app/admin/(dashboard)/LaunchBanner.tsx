@@ -1,7 +1,7 @@
-import { dash } from '@/components/dash/ui';
-import { launchProblems, loginChecks, realtimeConfigured } from '@/lib/launch-checks';
-import { realtimeBroadcastWorks } from '@/lib/realtime';
-import { storageInfo } from '@/lib/store';
+import { dash } from '@/modules/shared/frontend/dash/ui';
+import { launchProblems, loginChecks, realtimeConfigured } from '@/modules/shared/backend/launch-checks';
+import { realtimeBroadcastWorks } from '@/modules/shared/backend/realtime';
+import { storageInfo } from '@/modules/shared/database/store';
 
 // Shown on every admin page until production is connected. Not dismissible: fix the setup to clear it.
 export default async function LaunchBanner() {

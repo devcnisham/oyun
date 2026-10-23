@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { checkReferralCode, quoteSelection, type ReferralCheck } from '@/lib/booking-actions';
-import type { SelectionQuote } from '@/lib/booking-types';
-import { getProfile } from '@/lib/client/device';
-import type { AddOn, PitchSide, PitchSize } from '@/lib/types';
+import { checkReferralCode, quoteSelection, type ReferralCheck } from '@/modules/web/backend/booking-actions';
+import type { SelectionQuote } from '@/modules/web/lib/booking-types';
+import { getProfile } from '@/modules/web/frontend/hooks/device';
+import type { AddOn, PitchSide, PitchSize } from '@/modules/shared/database/types';
 
 interface CheckoutFormOptions {
   turfId: string;

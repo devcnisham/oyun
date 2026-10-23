@@ -1,10 +1,10 @@
 'use client';
 
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import { useActionState, useEffect, useRef, useState } from 'react';
-import { dash } from '@/components/dash/ui';
-import { checkInBooking } from '@/lib/partner-actions';
-import type { ActionResult } from '@/lib/types';
+import { dash } from '@/modules/shared/frontend/dash/ui';
+import { checkInBooking } from '@/modules/partner/backend/partner-actions';
+import type { ActionResult } from '@/modules/shared/database/types';
 
 // BarcodeDetector is available in Chrome/Edge/Android; other browsers fall back to typing the code
 interface DetectedBarcode { rawValue: string }

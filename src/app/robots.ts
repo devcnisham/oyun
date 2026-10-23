@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
-import { roleForHost } from '@/lib/hosts';
-import { SITE_URL } from '@/lib/site';
+import { roleForHost } from '@/modules/shared/backend/hosts';
+import { SITE_URL } from '@/modules/web/lib/site';
 
 // Read the site URL and the requesting host at request time, not build time
 export const dynamic = 'force-dynamic';

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import type { OpenMatch, PublicTurf } from '@/lib/types';
-import { createOpenMatch, joinOpenMatch } from '@/lib/community';
+import type { OpenMatch, PublicTurf } from '@/modules/shared/database/types';
+import { createOpenMatch, joinOpenMatch } from '@/modules/web/backend/community';
 
 export default function MatchesClient({
   initialMatches,

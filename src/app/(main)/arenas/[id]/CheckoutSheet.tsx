@@ -1,9 +1,9 @@
 import StudentIdBox from './StudentIdBox';
 import { createPortal } from 'react-dom';
-import { useDialogFocus } from '@/lib/client/use-dialog-focus';
-import type { SelectionQuote } from '@/lib/booking-types';
-import type { AddOn, PitchSize, PublicTurf, Slot } from '@/lib/types';
-import { rupees, shortHour } from '@/lib/format';
+import { useDialogFocus } from '@/modules/web/frontend/hooks/use-dialog-focus';
+import type { SelectionQuote } from '@/modules/web/lib/booking-types';
+import type { AddOn, PitchSize, PublicTurf, Slot } from '@/modules/shared/database/types';
+import { rupees, shortHour } from '@/modules/shared/lib/format';
 import { describeHours } from './booking-format';
 import styles from './BookingFlow.module.css';
 import type { CheckoutForm } from './useCheckoutForm';

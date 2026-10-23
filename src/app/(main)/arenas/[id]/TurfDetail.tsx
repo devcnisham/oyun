@@ -2,19 +2,19 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { canOptimize } from '@/lib/images';
-import type { AddOn, Offer, PublicTurf, Slot } from '@/lib/types';
-import type { PublicReview } from '@/lib/reviews';
-import Stars from '@/components/Stars';
-import FavouriteButton from '@/components/FavouriteButton';
+import { canOptimize } from '@/modules/shared/backend/images';
+import type { AddOn, Offer, PublicTurf, Slot } from '@/modules/shared/database/types';
+import type { PublicReview } from '@/modules/shared/lib/reviews';
+import Stars from '@/modules/shared/frontend/Stars';
+import FavouriteButton from '@/modules/web/frontend/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from './BookingFlow';
-import { shortHour } from '@/lib/format';
+import { shortHour } from '@/modules/shared/lib/format';
 import ShareButton from './ShareButton';
 import TurfMiniMap from './TurfMiniMap';
 import styles from './page.module.css';
-import BackButton from '@/components/BackButton';
-import { sportInfo } from '@/lib/sports';
-import { getWeatherAlert } from '@/lib/weather';
+import BackButton from '@/modules/web/frontend/BackButton';
+import { sportInfo } from '@/modules/web/lib/sports';
+import { getWeatherAlert } from '@/modules/shared/lib/weather';
 
 interface TurfDetailProps {
   turf: PublicTurf;

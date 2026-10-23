@@ -1,9 +1,9 @@
-import { PageHeader, Stat, dash, tableScroll } from '@/components/dash/ui';
-import Stars from '@/components/Stars';
-import { requirePartner } from '@/lib/partner-auth';
-import { turfReviews } from '@/lib/reviews';
-import { getDb } from '@/lib/store';
-import { formatDateTime } from '@/lib/time';
+import { PageHeader, Stat, dash, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import Stars from '@/modules/shared/frontend/Stars';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { turfReviews } from '@/modules/shared/lib/reviews';
+import { getDb } from '@/modules/shared/database/store';
+import { formatDateTime } from '@/modules/shared/lib/time';
 
 export default async function PartnerReviews() {
   const ctx = await requirePartner();

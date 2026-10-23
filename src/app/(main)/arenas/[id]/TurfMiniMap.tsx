@@ -2,11 +2,11 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import { locateTurf } from '@/lib/map-actions';
-import type { Coords } from '@/lib/geocode';
-import type { MapTurf } from '@/components/TurfMap';
+import { locateTurf } from '@/modules/web/backend/map-actions';
+import type { Coords } from '@/modules/shared/backend/geocode';
+import type { MapTurf } from '@/modules/web/frontend/TurfMap';
 
-const TurfMap = dynamic(() => import('@/components/TurfMap'), { ssr: false, loading: () => <Note>Loading map…</Note> });
+const TurfMap = dynamic(() => import('@/modules/web/frontend/TurfMap'), { ssr: false, loading: () => <Note>Loading map…</Note> });
 
 const fill = { width: '100%', height: '100%', display: 'grid', placeItems: 'center', padding: 16, textAlign: 'center' as const };
 

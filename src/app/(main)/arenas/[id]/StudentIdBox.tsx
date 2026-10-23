@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getStudentInfo, type StudentInfo } from '@/lib/student-actions';
-import { STUDENT_ID_MAX_BYTES, studentIdFileError } from '@/lib/student-id';
+import { getStudentInfo, type StudentInfo } from '@/modules/web/backend/student-actions';
+import { STUDENT_ID_MAX_BYTES, studentIdFileError } from '@/modules/shared/backend/student-id';
 import styles from './BookingFlow.module.css';
 
 /**

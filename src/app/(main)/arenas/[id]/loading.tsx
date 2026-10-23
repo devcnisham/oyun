@@ -1,4 +1,4 @@
-import PageSkeleton from '@/components/PageSkeleton';
+import PageSkeleton from '@/modules/shared/frontend/PageSkeleton';
 
 // Shown while a turf's details and live slots load; a detail page reads as rows, not a card grid
 export default function Loading() {

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { openConsentSettings } from '@/components/consent/consent';
-import PrivacyDataControls from '@/components/PrivacyDataControls';
-import LanguageSelector from '@/components/LanguageSelector';
-import { useTranslation } from '@/lib/client/use-translation';
+import { openConsentSettings } from '@/modules/web/frontend/consent/consent';
+import PrivacyDataControls from '@/modules/web/frontend/PrivacyDataControls';
+import LanguageSelector from '@/modules/web/frontend/LanguageSelector';
+import { useTranslation } from '@/modules/web/frontend/hooks/use-translation';
 import styles from './Settings.module.css';
 
 // Everything a player can change or look up about their OYUN experience, in one list

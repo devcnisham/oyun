@@ -3,20 +3,20 @@
 import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import TurfCard from '@/components/TurfCard';
-import type { TurfSummary } from '@/lib/types';
+import TurfCard from '@/modules/web/frontend/TurfCard';
+import type { TurfSummary } from '@/modules/shared/database/types';
 import styles from './page.module.css';
-import BackButton from '@/components/BackButton';
-import { SPORTS, sportInfo } from '@/lib/sports';
-import { PRICE_STEPS, filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/lib/search';
-import { locateTurfs } from '@/lib/map-actions';
-import { getOpenHours } from '@/lib/availability-actions';
-import { TIME_WINDOWS, hasOpenSlot, isTimeWindow, type TimeWindow } from '@/lib/availability';
-import { BOOKING_DAYS, addDays, istNow } from '@/lib/time';
-import type { Coords } from '@/lib/geocode';
+import BackButton from '@/modules/web/frontend/BackButton';
+import { SPORTS, sportInfo } from '@/modules/web/lib/sports';
+import { PRICE_STEPS, filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/modules/web/backend/search';
+import { locateTurfs } from '@/modules/web/backend/map-actions';
+import { getOpenHours } from '@/modules/web/backend/availability-actions';
+import { TIME_WINDOWS, hasOpenSlot, isTimeWindow, type TimeWindow } from '@/modules/web/lib/availability';
+import { BOOKING_DAYS, addDays, istNow } from '@/modules/shared/lib/time';
+import type { Coords } from '@/modules/shared/backend/geocode';
 
 // Leaflet touches window, so the map loads in the browser only
-const TurfMap = dynamic(() => import('@/components/TurfMap'), { ssr: false, loading: () => <div style={{ height: 420 }} /> });
+const TurfMap = dynamic(() => import('@/modules/web/frontend/TurfMap'), { ssr: false, loading: () => <div style={{ height: 420 }} /> });
 
 const formatDay = (d: string) =>
   new Date(`${d}T12:00:00+05:30`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });

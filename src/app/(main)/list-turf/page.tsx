@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { submitApplication } from '@/lib/booking-actions';
-import { STEP_FIELDS, validateApplication, type FieldErrors } from '@/lib/validation/application';
-import BackButton from '@/components/BackButton';
+import { submitApplication } from '@/modules/web/backend/booking-actions';
+import { STEP_FIELDS, validateApplication, type FieldErrors } from '@/modules/web/lib/validation/application';
+import BackButton from '@/modules/web/frontend/BackButton';
 import ListingSubmitted from './ListingSubmitted';
 import { amenitiesOptions, EMPTY_FORM, mangaloreAreas, perks, sizes, surfaces, type ListingForm } from './listing-options';
 import styles from './page.module.css';
