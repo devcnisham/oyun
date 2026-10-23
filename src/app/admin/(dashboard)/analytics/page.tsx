@@ -1,5 +1,5 @@
 import { PageHeader, Stat, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
-import { computePlatformAnalytics } from '@/modules/admin/backend/analytics';
+import { computePlatformAnalytics } from '@/modules/admin/database/analytics';
 import { getDb } from '@/modules/shared/database/store';
 import { istNow } from '@/modules/shared/lib/time';
 

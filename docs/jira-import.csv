@@ -403,7 +403,7 @@ Tracker id: P8-36. Source of truth: docs/build-tracker.html in the repo.","High"
 "164","Task","[P8-37] Forms clear typed values after validation error","ActionForm and LoginForm keep what was typed after a failed action. Found in the PR #27 review; fixed in PR #173.
 
 Tracker id: P8-37. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
-"165","Task","[P8-38] Check-in time window and turf hours limits","Check-in works only from an hour before the slot until it ends (src/modules/partner/lib/checkin-window.ts, PR #172). Turf hours must be whole hours and close later the same day or at 00:00; half hours and a close after midnight are refused with a message (src/modules/shared/lib/hours.ts). Found in the PR #27 review.
+"165","Task","[P8-38] Check-in time window and turf hours limits","Check-in works only from an hour before the slot until it ends (src/modules/partner/backend/checkin-window.ts, PR #172). Turf hours must be whole hours and close later the same day or at 00:00; half hours and a close after midnight are refused with a message (src/modules/shared/lib/hours.ts). Found in the PR #27 review.
 
 Tracker id: P8-38. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "166","Task","[P7-16] Mobile menu keyboard navigation and input labels","The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review. Done in PR #175: the drawer opens with the keyboard and the dashboard inputs are labelled.

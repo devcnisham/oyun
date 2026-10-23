@@ -35,7 +35,7 @@ All automated verification gates are passing with 100% success on `main`:
 2. **R010: One Order Per Checkout for Multi-Hour Bookings** (`3f42928`)
    - Added `BookingItem` and `items?: BookingItem[]`, `hours?: number[]` to `Booking`.
    - Multi-hour checkouts generate a single unified `Booking` order with itemized slots, one check-in code/QR, and one payment/invoice breakdown.
-   - Updated slot occupancy logic in `src/modules/shared/lib/pricing.ts`, `src/modules/partner/lib/calendar.ts`, and partner slot management.
+   - Updated slot occupancy logic in `src/modules/shared/lib/pricing.ts`, `src/modules/partner/database/calendar.ts`, and partner slot management.
    - Updated `Invoice.tsx` to render itemized breakdown lines.
 
 3. **Switch Slots Over to Database v2 RPCs** (`2fc690b`)
@@ -47,7 +47,7 @@ All automated verification gates are passing with 100% success on `main`:
    - Support for slots past midnight (e.g. 00:00–02:00 up to 06:00) using modulo arithmetic normalization in `src/modules/shared/lib/format.ts`, `src/modules/shared/lib/time.ts`, and `src/modules/shared/lib/pricing.ts`.
    - Variable slot durations (30 min pickleball, 60 min football, 90 min matches).
    - Late-night session badge `🦉` (hours 24..30) in arena booking flows.
-   - Early morning check-in window offset (`now.hour + 24`) in `src/modules/partner/lib/checkin-window.ts`.
+   - Early morning check-in window offset (`now.hour + 24`) in `src/modules/partner/backend/checkin-window.ts`.
    - Dynamic duration formatting in `Invoice.tsx` and iCal route.
 
 5. **R007: Multi-Court Venues in Booking Flow** (`9a7e6fe`)
@@ -63,7 +63,7 @@ All automated verification gates are passing with 100% success on `main`:
    - Added view toggle between **Day view** and **Week view** at `/partner/calendar`.
    - **Day View**: Side-by-side columns for every physical court or pitch partition (`mapped.resources`), showing slot occupancy, customer details, check-in badges, and direct links to block slots or add walk-ins.
    - **Week View**: 7-day schedule with court filtering chips (`All courts`, `Court 1`, `Court 2`, etc.).
-   - Full test coverage in `src/modules/partner/lib/calendar.test.ts`.
+   - Full test coverage in `src/modules/partner/database/calendar.test.ts`.
 
 ### C. Performance & Reliability
 8. **P10-04: Realtime Slot Updates & On-Focus Refetch** (`3962045`)
@@ -135,7 +135,7 @@ All automated verification gates are passing with 100% success on `main`:
 - [x] **P13-03: Weather Alerts**
   - Real-time weather warnings in `src/modules/shared/lib/weather.ts` and automated rain disruption cancellation policy in `src/modules/shared/lib/rain.ts`.
 - [x] **P13-05: Admin Platform Analytics**
-  - Analytics and revenue reports in `src/modules/admin/backend/analytics.ts` and `/admin/reports`.
+  - Analytics and revenue reports in `src/modules/admin/database/analytics.ts` and `/admin/reports`.
 - [x] **P13-07: Kannada Language Support**
   - Complete English/Kannada (`kn`) localization dictionary and formatting in `src/modules/web/lib/i18n.ts` and `src/modules/web/lib/i18n.test.ts`.
 

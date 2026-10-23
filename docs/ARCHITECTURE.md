@@ -25,7 +25,7 @@ Players sign in with Clerk when its keys are set (otherwise a name and phone kep
 | `src/app/admin` | Admin console: approvals, turfs, partners, players, refunds, settings |
 | `src/app/api` | `health`, `holds/release`, `client-error` |
 | `src/modules/web` | Player site code: `frontend` (components, hooks), `backend` (actions, payments, search), `database` (read queries), `lib` (pure logic) |
-| `src/modules/partner` | Owner dashboard code: `frontend`, `backend` (partner actions), `lib` (calendar, check-in window) |
+| `src/modules/partner` | Owner dashboard code: `frontend`, `backend` (partner actions), `backend` + `database` |
 | `src/modules/admin` | Admin console code: `backend` (admin actions, analytics) |
 | `src/modules/shared` | Used by two or more apps: `database` (store, Supabase clients, types), `backend` (session, rate limit, realtime), `lib` (pricing, wallet, hours), `frontend` (dashboard kit, login, invoice) |
 | `supabase/` | `migrations/` (the real history), `setup/` (the same SQL split for the SQL editor), `tests/`, `proposals/` (the v2 slot booking design) |

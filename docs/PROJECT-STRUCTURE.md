@@ -17,11 +17,12 @@ src/
       lib/                  Pure logic: SEO, sports, i18n, availability, cancel policy
     partner/                Owner dashboard
       frontend/             Dashboard components (CourtTimeline, CheckInDesk, NavLinks...), auth/
-      backend/              partner-actions, social, activity
-      lib/                  Calendar, check-in window
+      backend/              partner-actions, social, check-in window
+      database/             activity log writes, calendar (reads the store)
     admin/                  Admin console
       frontend/             AdminShell, tab bar, banners, pending applications
-      backend/              admin-actions, analytics
+      backend/              admin-actions
+      database/             analytics (reads the store)
     shared/                 Used by two or more of the above
       database/             store.ts (the only storage gateway), types, seed, ids, supabase/ clients, data/
       backend/              session, auth, rate limits, realtime, hosts, csp, env, errors, monitoring

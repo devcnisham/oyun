@@ -1,7 +1,7 @@
 import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import Link from 'next/link';
 import { PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
-import { buildDayAcrossCourts, buildWeek, weekStart, type CalendarCell } from '@/modules/partner/lib/calendar';
+import { buildDayAcrossCourts, buildWeek, weekStart, type CalendarCell } from '@/modules/partner/database/calendar';
 import { requirePartner } from '@/modules/shared/backend/partner-auth';
 import { getDb } from '@/modules/shared/database/store';
 import { addDays, formatDate, formatSlotRange, isValidDate, istNow } from '@/modules/shared/lib/time';

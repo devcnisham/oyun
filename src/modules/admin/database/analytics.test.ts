@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { computePlatformAnalytics } from '@/modules/admin/backend/analytics';
+import { computePlatformAnalytics } from '@/modules/admin/database/analytics';
 import type { Booking, Database, Turf } from '@/modules/shared/database/types';
 
 describe('Admin platform analytics (P13-05)', () => {

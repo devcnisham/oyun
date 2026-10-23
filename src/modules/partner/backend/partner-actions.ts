@@ -17,7 +17,7 @@ import { buildQuote, getSlots, turfHours } from '@/modules/shared/lib/pricing';
 import { getDb, mutate, newBookingCode, newId } from '@/modules/shared/database/store';
 import { addDays, formatHour, formatSlotRange, isValidDate, istNow, parseHour } from '@/modules/shared/lib/time';
 import type { ActionResult, Booking, Database, OfferType, Slot, StaffRole } from '@/modules/shared/database/types';
-import { checkInWindow } from '@/modules/partner/lib/checkin-window';
+import { checkInWindow } from '@/modules/partner/backend/checkin-window';
 import { mapTurfToResourcesAndBookables } from '@/modules/shared/lib/venue-mapping';
 import { withDate, withoutDate } from '@/modules/shared/lib/rain';
 import { isOutdoorTurf } from '@/modules/shared/lib/weather';
@@ -25,7 +25,7 @@ import { createPlayer, refundDue, rewardCheckIn, walletTxn } from '@/modules/sha
 import { isV2SlotsActive, v2BlockSlot, v2BookRanges, v2Range, v2UnblockSlot } from '@/modules/shared/database/v2-slots';
 import { v2QuoteOf } from '@/modules/shared/database/v2-bookings';
 import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
-import { logActivity } from '@/modules/partner/backend/activity';
+import { logActivity } from '@/modules/partner/database/activity';
 
 function bookingInTurf(db: Database, ctx: PartnerContext, bookingId: string) {
   const booking = db.bookings.find((b) => b.id === bookingId);

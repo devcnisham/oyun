@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { checkInWindow } from '@/modules/partner/lib/checkin-window';
+import { checkInWindow } from '@/modules/partner/backend/checkin-window';
 
 describe('checkInWindow', () => {
   test('opens one hour before the slot', () => {

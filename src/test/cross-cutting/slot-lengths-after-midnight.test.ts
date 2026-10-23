@@ -6,10 +6,10 @@ import {
   parseMinute,
   slotTimestamp,
 } from '@/modules/shared/lib/time';
-import { checkInWindow } from '@/modules/partner/lib/checkin-window';
+import { checkInWindow } from '@/modules/partner/backend/checkin-window';
 import { turfHours } from '@/modules/shared/lib/pricing';
 import { describeHours, SESSIONS } from '@/modules/web/frontend/main/arenas/id/booking-format';
-import { buildDayAcrossCourts, buildWeek } from '@/modules/partner/lib/calendar';
+import { buildDayAcrossCourts, buildWeek } from '@/modules/partner/database/calendar';
 import { makeDb } from '@/test/fixtures';
 
 describe('R009 - Slot formatting & arbitrary durations', () => {

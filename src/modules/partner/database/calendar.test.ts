@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { MONDAY, makeBooking, makeDb } from '@/test/fixtures';
-import { buildDayAcrossCourts, buildWeek, weekStart } from '@/modules/partner/lib/calendar';
+import { buildDayAcrossCourts, buildWeek, weekStart } from '@/modules/partner/database/calendar';
 
 const NOW = { date: '2026-10-14', hour: 10 }; // a Wednesday
 
