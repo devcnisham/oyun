@@ -57,8 +57,8 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           <section>
             <h3>Your details</h3>
             <div className={styles.fields}>
-              <input className={styles.input} placeholder="Full name" value={name} onChange={(e) => form.setName(e.target.value)} autoComplete="name" />
-              <input className={styles.input} placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => form.setPhone(e.target.value)} autoComplete="tel" />
+              <input className={styles.input} name="name" aria-label="Full name" placeholder="Full name" value={name} onChange={(e) => form.setName(e.target.value)} autoComplete="name" />
+              <input className={styles.input} name="phone" type="tel" aria-label="10-digit mobile number" placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => form.setPhone(e.target.value)} autoComplete="tel-national" />
             </div>
           </section>
           <StudentIdBox name={name} phone={phone} />
@@ -68,6 +68,10 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
             <div className={styles.codeRow}>
               <input
                 className={styles.input}
+                aria-label="Promo or referral code"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
                 placeholder="Promo or referral code"
                 value={code}
                 onChange={(e) => form.setCode(e.target.value.toUpperCase())}

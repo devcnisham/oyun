@@ -272,6 +272,8 @@ export default function ListTurfPage() {
                     id="whatsapp"
                     name="whatsapp"
                     type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
                     placeholder="Same as mobile or different"
                     className={styles.input}
                     value={formData.whatsapp}

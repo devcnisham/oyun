@@ -269,7 +269,8 @@
   padding: 12px 14px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: 16px; /* under 16px makes iOS Safari zoom the page on focus */
+  min-height: 44px;
   font-family: 'Inter', sans-serif;
   color: var(--text-primary);
   background: var(--bg-secondary);
