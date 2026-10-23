@@ -206,7 +206,7 @@
 .primary { background: var(--brand); color: #fff; padding: 14px 26px; font-size: 15px; min-width: 132px; }
 .primary:disabled { opacity: 0.55; cursor: default; }
 .primary:active:not(:disabled), .secondary:active { transform: scale(0.97); }
-.secondary { background: var(--bg-muted); color: var(--text-primary); border: 1px solid var(--border); padding: 0 16px; }
+.secondary { background: var(--bg-muted); color: var(--text-primary); border: 1px solid var(--border); padding: 0 16px; min-height: 44px; }
 
 @media (min-width: 1024px) {
   /* Desktop: the bar sits at the bottom of the sticky booking card */
@@ -302,7 +302,8 @@
 .input {
   width: 100%;
   font: inherit;
-  font-size: 15px;
+  font-size: 16px; /* under 16px makes iOS Safari zoom the page on focus */
+  min-height: 44px;
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--border);

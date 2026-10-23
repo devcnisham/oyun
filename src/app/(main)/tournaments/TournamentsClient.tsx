@@ -134,25 +134,32 @@ export default function TournamentsClient({
                 <input
                   type="text"
                   placeholder="Team name"
+                  aria-label="Team name"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '13px' }}
+                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                   required
                 />
                 <input
                   type="text"
                   placeholder="Captain name"
+                  aria-label="Captain name"
+                  autoComplete="name"
                   value={captainName}
                   onChange={(e) => setCaptainName(e.target.value)}
-                  style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '13px' }}
+                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                   required
                 />
                 <input
                   type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel-national"
+                  maxLength={10}
+                  aria-label="Captain 10-digit mobile number"
                   placeholder="Captain 10-digit mobile"
                   value={captainPhone}
                   onChange={(e) => setCaptainPhone(e.target.value)}
-                  style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '13px' }}
+                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                   required
                 />
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -160,7 +167,7 @@ export default function TournamentsClient({
                     type="submit"
                     style={{
                       flex: 1,
-                      padding: '8px',
+                      padding: '8px', minHeight: 44,
                       borderRadius: '6px',
                       background: '#047857',
                       color: '#ffffff',
@@ -176,6 +183,7 @@ export default function TournamentsClient({
                     onClick={() => setRegisteringId(null)}
                     style={{
                       padding: '8px 12px',
+                      minHeight: 44,
                       borderRadius: '6px',
                       background: 'var(--bg-muted)',
                       color: 'var(--text-secondary)',
@@ -198,6 +206,7 @@ export default function TournamentsClient({
                 style={{
                   width: '100%',
                   padding: '10px',
+                  minHeight: 44,
                   borderRadius: '8px',
                   backgroundColor: isFull ? '#e5e7eb' : '#047857',
                   color: isFull ? '#4b5563' : '#ffffff',

@@ -37,6 +37,10 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
     return;
   }
+  // Leave cross-origin requests (Clerk, analytics, maps) to the browser
+  if (new URL(event.request.url).origin !== self.location.origin) {
+    return;
+  }
 
   // Network-first strategy with cache fallback for offline resilience
   event.respondWith(
@@ -56,7 +60,12 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        return caches.match(event.request).then((cached) => cached || caches.match('/'));
+        // Only page navigations may fall back to the cached home page; serving HTML
+        // for a failed API or asset request breaks the caller's JSON/asset parsing
+        return caches
+          .match(event.request)
+          .then((cached) => cached || (event.request.mode === 'navigate' ? caches.match('/') : undefined))
+          .then((res) => res || Response.error());
       })
   );
 });
