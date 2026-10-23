@@ -4,7 +4,7 @@ import { commissionFor } from '@/modules/shared/lib/pricing';
 import { bookingRevenue, onlineCollected } from '@/modules/shared/lib/reports';
 import { getDb } from '@/modules/shared/database/store';
 import { formatDate, istNow } from '@/modules/shared/lib/time';
-import PendingApplications from './PendingApplications';
+import PendingApplications from '@/modules/admin/frontend/PendingApplications';
 
 export default async function AdminOverview() {
   const db = await getDb();

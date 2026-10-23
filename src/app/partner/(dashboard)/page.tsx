@@ -6,7 +6,7 @@ import { bookingRevenue } from '@/modules/shared/lib/reports';
 import { getDb } from '@/modules/shared/database/store';
 import { addDays, formatDate, formatHour, formatSlotRange, istNow } from '@/modules/shared/lib/time';
 import { halfNote, turfHours } from '@/modules/shared/lib/pricing';
-import QuickSlotBlocker from './QuickSlotBlocker';
+import QuickSlotBlocker from '@/modules/partner/frontend/QuickSlotBlocker';
 import styles from './PartnerDashboard.module.css';
 
 export default async function PartnerDashboard() {

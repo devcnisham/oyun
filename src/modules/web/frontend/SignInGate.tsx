@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useDialogFocus } from '@/modules/web/frontend/hooks/use-dialog-focus';
-import PlayerForm from '@/app/(auth)/_shell/PlayerForm';
+import PlayerForm from '@/modules/web/frontend/auth/_shell/PlayerForm';
 import styles from '@/modules/web/frontend/SignInGate.module.css';
 
 // Sign in / sign up without leaving checkout, so the held slots stay held

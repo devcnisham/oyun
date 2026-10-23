@@ -5,15 +5,15 @@ import { getSettings, listAreas, listPublicTurfs } from '@/modules/web/database/
 import { organizationSchema, websiteSchema } from '@/modules/web/lib/schema';
 import { localeAlternates, ogBase } from '@/modules/web/lib/seo';
 import { SITE_CITY, SITE_DESCRIPTION, areaSlug } from '@/modules/web/lib/site';
-import { IconArrow, IconPlus } from '../_ui/icons';
-import { BROWSE_URL } from '../_ui/links';
-import Reveal from '../_ui/Reveal';
+import { IconArrow, IconPlus } from '@/modules/web/frontend/launch/_ui/icons';
+import { BROWSE_URL } from '@/modules/web/frontend/launch/_ui/links';
+import Reveal from '@/modules/web/frontend/launch/_ui/Reveal';
 import { isLaunched } from '@/modules/shared/backend/hosts';
-import SiteFooter from '../_ui/SiteFooter';
-import SiteHeader from '../_ui/SiteHeader';
+import SiteFooter from '@/modules/web/frontend/launch/_ui/SiteFooter';
+import SiteHeader from '@/modules/web/frontend/launch/_ui/SiteHeader';
 import { display } from './fonts';
-import OwnerCalendar from './OwnerCalendar';
-import SlotBoard from './SlotBoard';
+import OwnerCalendar from '@/modules/web/frontend/launch/landing/OwnerCalendar';
+import SlotBoard from '@/modules/web/frontend/launch/landing/SlotBoard';
 import styles from './landing.module.css';
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import BackButton from '@/modules/web/frontend/BackButton';
 import { getTournaments } from '@/modules/web/lib/tournaments';
-import TournamentsClient from './TournamentsClient';
+import TournamentsClient from '@/modules/web/frontend/main/tournaments/TournamentsClient';
 import styles from '../faq/page.module.css';
 
 export const metadata: Metadata = {

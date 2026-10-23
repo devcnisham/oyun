@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { localeAlternates } from '@/modules/web/lib/seo';
 import { SITE_DESCRIPTION } from '@/modules/web/lib/site';
-import { HomeView } from './HomeView';
+import { HomeView } from '@/modules/web/frontend/main/HomeView';
 
 export const metadata: Metadata = {
   title: { absolute: 'OYUN | Book Sports Turfs & Courts in Mangalore Online' },

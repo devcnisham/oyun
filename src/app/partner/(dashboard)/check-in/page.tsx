@@ -4,7 +4,7 @@ import { requirePartner } from '@/modules/shared/backend/partner-auth';
 import { checkInBooking, markNoShow } from '@/modules/partner/backend/partner-actions';
 import { getDb } from '@/modules/shared/database/store';
 import { addDays, formatDate, formatDateTime, formatSlotRange, isSlotInPast, istNow, parseHour } from '@/modules/shared/lib/time';
-import CheckInDesk from './CheckInDesk';
+import CheckInDesk from '@/modules/partner/frontend/check-in/CheckInDesk';
 import { halfNote } from '@/modules/shared/lib/pricing';
 
 export default async function CheckInPage({ searchParams }: { searchParams?: Promise<{ code?: string }> }) {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { listPublicTurfs } from '@/modules/web/database/queries';
-import SavedTurfs from './SavedTurfs';
+import SavedTurfs from '@/modules/web/frontend/main/saved/SavedTurfs';
 
 export const metadata: Metadata = { title: 'Saved turfs', robots: { index: false, follow: true } };
 

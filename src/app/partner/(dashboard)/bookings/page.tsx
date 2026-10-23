@@ -5,11 +5,11 @@ import { requirePartner } from '@/modules/shared/backend/partner-auth';
 import { cancelBooking } from '@/modules/partner/backend/partner-actions';
 import { getDb } from '@/modules/shared/database/store';
 import { addDays, formatDate, istNow } from '@/modules/shared/lib/time';
-import WalkInForm from './WalkInForm';
+import WalkInForm from '@/modules/partner/frontend/bookings/WalkInForm';
 import { halfNote } from '@/modules/shared/lib/pricing';
 import { paginate } from '@/modules/shared/lib/paginate';
 import Pager from '@/modules/shared/frontend/dash/Pager';
-import CourtTimeline from '../CourtTimeline';
+import CourtTimeline from '@/modules/partner/frontend/CourtTimeline';
 
 const VIEWS = [
   { key: 'today', label: 'Today' },

@@ -10,10 +10,10 @@ import styles from './page.module.css';
 import BackButton from '@/modules/web/frontend/BackButton';
 import { CANCEL_CUTOFF_HOURS, canSelfCancel } from '@/modules/web/lib/cancel-policy';
 import { isRainDisruption } from '@/modules/shared/lib/rain';
-import CancelBooking from './CancelBooking';
-import RescheduleBooking from './RescheduleBooking';
-import ReviewForm from './ReviewForm';
-import SplitPayment from './SplitPayment';
+import CancelBooking from '@/modules/web/frontend/main/bookings/id/CancelBooking';
+import RescheduleBooking from '@/modules/web/frontend/main/bookings/id/RescheduleBooking';
+import ReviewForm from '@/modules/web/frontend/main/bookings/id/ReviewForm';
+import SplitPayment from '@/modules/web/frontend/main/bookings/id/SplitPayment';
 import { halfNote, turfHours } from '@/modules/shared/lib/pricing';
 
 const STATUS_TEXT: Record<string, string> = {

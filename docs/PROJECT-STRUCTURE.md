@@ -11,15 +11,16 @@ src/
     api/                    Route handlers (webhooks, cron, health, uploads)
   modules/
     web/                    Player site
-      frontend/             Components, consent, client hooks (hooks/)
+      frontend/             Components, consent, client hooks (hooks/); route components in main/, launch/, auth/
       backend/              Server actions and server services (bookings, recurring, payments, search, notifications)
       database/             Read queries for the site
       lib/                  Pure logic: SEO, sports, i18n, availability, cancel policy
     partner/                Owner dashboard
-      frontend/             Partner-only components
+      frontend/             Dashboard components (CourtTimeline, CheckInDesk, NavLinks...), auth/
       backend/              partner-actions, social, activity
       lib/                  Calendar, check-in window
     admin/                  Admin console
+      frontend/             AdminShell, tab bar, banners, pending applications
       backend/              admin-actions, analytics
     shared/                 Used by two or more of the above
       database/             store.ts (the only storage gateway), types, seed, ids, supabase/ clients, data/
@@ -48,4 +49,4 @@ e2e/                        Playwright tests
 
 ## Database
 
-One database, one gateway: `src/modules/shared/database/store.ts`. All three products read and write through it. Schema changes go in `supabase/migrations/` (one flat, timestamp-ordered list; the Supabase CLI needs it flat). `docs/SLOT-BOOKING-DB.md` and `docs/adr/` explain the design.
+One Postgres, one gateway: `src/modules/shared/database/store.ts`. The three products share the same tables, so there is one migration history in `supabase/migrations/` (flat and timestamp-ordered, which the Supabase CLI requires). Which product mainly owns which tables is in `supabase/README.md`. `docs/SLOT-BOOKING-DB.md` and `docs/adr/` explain the design.

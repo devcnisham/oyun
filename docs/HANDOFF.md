@@ -122,7 +122,7 @@ All automated verification gates are passing with 100% success on `main`:
     - P12-04: Email booking receipt generator.
     - P12-05: Web Push notifications dispatch.
 - [x] **P13-04: Search Filters & Map View (GATE)**
-  - Live filtering by sport, area/neighborhood, price sorting, and Google Maps embed view in `src/app/(main)/arenas/ArenasClient.tsx` (PR #273).
+  - Live filtering by sport, area/neighborhood, price sorting, and Google Maps embed view in `src/modules/web/frontend/main/arenas/ArenasClient.tsx` (PR #273).
 - [x] **P13-06: Waitlist & Recurring Bookings**
   - Player waitlist queue in `src/modules/web/backend/waitlist.ts` with FIFO notification on slot cancellation.
   - Recurring weekly bookings generator in `src/modules/partner/lib/recurring.ts` with conflict checks (PR #274).

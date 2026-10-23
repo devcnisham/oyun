@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE_DESCRIPTION } from '@/modules/web/lib/site';
-import { HomeView } from '../HomeView';
+import { HomeView } from '@/modules/web/frontend/main/HomeView';
 
 // The phone version of the home page: phones reach it through a rewrite from /, so it must stay indexable (canonical points at /)
 export const metadata: Metadata = {

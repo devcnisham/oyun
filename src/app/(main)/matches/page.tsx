@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import BackButton from '@/modules/web/frontend/BackButton';
 import { listOpenMatches } from '@/modules/web/backend/community';
 import { listPublicTurfs } from '@/modules/web/database/queries';
-import MatchesClient from './MatchesClient';
+import MatchesClient from '@/modules/web/frontend/main/matches/MatchesClient';
 import styles from '../faq/page.module.css';
 
 export const metadata: Metadata = {

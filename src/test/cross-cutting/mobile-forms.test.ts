@@ -3,10 +3,10 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
 const read = (f: string) => readFileSync(f, 'utf8');
-const checkout = read('src/app/(main)/arenas/[id]/CheckoutSheet.tsx');
-const flowCss = read('src/app/(main)/arenas/[id]/BookingFlow.module.css');
-const matches = read('src/app/(main)/matches/MatchesClient.tsx');
-const tournaments = read('src/app/(main)/tournaments/TournamentsClient.tsx');
+const checkout = read('src/modules/web/frontend/main/arenas/id/CheckoutSheet.tsx');
+const flowCss = read('src/modules/web/frontend/main/arenas/id/BookingFlow.module.css');
+const matches = read('src/modules/web/frontend/main/matches/MatchesClient.tsx');
+const tournaments = read('src/modules/web/frontend/main/tournaments/TournamentsClient.tsx');
 const listTurfCss = read('src/app/(main)/list-turf/page.module.css');
 const listTurf = read('src/app/(main)/list-turf/page.tsx');
 

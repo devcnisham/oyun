@@ -9,7 +9,7 @@ import JsonLd from '@/modules/web/frontend/JsonLd';
 import { breadcrumbSchema, turfSchema } from '@/modules/web/lib/schema';
 import { areaSlug } from '@/modules/web/lib/site';
 import { turfReviews } from '@/modules/shared/lib/reviews';
-import TurfDetail from './TurfDetail';
+import TurfDetail from '@/modules/web/frontend/main/arenas/id/TurfDetail';
 import { primarySport } from '@/modules/web/lib/sports';
 
 interface PageProps {

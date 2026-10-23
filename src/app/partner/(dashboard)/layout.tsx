@@ -7,9 +7,9 @@ import HeaderPageTitle from '@/modules/shared/frontend/dash/HeaderPageTitle';
 import SidebarToggle from '@/modules/shared/frontend/dash/SidebarToggle';
 import { ROLE_LABELS, requirePartner } from '@/modules/shared/backend/partner-auth';
 import { switchTurf } from '@/modules/partner/backend/partner-actions';
-import NavLinks, { type NavItem } from './NavLinks';
-import MobileTabBar from './MobileTabBar';
-import MobileDrawerClose, { DrawerButton } from './MobileDrawerClose';
+import NavLinks, { type NavItem } from '@/modules/partner/frontend/NavLinks';
+import MobileTabBar from '@/modules/partner/frontend/MobileTabBar';
+import MobileDrawerClose, { DrawerButton } from '@/modules/partner/frontend/MobileDrawerClose';
 import styles from './layout.module.css';
 
 export default async function PartnerLayout({ children }: { children: React.ReactNode }) {

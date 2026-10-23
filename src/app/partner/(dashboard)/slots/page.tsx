@@ -2,7 +2,7 @@ import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import Link from 'next/link';
 import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
 import { PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
-import DateJump from './DateJump';
+import DateJump from '@/modules/partner/frontend/slots/DateJump';
 import styles from './slots.module.css';
 import { requirePartner } from '@/modules/shared/backend/partner-auth';
 import { blockRange, blockSlot, unblockSlot } from '@/modules/partner/backend/partner-actions';

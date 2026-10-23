@@ -1,5 +1,5 @@
 import { SignIn, SignUp } from '@clerk/nextjs';
-import { clerkAppearance } from '@/app/(auth)/_shell/appearance';
+import { clerkAppearance } from '@/modules/shared/frontend/auth/appearance';
 
 // Google and Apple only: Clerk's email form is hidden so partners sign in either with a social account or the password form below
 const appearance = {

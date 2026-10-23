@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { SITE_CITY } from '@/modules/web/lib/site';
 import { getSettings } from '@/modules/web/database/queries';
 import { isLaunched } from '@/modules/shared/backend/hosts';
-import SiteFooter from '../_ui/SiteFooter';
-import SiteHeader from '../_ui/SiteHeader';
+import SiteFooter from '@/modules/web/frontend/launch/_ui/SiteFooter';
+import SiteHeader from '@/modules/web/frontend/launch/_ui/SiteHeader';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
