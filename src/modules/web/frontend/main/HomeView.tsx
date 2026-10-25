@@ -6,18 +6,14 @@ import { getDb } from '@/modules/shared/database/store';
 import { listOpenMatches } from '@/modules/web/backend/community';
 import PopupAd from '@/modules/web/frontend/PopupAdLazy';
 import MobileHome from '@/modules/web/frontend/main/_home/MobileHome';
-import DesktopLanding from '@/modules/web/frontend/main/_landing/DesktopLanding';
-import { qrSvg } from '@/modules/web/lib/qr';
 import styles from '@/modules/web/frontend/main/page.module.css';
 
-// A phone only needs the app feed, so the proxy sends phones to /m, which skips the desktop landing page.
-// Both are prebuilt and revalidated on a timer, so the CDN serves them instead of rendering for every visitor.
-export async function HomeView({ phone }: { phone: boolean }) {
+// Both home routes serve the same booking feed on every screen size.
+export async function HomeView() {
   const site = await getSiteContent();
   const turfs = await listPublicTurfs();
   const settings = await getSettings();
   const matches = await listOpenMatches();
-  const recommended = [...turfs].sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating).slice(0, 10);
 
   // Phone home feed extras: coupons, turf deals and every area with its turf count
   const db = await getDb();
@@ -49,19 +45,7 @@ export async function HomeView({ phone }: { phone: boolean }) {
     <div className={styles.page}>
       <JsonLd data={[organizationSchema(settings.supportEmail, settings.supportPhone), websiteSchema()]} />
       <PopupAd promos={site.promos} />
-      {!phone && (
-        <div className={styles.desktopHome}>
-          <DesktopLanding
-            title={site.heroTitle}
-            qr={await qrSvg('https://www.oyun.co.in/')}
-            turfs={recommended.slice(0, 3).map((t) => ({ name: t.name, area: t.area, price: t.pricePerHour }))}
-          />
-        </div>
-      )}
-
-      <div className={`${styles.mobileHome} ${phone ? styles.mobileForced : ''}`}>
-        <MobileHome turfs={turfs} promos={site.promos} coupons={coupons} deals={deals} matches={matches} />
-      </div>
+      <MobileHome turfs={turfs} promos={site.promos} coupons={coupons} deals={deals} matches={matches} />
     </div>
   );
 }

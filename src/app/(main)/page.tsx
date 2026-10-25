@@ -13,5 +13,5 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default function Home() {
-  return <HomeView phone={false} />;
+  return <HomeView />;
 }

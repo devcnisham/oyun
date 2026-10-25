@@ -1,5 +1,5 @@
 .transparentWrapper {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
@@ -30,7 +30,7 @@
 }
 
 .navbarTransparent {
-  background: transparent !important;
+  background: var(--primary-gradient) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: none !important;
 }

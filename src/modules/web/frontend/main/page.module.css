@@ -792,15 +792,6 @@ a.tagBtn {
   text-decoration: none;
 }
 
-/* Phones get the app feed (MobileHome); larger screens the landing page */
-.mobileHome { display: none; }
-@media (max-width: 768px) {
-  .mobileHome { display: block; }
-  .desktopHome { display: none; }
-}
-/* Phones are served only the feed, whatever the screen width (landscape) */
-.mobileForced { display: block; }
-
 /* Scroll-linked hero (see HeroScroll.tsx, which sets --hero-p from 0 to 1): the photo drifts slower than the page and
    zooms slightly so it recedes, a dark veil grows over it, and the headline and search lift away and fade. */
 @media (min-width: 769px) {

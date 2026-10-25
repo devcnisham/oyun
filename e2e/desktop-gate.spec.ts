@@ -5,14 +5,15 @@ test.beforeEach(async ({ page }) => {
   await page.context().addCookies([{ name: 'oyun_consent', value: 'essential', domain: 'localhost', path: '/' }]);
 });
 
-test('a computer sees the landing page with a QR code at /', async ({ page, isMobile }) => {
-  test.skip(isMobile, 'wide windows only');
+test('home opens the booking feed directly on every screen', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(page.getByRole('img', { name: /QR code that opens OYUN on your phone/ })).toBeVisible();
-  await expect(page.getByRole('img', { name: /OYUN app: browse turfs/ })).toBeVisible();
-  await page.getByRole('link', { name: 'Browse venues and book' }).click();
-  await expect(page).toHaveURL(/\/arenas$/);
+  await expect(page.getByRole('tab', { name: /Turfs/ })).toBeVisible();
+  await expect(page.getByRole('img', { name: /QR code that opens OYUN on your phone/ })).toHaveCount(0);
+  await expect(page.getByRole('img', { name: /OYUN app: browse turfs/ })).toHaveCount(0);
+  const venue = page.locator('a[href^="/arenas/"]').first();
+  await expect(venue).toBeVisible();
+  await venue.click();
+  await expect(page).toHaveURL(/\/arenas\/[^/?]+$/);
   await expect(page.locator('[data-desktop-gate]')).toHaveCount(0);
 });
 
