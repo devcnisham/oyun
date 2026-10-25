@@ -10,8 +10,7 @@ const STEPS = [
   { n: 'Play', t: 'Show your QR', d: 'Walk in with the QR on your phone. Pay at the venue. Rain? The venue refunds under OYUN policy.' },
 ];
 
-// What people see on a computer: what OYUN is, a demo of the app, and a QR code that opens the phone site.
-// Booking itself lives on the phone, so the QR is the main call to action.
+// Desktop visitors can book here or use the QR code to continue on their phone.
 export default function DesktopLanding({ title, qr, turfs }: { title: string; qr: string; turfs: DemoTurf[] }) {
   return (
     <div className={styles.page}>
@@ -22,12 +21,13 @@ export default function DesktopLanding({ title, qr, turfs }: { title: string; qr
             <h1 className={styles.title}>{title}</h1>
             <p className={styles.lead}>
               OYUN shows you which sports venues are free right now, holds your hour while you pay, and gives you a QR to walk in with.
-              Built for your phone, live in {SITE_CITY} and coming to more cities across India.
+              Book from your computer or phone, live in {SITE_CITY} and coming to more cities across India.
             </p>
+            <Link href="/arenas" className={styles.bookBtn}>Browse venues and book</Link>
             <div className={styles.scan}>
               <div className={styles.qr} dangerouslySetInnerHTML={{ __html: qr }} role="img" aria-label="QR code that opens OYUN on your phone" />
               <div className={styles.scanText}>
-                <b>Scan to book on your phone</b>
+                <b>Prefer your phone?</b>
                 <span>Point your camera at the code, or open <strong>oyun.co.in</strong> on your phone.</span>
               </div>
             </div>
