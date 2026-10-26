@@ -6,6 +6,8 @@ test('partner checks in a booking for today by its code', async ({ page }) => {
   const istDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
   const runnerDate = new Intl.DateTimeFormat('en-CA').format(new Date());
   test.skip(istDate !== runnerDate, 'Runner and venue are on different calendar days');
+  const istHour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', hourCycle: 'h23' }).format(new Date()));
+  test.skip(istHour < 6, 'The venue day session has not opened yet');
 
   await asPlayer(page, 'Walk Up', '9876500004');
   // The dev partner login owns Oyun Club only, so the booking has to be there for the desk to find it
