@@ -132,11 +132,12 @@ test('home live slots show actual times and open the venue date', async ({ page 
   await page.goto('/');
   const live = page.getByRole('region', { name: 'Live slots', exact: true });
   await expect(live.getByRole('heading', { name: 'Live slots', exact: true })).toBeVisible();
-  const action = live.getByRole('link', { name: 'View slots', exact: true }).first();
+  const action = live.getByRole('link', { name: /^View .* live slots$/ }).first();
   await expect(action).toBeVisible({ timeout: 20_000 });
   const href = await action.getAttribute('href');
   expect(href).toMatch(/^\/arenas\/[^?]+\?date=\d{4}-\d{2}-\d{2}$/);
-  await expect(live.locator('article').first().getByRole('listitem').first()).toContainText(/₹/);
+  await expect(live.locator('article').first()).toContainText('Next available');
+  await expect(live.locator('article').first()).toContainText(/₹/);
   await action.click();
   await expect(page).toHaveURL(new RegExp(href!.replaceAll('?', '\\?')));
   await expect(page.getByRole('tab', { selected: true })).toBeVisible();

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { canOptimize } from '@/modules/shared/backend/images';
 import { getSlotsForDate } from '@/modules/web/backend/booking-actions';
 import { istNow } from '@/modules/shared/lib/time';
 import { rupees } from '@/modules/shared/lib/format';
@@ -35,12 +37,17 @@ export default function LiveSlots({ turfs }: { turfs: TurfSummary[] }) {
   const loading = snapshot?.key !== key;
   const open = snapshot?.key === key ? snapshot.venues.filter(venue => venue.slots.length > 0) : [];
   return <section className={styles.section} aria-labelledby="live-slots-title">
-    <div className={styles.heading}><div><h2 id="live-slots-title">Live slots</h2><p>Available today · refreshed every 30 seconds</p></div><Link href="/arenas">See all turfs</Link></div>
+    <div className={styles.heading}><div><h2 id="live-slots-title">Live slots</h2><p>Available today</p></div><Link href="/arenas">See all turfs</Link></div>
     {loading ? <div className={styles.grid} role="status" aria-label="Checking live availability">{Array.from({ length: 4 }, (_, i) => <div className={styles.skeleton} key={i} aria-hidden="true" />)}</div> : <>
       {snapshot?.error && <p role="status" className={styles.notice}>Some venues could not be refreshed. Check availability on the venue page.</p>}
       {open.length ? <div className={styles.grid}>{open.map(venue => {
         const turf = candidates.find(t => t.id === venue.id)!;
-        return <article className={styles.card} key={venue.id}><span className={styles.available}><i aria-hidden="true" />{venue.slots.length} slots available today</span><h3>{turf.name}</h3><p className={styles.city}>Mangalore</p><ul className={styles.times} aria-label={`${turf.name} available times`}>{venue.slots.slice(0, 4).map((slot, index) => <li key={`${slot.hour}-${slot.minute ?? 0}-${index}`}><span>{slot.label}</span><strong>{rupees(slot.price)}</strong></li>)}</ul><Link href={`/arenas/${venue.id}?date=${snapshot!.date}`}>View slots</Link></article>;
+        const next = venue.slots[0];
+        return <article className={styles.card} key={venue.id}><Link href={`/arenas/${venue.id}?date=${snapshot!.date}`} aria-label={`View ${turf.name} live slots`}>
+          <div className={styles.photo}>{turf.images[0] && <Image src={turf.images[0]} alt="" fill sizes="(max-width: 600px) 80vw, 25vw" unoptimized={!canOptimize(turf.images[0])} />}<span className={styles.available}><i aria-hidden="true" />{venue.slots.length} slots today</span></div>
+          <div className={styles.body}><h3>{turf.name}</h3><p className={styles.city}>Mangalore</p><div className={styles.next}><div><span>Next available</span><strong>{next.label}</strong></div><div className={styles.price}><strong>{rupees(next.price)}</strong><span>per slot</span></div></div></div>
+        </Link></article>;
+
       })}</div> : !snapshot?.error && <div className={styles.empty}>No slots are available today for these venues. <Link href="/arenas">Check another day</Link>.</div>}
     </>}
   </section>;
