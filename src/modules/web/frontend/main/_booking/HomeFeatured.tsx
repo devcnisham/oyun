@@ -6,6 +6,7 @@ import type { TurfSummary } from '@/modules/shared/database/types';
 import { sportHref } from '@/modules/web/lib/sports';
 import BookingDiscovery from './BookingDiscovery';
 import VenueCard from './VenueCard';
+import LiveSlots from './LiveSlots';
 import styles from './BookingHome.module.css';
 
 export default function HomeFeatured({ turfs }: { turfs: TurfSummary[] }) {
@@ -20,5 +21,6 @@ export default function HomeFeatured({ turfs }: { turfs: TurfSummary[] }) {
       <p className="sr-only" role="status">{picks.length} {sport || 'all sports'} venues shown</p>
       {picks.length ? <div className={styles.venueGrid}>{picks.map((t, i) => <VenueCard key={t.id} turf={t} eager={i < 4} />)}</div> : <div className={styles.empty}>{sport ? `No ${sport.toLowerCase()} venues are available right now.` : 'New venues are on the way.'} <button type="button" className={styles.resetSport} onClick={() => setSport('')}>Show all sports</button></div>}
     </section>
+    <LiveSlots turfs={matching} />
   </>;
 }

@@ -37,8 +37,8 @@ test('the redesigned home fits the viewport and offers direct daytime browsing',
   const daytime = page.getByRole('region', { name: /Morning and afternoon deals/ });
   await expect(daytime.getByRole('link', { name: /daytime slots/ })).toHaveCount(3);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({ path: `/private/tmp/oyun-redesign-${isMobile ? 'mobile' : 'desktop'}.png`, fullPage: true });
-  await page.screenshot({ path: `/private/tmp/oyun-redesign-${isMobile ? 'mobile' : 'desktop'}-top.png` });
+  await page.screenshot({ path: test.info().outputPath(`oyun-redesign-${isMobile ? 'mobile' : 'desktop'}.png`), fullPage: true });
+  await page.screenshot({ path: test.info().outputPath(`oyun-redesign-${isMobile ? 'mobile' : 'desktop'}-top.png`) });
 });
 
 test('home remains readable at tablet width', async ({ page, isMobile }) => {

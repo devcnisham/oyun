@@ -42,7 +42,7 @@ test('booking ticket tools remain usable at tablet and phone widths', async ({ p
   acceptDialogs(page);
   expect(await holdFirstSlot(page, 3)).toBe(true);
   await confirmBooking(page);
-  await page.screenshot({ path: `/private/tmp/oyun-ticket-${isMobile ? 'mobile' : 'desktop'}.png`, fullPage: true });
+  await page.screenshot({ path: test.info().outputPath(`oyun-ticket-${isMobile ? 'mobile' : 'desktop'}.png`), fullPage: true });
   await page.getByRole('button', { name: /Split cost with team/ }).click();
   await expect(page.getByRole('heading', { name: 'Split Payment with Teammates' })).toBeVisible();
   for (const width of isMobile ? [393] : [700, 393]) {

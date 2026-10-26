@@ -3,7 +3,7 @@
 // driven with the keyboard alone.
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { TURF, PARTNER_TURF, asPlayer, seats, holdFirstSlot, confirmBooking } from './helpers';
+import { TURF, PARTNER_TURF, asPlayer, seats, selectDay, holdFirstSlot, confirmBooking } from './helpers';
 
 const PAGES = [
   { name: 'home', path: '/' },
@@ -63,7 +63,7 @@ for (const { name, path } of PAGES) {
 test('the booking path works with the keyboard alone', async ({ page }) => {
   await asPlayer(page);
   await page.goto(`/arenas/${TURF}`);
-  await page.getByRole('tab').nth(1).click(); // tomorrow
+  await selectDay(page, 1); // wait for the hydrated tomorrow grid
   const open = seats(page).and(page.locator('[aria-disabled="false"][aria-pressed="false"]'));
   await open.first().waitFor({ timeout: 10_000 });
 
