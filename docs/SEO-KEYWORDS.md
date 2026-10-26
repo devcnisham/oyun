@@ -56,3 +56,7 @@ Playo, Hudle, local WhatsApp groups, Google Maps listings for "turf in Mangalore
 
 Lab numbers on a laptop with Lighthouse's slow-phone throttling; real-user data comes from Speed Insights and Search Console after launch.
 Known gap: on `/arenas` the first card image is not in the initial HTML (the list renders on the client inside a Suspense boundary), so the browser finds it late. Fixing it means server-rendering the list; do it only with a test that filters still work.
+
+- `/blog`: OYUN sports blog and Mangalore playing tips. Articles retain their `/guides/[slug]` URLs. Public and permitted by the existing robots policy.
+
+- `/news`: OYUN news and events in Mangalore; demo events are visible as previews, never represented as real event structured data. `/about` stays at its existing canonical and now uses the customer layout.

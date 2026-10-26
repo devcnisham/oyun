@@ -1,0 +1,25 @@
+.trigger, .close { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 1px solid #d2d2d7; border-radius: 50%; background: #fff; color: #1d1d1f; cursor: pointer; flex: none; }
+.trigger:hover, .close:hover { border-color: #a1a1a6; }
+.drawer { position: fixed; inset: 0 0 0 auto; width: min(440px, calc(100vw - 24px)); height: 100dvh; max-height: 100dvh; max-width: none; margin: 0; padding: 0 0 env(safe-area-inset-bottom); border: 0; background: #fff; color: #1d1d1f; overflow-y: auto; overscroll-behavior: contain; box-shadow: -12px 0 40px #00000018; }
+.drawer::backdrop { background: #0007; }
+.top { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 90px; padding: 20px 26px; background: #fff; border-bottom: 1px solid #e5e5e7; }
+.top h2 { font-size: 30px; letter-spacing: -.04em; }
+.close { border-color: transparent; background: #f5f5f7; }
+.account { display: flex; align-items: center; gap: 12px; padding: 24px; background: #f8f8fa; border-bottom: 1px solid #e5e5e7; }
+.accountIcon { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: #a40000; color: #fff; font-family: var(--font-wordmark-family); font-size: 11px; font-weight: 850; }
+.account p { font-size: 13px; line-height: 1.5; color: #646469; }
+.account a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 13px; margin-left: auto; border: 1px solid #a40000; border-radius: 10px; color: #a40000; font-size: 12px; font-weight: 700; text-decoration: none; flex: none; }
+.row { display: flex; align-items: center; gap: 18px; min-height: 88px; padding: 20px 26px; border-bottom: 1px solid #ededf0; color: #414145; text-decoration: none; }
+.row > svg { flex: none; color: #737379; }
+.row span { display: grid; gap: 5px; }
+.row strong { font-size: 16px; font-weight: 600; }
+.row small { font-size: 12px; line-height: 1.4; color: #737379; }
+.row:hover { background: #f5f5f7; }
+.explore { padding: 24px 26px 8px; display: grid; }
+.explore > p { color: #737379; letter-spacing: .1em; font-size: 10px; font-weight: 700; margin-bottom: 8px; }
+.explore a { display: inline-flex; align-items: center; min-height: 44px; color: #414145; text-decoration: none; font-size: 14px; }
+.explore a:hover { color: #a40000; }
+.tagline { padding: 20px 26px 28px; color: #8b8b90; font-size: 10px; letter-spacing: .08em; }
+.drawer :is(a, button):focus-visible, .trigger:focus-visible { outline: 3px solid #6e6e73; outline-offset: -3px; }
+@media (max-width: 400px) { .account { flex-wrap: wrap; } .account p { flex: 1; } .account a { margin-left: 54px; } }
+@media (prefers-reduced-motion: no-preference) { .drawer[open] { animation: slideIn .22s ease-out; } @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } } }

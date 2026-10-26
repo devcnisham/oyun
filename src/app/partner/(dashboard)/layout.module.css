@@ -58,7 +58,7 @@
 .headerActions :global(.btn) { min-height: 44px; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: #625955; box-shadow: none; font-size: 12px; padding-inline: 16px; }
 .headerActions :global(.btn):hover { background: #fff1f2; color: #9e0a0a; border-color: #f3c8cc; }
 .headerSearch input { width: 200px; height: 44px; padding: 0 14px; font-size: 13px; background: #faf9f7; border: 1px solid var(--border); border-radius: 12px; }
-.headerSearch input:focus { outline: 3px solid #f3c8cc; border-color: #9e0a0a; }
+.headerSearch input:focus { outline: 3px solid #f3c8cc; border-color: #6e6e73; }
 .content { width: 100%; max-width: 1600px; margin: 0 auto; padding: 32px; flex: 1; animation: enter .35s ease both; }
 .content > * { min-width: 0; }
 .content :global(.btn) { min-height: 44px; }

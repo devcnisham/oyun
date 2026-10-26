@@ -499,7 +499,7 @@
 .summaryTotal b .wasPrice { display: inline; margin-right: 8px; font-size: 15px; }
 
 /* Quiet detail, clear touch targets throughout the reservation desk. */
-.flow :is(button, input):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 3px; }
+.flow :is(button, input):focus-visible { outline: 3px solid #6e6e73; outline-offset: 3px; }
 .primary:hover:not(:disabled) { background: #9e0a0a; }
 .linkBtn { min-height: 44px; }
 .addOns { display: grid; gap: 10px; margin: 12px 0; }
@@ -509,5 +509,5 @@
 .quantityButton:disabled { opacity: .4; cursor: default; }
 .summaryTitle { letter-spacing: -.035em; }
 .stepCard, .summary { box-shadow: 0 8px 26px #4a000006; }
-@media (hover: hover) { .date:not(.dateOn):hover, .pitchOption:hover { border-color: #9e0a0a; background: #fff9f6; } }
+@media (hover: hover) { .date:not(.dateOn):hover, .pitchOption:hover { border-color: #a1a1a6; background: #fff9f6; } }
 @media (max-width: 600px) { .sheetHead { padding: 14px 16px; } .sheetBody { padding: 16px; } .sheetFoot .primary { min-width: 0; padding: 14px 20px; } .addOn { flex-wrap: wrap; } }

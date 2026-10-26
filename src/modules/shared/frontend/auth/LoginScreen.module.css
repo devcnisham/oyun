@@ -133,7 +133,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #d31027;
+  border-color: #6e6e73;
   background: #fff;
   box-shadow: 0 0 0 4px rgba(238,46,36,0.1);
 }

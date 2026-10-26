@@ -1,26 +1,27 @@
 .nav, .spacer { display: none; }
 
 @media (max-width: 768px) {
-  .spacer { display: block; height: var(--bottom-nav-h); }
+  .spacer { display: block; height: calc(64px + env(safe-area-inset-bottom)); }
   .nav {
     box-sizing: border-box;
-    height: 70px;
-    --nav-bg: color-mix(in srgb, var(--bg-card) 90%, transparent);
+    height: calc(64px + env(safe-area-inset-bottom));
+    --nav-bg: #ffffff;
     position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1050;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     align-items: center;
-    padding: 6px 4px;
-    border-radius: 26px;
+    padding: 6px max(4px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+    border-radius: 0;
     background: var(--nav-bg);
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
     backdrop-filter: blur(16px) saturate(1.4);
-    border: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.1);
+    border: 0;
+    border-top: 1px solid #dedee2;
+    box-shadow: none;
   }
   .tab {
     display: flex;
@@ -46,7 +47,7 @@
     object-fit: cover;
     box-shadow: 0 0 0 2px var(--nav-bg), 0 0 0 3.5px #c4c8ce;
   }
-  .active .avatar { box-shadow: 0 0 0 2px var(--nav-bg), 0 0 0 3.5px var(--primary-700); }
+  .active .avatar { box-shadow: 0 0 0 2px var(--nav-bg), 0 0 0 3.5px #6e6e73; }
   .initial {
     display: grid;
     place-items: center;

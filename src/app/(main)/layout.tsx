@@ -1,3 +1,6 @@
+import Breadcrumbs from '@/modules/web/frontend/Breadcrumbs';
+import breadcrumbStyles from '@/modules/web/frontend/Breadcrumbs.module.css';
+import { GUIDES } from '@/modules/web/lib/guides-content';
 import Navbar from "@/modules/web/frontend/Navbar";
 import AppBar from "@/modules/web/frontend/AppBar";
 import Footer from "@/modules/web/frontend/Footer";
@@ -24,7 +27,7 @@ export default async function MainLayout({
       <a href="#main" className="skipLink">Skip to main content</a>
       <Navbar />
       <AppBar />
-      <main id="main" tabIndex={-1} className="appMain">{children}</main>
+      <main id="main" tabIndex={-1} className="appMain"><Breadcrumbs guideCategories={Object.fromEntries(GUIDES.map(g => [g.slug, g.category]))} /><div className={breadcrumbStyles.content}>{children}</div></main>
       <Footer supportEmail={settings.supportEmail} />
     </div>
   );

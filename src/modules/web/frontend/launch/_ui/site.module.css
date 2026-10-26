@@ -91,7 +91,7 @@
 .primary:hover { background: #9e0a0a; transform: translateY(-1px); }
 .primary:active { transform: scale(0.97); }
 .ghost { border: 1px solid #ded6d0; color: #4a0000; background: #fff; }
-.ghost:hover, .ghost[aria-current='page'] { border-color: #9e0a0a; background: #fff0ed; }
+.ghost:hover, .ghost[aria-current='page'] { border-color: #a1a1a6; background: #fff0ed; }
 .ghost:active { transform: scale(0.97); }
 
 .menuBtn {
@@ -129,7 +129,7 @@
 @keyframes panelIn { from { transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
 .primary:focus-visible, .ghost:focus-visible, .menuBtn:focus-visible, .navLink:focus-visible, .panelLink:focus-visible, .brand:focus-visible {
-  outline: 3px solid #9e0a0a;
+  outline: 3px solid #6e6e73;
   outline-offset: 3px;
 }
 

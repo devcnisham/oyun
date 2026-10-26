@@ -35,7 +35,7 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: #6e6e73;
 }
 
 .buttonRow {

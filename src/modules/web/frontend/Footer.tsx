@@ -72,6 +72,9 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
             <div className={styles.linkGroup}>
               <p className={styles.linkGroupTitle}>Guides &amp; Highlights</p>
               <ul className={styles.linkList}>
+                <li><Link href="/blog">Blog</Link></li>
+                <li><Link href="/news">News &amp; events</Link></li>
+                <li><Link href="/about">About us</Link></li>
                 <li><Link href="/guides">Sports guides &amp; rules</Link></li>
                 <li><Link href="/guides/pickleball-mangalore-venues">Pickleball in Mangalore</Link></li>
                 <li><Link href="/guides/padel-in-mangalore">Padel court guide</Link></li>

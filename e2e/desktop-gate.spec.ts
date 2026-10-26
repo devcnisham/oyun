@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test('home opens the booking feed directly on every screen', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: /Find your next game/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Book turfs and courts in Mangalore');
   await expect(page.getByRole('search', { name: 'Find a turf' })).toBeVisible();
   await expect(page.getByRole('img', { name: /QR code that opens OYUN on your phone/ })).toHaveCount(0);
   await expect(page.getByRole('img', { name: /OYUN app: browse turfs/ })).toHaveCount(0);
@@ -18,18 +18,16 @@ test('home opens the booking feed directly on every screen', async ({ page }) =>
   await expect(page.locator('[data-desktop-gate]')).toHaveCount(0);
 });
 
-test('home search carries the selected area, sport and date into venue results', async ({ page }) => {
+test('home search carries its query into venue results', async ({ page }) => {
   await page.goto('/');
   const search = page.getByRole('search', { name: 'Find a turf' });
   await search.getByRole('searchbox').fill('Kodialbail');
-  await search.getByLabel('Your sport').selectOption('Football');
-  const date = await search.getByLabel('Booking date').inputValue();
-  await search.getByRole('button', { name: /Search turfs/ }).click();
+  await search.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page).toHaveURL(/\/arenas\?/);
   const url = new URL(page.url());
   expect(url.searchParams.get('q')).toBe('Kodialbail');
-  expect(url.searchParams.get('sport')).toBe('Football');
-  expect(url.searchParams.get('date')).toBe(date);
+  expect(url.searchParams.has('sport')).toBe(false);
+  expect(url.searchParams.has('date')).toBe(false);
 });
 
 test('the redesigned home fits the viewport and offers direct daytime browsing', async ({ page, isMobile }) => {
@@ -47,7 +45,7 @@ test('home remains readable at tablet width', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop context can resize to tablet');
   await page.setViewportSize({ width: 820, height: 1180 });
   await page.goto('/');
-  await expect(page.getByRole('button', { name: /Search turfs/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Search', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 

@@ -30,7 +30,7 @@ const TITLES: [string, string][] = [
 export default function AppBar() {
   const path = usePathname() ?? '/';
   // Home draws its own header; the venue page has its own floating controls
-  if (path === '/' || path === '/m' || (path.startsWith('/arenas/') && path !== '/arenas')) return null;
+  if (path === '/' || path === '/m' || ['/blog', '/news', '/events', '/about'].includes(path) || (path.startsWith('/arenas/') && path !== '/arenas')) return null;
   const title = TITLES.find(([p]) => path === p || path.startsWith(`${p}/`))?.[1] ?? 'OYUN';
   // Top-level tabs have nothing to go back to
   const isTab = ['/arenas', '/bookings', '/profile'].includes(path);

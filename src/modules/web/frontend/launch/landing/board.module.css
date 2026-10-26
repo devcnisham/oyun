@@ -78,7 +78,7 @@
 .row { display: flex; align-items: center; gap: 16px; }
 .link { border: 0; background: none; color: #12161c; font: 600 14px/1 var(--font-inter), system-ui, sans-serif; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; min-height: 44px; }
 
-.sport:focus-visible, .slot:focus-visible, .cta:focus-visible, .link:focus-visible { outline: 3px solid #d31027; outline-offset: 2px; }
+.sport:focus-visible, .slot:focus-visible, .cta:focus-visible, .link:focus-visible { outline: 3px solid #6e6e73; outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   .ringFg, .slot, .sport, .cta { transition: none; }

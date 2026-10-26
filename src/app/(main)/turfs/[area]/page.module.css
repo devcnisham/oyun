@@ -1,6 +1,6 @@
 /* Customer pages share the booking home’s paper, red accents and roomy type. */
 .page { padding-top: 36px; padding-bottom: 80px; display: flex; flex-direction: column; gap: 28px; color: #241510; }
-.page :is(a, button, input, select, summary):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.page :is(a, button, input, select, summary):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 .crumbs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #786c65; }
 .crumbs a { display: inline-flex; align-items: center; min-height: 44px; color: #655951; text-decoration: none; }
 .crumbs a:hover { color: #9e0a0a; text-decoration: underline; }
@@ -15,7 +15,7 @@
 .about p { color: #6d625c; line-height: 1.8; max-width: 820px; }
 .areas { display: flex; flex-wrap: wrap; gap: 10px; }
 .areaLink { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 19px; border-radius: 999px; background: #fff; border: 1px solid #ded6d0; text-decoration: none; color: #4a0000; font-size: 14px; font-weight: 650; }
-.areaLink:hover { border-color: #9e0a0a; background: #fff4f2; }
+.areaLink:hover { border-color: #a1a1a6; background: #fff4f2; }
 .faqList { display: flex; flex-direction: column; gap: 12px; max-width: 900px; }
 .faqItem { background: #fff; border: 1px solid #e9e2dc; border-radius: 20px; padding: 12px 24px; }
 .faqItem summary { min-height: 44px; align-content: center; font-size: 16px; font-weight: 750; color: #241510; cursor: pointer; list-style-position: inside; }

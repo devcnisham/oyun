@@ -134,8 +134,8 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--primary-700);
-  box-shadow: 0 0 0 4px rgba(211, 16, 39, 0.12);
+  border-color: #6e6e73;
+  box-shadow: 0 0 0 4px rgba(110,110,115,.12);
 }
 
 .error {
@@ -329,5 +329,5 @@
 .card { border-color: #e9e2dc; border-radius: 24px; padding: 28px; box-shadow: 0 10px 30px #4a000005; }
 .card h2 { font-size: 21px; letter-spacing: -.03em; }
 .page :is(button, input, a) { min-height: 44px; }
-.page :is(a, button, input):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.page :is(a, button, input):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 @media (max-width: 600px) { .page { padding-top: 24px; } .card { padding: 22px; } }

@@ -281,7 +281,7 @@
 .input:focus,
 .select:focus,
 .textarea:focus {
-  border-color: var(--primary-500);
+  border-color: #6e6e73;
   box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
   background: var(--bg-card);
 }
@@ -640,5 +640,5 @@
 .amenityToggle { min-height: 48px; border-radius: 14px; }
 .pricingCard, .reviewCard { border-radius: 20px; }
 .nextBtn { min-height: 48px; border-radius: 999px; }
-.page :is(a, button, input, select, textarea):focus-visible, .landingPage :is(a, button):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.page :is(a, button, input, select, textarea):focus-visible, .landingPage :is(a, button):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) { .page *, .landingPage * { animation: none; transition: none; } }

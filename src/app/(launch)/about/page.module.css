@@ -129,5 +129,5 @@
 .pillar strong { color: #4a0000; letter-spacing: -.025em; text-transform: none; font-size: 25px; }
 .pillar span { color: #6d625c; }
 .back { display: inline-flex; min-height: 44px; align-items: center; color: #9e0a0a; }
-.page :is(a, button):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.page :is(a, button):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 @keyframes rise { from { transform: translateY(10px); } to { transform: none; } }

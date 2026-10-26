@@ -21,6 +21,6 @@
 }
 
 .select:focus {
-  border-color: var(--brand-primary, #9e0a0a);
+  border-color: var(--brand-primary, #6e6e73);
   box-shadow: 0 0 0 2px rgba(158, 10, 10, 0.15);
 }

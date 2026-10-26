@@ -1,0 +1,31 @@
+.page { max-width: 1384px; margin: auto; padding: 40px 28px 72px; color: var(--text-primary); }
+.header > span { font-size: 11px; letter-spacing: .12em; font-weight: 750; color: #9c0a0a; }
+.header h1 { margin: 12px 0; font-size: clamp(40px, 5vw, 68px); line-height: 1.05; letter-spacing: -.055em; }
+.header p { color: var(--text-secondary); font-size: 16px; line-height: 1.6; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 28px 0; }
+.filters a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 17px; border-radius: 999px; background: #fff; border: 1px solid #e5dfda; color: #4c4540; font-size: 13px; font-weight: 650; text-decoration: none; }
+.filters a[aria-current] { background: #a40000; color: white; border-color: #a40000; }
+.filters a:hover { border-color: #a1a1a6; }
+.featured { display: grid; grid-template-columns: 1.25fr 1fr; overflow: hidden; border-radius: 24px; background: #f0eee9; }
+.featureImage { position: relative; min-height: 380px; }
+.page img { object-fit: cover; }
+.featureBody { padding: 36px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.meta { font-size: 12px; color: #686159; line-height: 1.5; }
+.featureBody h2 { font-size: clamp(24px, 2.5vw, 34px); letter-spacing: -.035em; line-height: 1.2; text-wrap: balance; }
+.page :is(h2, h3) a { color: inherit; text-decoration: none; }
+.page :is(h2, h3) a:hover { color: #a40000; }
+.featureBody p, .cardBody p { color: #625b53; font-size: 14px; line-height: 1.7; }
+.read { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; font-weight: 750; color: #a40000; text-decoration: none; margin-top: auto; }
+.read:hover { text-decoration: underline; }
+.stories { margin-top: 36px; }
+.stories > h2 { margin-bottom: 22px; font-size: 28px; letter-spacing: -.035em; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.grid > * { min-width: 0; }
+.card { overflow: hidden; border: 1px solid #e5dfda; border-radius: 20px; background: #fff; display: flex; flex-direction: column; }
+.cardImage { position: relative; aspect-ratio: 1.7; }
+.cardBody { display: flex; flex-direction: column; flex: 1; gap: 12px; padding: 22px; }
+.cardBody h3 { font-size: 21px; line-height: 1.3; letter-spacing: -.03em; }
+.page a:focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
+@media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .featureBody { padding: 26px; } }
+@media (max-width: 760px) { .page { padding: 26px 18px 48px; } .featured { grid-template-columns: 1fr; } .featureImage { min-height: 0; aspect-ratio: 1.6; } .featureBody { padding: 24px; gap: 14px; } }
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }

@@ -108,7 +108,7 @@
 .textBlock { max-width: 820px; }
 .textBlock h2 { letter-spacing: -.025em; }
 .content :is(input, select, button) { min-height: 44px; }
-.content :is(a, button, input, select):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.content :is(a, button, input, select):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 .back { min-height: 44px; }
 @media (max-width: 600px) { .pageContainer { padding: 24px 16px 48px; } .content { padding: 24px 20px; border-radius: 22px; } .title { font-size: 34px; } .subtitle { margin-bottom: 28px; } }
 @media (prefers-reduced-motion: no-preference) { .content { animation: arrival .35s ease-out; } @keyframes arrival { from { transform: translateY(8px); } to { transform: none; } } }

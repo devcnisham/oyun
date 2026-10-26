@@ -22,4 +22,4 @@
   text-underline-offset: 4px;
   cursor: pointer;
 }
-.primary:focus-visible, .secondary:focus-visible, .skip:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 2px; }
+.primary:focus-visible, .secondary:focus-visible, .skip:focus-visible { outline: 3px solid #6e6e73; outline-offset: 2px; }

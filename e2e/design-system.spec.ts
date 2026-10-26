@@ -13,7 +13,8 @@ test('desktop navigation is fixed flush to the viewport with no redundant search
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav).toBeVisible();
     await expect(nav.getByRole('search')).toHaveCount(0);
-    await expect(nav.getByRole('link', { name: /^Bookings/ })).toBeVisible();
+    await expect(nav.getByRole('link', { name: /^Bookings/ })).toHaveCount(0);
+    await expect(nav.getByRole('button', { name: 'Open menu' })).toBeVisible();
     await expect(nav.getByRole('link', { name: 'List your turf' })).toHaveCount(0);
     await expect(nav.getByRole('link', { name: 'Offers', exact: true })).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0, 600));
@@ -75,7 +76,7 @@ test('desktop footer keeps Support beside the other groups and shows the dimmed 
 
 test('redesigned page groups render with no viewport overflow', async ({ page, isMobile }) => {
   test.setTimeout(180_000);
-  const paths = ['/sports', '/offers', '/events', '/guides', '/help', '/profile', '/settings', '/saved', '/bookings', '/list-turf', '/about', '/login', `/arenas/${TURF}`, '/partner', '/partner/bookings', '/partner/pricing', '/partner/slots', '/partner/calendar', '/admin', '/admin/turfs', '/admin/users', '/admin/settings'];
+  const paths = ['/blog', '/news', '/sports', '/offers', '/events', '/guides', '/help', '/profile', '/settings', '/saved', '/bookings', '/list-turf', '/about', '/login', `/arenas/${TURF}`, '/partner', '/partner/bookings', '/partner/pricing', '/partner/slots', '/partner/calendar', '/admin', '/admin/turfs', '/admin/users', '/admin/settings'];
   for (const path of paths) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
@@ -84,5 +85,45 @@ test('redesigned page groups render with no viewport overflow', async ({ page, i
     if (['/partner', '/admin', `/arenas/${TURF}`].includes(path)) {
       await page.screenshot({ path: `/private/tmp/oyun-all-pages-${path.replaceAll('/', '-').replace(/^-/, '')}-${isMobile ? 'mobile' : 'desktop'}.png`, fullPage: true });
     }
+  }
+});
+
+
+test('home category selection filters featured venues without navigating away', async ({ page }) => {
+  await page.goto('/');
+  const category = page.getByRole('button', { name: 'Badminton', exact: true });
+  await category.click();
+  await expect(category).toHaveAttribute('aria-pressed', 'true');
+  const featured = page.getByRole('region', { name: 'Badminton featured turfs' });
+  await expect(featured.getByRole('link', { name: 'Book Smash Court Badminton' })).toBeVisible();
+  await expect(featured.getByRole('link', { name: 'Book Perfect Pass' })).toHaveCount(0);
+  await expect(featured.getByRole('link', { name: 'See all turfs' })).toHaveAttribute('href', '/arenas?sport=Badminton');
+  expect(new URL(page.url()).pathname).toBe('/');
+  await featured.getByRole('button', { name: 'All sports', exact: true }).click();
+  await expect(category).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('region', { name: 'Featured turfs' }).getByRole('link', { name: 'Book Perfect Pass' })).toBeVisible();
+});
+
+test('side menu opens, traps focus and closes with Escape', async ({ page, isMobile }) => {
+  await page.goto('/');
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  await expect(nav.getByRole('link', { name: /^Bookings/ })).toHaveCount(0);
+  const trigger = nav.getByRole('button', { name: 'Open menu' });
+  await trigger.click();
+  const drawer = page.getByRole('dialog', { name: /^Hey/ });
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole('link', { name: 'Your bookings', exact: false })).toBeVisible();
+  await expect(drawer.getByRole('link', { name: 'Blog', exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(drawer).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  if (isMobile) {
+    await expect(nav.getByRole('link', { name: 'Blog', exact: true })).not.toBeVisible();
+    const bottom = page.getByRole('navigation', { name: 'Main', exact: true });
+    const rect = await bottom.boundingBox();
+    const viewport = page.viewportSize()!;
+    expect(rect?.x).toBe(0);
+    expect(Math.round(rect!.width)).toBe(viewport.width);
+    expect(Math.round(rect!.y + rect!.height)).toBe(viewport.height);
   }
 });

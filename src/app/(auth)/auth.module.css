@@ -240,8 +240,8 @@
 }
 
 .input:focus {
-  border-color: var(--primary-700);
-  box-shadow: 0 0 0 4px rgba(211, 16, 39, 0.12);
+  border-color: #6e6e73;
+  box-shadow: 0 0 0 4px rgba(110,110,115,.12);
   outline: none;
 }
 
@@ -419,7 +419,7 @@
 .formWrapper { background: #fff; border: 1px solid #e9e2dc; border-radius: 26px; padding: 28px; width: 100%; }
 .title { color: #4a0000; letter-spacing: -.045em; }
 .container :is(input, button, select) { min-height: 48px; }
-.container :is(a, button, input):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.container :is(a, button, input):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 .tabs { border-radius: 999px; }
 @media (min-width: 900px) { .formPanel { width: 580px; padding: 32px; } .formWrapper { margin: auto; } }
 @media (max-width: 600px) { .formWrapper { padding: 24px 20px; } }

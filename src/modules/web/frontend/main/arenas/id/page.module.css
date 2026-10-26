@@ -1,6 +1,6 @@
 /* Venue: a photo-led introduction followed by the live reservation desk. */
 .page { background: #faf9f7; color: #261c19; min-height: 100vh; padding: 24px 28px 100px; }
-.page :is(a, button):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.page :is(a, button):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 .imageHeader { position: relative; max-width: 1384px; margin: 0 auto; height: clamp(260px, 38vw, 480px); border-radius: 28px; overflow: hidden; background: #4a0000; }
 .mainImage { object-fit: cover; }
 .imageHeader::after { content: ''; position: absolute; inset: 0; background: linear-gradient(#0005, transparent 45%, #0005); pointer-events: none; }

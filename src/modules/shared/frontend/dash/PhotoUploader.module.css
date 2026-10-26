@@ -185,7 +185,7 @@
 }
 
 .dropzone { border-radius: 20px; background: #faf9f7; }
-.dropzone:hover, .dropzoneActive { border-color: #9e0a0a; background: #fff1f2; }
+.dropzone:hover, .dropzoneActive { border-color: #a1a1a6; background: #fff1f2; }
 .toggleBtn { min-height: 44px; }
 .iconBtn { min-width: 44px; min-height: 44px; border-radius: 10px; }
 .iconBtn:hover { background: #9e0a0a; }

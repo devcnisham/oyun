@@ -32,7 +32,7 @@
   font-size: 15px;
   resize: vertical;
 }
-.input:focus { outline: none; border-color: var(--primary-700); }
+.input:focus { outline: none; border-color: #6e6e73; }
 .submit {
   margin-top: 10px;
   width: 100%;

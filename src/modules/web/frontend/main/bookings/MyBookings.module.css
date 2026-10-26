@@ -32,7 +32,7 @@
 .emptyIcon { font-size: 44px; display: grid; place-items: center; width: 88px; height: 88px; margin: auto; border-radius: 50%; background: #faf9f7; }
 .cta { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; background: linear-gradient(120deg, #9e0a0a, #4a0000); color: #fff; font-weight: 750; padding: 12px 26px; border-radius: 99px; text-decoration: none; }
 .rate { color: #82500b; font-weight: 700; }
-.page :is(button, a):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.page :is(button, a):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 @keyframes enter { from { opacity: .5; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (max-width: 600px) { .page { padding-top: 28px; } .header { margin-bottom: 24px; } .card { padding: 15px; gap: 14px; } .thumb { width: 76px; height: 90px; border-radius: 13px; } .info { font-size: 12px; gap: 7px; } .info b { font-size: 18px; } .chev { width: 32px; height: 44px; border: 0; } .empty { padding: 42px 20px; } }

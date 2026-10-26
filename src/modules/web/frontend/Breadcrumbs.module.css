@@ -1,0 +1,9 @@
+.trail { max-width: 1440px; margin: auto; padding: 16px 28px 0; font-size: 13px; line-height: 1.5; color: #746b64; }
+.trail ol { display: flex; flex-wrap: wrap; align-items: center; list-style: none; padding: 0; margin: 0; gap: 10px; }
+.trail li { display: inline-flex; align-items: center; min-width: 0; gap: 10px; overflow-wrap: anywhere; }
+.trail a { display: inline-flex; align-items: center; min-height: 32px; color: #62584f; text-decoration: none; }
+.trail a:hover { color: #a40000; }
+.trail a:focus-visible { outline: 2px solid #6e6e73; outline-offset: 3px; }
+.separator { color: #8c8075; }
+.content nav:is([aria-label="Breadcrumb"], [aria-label="Breadcrumbs"]) { display: none; }
+@media (max-width: 760px) { .trail { padding-inline: 18px; font-size: 12px; } }

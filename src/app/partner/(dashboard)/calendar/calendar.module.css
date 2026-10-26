@@ -37,7 +37,7 @@
 }
 
 .navBtn:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
   color: var(--primary-700);
 }
 
@@ -283,7 +283,7 @@
 .wrap { border-radius: 20px; }
 .navBtn, .seg { min-height: 44px; }
 .seg { display: inline-flex; align-items: center; justify-content: center; }
-.navActive, .navActive:hover, .segActive, .segActive:hover { background: #9e0a0a; border-color: #9e0a0a; }
+.navActive, .navActive:hover, .segActive, .segActive:hover { background: #9e0a0a; border-color: #a1a1a6; }
 .grid thead th { background: #faf9f7; }
 .grid thead th a { min-height: 44px; }
 @media (prefers-reduced-motion: reduce) { .navBtn { transition: none; } }

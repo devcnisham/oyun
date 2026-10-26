@@ -55,7 +55,7 @@
 }
 
 .todayBtn:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
 }
 
 .dateRow {
@@ -149,7 +149,7 @@
 }
 
 .cell:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
   transform: translateY(-1px);
 }
 
@@ -182,7 +182,7 @@
 }
 
 .day:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
@@ -241,7 +241,7 @@
 }
 
 .stepBtn:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
   color: var(--primary-700);
 }
 
@@ -261,13 +261,13 @@
 }
 
 .dateInput:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
 }
 
 .dateInput:focus {
   outline: none;
-  border-color: var(--primary-700);
-  box-shadow: 0 0 0 3px rgba(211, 16, 39, 0.12);
+  border-color: #6e6e73;
+  box-shadow: 0 0 0 3px rgba(110,110,115,.12);
 }
 
 .tiles {
@@ -291,7 +291,7 @@
 }
 
 .tile:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
 }
 
 .tileActive,
@@ -429,7 +429,7 @@
 }
 
 .blockBox summary:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
   color: var(--primary-700);
 }
 
@@ -483,7 +483,7 @@
 }
 
 .stepBtn:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
   color: var(--primary-700);
 }
 
@@ -503,13 +503,13 @@
 }
 
 .dateInput:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
 }
 
 .dateInput:focus {
   outline: none;
-  border-color: var(--primary-700);
-  box-shadow: 0 0 0 3px rgba(211, 16, 39, 0.12);
+  border-color: #6e6e73;
+  box-shadow: 0 0 0 3px rgba(110,110,115,.12);
 }
 
 .tiles {
@@ -533,7 +533,7 @@
 }
 
 .tile:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
 }
 
 .tileActive,
@@ -733,7 +733,7 @@
 }
 
 .dayPick input:focus-visible + span {
-  box-shadow: 0 0 0 3px rgba(211, 16, 39, 0.2);
+  box-shadow: 0 0 0 3px rgba(110,110,115,.12);
 }
 
 .bulkFoot {
@@ -782,7 +782,7 @@
 }
 
 .addLink:hover {
-  border-color: var(--primary-700);
+  border-color: #a1a1a6;
   color: var(--primary-700);
 }
 
@@ -823,7 +823,7 @@ a.slotNote:hover {
 .segBtn, .addLink, .blockBox summary { display: inline-flex; align-items: center; }
 .stepBtn { width: 44px; height: 44px; }
 .dateInput { height: 46px; }
-.segActive, .segActive:hover, .tileActive, .tileActive:hover, .dayPick input:checked + span { background: #9e0a0a; border-color: #9e0a0a; box-shadow: none; }
+.segActive, .segActive:hover, .tileActive, .tileActive:hover, .dayPick input:checked + span { background: #9e0a0a; border-color: #a1a1a6; box-shadow: none; }
 .grid button, .slotTile button, .blockBox button, .bulkFoot button, .grid input, .blockBox input, .bulkGrid input, .bulkGrid select, .bulkFoot input { min-height: 44px; }
 @media (max-width: 600px) { .cell { min-height: 44px; } .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .cell, .day, .stepBtn, .dateInput, .tile, .bulkChevron, .dayPick span { transition: none; } .cell:hover { transform: none; } }

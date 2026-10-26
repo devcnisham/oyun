@@ -35,5 +35,5 @@
 .rows a { min-height: 66px; }
 .faq summary { min-height: 44px; align-items: center; }
 .linkBtn { min-height: 44px; }
-.page :is(a, button, summary):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.page :is(a, button, summary):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
 @media (max-width: 600px) { .page { padding-top: 24px; } .card { padding: 22px; } }

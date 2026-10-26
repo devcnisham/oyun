@@ -175,7 +175,7 @@
 .h1Accent { color: #9e0a0a; }
 .kicker, .lead { color: #6d625c; }
 .hero .btnGhost { border-color: #ded6d0; color: #4a0000; background: #fff; }
-.hero .btnGhost:hover { border-color: #9e0a0a; background: #fff4f2; }
+.hero .btnGhost:hover { border-color: #a1a1a6; background: #fff4f2; }
 .step { border-radius: 24px; }
 .h2, .h3 { font-family: var(--font-inter), system-ui, sans-serif; font-weight: 800; letter-spacing: -.04em; }
 .owners { border-radius: 32px; margin: 0 20px; background: #4a0000; }
