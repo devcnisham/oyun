@@ -13,6 +13,8 @@ import SearchSuggestions, { useSuggestions } from '@/modules/web/frontend/Search
 // Own chunk: without Clerk keys the branch below is dropped at build time and the Clerk hooks are never shipped
 const ClerkAccount = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? dynamic(() => import('@/modules/web/frontend/ClerkAccount')) : null;
 import styles from '@/modules/web/frontend/Navbar.module.css';
+import homeStyles from '@/modules/web/frontend/main/_booking/HomeNav.module.css';
+import Image from 'next/image';
 
 export default function Navbar() {
   const { t } = useTranslation();
@@ -76,6 +78,18 @@ export default function Navbar() {
       window.removeEventListener(DEVICE_EVENT, refresh);
     };
   }, []);
+
+  if (isHome) return (
+    <nav className={homeStyles.nav} aria-label="Main navigation">
+      <div className={homeStyles.inner}>
+        <Link href="/" className={homeStyles.brand} aria-label="OYUN home"><Image src="/oyun-icon.svg" alt="" width={37} height={37} />OYUN</Link>
+        <div className={homeStyles.links}><Link href="/arenas">Browse turfs</Link><Link href="/offers">Offers</Link><Link href="/bookings">My bookings</Link></div>
+        <div className={homeStyles.actions}><Link href="/list-turf" className={homeStyles.owner}>List your turf ↗</Link>
+          {clerkEnabled && ClerkAccount ? <ClerkAccount className={homeStyles.account} /> : <Link href={signedIn ? '/profile' : '/login'} className={homeStyles.account}>{signedIn ? `Hi, ${firstName || 'player'}` : 'Sign in'} <span aria-hidden>↗</span></Link>}
+        </div>
+      </div>
+    </nav>
+  );
 
   return (
     <>
