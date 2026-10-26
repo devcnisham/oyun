@@ -239,16 +239,3 @@
 
 .resetSport { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; background: #fff; border: 1px solid #d2d2d7; border-radius: 999px; color: #a40000; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .resetSport:hover { border-color: #a1a1a6; }
-
-/* OYUN burgundy venue cards, shared by home, results and saved turfs. */
-.venue {
-  --text-primary: #fff8f5;
-  --text-secondary: #f0d6d0;
-  --text-muted: #e6c4bc;
-  background: #4a0000;
-  color: #fff8f5;
-}
-.venueBody { color: #fff8f5; }
-.venueBottom { border-color: #ffffff26; }
-.venue .bookButton { background: #fff8f5; color: #4a0000; }
-.venue:hover .bookButton { background: #fff; box-shadow: none; }
