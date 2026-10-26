@@ -30,3 +30,14 @@
 .category { appearance: none; padding: 0; border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer; }
 .category[aria-pressed="true"] .photo { outline: none; }
 .category[aria-pressed="true"] .name { color: #a40000; }
+
+/* Compact sport categories leave room for the live availability summary below. */
+.categories { grid-template-columns: repeat(4, minmax(0, 160px)); justify-content: center; gap: 20px; }
+.category { gap: 9px; }
+.photo { aspect-ratio: 1.5; border-radius: 12px; width: 100%; }
+.name { text-align: center; font-size: 14px; padding-bottom: 0; }
+@media (max-width: 760px) {
+  .categories { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding-top: 18px; }
+  .photo { aspect-ratio: 1.15; border-radius: 11px; }
+  .name { font-size: 11px; line-height: 1.3; }
+}
