@@ -116,3 +116,18 @@
     animation: none;
   }
 }
+
+/* Booking platform visual system */
+.page { background: #faf9f7; color: #241510; }
+.page::before { display: none; }
+.main { max-width: 1160px; padding: 140px 28px 80px; }
+.title { color: #4a0000; font-size: clamp(42px, 7vw, 88px); line-height: .98; letter-spacing: -.06em; max-width: 1000px; }
+.eyebrow { color: #9e0a0a; }
+.lead { color: #9e0a0a; max-width: 820px; }
+.text { color: #6d625c; max-width: 760px; }
+.pillar { padding: 28px; border: 1px solid #e9e2dc; border-radius: 24px; background: #fff; }
+.pillar strong { color: #4a0000; letter-spacing: -.025em; text-transform: none; font-size: 25px; }
+.pillar span { color: #6d625c; }
+.back { display: inline-flex; min-height: 44px; align-items: center; color: #9e0a0a; }
+.page :is(a, button):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+@keyframes rise { from { transform: translateY(10px); } to { transform: none; } }

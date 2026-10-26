@@ -1,8 +1,9 @@
 .invoice {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 12px 36px #4a000008;
   max-width: 760px;
   margin: 0 auto;
   font-size: 14px;
@@ -14,12 +15,13 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  border-bottom: 2px solid var(--text-primary);
+  border-bottom: 2px solid #9e0a0a;
   padding-bottom: 16px;
 }
 
 .title {
-  font-size: 22px;
+  font-size: 28px;
+  letter-spacing: -.04em;
   font-weight: 800;
   color: var(--text-primary);
 }
@@ -32,7 +34,7 @@
 .brand {
   font-family: var(--font-wordmark-family);
   font-weight: 800;
-  font-size: 18px;
+  font-size: 24px;
   color: var(--accent-text);
 }
 
@@ -65,7 +67,7 @@
 
 .table th,
 .table td {
-  padding: 10px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--border);
   text-align: left;
 }
@@ -87,7 +89,7 @@
   font-weight: 800;
   color: var(--text-primary);
   font-size: 16px;
-  border-bottom: 2px solid var(--text-primary);
+  border-bottom: 2px solid #9e0a0a;
 }
 
 .footer {
@@ -102,3 +104,6 @@
     padding: 0;
   }
 }
+
+@media (max-width: 600px) { .invoice { padding: 22px 18px; border-radius: 20px; font-size: 13px; } .header { flex-wrap: wrap; } .parties { gap: 18px; grid-template-columns: 1fr; } .table th, .table td { padding: 12px 4px; } .title { font-size: 24px; } }
+@media print { .invoice { box-shadow: none; border-radius: 0; } }

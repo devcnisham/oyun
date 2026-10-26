@@ -18,7 +18,7 @@ export default function BookingSearch() {
         <span>When?</span>
         <input name="date" type="date" aria-label="Booking date" min={today} max={addDays(today, BOOKING_DAYS - 1)} defaultValue={today} />
       </label>
-      <button type="submit" className={styles.searchButton}>Search turfs <span aria-hidden>↗</span></button>
+      <button type="submit" className={styles.searchButton}>Search turfs </button>
     </form>
   );
 }

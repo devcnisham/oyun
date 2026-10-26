@@ -166,3 +166,17 @@
   .rise { animation: none; }
   .faqIcon, .btn, .btnGhost, .btnLight, .btnGhostLight { transition: none; }
 }
+
+/* Booking platform visual system */
+.page { --ink: #4a0000; --bg: #faf9f7; --text: #241510; --muted: #6d625c; --line: #e9e2dc; }
+.hero { background: #faf9f7; color: #241510; padding-top: 124px; }
+.hero::after { display: none; }
+.h1 { color: #4a0000; font-family: var(--font-inter), system-ui, sans-serif; font-weight: 850; letter-spacing: -.055em; }
+.h1Accent { color: #9e0a0a; }
+.kicker, .lead { color: #6d625c; }
+.hero .btnGhost { border-color: #ded6d0; color: #4a0000; background: #fff; }
+.hero .btnGhost:hover { border-color: #9e0a0a; background: #fff4f2; }
+.step { border-radius: 24px; }
+.h2, .h3 { font-family: var(--font-inter), system-ui, sans-serif; font-weight: 800; letter-spacing: -.04em; }
+.owners { border-radius: 32px; margin: 0 20px; background: #4a0000; }
+@keyframes rise { from { transform: translateY(10px); } to { transform: none; } }

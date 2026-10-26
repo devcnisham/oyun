@@ -1,14 +1,40 @@
-/* Placeholder shown while a page's data loads (loading.tsx). Plain blocks that pulse slowly. */
-.wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-direction: column; gap: 16px; }
-.title { height: 28px; width: min(320px, 60%); }
-.line { height: 14px; }
-.lineShort { height: 14px; width: 55%; }
-.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
-.card { height: 190px; border-radius: 16px; }
-.row { height: 56px; border-radius: 12px; }
-.block { background: var(--border, #e0e0e0); border-radius: 8px; opacity: 0.55; }
-@media (prefers-reduced-motion: no-preference) {
-  .block { animation: pulse 1.4s ease-in-out infinite; }
-}
-@keyframes pulse { 50% { opacity: 0.25; } }
+.wrap { width: 100%; max-width: 1440px; margin: auto; padding: 28px 28px 52px; }
+.loadingLabel { display: flex; align-items: center; gap: 9px; color: var(--text-muted); font-size: 12px; margin-bottom: 22px; }
+.indicator { width: 13px; height: 13px; border: 2px solid #d9ceca; border-top-color: #9e0a0a; border-radius: 50%; }
+.content { display: grid; gap: 20px; }
+.block { position: relative; overflow: hidden; background: #eae7e3; border-radius: 8px; }
+.block::after { content: ''; position: absolute; inset: 0; transform: translateX(-110%); background: linear-gradient(90deg, transparent, #ffffffa3, transparent); }
+.title { height: 38px; width: min(380px, 75%); }
+.heroTitle { height: 128px; width: min(560px, 90%); border-radius: 14px; }
+.lineShort { height: 14px; width: min(320px, 65%); }
+.search { height: 76px; border-radius: 20px; margin: 8px 0 16px; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.card { min-width: 0; border-radius: 24px; background: #fff; border: 1px solid #eee8e3; overflow: hidden; }
+.photo { aspect-ratio: 1.6; border-radius: 0; }
+.cardBody { display: grid; gap: 12px; padding: 20px 18px; }
+.cardTitle { height: 22px; width: 82%; }
+.short { height: 14px; width: 46%; }
+.cardFoot { display: flex; justify-content: space-between; gap: 16px; margin-top: 15px; padding-top: 16px; border-top: 1px solid #eee8e3; }
+.price { width: 84px; height: 38px; }
+.button { height: 44px; width: 108px; border-radius: 999px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.stat { height: 100px; border-radius: 20px; }
+.table, .form { display: grid; gap: 12px; padding: 22px; border: 1px solid #eee8e3; border-radius: 24px; background: #fff; }
+.row { height: 42px; width: 100%; }
+.cover { height: 300px; border-radius: 24px; }
+.detail { display: grid; grid-template-columns: 1.6fr 1fr; gap: 26px; }
+.detail > div { display: grid; gap: 20px; }
+.panel { height: 170px; border-radius: 24px; }
+.booking { min-height: 350px; border-radius: 24px; }
+.ticket { max-width: 860px; width: 100%; display: grid; grid-template-columns: 200px 1fr; gap: 32px; padding: 28px; border-radius: 24px; background: #fff; border: 1px solid #eee8e3; }
+.ticket > div { display: grid; gap: 12px; }
+.qr { height: 192px; width: 192px; border-radius: 16px; }
+.field { height: 52px; border-radius: 12px; }
+.auth { max-width: 540px; padding-top: 72px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 768px) { .wrap { padding: 22px 18px 40px; } .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .detail, .ticket { grid-template-columns: 1fr; } .ticket { padding: 22px; } .cover { height: 220px; } .heroTitle { height: 100px; } }
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: no-preference) { .block::after { animation: shimmer 1.6s ease-in-out infinite; } .indicator { animation: spin .8s linear infinite; } }
+@keyframes shimmer { to { transform: translateX(110%); } }
+@keyframes spin { to { transform: rotate(360deg); } }

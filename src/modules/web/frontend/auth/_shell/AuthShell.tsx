@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import BackButton from '@/modules/web/frontend/BackButton';
 import BrandMark from '@/modules/shared/frontend/BrandMark';
 import styles from '@/app/(auth)/auth.module.css';
 
@@ -51,10 +50,7 @@ export default function AuthShell({ mode, title, subtitle, children, footer }: {
 
       <main className={styles.formPanel}>
         <div className={styles.topBar}>
-          <BackButton className={styles.backBtn}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 18l-6-6 6-6" /></svg>
-            Back
-          </BackButton>
+
           <Link href="/" className={styles.mobileLogo} aria-label="OYUN home">
             <BrandMark size={30} />
             <span>OYUN</span>

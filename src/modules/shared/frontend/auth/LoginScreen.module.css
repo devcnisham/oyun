@@ -1,9 +1,9 @@
 .loginContainer {
   display: flex;
   min-height: 100vh;
-  width: 100vw;
-  background: #f8f9fa;
-  font-family: 'Inter', system-ui, sans-serif;
+  width: 100%;
+  background: #faf9f7;
+  font-family: inherit;
 }
 
 .leftPane {
@@ -19,7 +19,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(17,17,17,0.9) 0%, rgba(238,46,36,0.85) 100%);
+  background: linear-gradient(150deg, rgb(74 0 0 / 75%), rgb(158 10 10 / 65%));
   z-index: 1;
 }
 
@@ -140,7 +140,7 @@
 
 .loginBtn {
   margin-top: 12px;
-  background: #111;
+  background: #d31027;
   color: #fff;
   border: none;
   padding: 16px;
@@ -218,3 +218,31 @@
 }
 
 .orLine { margin: 1rem 0; text-align: center; font-size: 13px; color: #626262; }
+
+.loginContainer { min-height: 100dvh; }
+.leftPane { flex: 0 0 42%; }
+.leftContent { padding: 40px; }
+.brandTitle { font-size: clamp(52px, 7vw, 92px); line-height: 1; }
+.brandTag { margin-top: 20px; font-size: 12px; font-weight: 700; letter-spacing: .16em; }
+.rightPane { padding: 56px 32px; }
+.loginCard { max-width: 480px; padding: 40px; border: 1px solid #e9e3de; box-shadow: 0 14px 50px rgb(74 0 0 / 4%); animation: arrive .35s ease both; }
+.loginHeader h2 { font-size: 30px; color: #241d1b; letter-spacing: -.04em; }
+.loginHeader p { line-height: 1.65; color: #7b706b; }
+.input { min-height: 50px; background: #faf9f7; border-color: #e4ddd7; }
+.loginBtn, .demoBtn { min-height: 50px; }
+.loginBtn:hover { background: #9e0a0a; }
+.partnerLink { display: inline-flex; align-items: center; min-height: 44px; color: #9e0a0a; }
+.loginContainer :is(a, button, input):focus-visible { outline: 3px solid #eaa6ad; outline-offset: 3px; }
+@keyframes arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 900px) {
+ .loginContainer { flex-direction: column; background: #faf9f7; }
+ .leftPane { display: flex; flex: initial; min-height: 180px; }
+ .leftContent { padding: 26px; }
+ .logo { margin-bottom: 12px; width: 32px; height: 32px; }
+ .brandTitle { font-size: 40px; }
+ .brandTag { margin-top: 10px; font-size: 10px; }
+ .rightPane { padding: 28px 20px; }
+ .loginCard { padding: 28px; box-shadow: none; }
+ .loginHeader h2 { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .loginCard { animation: none; } .loginContainer * { transition: none !important; } }

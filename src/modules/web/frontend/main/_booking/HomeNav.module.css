@@ -1,13 +1,23 @@
-.nav { background: #faf9f7; border-bottom: 1px solid #e7e0db; color: #222; }
-.inner { max-width: 1440px; margin: auto; padding: 0 28px; height: 86px; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
-.brand { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: var(--logo-from); font-family: var(--font-wordmark-family); font-size: 31px; font-weight: 800; letter-spacing: -.04em; }
-.brand img { width: 37px; height: 37px; }
-.links { display: flex; align-items: center; gap: 27px; margin-left: 35px; margin-right: auto; }
-.links a, .owner { font-size: 12px; color: #4a403b; text-decoration: none; font-weight: 650; }
-.links a:hover, .owner:hover { color: var(--logo-from); }
-.actions { display: flex; align-items: center; gap: 25px; }
-.account { display: inline-flex; align-items: center; gap: 15px; padding: 11px 17px; border: 1px solid #dcd3cd; border-radius: 999px; color: #301714; text-decoration: none; font-weight: 700; font-size: 12px; }
+.navSlot { --nav-height: 76px; height: var(--nav-height); }
+.nav { position: fixed; inset: 0 0 auto; z-index: 1100; height: var(--nav-height); background: #faf9f7; border-bottom: 1px solid #e7e0db; color: #222; }
+.inner { max-width: 1440px; margin: auto; padding: 0 28px; height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.brand { flex: none; display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: var(--logo-from); font-family: var(--font-wordmark-family); font-size: 30px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+.brand img { display: block; width: 36px; height: 36px; border-radius: 50%; flex: none; }
+.links { display: flex; align-items: center; gap: 24px; margin-right: auto; margin-left: 0; }
+.links a { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: #4a403b; text-decoration: none; font-weight: 650; }
+.links a:hover { color: var(--logo-from); }
+.actions { margin-left: auto; display: flex; align-items: center; gap: 12px; flex: none; }
+.primaryAction, .account { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 20px; border: 1px solid #dcd3cd; border-radius: 999px; color: #301714; text-decoration: none; font-weight: 700; font-size: 13px; line-height: 20px; white-space: nowrap; }
+.primaryAction { background: var(--primary-gradient); border-color: transparent; color: #fff; }
+.primaryAction:hover { background: var(--primary-gradient-hover); }
+.account { gap: 10px; background: #fff; }
+.account:hover { border-color: var(--logo-from); }
 .account svg { width: 18px; height: 18px; }
 .nav a:focus-visible { outline: 3px solid var(--primary-700); outline-offset: 5px; }
-@media (max-width: 950px) { .links { gap: 17px; margin-left: 10px; } .actions { gap: 15px; } .owner { display: none; } }
-@media (max-width: 760px) { .inner { height: 70px; padding-inline: 18px; gap: 12px; } .brand { font-size: 27px; gap: 7px; } .brand img { width: 31px; height: 31px; } .links { display: none; } .account { font-size: 11px; padding: 9px 13px; } }
+@media (max-width: 1050px) { .links { gap: 16px; margin-left: 0; } .inner { gap: 18px; } .primaryAction, .account { padding-inline: 16px; } }
+@media (max-width: 850px) { .links { display: none; } }
+@media (max-width: 760px) { .navSlot { --nav-height: 68px; } .inner { padding-inline: 18px; gap: 12px; } .brand { font-size: 26px; gap: 7px; } .brand img { width: 32px; height: 32px; } .primaryAction { display: inline-flex; font-size: 12px; padding-inline: 12px; } .account { font-size: 13px; padding-inline: 16px; } }
+@media (max-width: 768px) { .innerSlot { display: none; } }
+@media (prefers-reduced-motion: no-preference) { .primaryAction, .account { transition: background .2s, border-color .2s, transform .2s; } .primaryAction:active, .account:active { transform: scale(.97); } }
+
+@media (max-width: 760px) { .inner { padding-inline: 16px; gap: 10px; } .brand { font-size: 24px; gap: 6px; } .brand img { width: 30px; height: 30px; } .actions { gap: 8px; } .account { font-size: 12px; padding-inline: 12px; } }

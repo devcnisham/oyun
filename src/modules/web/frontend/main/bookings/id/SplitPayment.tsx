@@ -97,14 +97,14 @@ export default function SplitPayment({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: 'var(--text-muted)' }}
+              style={{ background: 'none', border: 'none', fontSize: 18, minWidth: 44, minHeight: 44, cursor: 'pointer', color: 'var(--text-muted)' }}
               aria-label="Close"
             >
               ✕
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontSize: 14, fontWeight: 600 }}>Number of players:</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <button
@@ -175,7 +175,7 @@ export default function SplitPayment({
             )}
           </label>
 
-          <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
             <a
               className="btn btn--primary btn--sm"
               target="_blank"

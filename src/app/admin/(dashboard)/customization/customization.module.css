@@ -130,3 +130,11 @@
   .cards { grid-template-columns: minmax(0, 1fr); }
   .row2 { grid-template-columns: minmax(0, 1fr); }
 }
+
+.cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 20px; }
+.card, .addCard { border-radius: 22px; }
+.body { padding: 20px; gap: 16px; }
+.fields input, .footer button { min-height: 44px; }
+.footer { flex-wrap: wrap; }
+.preview { background: #f4f1ed; }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }

@@ -85,18 +85,19 @@ export default function MatchesClient({
     <div>
       {/* Controls & Filter Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {sports.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setSportFilter(s)}
+              aria-pressed={sportFilter === s}
               style={{
                 padding: '8px 16px',
                 minHeight: 44,
                 borderRadius: '999px',
                 border: '1px solid var(--border)',
-                backgroundColor: sportFilter === s ? '#047857' : '#ffffff',
+                backgroundColor: sportFilter === s ? '#9e0a0a' : '#ffffff',
                 color: sportFilter === s ? '#ffffff' : '#374151',
                 fontWeight: 600,
                 fontSize: '14px',
@@ -119,7 +120,7 @@ export default function MatchesClient({
             padding: '10px 20px',
             minHeight: 44,
             borderRadius: '8px',
-            backgroundColor: '#047857',
+            backgroundColor: '#d31027',
             color: '#ffffff',
             fontWeight: 'bold',
             border: 'none',
@@ -137,7 +138,7 @@ export default function MatchesClient({
           style={{
             background: 'var(--bg-muted)',
             border: '1px solid var(--border)',
-            borderRadius: '12px',
+            borderRadius: '24px',
             padding: '24px',
             marginBottom: '32px',
           }}
@@ -158,10 +159,10 @@ export default function MatchesClient({
                   const selectedTurf = turfs.find((t) => t.id === e.target.value);
                   if (selectedTurf) setHostSport(selectedTurf.sports[0] ?? 'Football');
                 }}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
               >
                 {turfs.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name} ({t.area})</option>
+                  <option key={t.id} value={t.id}>{t.name} (Mangalore)</option>
                 ))}
               </select>
             </div>
@@ -173,7 +174,7 @@ export default function MatchesClient({
                 type="text"
                 value={hostSport}
                 onChange={(e) => setHostSport(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
                 placeholder="Football, Box Cricket..."
                 required
               />
@@ -186,7 +187,7 @@ export default function MatchesClient({
                 type="text"
                 value={hostFormat}
                 onChange={(e) => setHostFormat(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
                 placeholder="5-a-side, 7-a-side..."
               />
             </div>
@@ -198,7 +199,7 @@ export default function MatchesClient({
                 type="date"
                 value={hostDate}
                 onChange={(e) => setHostDate(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
                 required
               />
             </div>
@@ -209,7 +210,7 @@ export default function MatchesClient({
                 id="host-hour"
                 value={hostHour}
                 onChange={(e) => setHostHour(Number(e.target.value))}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
               >
                 {Array.from({ length: 18 }, (_, i) => i + 6).map((h) => (
                   <option key={h} value={h}>{h > 12 ? `${h - 12}:00 PM` : `${h}:00 AM`}</option>
@@ -226,7 +227,7 @@ export default function MatchesClient({
                 max="20"
                 value={hostPlayersNeeded}
                 onChange={(e) => setHostPlayersNeeded(Number(e.target.value))}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
                 required
               />
             </div>
@@ -238,7 +239,7 @@ export default function MatchesClient({
                 type="text"
                 value={hostName}
                 onChange={(e) => setHostName(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
                 placeholder="Rohan"
                 autoComplete="name"
                 required
@@ -255,7 +256,7 @@ export default function MatchesClient({
                 maxLength={10}
                 value={hostPhone}
                 onChange={(e) => setHostPhone(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                style={{ width: '100%', padding: '10px 12px', minHeight: 44, fontSize: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}
                 placeholder="9876543210"
                 required
               />
@@ -269,7 +270,7 @@ export default function MatchesClient({
               padding: '10px 24px',
               minHeight: 44,
               borderRadius: '8px',
-              backgroundColor: '#047857',
+              backgroundColor: '#d31027',
               color: '#ffffff',
               fontWeight: 'bold',
               border: 'none',
@@ -283,7 +284,7 @@ export default function MatchesClient({
 
       {/* Match Listings */}
       {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 16px', background: 'var(--bg-muted)', borderRadius: '12px', border: '1px dashed var(--border)' }}>
+        <div style={{ textAlign: 'center', padding: '48px 16px', background: 'var(--bg-muted)', borderRadius: '24px', border: '1px dashed var(--border)' }}>
           <p style={{ fontSize: '18px', color: 'var(--text-muted)', margin: '0 0 12px' }}>No open matches found for {sportFilter}.</p>
           <button
             type="button"
@@ -291,8 +292,8 @@ export default function MatchesClient({
             style={{
               padding: '8px 16px',
               minHeight: 44,
-              borderRadius: '6px',
-              backgroundColor: '#047857',
+              borderRadius: '12px',
+              backgroundColor: '#d31027',
               color: '#ffffff',
               fontWeight: 'bold',
               border: 'none',
@@ -303,7 +304,7 @@ export default function MatchesClient({
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '20px' }}>
           {filtered.map((m) => {
             const slotsLeft = m.playersNeeded - m.playersJoined.length;
             const isFull = m.status === 'full' || slotsLeft <= 0;
@@ -314,7 +315,7 @@ export default function MatchesClient({
                 style={{
                   background: 'var(--bg-card)',
                   border: '1px solid var(--border)',
-                  borderRadius: '12px',
+                  borderRadius: '24px',
                   padding: '20px',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                   display: 'flex',
@@ -362,7 +363,7 @@ export default function MatchesClient({
                   </p>
 
                   {m.playersJoined.length > 0 && (
-                    <div style={{ background: 'var(--bg-muted)', padding: '8px 12px', borderRadius: '6px', marginBottom: '16px', fontSize: '12px' }}>
+                    <div style={{ background: 'var(--bg-muted)', padding: '8px 12px', borderRadius: '12px', marginBottom: '16px', fontSize: '12px' }}>
                       <span style={{ fontWeight: 'bold', color: 'var(--text-secondary)' }}>Joined ({m.playersJoined.length}): </span>
                       <span style={{ color: 'var(--text-muted)' }}>{m.playersJoined.map((p) => p.name).join(', ')}</span>
                     </div>
@@ -384,7 +385,7 @@ export default function MatchesClient({
                       autoComplete="name"
                       value={playerName}
                       onChange={(e) => setPlayerName(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
+                      style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                       required
                     />
                     <input
@@ -396,17 +397,17 @@ export default function MatchesClient({
                       placeholder="10-digit mobile"
                       value={playerPhone}
                       onChange={(e) => setPlayerPhone(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
+                      style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                       required
                     />
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                       <button
                         type="submit"
                         style={{
                           flex: 1,
                           padding: '8px', minHeight: 44,
-                          borderRadius: '6px',
-                          background: '#047857',
+                          borderRadius: '12px',
+                          background: '#d31027',
                           color: '#ffffff',
                           fontWeight: 'bold',
                           border: 'none',
@@ -421,7 +422,7 @@ export default function MatchesClient({
                         style={{
                           padding: '8px 12px',
                           minHeight: 44,
-                          borderRadius: '6px',
+                          borderRadius: '12px',
                           background: 'var(--bg-muted)',
                           color: 'var(--text-secondary)',
                           border: 'none',

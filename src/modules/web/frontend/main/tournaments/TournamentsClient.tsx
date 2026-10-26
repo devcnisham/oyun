@@ -40,7 +40,7 @@ export default function TournamentsClient({
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
       {tournaments.map((t) => {
         const spotsLeft = t.maxTeams - t.registeredTeams.length;
         const isFull = t.status !== 'upcoming' || spotsLeft <= 0;
@@ -51,7 +51,7 @@ export default function TournamentsClient({
             style={{
               background: 'var(--bg-card)',
               border: '1px solid var(--border)',
-              borderRadius: '12px',
+              borderRadius: '24px',
               padding: '24px',
               boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
               display: 'flex',
@@ -137,7 +137,7 @@ export default function TournamentsClient({
                   aria-label="Team name"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
+                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                   required
                 />
                 <input
@@ -147,7 +147,7 @@ export default function TournamentsClient({
                   autoComplete="name"
                   value={captainName}
                   onChange={(e) => setCaptainName(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
+                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                   required
                 />
                 <input
@@ -159,17 +159,17 @@ export default function TournamentsClient({
                   placeholder="Captain 10-digit mobile"
                   value={captainPhone}
                   onChange={(e) => setCaptainPhone(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
+                  style={{ width: '100%', padding: '10px 12px', minHeight: 44, borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '8px', fontSize: '16px' }}
                   required
                 />
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   <button
                     type="submit"
                     style={{
                       flex: 1,
                       padding: '8px', minHeight: 44,
-                      borderRadius: '6px',
-                      background: '#047857',
+                      borderRadius: '12px',
+                      background: '#d31027',
                       color: '#ffffff',
                       fontWeight: 'bold',
                       border: 'none',
@@ -184,7 +184,7 @@ export default function TournamentsClient({
                     style={{
                       padding: '8px 12px',
                       minHeight: 44,
-                      borderRadius: '6px',
+                      borderRadius: '12px',
                       background: 'var(--bg-muted)',
                       color: 'var(--text-secondary)',
                       border: 'none',

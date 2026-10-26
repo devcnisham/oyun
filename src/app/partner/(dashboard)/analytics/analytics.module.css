@@ -97,3 +97,9 @@
   .grid2 { grid-template-columns: 1fr; }
   .chart { gap: 3px; }
 }
+
+.grid2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.bar { background: #e5c8c8; border-radius: 8px 8px 0 0; }
+.peak { background: #9e0a0a; }
+.val { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .bar { transition: none; } }

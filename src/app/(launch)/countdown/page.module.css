@@ -204,3 +204,17 @@
 .back { padding: 12px 8px; color: rgba(255, 255, 255, 0.85); font-weight: 600; text-underline-offset: 4px; }
 .cta:focus-visible, .back:focus-visible { outline: 3px solid #ffd166; outline-offset: 3px; border-radius: 999px; }
 @media (prefers-reduced-motion: reduce) { .cta { transition: none; } }
+
+/* Booking platform visual system */
+.shell, .page { background: #faf9f7; color: #241510; }
+.title { color: #4a0000; }
+.glow, .orbs { display: none; }
+.red { color: #9e0a0a; background: none; animation: none; }
+.back, .foot, .foot a { color: #6d625c; }
+.cta { box-shadow: none; }
+@keyframes letterIn { from { transform: translateY(.12em); } to { transform: none; } }
+@keyframes rise { from { transform: translateY(10px); } to { transform: none; } }
+
+.tickItem { color: #fff; }
+.cta:hover { background: #9e0a0a; }
+.cta:focus-visible, .back:focus-visible { outline-color: #9e0a0a; }

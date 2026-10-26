@@ -43,7 +43,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
 
   return (
     <div className={`container ${styles.page}`}>
-      <h1 className={styles.title}>My bookings</h1>
+      <header className={styles.header}><p className={styles.eyebrow}>Your game plan</p><h1 className={styles.title}>My bookings</h1><p className={styles.intro}>Your next game, your past sessions, all in one place.</p></header>
 
       {newIds.length > 0 && (
         <div className={styles.banner} role="status">

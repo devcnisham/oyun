@@ -1,19 +1,27 @@
-.page { padding-top: 24px; padding-bottom: 64px; display: flex; flex-direction: column; gap: 24px; }
-.crumbs { font-size: 13px; color: var(--text-muted); display: flex; gap: 6px; flex-wrap: wrap; }
-.crumbs a { color: var(--text-secondary); text-decoration: none; }
-.crumbs a:hover { text-decoration: underline; }
-.title { font-size: clamp(26px, 4vw, 40px); font-weight: 800; letter-spacing: -0.02em; }
-.lead { font-size: 16px; color: var(--text-secondary); max-width: 760px; margin-top: -12px; }
-.h2 { font-size: 20px; font-weight: 800; margin-bottom: 14px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.about p { color: var(--text-secondary); line-height: 1.7; max-width: 820px; }
-.areas { display: flex; flex-wrap: wrap; gap: 8px; }
-.areaLink { padding: 8px 14px; border-radius: 99px; background: var(--bg-card); border: 1px solid var(--border); text-decoration: none; color: var(--text-primary); font-size: 14px; font-weight: 600; }
-.areaLink:hover { border-color: var(--primary-700); color: var(--accent-text); }
-.faqList { display: flex; flex-direction: column; gap: 12px; max-width: 820px; }
-.faqItem { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
-.faqItem summary { font-size: 16px; font-weight: 700; color: var(--text-primary); cursor: pointer; list-style-position: inside; }
-.faqItem p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
-.emptyState { background: var(--bg-card); border: 1px dashed var(--border); border-radius: 16px; padding: 36px 24px; text-align: center; max-width: 720px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
-.emptyTitle { font-size: 20px; font-weight: 800; color: var(--text-primary); }
-.emptyDesc { font-size: 15px; color: var(--text-secondary); max-width: 540px; line-height: 1.6; }
+/* Customer pages share the booking home’s paper, red accents and roomy type. */
+.page { padding-top: 36px; padding-bottom: 80px; display: flex; flex-direction: column; gap: 28px; color: #241510; }
+.page :is(a, button, input, select, summary):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+.crumbs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: #786c65; }
+.crumbs a { display: inline-flex; align-items: center; min-height: 44px; color: #655951; text-decoration: none; }
+.crumbs a:hover { color: #9e0a0a; text-decoration: underline; }
+.title { max-width: 1000px; font-size: clamp(36px, 5vw, 64px); line-height: 1.04; font-weight: 850; letter-spacing: -.055em; color: #4a0000; text-wrap: balance; }
+.lead { max-width: 760px; margin-top: -10px; font-size: 17px; line-height: 1.7; color: #6d625c; }
+.h2 { font-size: clamp(23px, 2.7vw, 32px); line-height: 1.2; font-weight: 800; letter-spacing: -.035em; margin-bottom: 20px; }
+@media (max-width: 600px) { .page { padding-top: 24px; gap: 24px; padding-bottom: 48px; } .lead { font-size: 15px; } }
+@media (prefers-reduced-motion: no-preference) { .page { animation: pageArrival .35s ease-out; } @keyframes pageArrival { from { transform: translateY(8px); } to { transform: none; } } }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 24px; }
+.about { padding: 28px; border-radius: 26px; background: #fff; border: 1px solid #e9e2dc; }
+.about p { color: #6d625c; line-height: 1.8; max-width: 820px; }
+.areas { display: flex; flex-wrap: wrap; gap: 10px; }
+.areaLink { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 19px; border-radius: 999px; background: #fff; border: 1px solid #ded6d0; text-decoration: none; color: #4a0000; font-size: 14px; font-weight: 650; }
+.areaLink:hover { border-color: #9e0a0a; background: #fff4f2; }
+.faqList { display: flex; flex-direction: column; gap: 12px; max-width: 900px; }
+.faqItem { background: #fff; border: 1px solid #e9e2dc; border-radius: 20px; padding: 12px 24px; }
+.faqItem summary { min-height: 44px; align-content: center; font-size: 16px; font-weight: 750; color: #241510; cursor: pointer; list-style-position: inside; }
+.faqItem p { margin: 8px 0 12px; font-size: 15px; line-height: 1.7; color: #6d625c; }
+.emptyState { background: #fff; border: 1px solid #e9e2dc; border-radius: 26px; padding: 40px 28px; max-width: 760px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.emptyTitle { font-size: 24px; font-weight: 800; letter-spacing: -.035em; color: #4a0000; }
+.emptyDesc { font-size: 15px; color: #6d625c; max-width: 540px; line-height: 1.7; }
+.page ol { padding-left: 24px; max-width: 820px; line-height: 1.8; color: #6d625c; }
+.page ol li + li { margin-top: 12px; }

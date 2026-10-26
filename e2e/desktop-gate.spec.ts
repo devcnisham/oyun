@@ -36,8 +36,8 @@ test('the redesigned home fits the viewport and offers direct daytime browsing',
   if (!isMobile) await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto('/');
   await page.waitForLoadState('networkidle');
-  await expect(page.getByRole('link', { name: /Morning slots/ })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Afternoon slots/ })).toBeVisible();
+  const daytime = page.getByRole('region', { name: /Morning and afternoon deals/ });
+  await expect(daytime.getByRole('link', { name: /daytime slots/ })).toHaveCount(3);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: `/private/tmp/oyun-redesign-${isMobile ? 'mobile' : 'desktop'}.png`, fullPage: true });
   await page.screenshot({ path: `/private/tmp/oyun-redesign-${isMobile ? 'mobile' : 'desktop'}-top.png` });

@@ -24,3 +24,20 @@ Use real public data only. Preserve booking and authentication. Keep `/m` compat
 - Browser tests ran from an independent temporary copy to preserve the existing port-3000 development server.
 - No active happy-hour offers or sponsor ads are present in preview seed data; the validated sections render when configured.
 - Production remains at the previous released version pending visual review of this redesign.
+
+## Expanded scope approved 26 October 2026
+- Every customer, partner and admin page receives the same OYUN visual system through shared shells and dedicated templates.
+- Fixed flush top navigation; remove redundant header search and floating outer pills.
+- Remove hero tagline/location row. Use Mangalore-only generic card locations, preserving actual addresses/SEO routes.
+- Align card CTA/footer sizing while keeping venue name/city tightly spaced. Sport categories only on venue results. Incoming URL search preferences remain clearable.
+- List your turf is a button; clean circular logo; Support stays in the desktop footer row; oversized dimmed OYUN footer wordmark.
+- Add reduced-motion-safe entrances, stagger and hover/press interaction.
+- Preserve data/auth/business logic; verify private dashboards in the isolated development test environment.
+
+## Final verification
+- 99 browser tests passed, 11 conditional/context-specific skips; no failed browser tests.
+- All 638 unit tests passed across 81 files.
+- Typecheck, changed-TypeScript ESLint, changed-CSS parsing and git diff whitespace checks passed.
+- Full browser coverage includes booking/cancel/reschedule display, owner approval, partner calendar/export, public-page metadata/crawler endpoints, accessibility and responsive overflow/card geometry.
+- Development-only HMR hash mismatch was resolved by a clean isolated build cache and warming launch routes.
+- Production has not been replaced by this redesign; the local preview is available for review.

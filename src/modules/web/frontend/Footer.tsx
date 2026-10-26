@@ -26,7 +26,7 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
               </svg>
               <div>
                 <div className={`${styles.logoName} brand-wordmark`}>OYUN</div>
-                <div className={styles.logoTag}>Premium Turf Booking Platform</div>
+                <div className={styles.logoTag}>PLAY BEYOND.</div>
               </div>
             </div>
             <p className={styles.brandDesc}>
@@ -100,6 +100,7 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
           </nav>
         </div>
 
+        <div className={styles.watermark} aria-hidden="true">OYUN</div>
         <div className={styles.bottom}>
           <p className={styles.copyright}>© {new Date().getFullYear()} OYUN</p>
           <p className={styles.copyright}>All rights reserved.</p>

@@ -1,16 +1,18 @@
-/* Shared header and footer for the launch pages. Tokens: ink #100a0b, red #d31027, line white #f4f1ec. 8px rhythm. */
+/* Launch navigation uses the same paper and deep red as customer pages. */
 .header {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 100;
-  color: #f4f1ec;
+  color: #4a0000;
+  background: #faf9f7;
+  border-bottom: 1px solid #e9e2dc;
   transition: background-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
 }
 .solid {
-  background: rgba(16, 10, 11, 0.86);
+  background: #faf9f7;
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
-  box-shadow: 0 1px 0 rgba(244, 241, 236, 0.1);
+  box-shadow: 0 4px 20px #4a000008;
 }
 .skip {
   position: absolute;
@@ -52,15 +54,18 @@
 }
 .nav { display: none; gap: 4px; }
 .navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   padding: 10px 12px;
   border-radius: 8px;
-  color: rgba(244, 241, 236, 0.82);
+  color: #655951;
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
-.navLink:hover, .navLink[aria-current='page'] { color: #fff; background: rgba(244, 241, 236, 0.08); }
+.navLink:hover, .navLink[aria-current='page'] { color: #9e0a0a; background: #fff0ed; }
 
 .actions { display: flex; align-items: center; gap: 8px; }
 .ghost { display: none; }
@@ -70,7 +75,7 @@
   gap: 8px;
   min-height: 44px;
   padding: 0 18px;
-  border-radius: 4px;
+  border-radius: 999px;
   font-size: 15px;
   font-weight: 700;
   text-decoration: none;
@@ -83,10 +88,10 @@
   background: #c8102e;
   color: #fff;
 }
-.primary:hover { background: #e3263a; transform: translateY(-1px); }
+.primary:hover { background: #9e0a0a; transform: translateY(-1px); }
 .primary:active { transform: scale(0.97); }
-.ghost { border: 1px solid rgba(244, 241, 236, 0.35); color: #f4f1ec; }
-.ghost:hover, .ghost[aria-current='page'] { border-color: #f4f1ec; background: rgba(244, 241, 236, 0.08); }
+.ghost { border: 1px solid #ded6d0; color: #4a0000; background: #fff; }
+.ghost:hover, .ghost[aria-current='page'] { border-color: #9e0a0a; background: #fff0ed; }
 .ghost:active { transform: scale(0.97); }
 
 .menuBtn {
@@ -94,13 +99,13 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border: 1px solid rgba(244, 241, 236, 0.35);
+  border: 1px solid #ded6d0;
   border-radius: 4px;
   background: transparent;
   color: inherit;
   cursor: pointer;
 }
-.menuBtn:hover { background: rgba(244, 241, 236, 0.08); }
+.menuBtn:hover { background: #fff0ed; }
 
 .panel { display: none; }
 .panelOpen {
@@ -108,22 +113,23 @@
   flex-direction: column;
   gap: 4px;
   padding: 8px 20px 20px;
-  background: rgba(16, 10, 11, 0.96);
+  background: #faf9f7;
   animation: panelIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .panelLink {
   padding: 14px 4px;
-  border-bottom: 1px solid rgba(244, 241, 236, 0.1);
-  color: #f4f1ec;
+  border-bottom: 1px solid #e9e2dc;
+  color: #4a0000;
+  min-height: 44px;
   font-size: 17px;
   font-weight: 600;
   text-decoration: none;
 }
 .panelCta { margin-top: 12px; justify-content: center; }
-@keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes panelIn { from { transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
 .primary:focus-visible, .ghost:focus-visible, .menuBtn:focus-visible, .navLink:focus-visible, .panelLink:focus-visible, .brand:focus-visible {
-  outline: 3px solid #fff;
+  outline: 3px solid #9e0a0a;
   outline-offset: 3px;
 }
 
@@ -147,3 +153,5 @@
 .footCol a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 4px; }
 .footBase { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(244, 241, 236, 0.12); font-size: 14px; }
 @media (min-width: 760px) { .footGrid { grid-template-columns: 1.6fr 1fr 1fr 1fr; } }
+
+@media (prefers-reduced-motion: reduce) { .header, .navLink, .primary, .ghost { transition: none; } .panelOpen { animation: none; } }

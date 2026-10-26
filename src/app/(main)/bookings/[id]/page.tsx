@@ -53,94 +53,104 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
     <div className={`container ${styles.page}`}>
       <BackButton fallback="/bookings" />
       <div className={styles.card}>
-        <div className={`${styles.status} ${active || booking.status === 'checked_in' ? styles.ok : styles.off}`}>
-          {active ? '✓ ' : ''}{STATUS_TEXT[booking.status]}
-        </div>
-        <h1 className={styles.turf}>{turf.name}</h1>
-        <p className={styles.when}>
-          {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}{halfNote(booking.pitch, turf.halfNames)}
-        </p>
-        <p className={styles.where}>{turf.location}</p>
-
-        {active && (
-          <div className={styles.qrBlock}>
-            {/* QR markup is generated server-side from our own booking code */}
-            <div className={styles.qr} dangerouslySetInnerHTML={{ __html: svg }} />
-            <div className={styles.code}>{booking.code}</div>
-            <p className={styles.hint}>Show this QR code at the gate to check in.</p>
+        <header className={styles.ticketHeader}>
+          <div className={`${styles.status} ${active || booking.status === 'checked_in' ? styles.ok : styles.off}`}>
+            {active ? '✓ ' : ''}{STATUS_TEXT[booking.status]}
           </div>
-        )}
+          <h1 className={styles.turf}>{turf.name}</h1>
+          <p className={styles.when}>
+            {formatDate(booking.date, { weekday: 'long', day: 'numeric', month: 'long' })} · {booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}{halfNote(booking.pitch, turf.halfNames)}
+          </p>
+          <p className={styles.where}>Mangalore</p>
+        </header>
 
-        <dl className={styles.summary}>
-          <div><dt>Name</dt><dd>{booking.customerName}</dd></div>
-          <div><dt>Phone</dt><dd>+91 {maskPhone(booking.customerPhone)}</dd></div>
-          {booking.addOns.length > 0 && (
-            <div><dt>Add-ons</dt><dd>{booking.addOns.map((a) => `${a.name} × ${a.qty}`).join(', ')}</dd></div>
-          )}
-          <div><dt>Total</dt><dd>₹{p.total}</dd></div>
-          {booking.amountPaid > 0 && <div><dt>Paid</dt><dd>₹{booking.amountPaid}</dd></div>}
-          {due > 0 && booking.status === 'confirmed' && (
-            p.advance > 0 && p.advance < due ? (
-              <>
-                <div><dt>Advance at the turf</dt><dd>₹{p.advance}</dd></div>
-                <div><dt>Balance after you play</dt><dd>₹{due - p.advance}</dd></div>
-              </>
-            ) : (
-              <div><dt>Pay at venue</dt><dd>₹{due}</dd></div>
-            )
-          )}
-        </dl>
+        <div className={`${styles.ticketBody} ${active ? styles.withQr : ''}`}>
 
-        <div className={styles.actions}>
-          <Link href={`/bookings/${booking.id}/invoice`} className="btn btn--secondary btn--sm">View invoice</Link>
-          <a
-            className="btn btn--secondary btn--sm"
-            href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Directions
-          </a>
-          <Link href={`/arenas/${turf.id}`} className="btn btn--primary btn--sm">Book again</Link>
-        </div>
-        {active && (
-          <>
-            <div className={styles.extras}>
-              <a href={`/bookings/${booking.id}/calendar`} className={styles.extra}>📅 Add to calendar</a>
-              <a
-                className={styles.extra}
-                target="_blank"
-                rel="noopener noreferrer"
-                href={`https://wa.me/?text=${encodeURIComponent(`I've booked ${turf.name} on ${formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}, ${booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}. Join the game! ${origin}/arenas/${turf.id}`)}`}
-              >
-                💬 Share on WhatsApp
-              </a>
-              <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
+          {active && (
+            <div className={styles.qrBlock}>
+              {/* QR markup is generated server-side from our own booking code */}
+              <div className={styles.qr} dangerouslySetInnerHTML={{ __html: svg }} />
+              <div className={styles.code}>{booking.code}</div>
+              <p className={styles.hint}>Show this QR code at the gate to check in.</p>
             </div>
-            <SplitPayment
-              turfName={turf.name}
-              dateStr={formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}
-              timeSlot={booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}
-              totalAmount={p.total}
-              customerName={booking.customerName}
-            />
-          </>
-        )}
-        {canSelfCancel(booking, rain) && (
-          <>
-            {rain && <p className={styles.rewardLine}>Rain: you can cancel any time before the slot and get a full refund to your wallet.</p>}
-            <RescheduleBooking
-              bookingId={booking.id}
-              currentDate={booking.date}
-              currentHour={booking.hour}
-              openHours={turfHours(turf)}
-              needsPhone={!booking.accountId}
-              durationMinutes={booking.durationMinutes}
-              startMinute={booking.startMinute}
-            />
-            <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} needsPhone={!booking.accountId} />
-          </>
-        )}
+          )}
+
+          <dl className={styles.summary}>
+            <div><dt>Name</dt><dd>{booking.customerName}</dd></div>
+            <div><dt>Phone</dt><dd>+91 {maskPhone(booking.customerPhone)}</dd></div>
+            {booking.addOns.length > 0 && (
+              <div><dt>Add-ons</dt><dd>{booking.addOns.map((a) => `${a.name} × ${a.qty}`).join(', ')}</dd></div>
+            )}
+            <div><dt>Total</dt><dd>₹{p.total}</dd></div>
+            {booking.amountPaid > 0 && <div><dt>Paid</dt><dd>₹{booking.amountPaid}</dd></div>}
+            {due > 0 && booking.status === 'confirmed' && (
+              p.advance > 0 && p.advance < due ? (
+                <>
+                  <div><dt>Advance at the turf</dt><dd>₹{p.advance}</dd></div>
+                  <div><dt>Balance after you play</dt><dd>₹{due - p.advance}</dd></div>
+                </>
+              ) : (
+                <div><dt>Pay at venue</dt><dd>₹{due}</dd></div>
+              )
+            )}
+          </dl>
+        </div>
+
+        <div className={styles.actionGroup}>
+          <div className={styles.actions}>
+            <Link href={`/bookings/${booking.id}/invoice`} className="btn btn--secondary btn--sm">View invoice</Link>
+            <a
+              className="btn btn--secondary btn--sm"
+              href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Directions
+            </a>
+            <Link href={`/arenas/${turf.id}`} className="btn btn--primary btn--sm">Book again</Link>
+          </div>
+          {active && (
+            <>
+              <div className={styles.extras}>
+                <a href={`/bookings/${booking.id}/calendar`} className={styles.extra}>📅 Add to calendar</a>
+                <a
+                  className={styles.extra}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`https://wa.me/?text=${encodeURIComponent(`I've booked ${turf.name} on ${formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}, ${booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}. Join the game! ${origin}/arenas/${turf.id}`)}`}
+                >
+                  💬 Share on WhatsApp
+                </a>
+                <Link href={`/arenas/${turf.id}?date=${addDays(booking.date, 7)}`} className={styles.extra}>🔁 Same slot next week</Link>
+              </div>
+            </>
+          )}
+        </div>
+        <div className={styles.manageActions}>
+          {active && (
+              <SplitPayment
+                turfName={turf.name}
+                dateStr={formatDate(booking.date, { weekday: 'short', day: 'numeric', month: 'short' })}
+                timeSlot={booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}
+                totalAmount={p.total}
+                customerName={booking.customerName}
+              />
+          )}
+          {canSelfCancel(booking, rain) && (
+            <>
+              <RescheduleBooking
+                bookingId={booking.id}
+                currentDate={booking.date}
+                currentHour={booking.hour}
+                openHours={turfHours(turf)}
+                needsPhone={!booking.accountId}
+                durationMinutes={booking.durationMinutes}
+                startMinute={booking.startMinute}
+              />
+              <CancelBooking bookingId={booking.id} cutoffHours={CANCEL_CUTOFF_HOURS} needsPhone={!booking.accountId} />
+            </>
+          )}
+        </div>
         {booking.status === 'checked_in' && (
           <ReviewForm
             bookingId={booking.id}

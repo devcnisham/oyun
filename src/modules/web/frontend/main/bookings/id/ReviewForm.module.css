@@ -2,8 +2,8 @@
   margin-top: 20px;
   padding: 18px;
   border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--warn-bg);
+  border-radius: 24px;
+  background: #faf9f7;
   text-align: center;
 }
 .box h2 { font-size: 17px; font-weight: 800; margin-bottom: 10px; }
@@ -15,7 +15,9 @@
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 2px;
+  padding: 5px;
+  min-width: 44px;
+  min-height: 44px;
   transition: transform 0.1s, color 0.1s;
 }
 .picker button:active { transform: scale(0.9); }
@@ -48,5 +50,7 @@
 .stars span { color: var(--text-muted); }
 .comment { margin-top: 6px; font-size: 15px; color: var(--text-secondary); font-style: italic; }
 .thanks { margin-top: 8px; font-size: 14px; font-weight: 700; color: var(--ok); }
-.link { margin-top: 8px; background: none; border: none; color: var(--accent-text); font-weight: 700; cursor: pointer; }
+.link { min-height: 44px; margin-top: 8px; background: none; border: none; color: var(--accent-text); font-weight: 700; cursor: pointer; }
 .error { margin-top: 8px; color: var(--err); font-size: 13px; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) { .picker button { transition: none; } }

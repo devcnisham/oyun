@@ -627,3 +627,18 @@
 .hint { font-weight: 500; color: var(--text-muted); }
 /* Off-screen, not display:none, so simple bots still see and fill it */
 .trap { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
+/* Booking platform visual system */
+
+.page, .landingPage { background: #faf9f7; }
+.page { padding-top: 20px; }
+.header, .heroSection { background: #faf9f7; border-color: #e9e2dc; }
+.pageTitle, .heroTitle { color: #4a0000; font-size: clamp(36px, 5vw, 64px); line-height: 1.05; letter-spacing: -.055em; }
+.formWrap, .form, .perksCard, .perkCardLarge { border-radius: 24px; border-color: #e9e2dc; }
+.stepDot { min-width: 44px; min-height: 44px; }
+.input, .select, .textarea { min-height: 48px; border-radius: 12px; }
+.amenityToggle { min-height: 48px; border-radius: 14px; }
+.pricingCard, .reviewCard { border-radius: 20px; }
+.nextBtn { min-height: 48px; border-radius: 999px; }
+.page :is(a, button, input, select, textarea):focus-visible, .landingPage :is(a, button):focus-visible { outline: 3px solid #9e0a0a; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .page *, .landingPage * { animation: none; transition: none; } }

@@ -20,7 +20,8 @@ test('displays valid happy-hour deals and clearly identifies paid sponsor conten
 
 test('does not fabricate discounts, sponsorships or review ratings in empty states', () => {
   const html = renderToStaticMarkup(<BookingHome turfs={[{ ...turf, reviewCount: 0, rating: 5 }]} offers={[]} ads={[]} />);
-  expect(html).toContain('No morning or afternoon discounts are live right now');
+  expect(html).toContain('Regular starting rates shown');
+  expect(html).toContain('Regular starting rate');
   expect(html).not.toContain('From our sponsors');
   expect(html).not.toContain('out of 5 from');
   expect(html).not.toContain('% off');

@@ -817,3 +817,13 @@ a.slotNote:hover {
   }
   .cell { height: 34px; font-size: 10px; }
 }
+
+.slotTile, .day { border-radius: 20px; }
+.segBtn, .todayBtn, .stepBtn, .dateInput, .cell, .addLink, .blockBox summary, .dayPick span { min-height: 44px; }
+.segBtn, .addLink, .blockBox summary { display: inline-flex; align-items: center; }
+.stepBtn { width: 44px; height: 44px; }
+.dateInput { height: 46px; }
+.segActive, .segActive:hover, .tileActive, .tileActive:hover, .dayPick input:checked + span { background: #9e0a0a; border-color: #9e0a0a; box-shadow: none; }
+.grid button, .slotTile button, .blockBox button, .bulkFoot button, .grid input, .blockBox input, .bulkGrid input, .bulkGrid select, .bulkFoot input { min-height: 44px; }
+@media (max-width: 600px) { .cell { min-height: 44px; } .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .cell, .day, .stepBtn, .dateInput, .tile, .bulkChevron, .dayPick span { transition: none; } .cell:hover { transform: none; } }

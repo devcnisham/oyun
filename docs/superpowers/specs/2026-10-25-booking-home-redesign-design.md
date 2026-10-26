@@ -20,7 +20,7 @@ Replace the current stretched app feed with a deliberately designed, responsive 
 - Signature: a large, compact “Find your next game.” title beside the location context, immediately followed by the booking search. The first venue row remains close to the top of the page.
 
 ## Page order
-1. Clean navigation: OYUN, Browse turfs, Offers, My bookings, account and List your turf.
+1. Fixed, flush navigation: OYUN, Bookings and account. No header search, Offers link, owner-listing button or decorative diagonal arrows.
 2. Compact heading and search: venue/area query, sport, date, and Search turfs. Search submits existing supported filters to `/arenas`.
 3. Sport shortcuts, with text labels and accessible active states.
 4. Featured turfs: four cards on wide screens, two on tablets, one readable card per row on phones. Include real venue photo, featured label when true, rating only when backed by reviews, availability, venue name, area, starting hourly price and Book now.
@@ -33,7 +33,7 @@ Replace the current stretched app feed with a deliberately designed, responsive 
 - Featured status does not prove sponsorship. Only explicit sponsor ads receive Sponsored labels.
 - Do not invent distances or availability, or turn ordinary first-booking offers into morning/afternoon deals.
 - If there are no featured venues, show actual available venues under “Explore turfs”.
-- If there are no valid off-peak deals, show an honest empty state with a browse action; do not invent discount cards.
+- If there are no active off-peak deals, show real daytime venue cards labelled with regular starting rates; do not invent discounts.
 - If no sponsors are configured, omit the paid-ad section from the public page.
 
 ## Implementation scope
@@ -41,7 +41,7 @@ Replace the current stretched app feed with a deliberately designed, responsive 
 - Fetch and prepare public venue, offer and sponsor data on the server. Keep only interactive search/filter controls client-side.
 - Apply the new home to both `/` and the existing `/m` compatibility route.
 - Update shared navigation only where required for this design; preserve working venue selection, authentication, booking, cancellation and payment behaviour.
-- This first redesign covers the home and shared navigation. Results, venue-detail and checkout screens continue to work through existing routes and can receive the same visual treatment in a subsequent pass.
+- Scope expanded by the user on 26 October 2026 to every customer, partner and admin page: shared shells, results, detail, checkout, ticket, account, content, authentication and dashboard templates.
 - Preserve metadata and structured data. Do not change route structure or expose private fields.
 - The previously observed production canonical-domain configuration issue remains a separately identified issue, not a claim of a passing canonical check.
 
@@ -51,3 +51,13 @@ Replace the current stretched app feed with a deliberately designed, responsive 
 - Verify keyboard navigation, focus visibility, contrast and reduced-motion behaviour.
 - Run relevant browser booking regressions, type checking and linting; inspect metadata, sitemap, robots and response status.
 - Present the finished local preview for visual review before the redesigned home replaces production.
+
+## Final user-directed refinements
+- Remove hero tagline/location row and visible results-count heading; keep accessible headings.
+- Show city-only Mangalore on generic cards/tickets, preserving real addresses for directions and SEO content.
+- Keep only sport categories in results controls, with incoming search preferences clearable.
+- Remove the venue rain-promotion banner and the auth-panel Back control.
+- Use icon-led sport tiles, consistent card imagery and bottom-aligned actions, with tight name/city spacing.
+- Footer Support aligns beside other groups on desktop; dimmed oversized OYUN and PLAY BEYOND. tagline.
+- Add home/card/table/venue/ticket/auth skeletons and reduced-motion-safe loading effects.
+- Compact booking ticket with readable QR; expanded team-split and reschedule panels span their available width.

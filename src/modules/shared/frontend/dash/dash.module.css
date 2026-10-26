@@ -15,16 +15,17 @@
 }
 
 .pageTitle {
-  font-size: 24px;
+  font-size: clamp(25px, 2.5vw, 34px);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.035em;
   color: var(--text-primary);
 }
 
 .pageDesc {
   font-size: 14px;
-  color: var(--text-muted);
-  margin-top: 4px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-top: 8px;
 }
 
 .card {
@@ -257,7 +258,7 @@
   font-weight: 600;
   border: 1px solid transparent;
   cursor: pointer;
-  background: #111;
+  background: #d31027;
   color: #fff;
   text-decoration: none;
   white-space: nowrap;
@@ -265,7 +266,7 @@
 }
 
 .btn:hover {
-  background: var(--primary-gradient);
+  background: #9e0a0a;
 }
 
 .btn:disabled {
@@ -503,3 +504,39 @@
 .calName { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .calLegend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--text-muted); margin-top: 12px; }
 .calDot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; border: 1px solid var(--border); margin-right: 4px; vertical-align: -1px; }
+
+/* Shared operational components follow the booking palette. */
+.page { min-width: 0; }
+.pageHeader { padding: 4px 0 8px; }
+.card, .stat { border-radius: 22px; border-color: #e9e3de; box-shadow: 0 4px 18px rgb(74 0 0 / 3%); }
+.cardTitle { font-size: 18px; letter-spacing: -.025em; }
+.stat { padding: 24px; }
+.statValue { font-size: clamp(26px, 2.6vw, 34px); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.statLabel { letter-spacing: .07em; font-size: 11px; }
+.tableWrap { scrollbar-width: thin; overscroll-behavior-inline: contain; }
+.table th { background: #faf9f7; padding: 14px 12px; font-size: 10px; letter-spacing: .09em; }
+.table td { padding: 16px 12px; border-color: #f0ebe7; }
+.table tbody tr:hover { background: #fdfaf8; }
+.input, .select, .textarea { min-height: 46px; border-color: #ded6d0; border-radius: 12px; background: #fff; }
+.label { font-size: 12px; font-weight: 700; }
+.btn, .btnSm { min-height: 44px; border-radius: 12px; transition: background .18s, border-color .18s, box-shadow .18s; }
+.btn:focus-visible, .tab:focus-visible { outline: 3px solid #eaa6ad; outline-offset: 3px; }
+.btnSecondary { background: #fff; }
+.btnDanger { background: #fff; }
+.btnSm { padding: 8px 12px; }
+.tab { display: inline-flex; align-items: center; min-height: 48px; }
+.tabActive { color: #9e0a0a; border-bottom-color: #d31027; }
+.check { min-height: 44px; }
+.formGrid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.empty { padding: 48px 20px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .page { gap: 20px; }
+  .card { padding: 20px; }
+  .tableWrap { margin-inline: -20px; padding-inline: 20px; }
+  .stat { padding: 18px 14px; }
+  .statValue { font-size: 26px; }
+  .table { min-width: 540px; }
+  .actions { gap: 10px; }
+  .listItem { align-items: flex-start; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }

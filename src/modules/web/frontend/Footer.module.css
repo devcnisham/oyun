@@ -10,8 +10,8 @@
 
 .top {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 64px;
+  grid-template-columns: minmax(230px, .8fr) minmax(0, 1.6fr);
+  gap: 48px;
   margin-bottom: 48px;
 }
 
@@ -88,8 +88,8 @@
 /* Links */
 .linksGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
 }
 
 .linkGroupTitle {
@@ -141,8 +141,8 @@
     gap: 40px;
   }
   .linksGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
   }
 }
 
@@ -168,3 +168,17 @@
   text-align: left;
 }
 .linkButton:hover { opacity: 1; text-decoration: underline; }
+
+.watermark {
+  margin: 40px 0 28px;
+  color: var(--logo-from);
+  opacity: 0.07;
+  font-family: var(--font-wordmark-family);
+  font-size: clamp(100px, 25vw, 350px);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.055em;
+  text-align: center;
+  user-select: none;
+  pointer-events: none;
+}

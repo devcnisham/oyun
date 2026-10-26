@@ -103,7 +103,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
           <div className={styles.headerTitle}>
             <SidebarToggle className={styles.toggleBtn} />
             <HeaderPageTitle items={[...nav, { href: '/partner/invoices', label: 'Invoice' }]} fallback="Dashboard" className={styles.pageName} />
-            <span className={styles.turfName}>
+            <div className={styles.turfName}>
             {ctx.turfs.length > 1 ? (
               <ActionForm action={switchTurf} inline>
                 <select name="turfId" defaultValue={ctx.turf.id} aria-label="Switch turf" style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', fontWeight: 600 }}>
@@ -116,7 +116,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
             ) : (
               ctx.turf.name
             )}
-            </span>
+            </div>
           </div>
           <div className={styles.headerActions}>
             {ctx.can('bookings') && (

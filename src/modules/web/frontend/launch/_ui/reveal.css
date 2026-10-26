@@ -1,8 +1,7 @@
-/* Scroll reveal: starts lifted and transparent, settles when it enters view. Without JavaScript or with reduced motion
-   the content is simply shown (see Reveal.tsx), and the rule below covers the no-script case. */
+/* Scroll motion keeps content visible before JavaScript and observation are ready. */
 .reveal {
-  opacity: 0;
-  transform: translate3d(0, 22px, 0);
+  opacity: 1;
+  transform: translate3d(0, 8px, 0);
   transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .reveal.revealIn {

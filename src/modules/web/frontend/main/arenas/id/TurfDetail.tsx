@@ -14,7 +14,6 @@ import TurfMiniMap from '@/modules/web/frontend/main/arenas/id/TurfMiniMap';
 import styles from '@/modules/web/frontend/main/arenas/id/page.module.css';
 import BackButton from '@/modules/web/frontend/BackButton';
 import { sportInfo } from '@/modules/web/lib/sports';
-import { getWeatherAlert } from '@/modules/shared/lib/weather';
 
 interface TurfDetailProps {
   turf: PublicTurf;
@@ -43,7 +42,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
 
         <div className={styles.topNav}>
           <BackButton fallback="/arenas" className={`${styles.iconBtn} ${styles.backIcon}`}>←</BackButton>
-          <div className={styles.midBadge}>{turf.isVerified ? 'Verified Turf' : 'Premium Turf'}</div>
+          <div className={styles.midBadge}>{turf.isVerified ? 'Verified venue' : 'OYUN venue'}</div>
           <div className={styles.topNavRight}>
             <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.iconBtn} />
             <ShareButton title={turf.name} className={styles.iconBtn} />
@@ -85,7 +84,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
               {turf.name}{' '}
               <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
             </h1>
-            <p className={styles.addressBlock}>{turf.location}</p>
+            <p className={styles.addressBlock}>Mangalore</p>
             <p className={styles.hoursText}>{turf.openTime} – {turf.closeTime}</p>
           </div>
           <div className={styles.titleSide}>
@@ -104,18 +103,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           </ul>
         )}
 
-        {(() => {
-          const alert = getWeatherAlert(turf);
-          return alert.active ? (
-            <div style={{ background: 'var(--info-bg)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', margin: '14px 0', fontSize: 13, color: 'var(--info)', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 20 }} aria-hidden>🌧️</span>
-              <div>
-                <strong>{alert.title}</strong>
-                <p style={{ margin: '2px 0 0', color: 'var(--info)', fontSize: 12 }}>{alert.description}</p>
-              </div>
-            </div>
-          ) : null;
-        })()}
+
 
 
         {offers.length > 0 && (

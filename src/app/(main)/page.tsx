@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import PageSkeleton from '@/modules/shared/frontend/PageSkeleton';
 import type { Metadata } from 'next';
 import { localeAlternates } from '@/modules/web/lib/seo';
 import { SITE_DESCRIPTION } from '@/modules/web/lib/site';
@@ -13,5 +15,5 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default function Home() {
-  return <HomeView />;
+  return <Suspense fallback={<PageSkeleton variant="home" />}><HomeView /></Suspense>;
 }

@@ -96,21 +96,21 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           {addOns && addOns.length > 0 && (
             <section>
               <h3>Add-ons & Equipment</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, margin: '8px 0' }}>
+              <div className={styles.addOns}>
                 {addOns.map((addon) => {
                   const qty = selectedAddOns?.find((a) => a.id === addon.id)?.qty ?? 0;
                   return (
-                    <div key={addon.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'var(--bg-muted, #f8f9fa)', borderRadius: 10 }}>
+                    <div key={addon.id} className={styles.addOn}>
                       <div>
                         <b style={{ fontSize: 14 }}>{addon.name}</b>
                         <span style={{ display: 'block', fontSize: 12, color: 'var(--text-muted, #666)' }}>{rupees(addon.price)}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div className={styles.quantity}>
                         <button
                           type="button"
                           onClick={() => setAddOnQty(addon.id, Math.max(0, qty - 1))}
                           disabled={qty === 0}
-                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg-card)', cursor: 'pointer', fontWeight: 800 }}
+                          className={styles.quantityButton}
                           aria-label={`Decrease ${addon.name}`}
                         >
                           −
@@ -119,7 +119,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
                         <button
                           type="button"
                           onClick={() => setAddOnQty(addon.id, qty + 1)}
-                          style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg-card)', cursor: 'pointer', fontWeight: 800 }}
+                          className={styles.quantityButton}
                           aria-label={`Increase ${addon.name}`}
                         >
                           +
@@ -142,7 +142,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           <div className={styles.ticket}>
             <div>
               <b>{turf.name}</b>
-              <span className={styles.muted}>{turf.area} · {bookableName ?? (size === 'half' ? 'Half pitch' : turf.size)}</span>
+              <span className={styles.muted}>Mangalore · {bookableName ?? (size === 'half' ? 'Half pitch' : turf.size)}</span>
             </div>
             <div className={styles.ticketRow}>
               <span>{dateLabel}</span>

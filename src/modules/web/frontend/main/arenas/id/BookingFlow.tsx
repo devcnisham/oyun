@@ -450,7 +450,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       <aside className={styles.summary} aria-label="Your reservation">
         <span className={styles.summaryEyebrow}>Your reservation</span>
         <h3 className={styles.summaryTitle}>{turf.name}</h3>
-        <p className={styles.summaryMuted}>{turf.area}, Mangalore</p>
+        <p className={styles.summaryMuted}>Mangalore</p>
         <dl className={styles.summaryList}>
           <div><dt>Date</dt><dd>{dateInfo?.label}</dd></div>
           <div><dt>Pitch</dt><dd>{selectedBookable ? selectedBookable.name : size === 'half' ? 'Half pitch' : turf.size}</dd></div>

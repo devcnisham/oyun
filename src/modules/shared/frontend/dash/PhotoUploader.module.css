@@ -183,3 +183,12 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.dropzone { border-radius: 20px; background: #faf9f7; }
+.dropzone:hover, .dropzoneActive { border-color: #9e0a0a; background: #fff1f2; }
+.toggleBtn { min-height: 44px; }
+.iconBtn { min-width: 44px; min-height: 44px; border-radius: 10px; }
+.iconBtn:hover { background: #9e0a0a; }
+.deleteBtn:hover { background: #d31027; }
+@media (hover: none) { .actionsBar { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .dropzone, .actionsBar, .iconBtn { transition: none; } }

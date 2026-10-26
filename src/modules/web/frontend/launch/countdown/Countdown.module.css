@@ -97,3 +97,13 @@
 @media (prefers-reduced-motion: reduce) {
   .wrap, .value, .date, .unit:not(:last-child)::after { animation: none; }
 }
+
+.value { color: #4a0000; }
+.date, .live { color: #9e0a0a; }
+.label { color: #6d625c; }
+@keyframes tick { from { transform: translateY(-8%); } to { transform: none; } }
+@keyframes spread { from { letter-spacing: .22em; } to { letter-spacing: .18em; } }
+@keyframes rise { from { transform: translateY(10px); } to { transform: none; } }
+
+/* Keep separators readable throughout the countdown. */
+.unit:not(:last-child)::after { color: #9e0a0a; animation: none; }

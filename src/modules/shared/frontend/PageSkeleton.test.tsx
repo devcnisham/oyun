@@ -10,9 +10,18 @@ describe('PageSkeleton', () => {
     expect(html).toContain('Loading…');
   });
 
-  test('the cards variant draws six cards and the rows variant six rows', () => {
-    const blocks = (html: string) => (html.match(/class="[^"]*block[^"]*"/g) ?? []).length;
-    expect(blocks(renderToStaticMarkup(<PageSkeleton variant="cards" />))).toBe(3 + 6);
-    expect(blocks(renderToStaticMarkup(<PageSkeleton variant="rows" />))).toBe(3 + 6);
+  test('card placeholders include an image, title and action rather than a featureless block', () => {
+    const html = renderToStaticMarkup(<PageSkeleton variant="cards" />);
+    expect((html.match(/data-skeleton-card/g) ?? []).length).toBe(8);
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).not.toContain('href=');
+  });
+
+  test('supports the home, venue, ticket and auth loading boundaries', () => {
+    for (const variant of ['home', 'venue', 'ticket', 'auth'] as const) {
+      const html = renderToStaticMarkup(<PageSkeleton variant={variant} />);
+      expect(html).toContain('aria-busy="true"');
+      expect(html).toContain('Loading…');
+    }
   });
 });

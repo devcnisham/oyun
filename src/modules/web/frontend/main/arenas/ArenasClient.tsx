@@ -4,22 +4,19 @@ import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import TurfCard from '@/modules/web/frontend/TurfCard';
+import PageSkeleton from '@/modules/shared/frontend/PageSkeleton';
 import type { TurfSummary } from '@/modules/shared/database/types';
 import styles from '@/app/(main)/arenas/page.module.css';
-import BackButton from '@/modules/web/frontend/BackButton';
 import { SPORTS, sportInfo } from '@/modules/web/lib/sports';
-import { PRICE_STEPS, filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/modules/web/backend/search';
+import { filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/modules/web/backend/search';
 import { locateTurfs } from '@/modules/web/backend/map-actions';
 import { getOpenHours } from '@/modules/web/backend/availability-actions';
-import { TIME_WINDOWS, hasOpenSlot, isTimeWindow, type TimeWindow } from '@/modules/web/lib/availability';
-import { BOOKING_DAYS, addDays, istNow } from '@/modules/shared/lib/time';
+import { hasOpenSlot, isTimeWindow, type TimeWindow } from '@/modules/web/lib/availability';
+import { istNow } from '@/modules/shared/lib/time';
 import type { Coords } from '@/modules/shared/backend/geocode';
 
 // Leaflet touches window, so the map loads in the browser only
-const TurfMap = dynamic(() => import('@/modules/web/frontend/TurfMap'), { ssr: false, loading: () => <div style={{ height: 420 }} /> });
-
-const formatDay = (d: string) =>
-  new Date(`${d}T12:00:00+05:30`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
+const TurfMap = dynamic(() => import('@/modules/web/frontend/TurfMap'), { ssr: false, loading: () => <PageSkeleton variant="content" /> });
 
 const sortOptions = [
   { value: 'featured', label: 'Featured First' },
@@ -85,7 +82,6 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
   // Open slots for the chosen day (today when only a time of day is chosen), fetched when the choice changes
   const today = useMemo(() => istNow().date, []);
-  const lastDay = addDays(today, BOOKING_DAYS - 1);
   const queryDate = date || (time ? today : '');
   const [openSlots, setOpenSlots] = useState<{ date: string; hours: Record<string, number[]> } | null>(null);
   useEffect(() => {
@@ -173,6 +169,8 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
     return result;
   }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time, placeType]);
 
+  const hasSearchPreferences = selectedArea !== 'All Areas' || maxPrice > 0 || amenities.length > 0 || Boolean(date || time);
+
   const mapTurfs = filtered.map((t) => (located[t.id] ? { ...t, ...located[t.id] } : t));
 
   return (
@@ -182,14 +180,12 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
         <div className="container">
           <div className={styles.headerInner}>
             <div>
-              <BackButton />
-              <p className={`section-label ${styles.cityLabel}`}>{selectedCity.toUpperCase()}</p>
-              <h1 className={styles.pageTitle}>{selectedSport === 'All Sports' ? 'Sports Arenas' : selectedSport + ' Arenas'}</h1>
-              <p className={styles.pageDesc}>
-                {filtered.length} venue{filtered.length !== 1 ? 's' : ''} available
-                {selectedArea !== 'All Areas' ? ` in ${selectedArea}` : ` across ${selectedCity}`}
-                {checking ? ' · checking open slots…' : ''}
-              </p>
+
+              <h1 className="sr-only">{selectedSport === 'All Sports' ? 'Sports Arenas' : selectedSport + ' Arenas'}</h1>
+              {(checking || hasSearchPreferences) && <div className={styles.pageDesc}>
+                {checking && <span role="status">Checking open slots…</span>}
+                {hasSearchPreferences && <button type="button" className={styles.clearFilters} onClick={() => { setSelectedArea('All Areas'); setMaxPrice(0); setAmenities([]); setDate(''); setTime(''); }}>Clear search preferences</button>}
+              </div>}
             </div>
           </div>
 
@@ -202,8 +198,8 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
               <input
                 id="arena-search"
                 type="search"
-                placeholder="Search turfs or areas"
-                aria-label="Search turfs or areas"
+                placeholder="Search turfs or sports"
+                aria-label="Search turfs or sports"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
@@ -245,21 +241,6 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
           {/* Row 2: area picker chip, then sports */}
           <div className={styles.chipRowWrap}>
             <div className={styles.chipRow}>
-              <label className={`${styles.chip} ${selectedArea !== 'All Areas' ? styles.chipOn : ''}`}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" />
-                </svg>
-                {selectedArea === 'All Areas' ? 'All areas' : selectedArea}
-                <span aria-hidden className={styles.caret}>▾</span>
-                <select className={styles.overlaySelect} value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)} aria-label="Area">
-                  {areas.map((area) => (
-                    <option key={area} value={area}>
-                      {area === 'All Areas' ? 'All areas' : `${area} (${turfs.filter((t) => t.area === area).length})`}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <span className={styles.chipDivider} aria-hidden />
               {['All Sports', ...SPORTS.map((s) => s.value)].map((sport) => (
                 <button
                   key={sport}
@@ -269,57 +250,6 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
                   aria-pressed={selectedSport === sport}
                 >
                   {sport === 'All Sports' ? 'All sports' : sport}
-                </button>
-              ))}
-              <span className={styles.chipDivider} aria-hidden />
-              <label className={`${styles.chip} ${maxPrice > 0 ? styles.chipOn : ''}`}>
-                {maxPrice > 0 ? `Up to ₹${maxPrice}/hr` : 'Any price'}
-                <span aria-hidden className={styles.caret}>▾</span>
-                <select className={styles.overlaySelect} value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} aria-label="Maximum price per hour">
-                  <option value={0}>Any price</option>
-                  {PRICE_STEPS.map((p) => (
-                    <option key={p} value={p}>{`Up to ₹${p}/hr`}</option>
-                  ))}
-                </select>
-              </label>
-              <span className={styles.chipDivider} aria-hidden />
-              <label className={`${styles.chip} ${date ? styles.chipOn : ''}`}>
-                <span aria-hidden>📅</span> {date ? formatDay(date) : 'Any date'}
-                <input
-                  type="date"
-                  className={styles.overlaySelect}
-                  min={today}
-                  max={lastDay}
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  onClick={(e) => {
-                    try {
-                      e.currentTarget.showPicker();
-                    } catch {}
-                  }}
-                  aria-label="Date"
-                />
-              </label>
-              {TIME_WINDOWS.map((w) => (
-                <button
-                  key={w.value}
-                  className={`${styles.chip} ${time === w.value ? styles.chipOn : ''}`}
-                  onClick={() => setTime((cur) => (cur === w.value ? '' : w.value))}
-                  aria-pressed={time === w.value}
-                  title={w.hint}
-                >
-                  {w.label}
-                </button>
-              ))}
-              <span className={styles.chipDivider} aria-hidden />
-              {amenityOptions.map((a) => (
-                <button
-                  key={a}
-                  className={`${styles.chip} ${amenities.includes(a) ? styles.chipOn : ''}`}
-                  onClick={() => setAmenities((cur) => (cur.includes(a) ? cur.filter((x) => x !== a) : [...cur, a]))}
-                  aria-pressed={amenities.includes(a)}
-                >
-                  {a}
                 </button>
               ))}
             </div>
@@ -350,7 +280,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
             <div className={styles.grid}>
               {filtered.map((turf, i) => (
                 // Above-the-fold cards paint at once: a fade-in starts at opacity 0 and would hold back the LCP image
-                <div key={turf.id} className={i < 4 ? undefined : 'animate-fadeInUp'} style={i < 4 ? undefined : { animationDelay: `${Math.min(i - 4, 6) * 0.06}s` }}>
+                <div key={turf.id}>
                   <TurfCard turf={turf} eager={i < 4} date={date || undefined} />
                 </div>
               ))}

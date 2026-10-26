@@ -83,7 +83,7 @@ export default async function GuideDetailPage({ params }: Props) {
       </nav>
 
       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-        <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--primary-700)', background: 'rgba(5, 150, 105, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+        <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--primary-700)', background: '#fff0ed', padding: '4px 10px', borderRadius: '6px' }}>
           {guide.category}
         </span>
         <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{guide.readTime}</span>
