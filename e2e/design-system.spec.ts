@@ -128,17 +128,12 @@ test('side menu opens, traps focus and closes with Escape', async ({ page, isMob
   }
 });
 
-test('home live slots show actual times and open the venue date', async ({ page }) => {
+test('home shows a real live-slot total without duplicate venue cards', async ({ page }) => {
   await page.goto('/');
-  const live = page.getByRole('region', { name: 'Live slots', exact: true });
-  await expect(live.getByRole('heading', { name: 'Live slots', exact: true })).toBeVisible();
-  const action = live.getByRole('link', { name: /^View .* live slots$/ }).first();
-  await expect(action).toBeVisible({ timeout: 20_000 });
-  const href = await action.getAttribute('href');
-  expect(href).toMatch(/^\/arenas\/[^?]+\?date=\d{4}-\d{2}-\d{2}$/);
-  await expect(live.locator('article').first()).toContainText('Next available');
-  await expect(live.locator('article').first()).toContainText(/₹/);
-  await action.click();
-  await expect(page).toHaveURL(new RegExp(href!.replaceAll('?', '\\?')));
-  await expect(page.getByRole('tab', { selected: true })).toBeVisible();
+  const live = page.getByRole('region', { name: 'Live slot availability', exact: true });
+  await expect(live.getByText(/\d+ open slots/)).toBeVisible({ timeout: 30_000 });
+  await expect(live.locator('article')).toHaveCount(0);
+  await expect(live.getByText('TODAY ON OYUN')).toBeVisible();
+  await page.getByRole('button', { name: 'Badminton', exact: true }).click();
+  await expect(live.getByText(/\d+ open slots/)).toBeVisible({ timeout: 30_000 });
 });
