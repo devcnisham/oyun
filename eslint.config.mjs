@@ -16,6 +16,20 @@ const eslintConfig = defineConfig([
     ".claude/**",
     ".data/**",
   ]),
+  // web, partner and admin must not import each other: shared code goes in src/modules/shared
+  ...["web", "partner", "admin"].map((mod) => ({
+    files: [`src/modules/${mod}/**/*.{ts,tsx}`],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["web", "partner", "admin"]
+            .filter((o) => o !== mod)
+            .map((o) => ({ group: [`@/modules/${o}/*`], message: `${mod} must not import ${o}. Move the shared code to src/modules/shared.` })),
+        },
+      ],
+    },
+  })),
 ]);
 
 export default eslintConfig;

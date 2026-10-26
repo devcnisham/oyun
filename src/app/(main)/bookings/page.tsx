@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import MyBookings from './MyBookings';
+import MyBookings from '@/modules/web/frontend/main/bookings/MyBookings';
 
 export const metadata: Metadata = { title: 'My bookings', robots: { index: false, follow: true } };
 

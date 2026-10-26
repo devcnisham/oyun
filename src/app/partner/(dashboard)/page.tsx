@@ -1,12 +1,12 @@
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import Link from 'next/link';
-import { Badge, inr, tableScroll } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { bookingRevenue } from '@/lib/reports';
-import { getDb } from '@/lib/store';
-import { addDays, formatDate, formatHour, formatSlotRange, istNow } from '@/lib/time';
-import { halfNote, turfHours } from '@/lib/pricing';
-import QuickSlotBlocker from './QuickSlotBlocker';
+import { Badge, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { bookingRevenue } from '@/modules/shared/lib/reports';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, formatDate, formatHour, formatSlotRange, istNow } from '@/modules/shared/lib/time';
+import { halfNote, turfHours } from '@/modules/shared/lib/pricing';
+import QuickSlotBlocker from '@/modules/partner/frontend/QuickSlotBlocker';
 import styles from './PartnerDashboard.module.css';
 
 export default async function PartnerDashboard() {

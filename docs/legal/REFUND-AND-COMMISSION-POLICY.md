@@ -1,6 +1,6 @@
 # Refund and commission policy (DRAFT; reflects how the product works today)
 
-Facts below come from the code (`src/lib/cancel-policy.ts`, `src/lib/pricing.ts`, `src/lib/payouts.ts`, `src/lib/seed.ts`) and the live Terms page. Anything in `[BRACKETS]` is a decision for the owner.
+Facts below come from the code (`src/modules/web/lib/cancel-policy.ts`, `src/modules/shared/lib/pricing.ts`, `src/modules/shared/lib/payouts.ts`, `src/modules/shared/database/seed.ts`) and the live Terms page. Anything in `[BRACKETS]` is a decision for the owner.
 
 ## Players: cancellations and refunds
 | Situation | What happens |

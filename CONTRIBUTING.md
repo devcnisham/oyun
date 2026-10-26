@@ -22,11 +22,11 @@ Read `AGENTS.md` and `docs/NEXT16-NOTES.md` first: this Next.js version differs 
 
 | What | How |
 | --- | --- |
-| Rules in `src/lib` | `npm test` (Vitest) |
+| Rules in `src/modules/*/lib` + `backend` | `npm test` (Vitest) |
 | Database functions, constraints, double-booking race | `npm run test:sql` (needs Postgres; CI runs it) |
 | Browse, hold, book, cancel, check-in, approve a turf | `npm run test:e2e` (Playwright; starts its own dev server) |
 
-If you add a server action, add it to the table in `src/lib/authorization.test.ts` with the permission it needs.
+If you add a server action, add it to the table in `src/test/cross-cutting/authorization.test.ts` with the permission it needs.
 
 ## Tracker
 

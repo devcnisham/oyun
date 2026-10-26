@@ -1,5 +1,5 @@
 /* ==========================================================================
-   OYUN Partner Command Center — Modern Linear/Stripe-Inspired Design
+   OYUN partner workspace
    ========================================================================== */
 
 .dashboard {
@@ -30,9 +30,9 @@
   gap: 20px;
   flex-wrap: wrap;
   padding: 24px 28px;
-  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
+  border-radius: 22px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 10px 24px -6px rgba(0, 0, 0, 0.02);
 }
 
@@ -128,19 +128,19 @@
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+  background: #d31027;
   color: #ffffff;
   border-radius: 999px;
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  border: 1px solid rgba(0, 0, 0, 0.8);
+  border: 1px solid #d31027;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .actionBtnPrimary:hover {
-  background: linear-gradient(135deg, #d31027 0%, #ef4444 100%);
+  background: #d31027;
   border-color: #b91c1c;
   color: #ffffff;
   transform: translateY(-1px);
@@ -172,13 +172,13 @@
 
 /* Coloured action buttons (modifiers on actionBtnPrimary / actionBtnSecondary) */
 .btnRed {
-  background: linear-gradient(135deg, #d31027 0%, #ef4444 100%);
+  background: #d31027;
   border-color: #b91c1c;
   box-shadow: 0 4px 12px rgba(211, 16, 39, 0.28);
 }
 
 .btnRed:hover {
-  background: linear-gradient(135deg, #b50e22 0%, #dc2626 100%);
+  background: #9e0a0a;
   box-shadow: 0 6px 16px rgba(211, 16, 39, 0.35);
 }
 
@@ -298,7 +298,7 @@
 .timelineSection {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
+  border-radius: 22px;
   padding: 20px 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
@@ -509,7 +509,7 @@
 .kpiCard {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
+  border-radius: 22px;
   padding: 20px 22px;
   display: flex;
   flex-direction: column;
@@ -613,7 +613,7 @@
 .card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
+  border-radius: 22px;
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
@@ -717,7 +717,7 @@
 
 .chartBarFill {
   width: 100%;
-  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(180deg, #b52b36, #750909);
   border-radius: 8px 8px 0 0;
   min-height: 4px;
   transition: height 0.4s ease;
@@ -878,8 +878,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-  color: #3730a3;
+  background: #fbecee;
+  color: #9e0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1085,4 +1085,32 @@
     margin: 0 -16px;
     padding: 0 16px;
   }
+}
+
+/* Workspace refinements, keeping state colours meaningful. */
+.commandHero { padding: 30px; border-color: #e9e3de; box-shadow: none; }
+.greetingTitle { font-size: clamp(26px, 3vw, 36px); letter-spacing: -.04em; color: #241d1b; }
+.heroSubtitle { margin-top: 4px; line-height: 1.6; }
+.card, .timelineSection, .kpiCard { border-color: #e9e3de; box-shadow: 0 4px 18px rgb(74 0 0 / 3%); }
+.kpiCard { padding: 24px; }
+.kpiValue { font-size: 34px; color: #241d1b; font-variant-numeric: tabular-nums; }
+.actionBtnPrimary, .actionBtnSecondary, .nextUpAction, .chipBtn, .slotQuickBtn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; }
+.unblockBtn { min-width: 44px; min-height: 44px; }
+.chartStatsSummary { background: #faf9f7; border-color: #e9e3de; border-radius: 14px; flex-wrap: wrap; }
+.sectionTitle, .cardTitle { color: #241d1b; font-size: 18px; }
+.modernTable th { background: #faf9f7; padding-block: 15px; font-size: 10px; letter-spacing: .09em; }
+.modernTable td { padding-block: 18px; }
+.pulseDot { animation: none; }
+@media (max-width: 768px) {
+ .commandHero { padding: 24px 20px; }
+ .kpiCard { padding: 18px 14px; }
+ .kpiValue { font-size: 26px; }
+ .modernTable { min-width: 580px; }
+ .nextUpLeft { flex-wrap: wrap; }
+ .scheduleRow { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .dashboard, .pulseDot { animation: none; }
+ .dashboard *, .dashboard *::before, .dashboard *::after { transition: none !important; }
+ .slotNode:hover, .kpiCard:hover, .nextUpAction:hover, .actionBtnPrimary:hover, .actionBtnSecondary:hover { transform: none; }
 }

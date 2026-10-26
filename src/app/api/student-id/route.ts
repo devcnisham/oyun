@@ -1,17 +1,17 @@
 import 'server-only';
 import { randomBytes } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { refreshAll } from '@/lib/action-utils';
-import { currentAccountId } from '@/lib/current-account';
-import { isApprovedStudent, platformOffersOf } from '@/lib/platform-offers';
-import { normalizePhone } from '@/lib/pricing';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
-import { STUDENT_ID_EXTENSIONS, applyStudentSubmission, studentIdFileError } from '@/lib/student-id';
-import { StudentIdStorageError, putStudentId, removeStudentIds } from '@/lib/student-id-storage';
-import { getDb, mutate } from '@/lib/store';
-import { createPlayer } from '@/lib/wallet';
-import { clientIpFrom } from '@/lib/client-ip';
-import { isSameOrigin } from '@/lib/same-origin';
+import { refreshAll } from '@/modules/shared/backend/action-utils';
+import { currentAccountId } from '@/modules/web/backend/current-account';
+import { isApprovedStudent, platformOffersOf } from '@/modules/shared/lib/platform-offers';
+import { normalizePhone } from '@/modules/shared/lib/pricing';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
+import { STUDENT_ID_EXTENSIONS, applyStudentSubmission, studentIdFileError } from '@/modules/shared/backend/student-id';
+import { StudentIdStorageError, putStudentId, removeStudentIds } from '@/modules/shared/backend/student-id-storage';
+import { getDb, mutate } from '@/modules/shared/database/store';
+import { createPlayer } from '@/modules/shared/lib/wallet';
+import { clientIpFrom } from '@/modules/shared/backend/client-ip';
+import { isSameOrigin } from '@/modules/shared/backend/same-origin';
 
 const fail = (error: string, status: number) => NextResponse.json({ error }, { status });
 

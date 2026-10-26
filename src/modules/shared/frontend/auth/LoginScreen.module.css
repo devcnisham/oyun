@@ -1,0 +1,248 @@
+.loginContainer {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #faf9f7;
+  font-family: inherit;
+}
+
+.leftPane {
+  flex: 1;
+  /* Own file: the old Unsplash photo now returns 404 */
+  background: url('/turfs/turf_1.jpg') center/cover no-repeat, linear-gradient(135deg, #180000, #d31027);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(150deg, rgb(74 0 0 / 75%), rgb(158 10 10 / 65%));
+  z-index: 1;
+}
+
+.leftContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+}
+
+.logo {
+  margin-bottom: 24px;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3));
+}
+
+.brandTitle {
+  font-family: var(--font-wordmark-family);
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.brandTag {
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.9;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rightPane {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  padding: 48px;
+  border-radius: 24px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.06);
+}
+
+.loginHeader {
+  margin-bottom: 32px;
+}
+
+.loginHeader h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.loginHeader p {
+  font-size: 15px;
+  color: #666;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.passwordLabelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgotLink {
+  font-size: 13px;
+  color: #d31027;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.2s;
+  background: #fafafa;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #6e6e73;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(238,46,36,0.1);
+}
+
+.loginBtn {
+  margin-top: 12px;
+  background: #d31027;
+  color: #fff;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  text-align: center;
+  text-decoration: none;
+}
+
+.loginBtn:hover {
+  background: #d31027;
+}
+
+.loginBtn:active {
+  transform: scale(0.98);
+}
+
+.partnerPrompt {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.partnerLink {
+  display: inline-block;
+  margin-top: 8px;
+  color: #111;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.partnerLink:hover {
+  text-decoration: underline;
+  color: #d31027;
+}
+
+@media (max-width: 900px) {
+  .leftPane {
+    display: none;
+  }
+  
+  .loginContainer {
+    background: #fff;
+  }
+  
+  .loginCard {
+    box-shadow: none;
+    padding: 24px 0;
+  }
+}
+
+.demoBtn {
+  margin-top: 8px;
+  background: #fff;
+  color: #111;
+  border: 1.5px solid #ddd;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.demoBtn:hover {
+  background: #fafafa;
+  border-color: #111;
+}
+
+.orLine { margin: 1rem 0; text-align: center; font-size: 13px; color: #626262; }
+
+.loginContainer { min-height: 100dvh; }
+.leftPane { flex: 0 0 42%; }
+.leftContent { padding: 40px; }
+.brandTitle { font-size: clamp(52px, 7vw, 92px); line-height: 1; }
+.brandTag { margin-top: 20px; font-size: 12px; font-weight: 700; letter-spacing: .16em; }
+.rightPane { padding: 56px 32px; }
+.loginCard { max-width: 480px; padding: 40px; border: 1px solid #e9e3de; box-shadow: 0 14px 50px rgb(74 0 0 / 4%); animation: arrive .35s ease both; }
+.loginHeader h2 { font-size: 30px; color: #241d1b; letter-spacing: -.04em; }
+.loginHeader p { line-height: 1.65; color: #7b706b; }
+.input { min-height: 50px; background: #faf9f7; border-color: #e4ddd7; }
+.loginBtn, .demoBtn { min-height: 50px; }
+.loginBtn:hover { background: #9e0a0a; }
+.partnerLink { display: inline-flex; align-items: center; min-height: 44px; color: #9e0a0a; }
+.loginContainer :is(a, button, input):focus-visible { outline: 3px solid #eaa6ad; outline-offset: 3px; }
+@keyframes arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 900px) {
+ .loginContainer { flex-direction: column; background: #faf9f7; }
+ .leftPane { display: flex; flex: initial; min-height: 180px; }
+ .leftContent { padding: 26px; }
+ .logo { margin-bottom: 12px; width: 32px; height: 32px; }
+ .brandTitle { font-size: 40px; }
+ .brandTag { margin-top: 10px; font-size: 10px; }
+ .rightPane { padding: 28px 20px; }
+ .loginCard { padding: 28px; box-shadow: none; }
+ .loginHeader h2 { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .loginCard { animation: none; } .loginContainer * { transition: none !important; } }

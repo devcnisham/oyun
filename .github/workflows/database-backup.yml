@@ -33,7 +33,7 @@ jobs:
 
           node -e '
             const fs = require("fs");
-            const seed = require("./src/lib/seed.ts");
+            const seed = require("./src/modules/shared/database/seed.ts");
             // Create a baseline schema and state snapshot
             const snapshot = {
               timestamp: new Date().toISOString(),

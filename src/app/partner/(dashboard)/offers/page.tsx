@@ -1,9 +1,9 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { createOffer, deleteOffer, toggleOffer } from '@/lib/partner-actions';
-import { getDb } from '@/lib/store';
-import { formatSlotRange } from '@/lib/time';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { createOffer, deleteOffer, toggleOffer } from '@/modules/partner/backend/partner-actions';
+import { getDb } from '@/modules/shared/database/store';
+import { formatSlotRange } from '@/modules/shared/lib/time';
 
 const hourText = (h: number) => (h === 24 ? 'Midnight' : formatSlotRange(h).split(' – ')[0]);
 

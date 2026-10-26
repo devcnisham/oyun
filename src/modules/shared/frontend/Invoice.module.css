@@ -1,0 +1,109 @@
+.invoice {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 12px 36px #4a000008;
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 2px solid #9e0a0a;
+  padding-bottom: 16px;
+}
+
+.title {
+  font-size: 28px;
+  letter-spacing: -.04em;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.brand {
+  font-family: var(--font-wordmark-family);
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--accent-text);
+}
+
+.parties {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin: 24px 0;
+  line-height: 1.6;
+}
+
+.partyLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.partyName {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.total td {
+  font-weight: 800;
+  color: var(--text-primary);
+  font-size: 16px;
+  border-bottom: 2px solid #9e0a0a;
+}
+
+.footer {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+@media print {
+  .invoice {
+    border: none;
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) { .invoice { padding: 22px 18px; border-radius: 20px; font-size: 13px; } .header { flex-wrap: wrap; } .parties { gap: 18px; grid-template-columns: 1fr; } .table th, .table td { padding: 12px 4px; } .title { font-size: 24px; } }
+@media print { .invoice { box-shadow: none; border-radius: 0; } }

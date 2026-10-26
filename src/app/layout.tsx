@@ -2,13 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
-import ConsentManager from "@/components/consent/ConsentManager";
-import AttributionCapture from "@/components/AttributionCapture";
-import NavTracker from "@/components/NavTracker";
-import BottomNav from "@/components/BottomNav";
-import AuthProvider from "@/components/AuthProvider";
-import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/modules/web/lib/site";
+import ConsentManager from "@/modules/web/frontend/consent/ConsentManager";
+import AttributionCapture from "@/modules/web/frontend/AttributionCapture";
+import NavTracker from "@/modules/web/frontend/NavTracker";
+import BottomNav from "@/modules/web/frontend/BottomNav";
+import AuthProvider from "@/modules/web/frontend/AuthProvider";
+import ServiceWorkerRegister from "@/modules/web/frontend/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 // Rounded face for the OYUN wordmark only (navbar and footer); one weight keeps it a few KB

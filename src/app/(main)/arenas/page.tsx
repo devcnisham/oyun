@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { ogBase } from '@/lib/seo';
+import { ogBase } from '@/modules/web/lib/seo';
 import { Suspense } from 'react';
-import { listAreas, listPublicTurfs } from '@/lib/queries';
-import EntryLoginPrompt from '@/components/EntryLoginPrompt';
-import JsonLd from '@/components/JsonLd';
-import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
-import ArenasClient from './ArenasClient';
+import { listAreas, listPublicTurfs } from '@/modules/web/database/queries';
+import EntryLoginPrompt from '@/modules/web/frontend/EntryLoginPrompt';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import { breadcrumbSchema, itemListSchema } from '@/modules/web/lib/schema';
+import ArenasClient from '@/modules/web/frontend/main/arenas/ArenasClient';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {

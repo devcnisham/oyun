@@ -1,11 +1,11 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { checkInBooking, markNoShow } from '@/lib/partner-actions';
-import { getDb } from '@/lib/store';
-import { addDays, formatDate, formatDateTime, formatSlotRange, isSlotInPast, istNow, parseHour } from '@/lib/time';
-import CheckInDesk from './CheckInDesk';
-import { halfNote } from '@/lib/pricing';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { checkInBooking, markNoShow } from '@/modules/partner/backend/partner-actions';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, formatDate, formatDateTime, formatSlotRange, isSlotInPast, istNow, parseHour } from '@/modules/shared/lib/time';
+import CheckInDesk from '@/modules/partner/frontend/check-in/CheckInDesk';
+import { halfNote } from '@/modules/shared/lib/pricing';
 
 export default async function CheckInPage({ searchParams }: { searchParams?: Promise<{ code?: string }> }) {
   const ctx = await requirePartner('checkin');

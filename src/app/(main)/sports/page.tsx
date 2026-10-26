@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { listPublicTurfs } from '@/lib/queries';
-import { SITE_CITY } from '@/lib/site';
-import { SPORTS, sportSlug } from '@/lib/sports';
+import { listPublicTurfs } from '@/modules/web/database/queries';
+import { SITE_CITY } from '@/modules/web/lib/site';
+import { SPORTS, sportSlug } from '@/modules/web/lib/sports';
 import styles from '../hub.module.css';
 
 export const metadata: Metadata = {

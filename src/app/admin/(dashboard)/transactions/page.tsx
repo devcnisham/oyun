@@ -1,14 +1,14 @@
 import Link from 'next/link';
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
-import { refundBooking } from '@/lib/admin-actions';
-import { bookingRevenue } from '@/lib/reports';
-import { getDb } from '@/lib/store';
-import { formatDate } from '@/lib/time';
-import type { BookingStatus } from '@/lib/types';
-import { halfNote } from '@/lib/pricing';
-import { paginate } from '@/lib/paginate';
-import Pager from '@/components/dash/Pager';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, Stat, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { refundBooking } from '@/modules/admin/backend/admin-actions';
+import { bookingRevenue } from '@/modules/shared/lib/reports';
+import { getDb } from '@/modules/shared/database/store';
+import { formatDate } from '@/modules/shared/lib/time';
+import type { BookingStatus } from '@/modules/shared/database/types';
+import { halfNote } from '@/modules/shared/lib/pricing';
+import { paginate } from '@/modules/shared/lib/paginate';
+import Pager from '@/modules/shared/frontend/dash/Pager';
 
 const STATUSES: BookingStatus[] = ['confirmed', 'checked_in', 'no_show', 'cancelled', 'refunded'];
 

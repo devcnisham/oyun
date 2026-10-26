@@ -1,11 +1,11 @@
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import Invoice from '@/components/Invoice';
-import PrintButton from '@/components/PrintButton';
-import { dash } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { getDb } from '@/lib/store';
+import Invoice from '@/modules/shared/frontend/Invoice';
+import PrintButton from '@/modules/shared/frontend/PrintButton';
+import { dash } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { getDb } from '@/modules/shared/database/store';
 
 export default async function PartnerInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const ctx = await requirePartner('bookings');

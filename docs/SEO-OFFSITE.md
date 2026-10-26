@@ -29,5 +29,5 @@ Code cannot do these. Tick each once done and update the build tracker (SEO11, S
 - [ ] Every month ask ChatGPT, Perplexity and Google AI: "best turf booking in Mangalore", "box cricket Mangalore", "pickleball courts in Mangalore". Record whether OYUN is named; fix the page that should answer.
 
 ## Kannada and Hindi pages
-- [ ] Have a native Kannada speaker and a native Hindi speaker read `src/lib/localized-home.ts` and fix the wording.
+- [ ] Have a native Kannada speaker and a native Hindi speaker read `src/modules/web/lib/localized-home.ts` and fix the wording.
 - [ ] Then set `LOCALIZED_PAGES_INDEXED=true` in the hosting env and rebuild. That turns on indexing for `/kn` and `/hi`, adds them to the sitemap and adds hreflang links on the English home page. Until then the pages are `noindex`.

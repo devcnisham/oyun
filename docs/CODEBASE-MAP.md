@@ -16,9 +16,9 @@ flowchart LR
   subgraph Vercel["Vercel (one Next.js 16 app)"]
     PX[proxy.ts<br/>HTTPS, cookie guard, Clerk]
     PG[Pages and layouts<br/>src/app]
-    SA[Server actions<br/>src/lib/*-actions.ts]
-    ST[Store<br/>src/lib/store.ts]
-    RT[Realtime broadcast<br/>src/lib/realtime.ts]
+    SA[Server actions<br/>src/modules/*/backend/*-actions.ts]
+    ST[Store<br/>src/modules/shared/database/store.ts]
+    RT[Realtime broadcast<br/>src/modules/shared/backend/realtime.ts]
   end
   subgraph Supabase
     DB[(Postgres<br/>jsonb document tables)]
@@ -118,7 +118,7 @@ flowchart LR
   AM --> a1[Approve turfs, partners, refunds, bans, wallet adjust, promo, site content]
 ```
 
-Rule in code: every admin action calls `requireAdmin()` and every partner action calls `requirePartnerAction(permission)` before touching data. `src/lib/authorization.test.ts` fails if an action lacks its guard. Permission sets (`PERMISSIONS` in `src/lib/partner-auth.ts`): front desk = bookings, checkin, slots; manager adds pricing, offers, addons, turf; owner adds staff and payouts.
+Rule in code: every admin action calls `requireAdmin()` and every partner action calls `requirePartnerAction(permission)` before touching data. `src/test/cross-cutting/authorization.test.ts` fails if an action lacks its guard. Permission sets (`PERMISSIONS` in `src/modules/shared/backend/partner-auth.ts`): front desk = bookings, checkin, slots; manager adds pricing, offers, addons, turf; owner adds staff and payouts.
 
 ## 4. How a booking works (end to end)
 
@@ -185,7 +185,7 @@ flowchart TD
 
 ## 6. Data model
 
-All data lives in 14 jsonb document tables (`id`, `seq`, `data`, `updated_at`) in `supabase/setup/1-tables.sql`, plus `app_meta` for the revision counter. TypeScript shapes are in `src/lib/types.ts`.
+All data lives in 14 jsonb document tables (`id`, `seq`, `data`, `updated_at`) in `supabase/setup/1-tables.sql`, plus `app_meta` for the revision counter. TypeScript shapes are in `src/modules/shared/database/types.ts`.
 
 ```mermaid
 erDiagram
@@ -236,12 +236,12 @@ flowchart TD
 | --- | --- |
 | `src/app/(main)` | Public and player pages |
 | `src/app/partner`, `src/app/admin` | Dashboards; each has a `/login` and a `(dashboard)` group guarded in its layout |
-| `src/lib/*-actions.ts` | Server actions: the only write path |
-| `src/lib/store.ts` | `getDb()` read, `mutate(fn)` write, revision lock, delta sync |
-| `src/lib/pricing.ts` | One function prices both the quote and the charge |
-| `src/lib/session.ts`, `partner-auth.ts` | Signed cookie sessions, roles, permissions |
-| `src/lib/public-turf.ts` | Narrow shape sent to the browser (no owner link or commission) |
-| `src/lib/launch-checks.ts` | The checks behind `/api/health` and the admin banner |
+| `src/modules/*/backend/*-actions.ts` | Server actions: the only write path |
+| `src/modules/shared/database/store.ts` | `getDb()` read, `mutate(fn)` write, revision lock, delta sync |
+| `src/modules/shared/lib/pricing.ts` | One function prices both the quote and the charge |
+| `src/modules/shared/backend/session.ts`, `partner-auth.ts` | Signed cookie sessions, roles, permissions |
+| `src/modules/web/database/public-turf.ts` | Narrow shape sent to the browser (no owner link or commission) |
+| `src/modules/shared/backend/launch-checks.ts` | The checks behind `/api/health` and the admin banner |
 
 ## 8. Pricing and the checkout total
 
@@ -345,16 +345,16 @@ mindmap
       Error webhook
 ```
 
-Not built yet (see `FEATURE_LIST.md` and the tracker): real payments (Razorpay), automated WhatsApp or SMS, map and filters, waitlist and recurring bookings, find players, Kannada.
+Not built yet (see `docs/FEATURE-LIST.md` and the tracker): real payments (Razorpay), automated WhatsApp or SMS, map and filters, waitlist and recurring bookings, find players, Kannada.
 
 ## 13. Where to start reading
 
 1. `src/app/(main)/arenas/[id]/page.tsx` and its client components: the turf page and checkout.
-2. `src/lib/booking-actions.ts`: hold, quote, create, cancel (the server-side booking planner lives in `booking-plan.ts`; request/quote types, `MAX_SLOTS` and request cleaning in client-safe `booking-types.ts`).
-3. `src/lib/store.ts` and `supabase/setup/3-apply-changes.sql`: how writes stay safe.
-4. `src/lib/pricing.ts`: slot grid and prices.
-5. `src/proxy.ts`, `src/lib/session.ts`, `src/lib/partner-auth.ts`: who may do what.
-6. `e2e/` and `src/lib/*.test.ts`: the behaviour the project promises.
+2. `src/modules/web/backend/booking-actions.ts`: hold, quote, create, cancel (the server-side booking planner lives in `booking-plan.ts`; request/quote types, `MAX_SLOTS` and request cleaning in client-safe `booking-types.ts`).
+3. `src/modules/shared/database/store.ts` and `supabase/setup/3-apply-changes.sql`: how writes stay safe.
+4. `src/modules/shared/lib/pricing.ts`: slot grid and prices.
+5. `src/proxy.ts`, `src/modules/shared/backend/session.ts`, `src/modules/shared/backend/partner-auth.ts`: who may do what.
+6. `e2e/` and `src/modules/**/*.test.ts`: the behaviour the project promises.
 
 ## 14. Roadmap
 

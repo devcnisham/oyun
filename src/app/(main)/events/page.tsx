@@ -1,6 +1,7 @@
+import CommunityCards from '@/modules/web/frontend/main/_booking/CommunityCards';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SITE_CITY } from '@/lib/site';
+import { SITE_CITY } from '@/modules/web/lib/site';
 import styles from '../hub.module.css';
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function EventsPage() {
       <nav className={styles.crumbs} aria-label="Breadcrumb"><Link href="/">Home</Link> / <span>Events</span></nav>
       <h1 className={styles.title}>Events</h1>
       <p className={styles.lead}>Play beyond a single booking: enter a tournament with your team, or join a game that is short of players.</p>
+      <CommunityCards />
       <div className={styles.cards}>
         <Link href="/tournaments" className={styles.card}>
           <span className={styles.cardTitle}>Tournaments</span>

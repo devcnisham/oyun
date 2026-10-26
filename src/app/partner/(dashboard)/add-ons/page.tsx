@@ -1,8 +1,8 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { deleteAddOn, saveAddOn, toggleAddOn } from '@/lib/partner-actions';
-import { getDb } from '@/lib/store';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { deleteAddOn, saveAddOn, toggleAddOn } from '@/modules/partner/backend/partner-actions';
+import { getDb } from '@/modules/shared/database/store';
 
 export default async function AddOnsPage() {
   const ctx = await requirePartner('addons');

@@ -11,7 +11,7 @@ You are the lead engineer finishing **OYUN**, a multi-sport turf and court booki
 1. `AGENTS.md`. This Next.js version has breaking changes, so read the relevant guide in `node_modules/next/dist/docs/` before writing Next.js code.
 2. `README.md`, `docs/GO-LIVE.md`, `docs/LAUNCH-SEO.md`, `FEATURE_LIST.md`.
 3. `docs/SLOT-BOOKING-DB.md`, `supabase/proposals/slot_booking_v2.sql` and `supabase/proposals/slot_booking_v2_test.sql`. This is the target database design: resources, bookables, slot_claims with an exclusion constraint, holds, payments. It is tested: 30 scenarios and a concurrency race on Postgres 17.
-4. `src/lib/store.ts`, `src/lib/booking-actions.ts`, `src/lib/pricing.ts`, `src/lib/types.ts` (current behaviour).
+4. `src/modules/shared/database/store.ts`, `src/modules/web/backend/booking-actions.ts`, `src/modules/shared/lib/pricing.ts`, `src/modules/shared/database/types.ts` (current behaviour).
 5. `git log --oneline -20` and open PRs, to see what has already landed.
 
 ## How to work
@@ -66,9 +66,9 @@ You are the lead engineer finishing **OYUN**, a multi-sport turf and court booki
 ### Phase 1: Engineering foundations
 - [ ] **R017 CI.** A GitHub Actions workflow on every PR that runs `npm ci`, lint, type-check and build, plus the SQL tests against a Postgres service container. Pin actions by SHA and give it least permissions.
 - [ ] **Test setup.**
-  - Vitest for `src/lib` (pricing, cancel policy, wallet, validation).
+  - Vitest for `src/modules/*/lib` + `backend` (pricing, cancel policy, wallet, validation).
   - Playwright for the critical flows: browse → hold → book → cancel, partner check-in, admin approve turf.
-- [ ] **R011 Persistent rate limits.** Move `src/lib/rate-limit.ts` from in-memory counters to Postgres, behind the same function signature.
+- [ ] **R011 Persistent rate limits.** Move `src/modules/shared/backend/rate-limit.ts` from in-memory counters to Postgres, behind the same function signature.
 - [ ] **R018 Update `FEATURE_LIST.md`** to match reality.
 
 ### Phase 2: Slot booking database v2
@@ -110,7 +110,7 @@ Follow `docs/SLOT-BOOKING-DB.md` → "Moving the app over".
 - [ ] **Daily reconciliation job:** payments vs bookings vs payouts. Alert me on any mismatch.
 
 ### Phase 4: Security hardening (full pass)
-- [ ] **Authorization audit** of every server action in `src/lib/*-actions.ts` and every route in `src/app/api`. Write a table of action → who may call it → test. Fix every gap.
+- [ ] **Authorization audit** of every server action in `src/modules/*/backend/*-actions.ts` and every route in `src/app/api`. Write a table of action → who may call it → test. Fix every gap.
 - [ ] **Partner tenant isolation.** A partner or staff member can only read and write their own venues, bookings, payouts and staff. Front-desk staff cannot change prices or payouts.
 - [ ] **Sessions.**
   - Admin and partner sessions are HttpOnly, Secure and SameSite, rotated on login, with idle and absolute expiry.

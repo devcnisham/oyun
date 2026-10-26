@@ -1,0 +1,569 @@
+.transparentWrapper {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.stickyWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* The bar stays in place while scrolling */
+.transparentWrapper, .stickyWrapper {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .transparentWrapper, .stickyWrapper { transition: none; }
+}
+
+.navbar {
+  background: var(--primary-gradient);
+  border-bottom: none;
+  box-shadow: 0 8px 30px rgba(24, 0, 0, 0.6);
+  position: relative;
+  z-index: 1000;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.navbarTransparent {
+  background: var(--primary-gradient) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: none !important;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+/* Logo */
+.logo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoName {
+  font-family: var(--font-wordmark-family);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+/* Nav Links */
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navItem {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navIcon {
+  font-size: 20px;
+  color: #fff;
+}
+
+.navText {
+  display: flex;
+  flex-direction: column;
+}
+
+.navTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.navSub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Left side: logo */
+.left { display: flex; align-items: center; gap: 10px; }
+
+/* Right side: list-your-turf (desktop), account, bookings */
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.account, .bookings {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.accountName { font-size: 15px; font-weight: 700; white-space: nowrap; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+.bookings { position: relative; padding: 2px; }
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--accent-text);
+  font-size: 12px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.account:active, .bookings:active { opacity: 0.7; }
+/* Phones reach the account and bookings from the bottom tab bar */
+@media (max-width: 768px) {
+  .account, .bookings { display: none; }
+}
+
+/* Logo text with a short tagline under it */
+.logoText { display: flex; flex-direction: column; line-height: 1.05; }
+.tagline {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 3px;
+}
+
+/* City chip (phones only) */
+.cityChip { display: none; }
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3ddc84;
+  box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6);
+  animation: livePulse 2s ease-out infinite;
+}
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6); }
+  70%, 100% { box-shadow: 0 0 0 7px rgba(61, 220, 132, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .liveDot { animation: none; } }
+
+
+/* Secondary Nav */
+.cityNav {
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s, border 0.3s;
+}
+
+.cityNavTransparent {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.cityNavTransparent .cityLink {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.cityNavTransparent .cityLink:hover {
+  color: #fff !important;
+}
+
+.cityInner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 12px 24px;
+}
+
+.cityInner::-webkit-scrollbar {
+  display: none;
+}
+
+.cityLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.cityLink:hover {
+  color: var(--text-primary);
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.bar {
+  width: 24px;
+  height: 2px;
+  background: var(--bg-card);
+  transition: 0.3s;
+}
+
+@media (max-width: 768px) {
+  .desktopOnlyNav {
+    display: none !important;
+  }
+  .hamburger { display: none !important; }
+  /* App bar: always solid and sticky on phones, under the notch */
+  .transparentWrapper { position: sticky; }
+  .navbar { padding-top: env(safe-area-inset-top); box-shadow: 0 2px 12px rgba(24, 0, 0, 0.25); }
+  .navbarTransparent {
+    background: var(--primary-gradient) !important;
+    border-bottom: none !important;
+    box-shadow: 0 2px 12px rgba(24, 0, 0, 0.25) !important;
+  }
+  .inner {
+    height: 60px;
+    justify-content: space-between;
+  }
+  .left { padding-left: 12px; }
+  /* Faint pitch markings behind the bar */
+  .navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.09;
+    background:
+      radial-gradient(circle at 50% 100%, transparent 26px, #fff 27px, #fff 28.5px, transparent 29.5px),
+      linear-gradient(#fff, #fff) 50% 0 / 1.5px 100% no-repeat,
+      radial-gradient(circle at 100% 50%, transparent 38px, #fff 39px, #fff 40.5px, transparent 41.5px);
+  }
+  .inner { position: relative; }
+  .cityChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px 7px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    backdrop-filter: blur(6px);
+  }
+  .cityChip:active { transform: scale(0.96); }
+  .desktopOnly { display: none !important; }
+  .right { gap: 14px; }
+  .accountName { font-size: 14px; max-width: 110px; }
+  .logoName { font-size: 18px; }
+  .navLinks {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    display: none;
+    z-index: 999;
+  }
+  .navOpen { display: flex; }
+  .cityNav { display: none; }
+}
+
+/* Narrow phones (iPhone SE and similar): keep the logo and city chip on one row */
+@media (max-width: 380px) {
+  .left { gap: 4px; }
+  .logo { gap: 6px; }
+  .logo svg { width: 32px; height: 32px; }
+  .logoName { font-size: 16px; }
+  .right { gap: 10px; }
+  .accountName { font-size: 13px; max-width: 72px; }
+  .account svg { width: 22px; height: 22px; }
+}
+
+/* Compact search shown in the desktop header after the hero search scrolls away */
+.navSearch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 420px;
+  height: 42px;
+  padding: 0 5px 0 14px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  color: var(--text-muted);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+.navSearch { position: relative; }
+.navSuggest {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 8px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  z-index: 10;
+}
+.navSearch input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+.navSearch button {
+  height: 32px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-700, #b3161f);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .navSearch { display: none; }
+}
+
+/* Desktop home, scrolled past the hero: the header is just the search bar */
+@media (min-width: 769px) {
+  .searchOnly { justify-content: center; position: relative; }
+  /* Profile stays pinned right; the other right-hand items drop away */
+  .searchOnly .right { position: absolute; right: 32px; top: 50%; transform: translateY(-50%); }
+  .searchOnly .right > :not(.account) { display: none; }
+  /* Only the OYUN wordmark stays, pinned left */
+  .searchOnly .left { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); }
+  .searchOnly .logo svg,
+  .searchOnly .tagline { display: none; }
+  .searchOnly .navSearch { flex: 0 1 700px; max-width: calc(100% - 400px); min-width: 0; }
+}
+
+.navBack { display: none; }
+@media (min-width: 769px) {
+  .searchOnly .navBack {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    margin-right: 12px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* Desktop: once the page is scrolled the top bar detaches and floats as a rounded card.
+   The negative bottom margin cancels the added padding so the page below does not jump. */
+@media (min-width: 769px) {
+  .transparentWrapper,
+  .stickyWrapper {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  }
+
+  .floating {
+    padding: 10px 24px 0;
+    margin-bottom: -10px;
+  }
+
+  /* floating card is off-white with dark text instead of the red gradient */
+  .floating .navbar {
+    /* slightly see-through, with the page softly blurred behind it */
+    background: rgba(250, 247, 242, 0.82);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-radius: 22px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 14px 36px rgba(24, 24, 24, 0.16), 0 2px 6px rgba(24, 24, 24, 0.08);
+  }
+
+  .floating .navTitle,
+  .floating .navIcon,
+  .floating .account,
+  .floating .bookings {
+    color: var(--text-primary);
+  }
+
+  /* the OYUN wordmark takes the logo colour (tokens in globals.css) once the bar floats on off-white */
+  .floating .logoName {
+    background: var(--logo-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* the logo's red drop shadow looks muddy on off-white; the inline style needs !important to override */
+  .floating .logo svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12)) !important;
+  }
+
+  .floating .tagline,
+  .floating .navSub {
+    color: rgba(31, 31, 31, 0.6);
+  }
+
+  .floating .navSearch {
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
+
+  .floating .badge {
+    background: var(--primary-700, #b3161f);
+    color: #fff;
+  }
+
+  .navbar {
+    transition: background 0.3s, box-shadow 0.3s, border-radius 0.25s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transparentWrapper, .stickyWrapper { transition: none; }
+}
+
+/* The compact search slides up into the bar from where the hero search was, as it scrolls out of view */
+@keyframes navSearchIn {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 769px) {
+  .navSearch {
+    animation: navSearchIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: 50% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navSearch { animation: none; }
+}
+
+/* Same search as the hero: place and Search in the bar, with the map button beside it */
+.navMap {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .navMap {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 42px;
+    height: 42px;
+    margin-left: 12px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .navMap:hover {
+    background: var(--bg-muted);
+  }
+
+  /* on the floating off-white bar the map button gets a hairline instead of a shadow */
+  .floating .navMap {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
+}
+
+/* Phones: once the page is scrolled the top bar detaches and floats as a rounded, slightly see-through off-white card,
+   with the wordmark in the logo colour. The negative margin cancels the padding so the page below does not jump. */
+@media (max-width: 768px) {
+  .transparentWrapper,
+  .stickyWrapper {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  }
+
+  .floating {
+    padding: calc(8px + env(safe-area-inset-top)) 12px 0;
+    margin-bottom: -8px;
+  }
+
+  .floating .navbar {
+    padding-top: 0;
+    background: rgba(250, 247, 242, 0.84);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 10px 28px rgba(24, 24, 24, 0.18), 0 2px 6px rgba(24, 24, 24, 0.08);
+  }
+
+  .floating .navbar::before {
+    display: none;
+  }
+
+  .floating .logoName {
+    background: var(--logo-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .floating .logo svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12)) !important;
+  }
+
+  .floating .cityChip {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+  }
+}

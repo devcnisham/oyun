@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SignIn } from '@clerk/nextjs';
-import { clerkEnabled } from '@/lib/clerk';
-import AuthShell from '../../_shell/AuthShell';
-import PlayerForm from '../../_shell/PlayerForm';
-import { clerkAppearance } from '../../_shell/appearance';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
+import AuthShell from '@/modules/web/frontend/auth/_shell/AuthShell';
+import PlayerForm from '@/modules/web/frontend/auth/_shell/PlayerForm';
+import { clerkAppearance } from '@/modules/shared/frontend/auth/appearance';
 import styles from '../../auth.module.css';
 
 export const metadata: Metadata = {

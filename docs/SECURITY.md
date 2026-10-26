@@ -20,9 +20,9 @@ Say what you found, where, and how to reproduce it, without exploiting it on rea
 
 ## Controls in place
 
-- Every admin and partner server action checks the caller before it touches data, and partner actions ask for the exact permission; `src/lib/authorization.test.ts` fails if one does not.
+- Every admin and partner server action checks the caller before it touches data, and partner actions ask for the exact permission; `src/test/cross-cutting/authorization.test.ts` fails if one does not.
 - Roles: owner, manager and front desk have different permission sets; front desk cannot change prices, offers, add-ons, the turf profile, staff or payouts.
-- Tenant isolation: a test calls every partner action as one owner with another owner's booking, block, offer, add-on and staff ids and checks that nothing changes (`src/lib/tenant-isolation.test.ts`).
+- Tenant isolation: a test calls every partner action as one owner with another owner's booking, block, offer, add-on and staff ids and checks that nothing changes (`src/test/cross-cutting/tenant-isolation.test.ts`).
 - Public pages receive a narrow turf shape (no owner account link or commission); a test blocks client components from importing full internal types. The phone number is masked on public ticket and invoice pages.
 - One function prices both the quote and the charge. Wallet spending and promo limits are enforced on the server.
 - No double booking: a revision lock plus unique indexes in Postgres, with a parallel race test in CI.

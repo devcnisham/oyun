@@ -1,0 +1,76 @@
+/* Venue: a photo-led introduction followed by the live reservation desk. */
+.page { background: #faf9f7; color: #261c19; min-height: 100vh; padding: 24px 28px 100px; }
+.page :is(a, button):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
+.imageHeader { position: relative; max-width: 1384px; margin: 0 auto; height: clamp(260px, 38vw, 480px); border-radius: 28px; overflow: hidden; background: #4a0000; }
+.mainImage { object-fit: cover; }
+.imageHeader::after { content: ''; position: absolute; inset: 0; background: linear-gradient(#0005, transparent 45%, #0005); pointer-events: none; }
+.topNav { position: absolute; z-index: 2; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 22px; gap: 12px; }
+.topNavRight { display: flex; gap: 9px; }
+.iconBtn, .carouselBtn { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; border: 1px solid #ffffff65; background: #ffffffed; color: #4a0000; font-size: 23px; cursor: pointer; text-decoration: none; transition: background .2s; }
+.iconBtn:hover, .carouselBtn:hover { background: #fff; }
+.midBadge { background: #fff; color: #4a0000; border-radius: 99px; padding: 9px 15px; font-size: 12px; font-weight: 750; margin-right: auto; }
+.carouselBtn { position: absolute; z-index: 2; top: 50%; transform: translateY(-50%); }
+.carouselPrev { left: 22px; } .carouselNext { right: 22px; }
+.imageCounter { position: absolute; z-index: 2; right: 22px; bottom: 22px; border-radius: 99px; padding: 8px 13px; font-size: 12px; background: #230c08bf; color: white; }
+.content.layout { max-width: 1240px; margin: 28px auto 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; }
+.info { min-width: 0; padding: 8px 0 28px; border-bottom: 1px solid #e6dfda; }
+.titleRow { display: flex; gap: 18px; align-items: flex-start; }
+.titleMain { flex: 1; min-width: 0; }
+.title { font-size: clamp(30px, 4vw, 50px); letter-spacing: -.055em; font-weight: 850; line-height: 1.12; color: #301814; overflow-wrap: anywhere; }
+.title .ratingBadge { display: inline-block; vertical-align: middle; margin-left: 8px; }
+.ratingBadge { background: #fff0db; color: #82500b; font-size: 13px; padding: 7px 11px; border-radius: 99px; font-weight: 750; letter-spacing: 0; }
+.addressBlock { font-size: 16px; color: #70635e; margin-top: 12px; }
+.hoursText { font-size: 13px; color: #70635e; margin-top: 6px; }
+.mapLink { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #e6dfda; border-radius: 50%; background: #fff; color: #9e0a0a; }
+.facts { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; padding: 0; margin: 20px 0 0; }
+.facts li { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 650; border-radius: 99px; padding: 8px 12px; background: #fff; border: 1px solid #e6dfda; }
+.ratingText { color: #70635e; text-underline-offset: 3px; }
+.offerStrip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.offerChip { font-size: 13px; line-height: 1.6; padding: 10px 14px; background: #edf5ee; border: 1px solid #d6e5d8; color: #31533b; border-radius: 14px; }
+.bookingPanel { min-width: 0; }
+.panelTitle { font-size: 28px; font-weight: 800; letter-spacing: -.035em; margin: 0 0 20px; }
+.notice { background: #fff0db; color: #82500b; padding: 20px; border-radius: 20px; line-height: 1.6; }
+.more { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; min-width: 0; }
+.mapSection, .detailsSection, .amenitiesSection, .reviewsSection { min-width: 0; border: 1px solid #e6dfda; border-radius: 24px; background: white; padding: 28px; }
+.detailsSection { grid-column: 1 / -1; grid-row: 1; }
+.reviewsSection { grid-column: 1 / -1; }
+.more h2 { font-size: 23px; font-weight: 800; letter-spacing: -.035em; margin-bottom: 18px; }
+.divider { display: none; }
+.description { font-size: 15px; line-height: 1.75; color: #70635e; margin-bottom: 24px; white-space: pre-line; }
+.infoGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; border-top: 1px solid #eee9e5; padding-top: 20px; }
+.infoItem { display: grid; align-content: start; gap: 8px; min-width: 0; }
+.infoLabel { color: #786c66; text-transform: uppercase; font-size: 10px; letter-spacing: .09em; font-weight: 700; }
+.infoValue { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.infoValue a { color: #9e0a0a; text-underline-offset: 3px; }
+.amenitiesGrid { display: flex; flex-wrap: wrap; gap: 10px; }
+.amenityTag { padding: 10px 14px; border-radius: 99px; font-size: 13px; background: #f5f3ef; color: #51453f; }
+.mapContainer { height: 250px; border-radius: 16px; overflow: hidden; background: #f5f3ef; }
+.reviewEmpty { color: #70635e; font-size: 15px; line-height: 1.7; }
+.reviewSummary { display: flex; align-items: center; gap: 18px; margin: 0 0 24px; }
+.reviewSummary > b { font-size: 48px; letter-spacing: -.05em; color: #4a0000; }
+.reviewSummary > div { display: grid; gap: 6px; }
+.reviewSummary span { font-size: 13px; color: #70635e; }
+.reviewList { list-style: none; padding: 0; display: grid; gap: 14px; }
+.reviewList li { border-top: 1px solid #eee9e5; padding: 18px 0 0; }
+.reviewHead { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.reviewHead b { font-size: 14px; } .reviewHead time { margin-left: auto; font-size: 12px; color: #786c66; }
+.reviewList p { font-size: 14px; line-height: 1.7; color: #70635e; margin-top: 8px; }
+.bottomSpacer { display: none; }
+.info, .more { animation: enter .45s ease-out; }
+@keyframes enter { from { transform: translateY(10px); opacity: .5; } to { transform: none; opacity: 1; } }
+@media (max-width: 767px) {
+ .page { padding: 12px 16px 110px; }
+ .imageHeader { border-radius: 22px; height: 300px; }
+ .topNav { padding: 14px; gap: 8px; } .topNavRight { gap: 6px; }
+ .midBadge { font-size: 10px; padding: 8px 10px; }
+ .iconBtn { width: 44px; height: 44px; }
+ .carouselPrev { left: 14px; } .carouselNext { right: 14px; }
+ .content.layout { margin-top: 24px; gap: 24px; }
+ .info { padding-bottom: 24px; }
+ .more { grid-template-columns: 1fr; gap: 16px; }
+ .mapSection, .detailsSection, .amenitiesSection, .reviewsSection { grid-column: auto; padding: 22px; }
+ .infoGrid { grid-template-columns: 1fr 1fr; gap: 20px; }
+ .infoItem:last-child { grid-column: 1 / -1; }
+ .reviewHead time { width: 100%; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .info, .more { animation: none; } .page * { transition: none; } }

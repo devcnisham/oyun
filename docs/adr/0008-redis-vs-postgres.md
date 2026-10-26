@@ -6,9 +6,9 @@ Status: Accepted (brief B-2.3, task P10-17)
 The system brief (Section 0 and Tier 2) suggests Redis for 10-minute slot holds, availability caching, and distributed rate limiting.
 
 In the current architecture:
-1. Rate limits are stored in Postgres table `public.rate_limit_buckets` with transactional atomic increments and sliding windows (`src/lib/shared-rate-limit.ts`).
+1. Rate limits are stored in Postgres table `public.rate_limit_buckets` with transactional atomic increments and sliding windows (`src/modules/shared/backend/shared-rate-limit.ts`).
 2. Slot holds are validated with transactional locks and Postgres exclusion constraints (`supabase/proposals/slot_booking_v2.sql`).
-3. Availability invalidation uses Supabase Realtime broadcast channels (`src/lib/client/use-slot-updates.ts`) so connected browsers invalidate immediately upon hold or booking without polling.
+3. Availability invalidation uses Supabase Realtime broadcast channels (`src/modules/web/frontend/hooks/use-slot-updates.ts`) so connected browsers invalidate immediately upon hold or booking without polling.
 4. Target market profile: Mangalore sports turfs (~50 venues, peak traffic of ~200-500 concurrent users during evening rush hours).
 
 ## Decision

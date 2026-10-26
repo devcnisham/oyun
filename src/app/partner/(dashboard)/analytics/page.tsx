@@ -1,9 +1,9 @@
-import { PageHeader, Stat, dash, inr, tableScroll } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { turfHours } from '@/lib/pricing';
-import { bookingRevenue } from '@/lib/reports';
-import { getDb } from '@/lib/store';
-import { addDays, formatDate, formatHour, istNow } from '@/lib/time';
+import { PageHeader, Stat, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { turfHours } from '@/modules/shared/lib/pricing';
+import { bookingRevenue } from '@/modules/shared/lib/reports';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, formatDate, formatHour, istNow } from '@/modules/shared/lib/time';
 import styles from './analytics.module.css';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

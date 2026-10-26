@@ -1,16 +1,16 @@
-import { platformOffersFor } from '@/lib/platform-offers';
+import { platformOffersFor } from '@/modules/shared/lib/platform-offers';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getSlots } from '@/lib/pricing';
-import { getPublicTurf } from '@/lib/queries';
-import { getDb } from '@/lib/store';
-import { BOOKING_DAYS, addDays, formatDate, istNow } from '@/lib/time';
-import JsonLd from '@/components/JsonLd';
-import { breadcrumbSchema, turfSchema } from '@/lib/schema';
-import { areaSlug } from '@/lib/site';
-import { turfReviews } from '@/lib/reviews';
-import TurfDetail from './TurfDetail';
-import { primarySport } from '@/lib/sports';
+import { getSlots } from '@/modules/shared/lib/pricing';
+import { getPublicTurf } from '@/modules/web/database/queries';
+import { getDb } from '@/modules/shared/database/store';
+import { BOOKING_DAYS, addDays, formatDate, istNow } from '@/modules/shared/lib/time';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import { breadcrumbSchema, turfSchema } from '@/modules/web/lib/schema';
+import { areaSlug } from '@/modules/web/lib/site';
+import { turfReviews } from '@/modules/shared/lib/reviews';
+import TurfDetail from '@/modules/web/frontend/main/arenas/id/TurfDetail';
+import { primarySport } from '@/modules/web/lib/sports';
 
 interface PageProps {
   params: Promise<{ id: string }>;

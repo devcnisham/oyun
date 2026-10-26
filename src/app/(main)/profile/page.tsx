@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { getSettings } from '@/lib/queries';
-import ProfileScreen from './ProfileScreen';
+import { getSettings } from '@/modules/web/database/queries';
+import ProfileScreen from '@/modules/web/frontend/main/profile/ProfileScreen';
 
 export const metadata: Metadata = { title: 'Account', robots: { index: false, follow: true } };
 

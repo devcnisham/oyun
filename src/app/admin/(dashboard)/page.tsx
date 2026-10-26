@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { Badge, PageHeader, Stat, dash, inr } from '@/components/dash/ui';
-import { commissionFor } from '@/lib/pricing';
-import { bookingRevenue, onlineCollected } from '@/lib/reports';
-import { getDb } from '@/lib/store';
-import { formatDate, istNow } from '@/lib/time';
-import PendingApplications from './PendingApplications';
+import { Badge, PageHeader, Stat, dash, inr } from '@/modules/shared/frontend/dash/ui';
+import { commissionFor } from '@/modules/shared/lib/pricing';
+import { bookingRevenue, onlineCollected } from '@/modules/shared/lib/reports';
+import { getDb } from '@/modules/shared/database/store';
+import { formatDate, istNow } from '@/modules/shared/lib/time';
+import PendingApplications from '@/modules/admin/frontend/PendingApplications';
 
 export default async function AdminOverview() {
   const db = await getDb();

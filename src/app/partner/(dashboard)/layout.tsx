@@ -1,15 +1,15 @@
 import Link from 'next/link';
-import BrandMark from '@/components/BrandMark';
-import ActionForm from '@/components/dash/ActionForm';
-import { logout } from '@/lib/auth-actions';
-import NavIcon from '@/components/dash/NavIcon';
-import HeaderPageTitle from '@/components/dash/HeaderPageTitle';
-import SidebarToggle from '@/components/dash/SidebarToggle';
-import { ROLE_LABELS, requirePartner } from '@/lib/partner-auth';
-import { switchTurf } from '@/lib/partner-actions';
-import NavLinks, { type NavItem } from './NavLinks';
-import MobileTabBar from './MobileTabBar';
-import MobileDrawerClose, { DrawerButton } from './MobileDrawerClose';
+import BrandMark from '@/modules/shared/frontend/BrandMark';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { logout } from '@/modules/shared/backend/auth-actions';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
+import HeaderPageTitle from '@/modules/shared/frontend/dash/HeaderPageTitle';
+import SidebarToggle from '@/modules/shared/frontend/dash/SidebarToggle';
+import { ROLE_LABELS, requirePartner } from '@/modules/shared/backend/partner-auth';
+import { switchTurf } from '@/modules/partner/backend/partner-actions';
+import NavLinks, { type NavItem } from '@/modules/partner/frontend/NavLinks';
+import MobileTabBar from '@/modules/partner/frontend/MobileTabBar';
+import MobileDrawerClose, { DrawerButton } from '@/modules/partner/frontend/MobileDrawerClose';
 import styles from './layout.module.css';
 
 export default async function PartnerLayout({ children }: { children: React.ReactNode }) {
@@ -103,7 +103,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
           <div className={styles.headerTitle}>
             <SidebarToggle className={styles.toggleBtn} />
             <HeaderPageTitle items={[...nav, { href: '/partner/invoices', label: 'Invoice' }]} fallback="Dashboard" className={styles.pageName} />
-            <span className={styles.turfName}>
+            <div className={styles.turfName}>
             {ctx.turfs.length > 1 ? (
               <ActionForm action={switchTurf} inline>
                 <select name="turfId" defaultValue={ctx.turf.id} aria-label="Switch turf" style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', fontWeight: 600 }}>
@@ -116,7 +116,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
             ) : (
               ctx.turf.name
             )}
-            </span>
+            </div>
           </div>
           <div className={styles.headerActions}>
             {ctx.can('bookings') && (

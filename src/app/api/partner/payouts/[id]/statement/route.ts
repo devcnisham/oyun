@@ -1,6 +1,6 @@
-import { getPartnerContext } from '@/lib/partner-auth';
-import { generatePayoutStatementHtml } from '@/lib/payouts';
-import { bookingsByIds, getDb } from '@/lib/store';
+import { getPartnerContext } from '@/modules/shared/backend/partner-auth';
+import { generatePayoutStatementHtml } from '@/modules/shared/lib/payouts';
+import { bookingsByIds, getDb } from '@/modules/shared/database/store';
 
 export async function GET(
   request: Request,

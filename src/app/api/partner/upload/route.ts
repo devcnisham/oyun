@@ -2,9 +2,9 @@ import 'server-only';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { NextResponse } from 'next/server';
-import { getPartnerContext } from '@/lib/partner-auth';
-import { getSessionSubject } from '@/lib/session';
-import { createAdminClient, supabaseConfigured } from '@/utils/supabase/admin';
+import { getPartnerContext } from '@/modules/shared/backend/partner-auth';
+import { getSessionSubject } from '@/modules/shared/backend/session';
+import { createAdminClient, supabaseConfigured } from '@/modules/shared/database/supabase/admin';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_MIME_TYPES = new Set([

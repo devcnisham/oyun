@@ -1,10 +1,10 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { PageHeader, dash, inr, tableScroll } from '@/components/dash/ui';
-import { requirePartner } from '@/lib/partner-auth';
-import { savePricing } from '@/lib/partner-actions';
-import { rulesFor, slotPrice, turfHours } from '@/lib/pricing';
-import { getDb } from '@/lib/store';
-import { addDays, dayOfWeek, formatSlotRange, istNow } from '@/lib/time';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { PageHeader, dash, inr, tableScroll } from '@/modules/shared/frontend/dash/ui';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { savePricing } from '@/modules/partner/backend/partner-actions';
+import { rulesFor, slotPrice, turfHours } from '@/modules/shared/lib/pricing';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, dayOfWeek, formatSlotRange, istNow } from '@/modules/shared/lib/time';
 
 const hourOptions = Array.from({ length: 25 }, (_, h) => h);
 const hourText = (h: number) => (h === 24 ? 'Midnight' : formatSlotRange(h).split(' – ')[0]);

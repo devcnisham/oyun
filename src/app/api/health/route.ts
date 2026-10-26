@@ -1,8 +1,8 @@
 import { connection } from 'next/server';
-import { clerkEnabled } from '@/lib/clerk';
-import { launchProblems, loginChecks, realtimeConfigured } from '@/lib/launch-checks';
-import { realtimeBroadcastWorks } from '@/lib/realtime';
-import { getDb, storageInfo } from '@/lib/store';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
+import { launchProblems, loginChecks, realtimeConfigured } from '@/modules/shared/backend/launch-checks';
+import { realtimeBroadcastWorks } from '@/modules/shared/backend/realtime';
+import { getDb, storageInfo } from '@/modules/shared/database/store';
 
 // Launch check: is the site wired up? Reports only yes/no flags, never keys or data.
 export async function GET() {

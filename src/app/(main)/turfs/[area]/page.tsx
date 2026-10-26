@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { isIndexableTurf, ogBase } from '@/lib/seo';
+import { isIndexableTurf, ogBase } from '@/modules/web/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import JsonLd from '@/components/JsonLd';
-import TurfCard from '@/components/TurfCard';
-import { rupees } from '@/lib/format';
-import { listAreas, listPublicTurfs } from '@/lib/queries';
-import { breadcrumbSchema, faqSchema, itemListSchema } from '@/lib/schema';
-import { areaSlug } from '@/lib/site';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import TurfCard from '@/modules/web/frontend/TurfCard';
+import { rupees } from '@/modules/shared/lib/format';
+import { listAreas, listPublicTurfs } from '@/modules/web/database/queries';
+import { breadcrumbSchema, faqSchema, itemListSchema } from '@/modules/web/lib/schema';
+import { areaSlug } from '@/modules/web/lib/site';
 import styles from './page.module.css';
-import { sportInfo } from '@/lib/sports';
+import { sportInfo } from '@/modules/web/lib/sports';
 
 // Sports played at these venues, e.g. "football and box cricket"
 function areaSports(turfs: { sports: string[] }[]) {

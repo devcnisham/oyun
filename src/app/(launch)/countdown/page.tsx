@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SITE_CITY } from '@/lib/site';
-import { SPORTS } from '@/lib/sports';
-import { getSettings } from '@/lib/queries';
-import { IconArrow } from '../_ui/icons';
-import { BROWSE_URL } from '../_ui/links';
-import { isLaunched } from '@/lib/hosts';
-import SiteFooter from '../_ui/SiteFooter';
-import SiteHeader from '../_ui/SiteHeader';
-import Countdown from './Countdown';
+import { SITE_CITY } from '@/modules/web/lib/site';
+import { SPORTS } from '@/modules/web/lib/sports';
+import { getSettings } from '@/modules/web/database/queries';
+import { IconArrow } from '@/modules/web/frontend/launch/_ui/icons';
+import { BROWSE_URL } from '@/modules/web/frontend/launch/_ui/links';
+import { isLaunched } from '@/modules/shared/backend/hosts';
+import SiteFooter from '@/modules/web/frontend/launch/_ui/SiteFooter';
+import SiteHeader from '@/modules/web/frontend/launch/_ui/SiteHeader';
+import Countdown from '@/modules/web/frontend/launch/countdown/Countdown';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {

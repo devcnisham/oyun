@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash } from '@/components/dash/ui';
-import { ROLE_LABELS, requirePartner } from '@/lib/partner-auth';
-import { changePassword, updateAccount } from '@/lib/partner-actions';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import { ROLE_LABELS, requirePartner } from '@/modules/shared/backend/partner-auth';
+import { changePassword, updateAccount } from '@/modules/partner/backend/partner-actions';
 
 export default async function ProfilePage() {
   const ctx = await requirePartner();

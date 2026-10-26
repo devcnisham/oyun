@@ -1,11 +1,11 @@
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import ActionForm from '@/components/dash/ActionForm';
-import TurfProfileFields from '@/components/dash/TurfProfileFields';
-import { PageHeader, dash } from '@/components/dash/ui';
-import { updateTurfAdmin } from '@/lib/admin-actions';
-import { getDb } from '@/lib/store';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import TurfProfileFields from '@/modules/shared/frontend/dash/TurfProfileFields';
+import { PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import { updateTurfAdmin } from '@/modules/admin/backend/admin-actions';
+import { getDb } from '@/modules/shared/database/store';
 
 export default async function AdminTurfEdit({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

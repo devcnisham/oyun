@@ -60,7 +60,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 ### F. Performance and UX
 - [x] P10-03 ISR and tag revalidation for public pages.
 - [x] P10-05 `loading.tsx` and Suspense on data pages.
-- [x] P10-04 Slot map: Supabase Realtime broadcast plus refetch on focus and tab visibility (`src/lib/client/use-slot-updates.ts`); the 10 s poll is only a safety net.
+- [x] P10-04 Slot map: Supabase Realtime broadcast plus refetch on focus and tab visibility (`src/modules/web/frontend/hooks/use-slot-updates.ts`); the 10 s poll is only a safety net.
 - [x] P10-09 Optimise images: remotePatterns and Supabase Storage allowlist (#146).
 - [x] P10-08 k6 load test: `scripts/k6/browse.js` covers the public read path (`docs/LOAD-TEST.md`). The booking writes are covered by the SQL race test and e2e (server actions cannot be replayed from k6); not run yet, needs staging.
 
@@ -73,7 +73,7 @@ First step of every run: tick anything already merged (check `git log`). Merged 
 - [x] P13-15 Rain policy in cancel and refund: owner or admin declares rain, full wallet refund (OYUN-314); [x] P13-01 Find players and open matches; P13-02 tournaments; [x] P13-03 weather alerts (PR #217); [x] P13-05 admin analytics; [x] P13-07 Kannada (PR #218).
 
 ### H. Quality and launch (Phases 6 to 7)
-- [x] Concurrency test in CI (`scripts/sql-race-test.sh`), accessibility (axe, `e2e/a11y.spec.ts`), bad-path tests (`src/lib/bad-paths.test.ts`).
+- [x] Concurrency test in CI (`scripts/sql-race-test.sh`), accessibility (axe, `e2e/a11y.spec.ts`), bad-path tests (`src/test/cross-cutting/bad-paths.test.ts`).
 - [x] Lighthouse 90: CI job and `npm run test:lighthouse` made blocking; scores 90 or more on home, arenas and turf pages (P8-64).
 - [x] Privacy (DPDP): export and delete my data, retention purge, notice matches reality. Built in PR #214.
 - [x] `docs/SECURITY.md` written (PR docs).

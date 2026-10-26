@@ -1,9 +1,9 @@
-import ActionForm from '@/components/dash/ActionForm';
-import { Badge, PageHeader, dash } from '@/components/dash/ui';
-import { reviewStudentId } from '@/lib/admin-actions';
-import { platformOffersOf } from '@/lib/platform-offers';
-import { STUDENT_ID_PENDING_DAYS } from '@/lib/student-id';
-import { getDb } from '@/lib/store';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { Badge, PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import { reviewStudentId } from '@/modules/admin/backend/admin-actions';
+import { platformOffersOf } from '@/modules/shared/lib/platform-offers';
+import { STUDENT_ID_PENDING_DAYS } from '@/modules/shared/backend/student-id';
+import { getDb } from '@/modules/shared/database/store';
 
 export default async function AdminStudents() {
   const db = await getDb();

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ogBase } from '@/lib/seo';
+import { ogBase } from '@/modules/web/lib/seo';
 
 export const metadata: Metadata = {
   title: 'List Your Turf for Free | Get More Bookings in Mangalore',

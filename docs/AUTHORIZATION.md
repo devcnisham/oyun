@@ -1,6 +1,6 @@
 # Who may call what
 
-Every server action, API route and dashboard page, with the check that guards it. `src/lib/authorization.test.ts` (admin and partner actions) and `src/lib/authorization-audit.test.ts` (public actions, login, routes, pages) fail when something here is added, removed or loses its guard, so this table cannot drift quietly. Related: `docs/SECURITY.md`, `src/lib/tenant-isolation.test.ts` (owner A cannot touch owner B).
+Every server action, API route and dashboard page, with the check that guards it. `src/test/cross-cutting/authorization.test.ts` (admin and partner actions) and `src/test/cross-cutting/authorization-audit.test.ts` (public actions, login, routes, pages) fail when something here is added, removed or loses its guard, so this table cannot drift quietly. Related: `docs/SECURITY.md`, `src/test/cross-cutting/tenant-isolation.test.ts` (owner A cannot touch owner B).
 
 How to read it: **Guard** is what runs before data is touched. **Scope** is what the caller can reach.
 
@@ -15,7 +15,7 @@ How to read it: **Guard** is what runs before data is touched. **Scope** is what
 
 Partner permissions: front desk = bookings, checkin, slots; manager adds pricing, offers, addons, turf; owner adds staff and payouts.
 
-## Public and player actions (`src/lib/booking-actions.ts`)
+## Public and player actions (`src/modules/web/backend/booking-actions.ts`)
 
 | Action | Guard | Scope |
 | --- | --- | --- |
@@ -32,14 +32,14 @@ Partner permissions: front desk = bookings, checkin, slots; manager adds pricing
 
 Shared rate limits live in Postgres (`supabase/setup/8-rate-limits.sql`) and fall back to per-instance counters until that step is run.
 
-## Login (`src/lib/auth-actions.ts`)
+## Login (`src/modules/shared/backend/auth-actions.ts`)
 
 | Action | Guard |
 | --- | --- |
 | `login(role)` | Lock after 5 failures per role+email+IP or 20 per role+IP for 15 minutes; checked before the password; scrypt hashes; constant-time compares |
 | `logout(role)` | Known role only |
 
-## Partner actions (`src/lib/partner-actions.ts`)
+## Partner actions (`src/modules/partner/backend/partner-actions.ts`)
 
 Each calls `requirePartnerAction(permission)` before touching data, and scopes every lookup to the caller's turf or partner.
 
@@ -56,7 +56,7 @@ Each calls `requirePartnerAction(permission)` before touching data, and scopes e
 | turf | `updateTurfProfile` |
 | payouts | `updateBusiness` |
 
-## Admin actions (`src/lib/admin-actions.ts`)
+## Admin actions (`src/modules/admin/backend/admin-actions.ts`)
 
 Every exported action calls `requireAdmin()` before touching data: approve and reject applications, update turfs and partners, suspend and reset partners, ban players, adjust wallets, refund bookings, save settings, declare or clear a city-wide rain day (`setRainDay`), promo codes, site content, promo cards and sponsor ads.
 

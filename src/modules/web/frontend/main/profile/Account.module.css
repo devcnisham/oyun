@@ -1,0 +1,333 @@
+.page {
+  max-width: 1000px;
+  padding-top: 28px;
+  padding-bottom: 64px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+/* Phone: one column. Desktop: the account card stays in view on the left, the menus scroll on the right */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .side {
+    position: sticky;
+    top: 96px;
+  }
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.card h2 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+/* Signed in */
+.who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar,
+.photo {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.photo {
+  object-fit: cover;
+}
+
+.whoText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.whoText b {
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.whoText span {
+  font-size: 14px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardActions {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.editForm label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #6e6e73;
+  box-shadow: 0 0 0 4px rgba(110,110,115,.12);
+}
+
+.error {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--err);
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Signed out */
+.signInCard {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.signInIcon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: var(--primary-50);
+  color: var(--accent-text);
+}
+
+.signInIcon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.signInCard p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.authRow {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  background: var(--primary-700);
+  color: #fff;
+  border: none;
+}
+
+.primaryBtn:hover {
+  background: #b50d21;
+}
+
+.ghostBtn {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+}
+
+.ghostBtn:hover {
+  background: var(--bg-muted);
+}
+
+.ghostBtn svg {
+  color: var(--text-muted);
+}
+
+/* Menus */
+.groupTitle {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 4px 10px;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.rows li + li {
+  border-top: 1px solid var(--border);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 68px;
+  padding: 12px 18px;
+  background: none;
+  border: none;
+  font: inherit;
+  color: var(--text-primary);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--bg-muted);
+}
+
+.tile {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--primary-50);
+  color: var(--accent-text);
+}
+
+.rowText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rowText b {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.rowText small {
+  font-size: 13px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chev {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.15s;
+}
+
+.row:hover .chev {
+  transform: translateX(2px);
+}
+
+.legal {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 4px;
+}
+
+.legal a {
+  color: var(--text-muted);
+}
+
+/* Booking platform visual system */
+
+.page { max-width: 1200px; padding-top: 40px; padding-bottom: 80px; }
+.pageTitle { font-size: clamp(34px, 4vw, 54px); line-height: 1.08; letter-spacing: -.05em; margin-bottom: 30px; color: #4a0000; }
+.card { border-color: #e9e2dc; border-radius: 24px; padding: 28px; box-shadow: 0 10px 30px #4a000005; }
+.card h2 { font-size: 21px; letter-spacing: -.03em; }
+.page :is(button, input, a) { min-height: 44px; }
+.page :is(a, button, input):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
+@media (max-width: 600px) { .page { padding-top: 24px; } .card { padding: 22px; } }

@@ -196,7 +196,7 @@ Tracker id: P8-03. Source of truth: docs/build-tracker.html in the repo.","High"
 "67","Task","[P8-04] Integration test: N parallel createBookings for one slot yields exactly one booking","Run against local Supabase; proves rev lock plus unique index.
 
 Tracker id: P8-04. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p8","tracker","9"
-"68","Task","[P8-05] Integration test: holds expire, release and cannot block a booking forever","src/lib/holds.test.ts runs the real hold and booking actions. The holds unique index has no expiry predicate, so expired rows are purged on every write (purgeExpiredHolds); pg_cron expiry is P10-06.
+"68","Task","[P8-05] Integration test: holds expire, release and cannot block a booking forever","src/test/cross-cutting/holds.test.ts runs the real hold and booking actions. The holds unique index has no expiry predicate, so expired rows are purged on every write (purgeExpiredHolds); pg_cron expiry is P10-06.
 
 Tracker id: P8-05. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p8","tracker","9"
 "69","Task","[P8-06] Authorization test sweep: every admin and partner action rejects without a session","Confirms requireAdmin and requirePartnerAction on every export.
@@ -227,7 +227,7 @@ Tracker id: P9-04. Source of truth: docs/build-tracker.html in the repo.","Highe
 "80","Task","[P9-05] Ticket page: hide phone, require account or signed token for details and actions","The bk_ id is a 48-bit bearer token shared over WhatsApp. Phone is masked on the ticket and invoice (PR #98). Anonymous cancel and review now also need the mobile number typed at booking (PR #122). Signed-in bookings need the same account. Not a signed token: the link plus the phone is still the only proof.
 
 Tracker id: P9-05. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
-"81","Task","[P9-06] Shared rate limiter (Redis or database) for login, holds, applications, client-error","Counters live in Postgres (rate_limits, rl_hit, rl_get, rl_clear in supabase/setup/8-rate-limits.sql). Login lockout, holds, bookings, cancels, reviews, applications and client-error use them via src/lib/shared-rate-limit.ts. Falls back to the per-instance limiter when Supabase is off, the call fails or step 8 has not been run. P9-22 runs the SQL on production.
+"81","Task","[P9-06] Shared rate limiter (Redis or database) for login, holds, applications, client-error","Counters live in Postgres (rate_limits, rl_hit, rl_get, rl_clear in supabase/setup/8-rate-limits.sql). Login lockout, holds, bookings, cancels, reviews, applications and client-error use them via src/modules/shared/backend/shared-rate-limit.ts. Falls back to the per-instance limiter when Supabase is off, the call fails or step 8 has not been run. P9-22 runs the SQL on production.
 
 Tracker id: P9-06. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
 "82","Task","[P9-07] Lockout keyed by email plus IP, so an attacker cannot lock the admin out","Tracker id: P9-07. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
@@ -238,7 +238,7 @@ Tracker id: P9-09. Source of truth: docs/build-tracker.html in the repo.","High"
 "85","Task","[P9-10] Strip passwordHash and phones from every object that can reach a client component","Introduce DTOs; getDb() returns the raw store.
 
 Tracker id: P9-10. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
-"86","Task","[P9-11] Check-in: require cash-collected confirmation before amountPaid is set","A balance due blocks check-in until the desk confirms the cash; the amount, time and staff name are stored on the booking (cashCollected). src/lib/checkin.test.ts.
+"86","Task","[P9-11] Check-in: require cash-collected confirmation before amountPaid is set","A balance due blocks check-in until the desk confirms the cash; the amount, time and staff name are stored on the booking (cashCollected). src/test/cross-cutting/checkin.test.ts.
 
 Tracker id: P9-11. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p9","tracker","10"
 "87","Task","[P9-12] Validate turf image URLs: reject //host, allowlist hosts","Tracker id: P9-12. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p9","tracker","10"
@@ -403,13 +403,13 @@ Tracker id: P8-36. Source of truth: docs/build-tracker.html in the repo.","High"
 "164","Task","[P8-37] Forms clear typed values after validation error","ActionForm and LoginForm keep what was typed after a failed action. Found in the PR #27 review; fixed in PR #173.
 
 Tracker id: P8-37. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
-"165","Task","[P8-38] Check-in time window and turf hours limits","Check-in works only from an hour before the slot until it ends (src/lib/checkin-window.ts, PR #172). Turf hours must be whole hours and close later the same day or at 00:00; half hours and a close after midnight are refused with a message (src/lib/hours.ts). Found in the PR #27 review.
+"165","Task","[P8-38] Check-in time window and turf hours limits","Check-in works only from an hour before the slot until it ends (src/modules/partner/backend/checkin-window.ts, PR #172). Turf hours must be whole hours and close later the same day or at 00:00; half hours and a close after midnight are refused with a message (src/modules/shared/lib/hours.ts). Found in the PR #27 review.
 
 Tracker id: P8-38. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "166","Task","[P7-16] Mobile menu keyboard navigation and input labels","The owner dashboard drawer cannot be opened with a keyboard, and a few inputs (reason, date, search) have no label. Found in the PR #27 review. Done in PR #175: the drawer opens with the keyboard and the dashboard inputs are labelled.
 
 Tracker id: P7-16. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
-"167","Task","[P8-39] Admin and partner list pagination","Admin transactions, admin users, admin reviews and partner bookings now page (src/lib/paginate.ts, PR #173 and the reviews page). Found in the PR #27 review.
+"167","Task","[P8-39] Admin and partner list pagination","Admin transactions, admin users, admin reviews and partner bookings now page (src/modules/shared/lib/paginate.ts, PR #173 and the reviews page). Found in the PR #27 review.
 
 Tracker id: P8-39. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "168","Task","[P7-17] Phone home: sport icons filter Open slots in place; remove How OYUN works card","Tapping a sport now filters the rail underneath on the same page instead of opening the turfs page. Removes the How OYUN works card and its styles. PR #28.
@@ -421,7 +421,7 @@ Tracker id: P7-18. Source of truth: docs/build-tracker.html in the repo.","Mediu
 "170","Task","[P7-19] Phone home: animate sport icons and the Open slots rail","Sport icons rise in staggered (70 ms apart), spring on hover and press, chosen icon pops with a larger ring. Rail title fades in, cards slide in one after another, loading shimmer, slots badge pop, hover zoom and enter press. All wrapped in prefers-reduced-motion. PR #31.
 
 Tracker id: P7-19. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
-"171","Task","[P7-20] Phone side menu: remove items, add Help center page and Settings page","PR #37. Help center has support email/phone, quick links, FAQ accordion (shared via src/lib/faq.ts), legal links. Settings has account links, cookie preferences, notifications/language (info only), help and legal links. Help & settings section added to side menu; /help in sitemap, /settings disallowed in robots.
+"171","Task","[P7-20] Phone side menu: remove items, add Help center page and Settings page","PR #37. Help center has support email/phone, quick links, FAQ accordion (shared via src/modules/web/lib/faq.ts), legal links. Settings has account links, cookie preferences, notifications/language (info only), help and legal links. Help & settings section added to side menu; /help in sitemap, /settings disallowed in robots.
 
 Tracker id: P7-20. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p7","tracker","8"
 "172","Task","[P7-21] Make the two Pickleball venues live: OneLve (Bejai Main Rd) and TheCourtyard (Kadri)","PR #34 added hidden drafts. PR #39 filled TheCourtyard with real data (Bikarnakatte address, ₹600/hour, 05:00–23:00, synthetic, amenities); OneLve still needs price, opening time, phone and real photos. Both pending, migrate() refreshes those with placeholder description. Then set each to Active in Admin, Turfs.
@@ -445,7 +445,7 @@ Tracker id: P9-18. Source of truth: docs/build-tracker.html in the repo.","Highe
 "178","Task","[P9-19] Refunds use refundDue() to return only wallet money really paid in; the uncollected advance is no longer credited","Cancels and refunds (player, owner, admin) call refundDue() which returns only wallet-paid money, not the recorded but uncollected advance. PR #33.
 
 Tracker id: P9-19. Source of truth: docs/build-tracker.html in the repo.","Highest","Done","oyun","p9","tracker","10"
-"179","Task","[P9-20] Remove the seed fallback password for the OYUN Operations partner login and set PARTNER_EMAIL and PARTNER_PASSWORD on the deployed site","src/lib/seed.ts creates that partner with a fixed default password when PARTNER_PASSWORD is not set. If the deployed site never set it, that account can be signed into with the default.
+"179","Task","[P9-20] Remove the seed fallback password for the OYUN Operations partner login and set PARTNER_EMAIL and PARTNER_PASSWORD on the deployed site","src/modules/shared/database/seed.ts creates that partner with a fixed default password when PARTNER_PASSWORD is not set. If the deployed site never set it, that account can be signed into with the default.
 
 Tracker id: P9-20. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
 "180","Task","[P7-27] Remove side menu; move all links to Profile page (Book and Help & settings sections with subsections)","Bookings, Saved turfs and all turfs moved under Book. Help center, Settings, support, cookies, List your turf and partner login moved under Help & settings. PR #43.
@@ -508,7 +508,7 @@ Tracker id: P10-16. Source of truth: docs/build-tracker.html in the repo.","High
 "199","Task","[P13-11] Add /welcome marketing landing page for players","Static copy: hero, sports, three-step flow, feature cards and an owner band linking to /list-turf. Listed in the sitemap and in the axe page list. Home page untouched. PR #121. PR #125 adds a booking section (slots, 8-minute hold, account, QR ticket, offers, add-ons, cancellation) and a booking FAQ built from the same source as /faq.
 
 Tracker id: P13-11. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p13","tracker","14"
-"200","Task","[P8-40] Bad-path tests through the booking actions: half versus full pitch, promos, bans, bad dates, wallet, cancel","src/lib/bad-paths.test.ts. PR #120 (RQ-Q4).
+"200","Task","[P8-40] Bad-path tests through the booking actions: half versus full pitch, promos, bans, bad dates, wallet, cancel","src/test/cross-cutting/bad-paths.test.ts. PR #120 (RQ-Q4).
 
 Tracker id: P8-40. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "201","Task","[P8-41] Accessibility checks: axe on the main pages and a keyboard-only booking test","e2e/a11y.spec.ts. Automated checks only, not a full audit (P8-20). PR #118 (RQ-Q2).
@@ -535,10 +535,10 @@ Tracker id: P8-47. Source of truth: docs/build-tracker.html in the repo.","Low",
 "208","Task","[P8-48] Dependency bump: minor-and-patch group","next and eslint-config-next 16.3.8 to 16.4.0, @clerk/nextjs 7.9.13, @supabase/supabase-js 2.117.3. docs/NEXT16-NOTES.md still says 16.3.8. PR #170 (Dependabot).
 
 Tracker id: P8-48. Source of truth: docs/build-tracker.html in the repo.","Low","Done","oyun","p8","tracker","9"
-"209","Task","[P9-23] Partner tenant isolation test: owner A cannot touch owner B's records","src/lib/tenant-isolation.test.ts. PR #115 (RQ-SEC2).
+"209","Task","[P9-23] Partner tenant isolation test: owner A cannot touch owner B's records","src/test/cross-cutting/tenant-isolation.test.ts. PR #115 (RQ-SEC2).
 
 Tracker id: P9-23. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
-"210","Task","[P9-24] Authorization audit table in docs/AUTHORIZATION.md, kept honest by a test","src/lib/authorization-audit.test.ts. Referral check limited to 40 attempts per 10 minutes per IP. PR #116 (RQ-SEC1).
+"210","Task","[P9-24] Authorization audit table in docs/AUTHORIZATION.md, kept honest by a test","src/test/cross-cutting/authorization-audit.test.ts. Referral check limited to 40 attempts per 10 minutes per IP. PR #116 (RQ-SEC1).
 
 Tracker id: P9-24. Source of truth: docs/build-tracker.html in the repo.","High","Done","oyun","p9","tracker","10"
 "211","Task","[P7-43] Partner week calendar: every opening hour for seven days, split pitch halves shown","Week view, Monday to Sunday, with previous and next week links. PR #117 (RQ-F3).
@@ -556,7 +556,7 @@ Tracker id: P8-51. Source of truth: docs/build-tracker.html in the repo.","Mediu
 "215","Task","[P8-52] Split list-turf options, form defaults and the success screen into their own files","listing-options.ts and ListingSubmitted.tsx hold the list-turf choices and the submitted screen; page.tsx is smaller. PR #179.
 
 Tracker id: P8-52. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
-"216","Task","[P8-53] One shared rupee and short-hour formatter in src/lib/format.ts instead of seven copies","src/lib/format.ts holds the rupees and shortHour helpers that were copied in seven files. PR #182.
+"216","Task","[P8-53] One shared rupee and short-hour formatter in src/modules/shared/lib/format.ts instead of seven copies","src/modules/shared/lib/format.ts holds the rupees and shortHour helpers that were copied in seven files. PR #182.
 
 Tracker id: P8-53. Source of truth: docs/build-tracker.html in the repo.","Medium","Done","oyun","p8","tracker","9"
 "217","Task","[P8-54] Move checkout form state into a useCheckoutForm hook; CheckoutSheet takes 12 props instead of about 25","The checkout form logic moved into a hook, and CheckoutSheet now receives about 12 props. PR #182.

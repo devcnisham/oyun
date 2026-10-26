@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
-import { ogBase } from '@/lib/seo';
+import { ogBase } from '@/modules/web/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import FaqList from '@/components/FaqList';
-import JsonLd from '@/components/JsonLd';
-import { GUIDES, getGuide } from '@/lib/guides-content';
-import { articleSchema, breadcrumbSchema, faqSchema } from '@/lib/schema';
-import { SITE_CITY } from '@/lib/site';
-import { sportFromSlug } from '@/lib/sports';
+import FaqList from '@/modules/web/frontend/FaqList';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import { GUIDES, getGuide } from '@/modules/web/lib/guides-content';
+import { articleSchema, breadcrumbSchema, faqSchema } from '@/modules/web/lib/schema';
+import { SITE_CITY } from '@/modules/web/lib/site';
+import { sportFromSlug } from '@/modules/web/lib/sports';
 import styles from '../../turfs/[area]/page.module.css';
 
 export const revalidate = 60;
@@ -83,7 +83,7 @@ export default async function GuideDetailPage({ params }: Props) {
       </nav>
 
       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-        <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--primary-700)', background: 'rgba(5, 150, 105, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+        <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--primary-700)', background: '#fff0ed', padding: '4px 10px', borderRadius: '6px' }}>
           {guide.category}
         </span>
         <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{guide.readTime}</span>

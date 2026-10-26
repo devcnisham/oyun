@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import BackButton from '@/components/BackButton';
-import JsonLd from '@/components/JsonLd';
-import CookieSettingsLink from '@/components/consent/CookieSettingsLink';
-import { buildFaqs } from '@/lib/faq';
-import { getSettings } from '@/lib/queries';
-import { faqSchema } from '@/lib/schema';
+import BackButton from '@/modules/web/frontend/BackButton';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import CookieSettingsLink from '@/modules/web/frontend/consent/CookieSettingsLink';
+import { buildFaqs } from '@/modules/web/lib/faq';
+import { getSettings } from '@/modules/web/database/queries';
+import { faqSchema } from '@/modules/web/lib/schema';
 import styles from './Help.module.css';
 
 export const metadata: Metadata = {

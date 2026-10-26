@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
-import { clientIpFrom } from '@/lib/client-ip';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
+import { clientIpFrom } from '@/modules/shared/backend/client-ip';
 
 export async function POST(req: NextRequest) {
   const ip = clientIpFrom(req.headers);

@@ -12,7 +12,7 @@ The brief assumes a stack the repo does not use. Pick one per row before Tier 2 
 |---|---|---|
 | Phone OTP auth, roles scoped to a venue | Clerk for players, own email and password for partners and admin | Keep Clerk (phone OTP is a Clerk setting) or build OTP. Recommend keep Clerk. |
 | Redis for holds, cache, rate limits | Holds in jsonb store and Postgres, rate limits in Postgres (`shared-rate-limit.ts`) | Add Redis now, or keep Postgres until a number says so (principle in section 1). Recommend keep. |
-| Typed API, one service layer | Server actions in `src/lib/*-actions.ts`, one `store.ts` | Server actions count as the service layer. Confirm. |
+| Typed API, one service layer | Server actions in `src/modules/*/backend/*-actions.ts`, one `store.ts` | Server actions count as the service layer. Confirm. |
 | Gateway, webhooks, refunds, ledger | None (no payment code) | GATE: Razorpay account and test keys. |
 | WhatsApp, SMS, email, push | None | GATE: provider choice. |
 | Queue and background jobs | None; holds purged inline | Vercel Cron or pg_cron. GATE: production approval. |

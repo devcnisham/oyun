@@ -1,0 +1,26 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+}
+
+.select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.select:hover {
+  border-color: var(--text-muted);
+}
+
+.select:focus {
+  border-color: var(--brand-primary, #6e6e73);
+  box-shadow: 0 0 0 2px rgba(158, 10, 10, 0.15);
+}

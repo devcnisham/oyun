@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireCronSecret } from '@/lib/cron-auth';
-import { runRetentionPurge } from '@/lib/dpdp';
+import { requireCronSecret } from '@/modules/shared/backend/cron-auth';
+import { runRetentionPurge } from '@/modules/web/backend/dpdp';
 
 export async function POST(req: NextRequest) {
   const denied = requireCronSecret(req);

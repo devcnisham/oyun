@@ -1,6 +1,6 @@
-import { getDb } from '@/lib/store';
-import { absoluteUrl } from '@/lib/site';
-import { parseHour, slotTimestamp } from '@/lib/time';
+import { getDb } from '@/modules/shared/database/store';
+import { absoluteUrl } from '@/modules/web/lib/site';
+import { parseHour, slotTimestamp } from '@/modules/shared/lib/time';
 
 // "Add to calendar": the booking as an .ics event (works with Google, Apple and Outlook calendars)
 const ics = (s: string) => s.replace(/[\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');

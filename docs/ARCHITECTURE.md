@@ -8,7 +8,7 @@ Player / Owner & staff / Admin
         ▼
  src/proxy.ts  — HTTPS redirect, cookie guard for /admin and /partner, Clerk
         │
- pages (src/app) ──► server actions (src/lib/*-actions.ts) ──► src/lib/store.ts (getDb, mutate)
+ pages (src/app) ──► server actions (src/modules/*/backend/*-actions.ts) ──► src/modules/shared/database/store.ts (getDb, mutate)
                                                                    │
                                   Supabase Postgres (14 jsonb tables + app_meta.rev)   Supabase Realtime (slot pings)
 ```
@@ -24,14 +24,15 @@ Players sign in with Clerk when its keys are set (otherwise a name and phone kep
 | `src/app/partner` | Owner and staff dashboard; every page and action checks a permission |
 | `src/app/admin` | Admin console: approvals, turfs, partners, players, refunds, settings |
 | `src/app/api` | `health`, `holds/release`, `client-error` |
-| `src/lib` | Domain logic: `store`, `pricing`, `wallet`, `reports`, `reviews`, `session`, `rate-limit`, `login-throttle`, `realtime` |
-| `src/utils/supabase` | Supabase clients (the secret-key client is `server-only`) |
-| `src/components` | Shared UI: shell, turf cards, consent, dashboard kit, invoice |
+| `src/modules/web` | Player site code: `frontend` (components, hooks), `backend` (actions, payments, search), `database` (read queries), `lib` (pure logic) |
+| `src/modules/partner` | Owner dashboard code: `frontend`, `backend` (partner actions), `backend` + `database` |
+| `src/modules/admin` | Admin console code: `backend` (admin actions, analytics) |
+| `src/modules/shared` | Used by two or more apps: `database` (store, Supabase clients, types), `backend` (session, rate limit, realtime), `lib` (pricing, wallet, hours), `frontend` (dashboard kit, login, invoice) |
 | `supabase/` | `migrations/` (the real history), `setup/` (the same SQL split for the SQL editor), `tests/`, `proposals/` (the v2 slot booking design) |
 
 ## How a write works
 
-Every change to data goes through `mutate(fn)` in `src/lib/store.ts`:
+Every change to data goes through `mutate(fn)` in `src/modules/shared/database/store.ts`:
 
 1. The server loads only the rows changed since the revision it already has (`load_changes`); a cold start loads everything.
 2. `fn` runs on a private copy; the change is diffed into upserts and deletes.
@@ -42,13 +43,13 @@ Unique indexes on bookings, blocks and holds are the backstop that stops a doubl
 
 ## Booking lifecycle
 
-`free → held` (8 minutes, tied to a device cookie hash) `→ confirmed` (pay at the turf) `→ checked_in` (QR or code at the venue) `→ reviewed`; a booking can end `cancelled`, `no_show` or `refunded`. Only `confirmed` and `checked_in` occupy a slot. Statuses are TypeScript unions in `src/lib/types.ts`, not database enums. A multi-hour booking is one booking row per hour.
+`free → held` (8 minutes, tied to a device cookie hash) `→ confirmed` (pay at the turf) `→ checked_in` (QR or code at the venue) `→ reviewed`; a booking can end `cancelled`, `no_show` or `refunded`. Only `confirmed` and `checked_in` occupy a slot. Statuses are TypeScript unions in `src/modules/shared/database/types.ts`, not database enums. A multi-hour booking is one booking row per hour.
 
 ## Rules the code follows
 
-- One function (`src/lib/pricing.ts`) prices both the quote and the charge, so they cannot differ.
-- Money is whole rupees. Times are India time, through `src/lib/time.ts`.
-- Server actions check the caller first (`requireAdmin()` or `requirePartnerAction(permission)`), validate input, then call `mutate`. `src/lib/authorization.test.ts` fails if one does not.
+- One function (`src/modules/shared/lib/pricing.ts`) prices both the quote and the charge, so they cannot differ.
+- Money is whole rupees. Times are India time, through `src/modules/shared/lib/time.ts`.
+- Server actions check the caller first (`requireAdmin()` or `requirePartnerAction(permission)`), validate input, then call `mutate`. `src/test/cross-cutting/authorization.test.ts` fails if one does not.
 - Data sent to the browser goes through narrow shapes (`PublicTurf`); a test fails if a client component imports a full internal type.
 - Styling is CSS Modules plus tokens in `src/app/globals.css`. No Tailwind, no UI library.
 

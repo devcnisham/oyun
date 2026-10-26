@@ -1,0 +1,18 @@
+.page { padding-top: 24px; padding-bottom: 48px; }
+.title { font-size: 28px; font-weight: 800; margin-bottom: 20px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.empty { text-align: center; padding: 48px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.empty h2 { font-size: 20px; }
+.empty p { color: var(--text-muted); margin-bottom: 8px; }
+.icon { font-size: 44px; color: var(--accent-text); }
+
+/* Booking platform visual system */
+
+.page { padding-top: 40px; padding-bottom: 80px; }
+.title { font-size: clamp(34px, 4vw, 54px); line-height: 1.08; letter-spacing: -.05em; color: #4a0000; margin-bottom: 30px; }
+.grid { gap: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+.empty { max-width: 760px; margin: 0 auto; padding: 56px 28px; border: 1px solid #e9e2dc; border-radius: 28px; background: #fff; gap: 16px; }
+.empty h2 { font-size: 26px; letter-spacing: -.035em; }
+.empty p { max-width: 440px; line-height: 1.7; }
+.page :is(a, button):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
+@media (max-width: 600px) { .page { padding-top: 24px; } }

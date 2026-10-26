@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { platformOffersOf } from '@/lib/platform-offers';
-import { getSettings } from '@/lib/queries';
-import { rupees } from '@/lib/format';
+import { platformOffersOf } from '@/modules/shared/lib/platform-offers';
+import { getSettings } from '@/modules/web/database/queries';
+import { rupees } from '@/modules/shared/lib/format';
 import styles from '../hub.module.css';
 
 export const metadata: Metadata = {

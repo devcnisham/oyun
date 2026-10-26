@@ -144,9 +144,9 @@ test.describe('Brief Workflows 2.1 to 2.5 with Failure Branches (P8-60 / B-6.1)'
   // Workflow 2.5: OTP / Password login and session + failure branch (invalid credentials)
   // --------------------------------------------------------------------------
   test('Workflow 2.5: login screen, lockout protection, and credential failure branch', async ({ page }) => {
-    // These tests run on `next dev`, where the dashboards skip their login (devLoginSkipped in src/lib/session.ts) and
+    // These tests run on `next dev`, where the dashboards skip their login (devLoginSkipped in src/modules/shared/backend/session.ts) and
     // /partner/login redirects to the dashboard, so the login screen cannot be reached here. The lockout and the
-    // credential checks are covered by src/lib/login-throttle.test.ts and src/lib/authorization-audit.test.ts.
+    // credential checks are covered by src/modules/shared/backend/login-throttle.test.ts and src/test/cross-cutting/authorization-audit.test.ts.
     test.skip(true, 'login screens are not served on the dev server used by e2e');
     await page.goto('/partner/login');
     await expect(page.getByRole('heading', { name: /Welcome Back/i })).toBeVisible();

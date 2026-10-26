@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { detectDoubleBookings, triggerOnCallPage } from '@/lib/alerts';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
-import { getDb } from '@/lib/store';
-import { clientIpFrom } from '@/lib/client-ip';
+import { detectDoubleBookings, triggerOnCallPage } from '@/modules/shared/lib/alerts';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
+import { getDb } from '@/modules/shared/database/store';
+import { clientIpFrom } from '@/modules/shared/backend/client-ip';
 
 export async function GET(req: Request) {
   const ip = clientIpFrom(req.headers);

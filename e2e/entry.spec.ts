@@ -5,7 +5,6 @@ import { TURF, asPlayer, seats, selectDay } from './helpers';
 async function asVisitor(page: Page) {
   await page.context().addCookies([
     { name: 'oyun_consent', value: 'essential', domain: 'localhost', path: '/' },
-    { name: 'oyun_desktop', value: '1', domain: 'localhost', path: '/' },
   ]);
 }
 

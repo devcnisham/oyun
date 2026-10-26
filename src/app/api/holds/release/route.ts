@@ -1,10 +1,10 @@
-import { refreshAll } from '@/lib/action-utils';
-import { deviceHolder } from '@/lib/device-holder';
-import { sharedRateLimit } from '@/lib/shared-rate-limit';
-import { mutate } from '@/lib/store';
-import { isV2SlotsActive, v2ReleaseHolds } from '@/lib/v2-slots';
-import { clientIpFrom } from '@/lib/client-ip';
-import { isSameOrigin } from '@/lib/same-origin';
+import { refreshAll } from '@/modules/shared/backend/action-utils';
+import { deviceHolder } from '@/modules/web/lib/device-holder';
+import { sharedRateLimit } from '@/modules/shared/backend/shared-rate-limit';
+import { mutate } from '@/modules/shared/database/store';
+import { isV2SlotsActive, v2ReleaseHolds } from '@/modules/shared/database/v2-slots';
+import { clientIpFrom } from '@/modules/shared/backend/client-ip';
+import { isSameOrigin } from '@/modules/shared/backend/same-origin';
 
 // Called with navigator.sendBeacon when a player leaves checkout (closes the tab, goes back),
 // so their held slots open up for everyone straight away instead of after the 8-minute timeout.

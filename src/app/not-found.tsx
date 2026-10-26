@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import StatusPage from '@/components/status/StatusPage';
+import StatusPage from '@/modules/shared/frontend/status/StatusPage';
 
 export const metadata: Metadata = { title: 'Page not found', robots: { index: false } };
 

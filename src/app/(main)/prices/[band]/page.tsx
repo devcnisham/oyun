@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import JsonLd from '@/components/JsonLd';
-import TurfCard from '@/components/TurfCard';
-import { rupees } from '@/lib/format';
-import { PRICE_BANDS, bandFromSlug, bandSlug } from '@/lib/price-bands';
-import { listPublicTurfs } from '@/lib/queries';
-import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
-import { isIndexableTurf, ogBase } from '@/lib/seo';
-import { SITE_CITY } from '@/lib/site';
+import JsonLd from '@/modules/web/frontend/JsonLd';
+import TurfCard from '@/modules/web/frontend/TurfCard';
+import { rupees } from '@/modules/shared/lib/format';
+import { PRICE_BANDS, bandFromSlug, bandSlug } from '@/modules/web/lib/price-bands';
+import { listPublicTurfs } from '@/modules/web/database/queries';
+import { breadcrumbSchema, itemListSchema } from '@/modules/web/lib/schema';
+import { isIndexableTurf, ogBase } from '@/modules/web/lib/seo';
+import { SITE_CITY } from '@/modules/web/lib/site';
 import styles from '../../turfs/[area]/page.module.css';
 
 export const revalidate = 60;

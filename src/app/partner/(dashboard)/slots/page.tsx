@@ -1,14 +1,14 @@
-import NavIcon from '@/components/dash/NavIcon';
+import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import Link from 'next/link';
-import ActionForm from '@/components/dash/ActionForm';
-import { PageHeader, dash } from '@/components/dash/ui';
-import DateJump from './DateJump';
+import ActionForm from '@/modules/shared/frontend/dash/ActionForm';
+import { PageHeader, dash } from '@/modules/shared/frontend/dash/ui';
+import DateJump from '@/modules/partner/frontend/slots/DateJump';
 import styles from './slots.module.css';
-import { requirePartner } from '@/lib/partner-auth';
-import { blockRange, blockSlot, unblockSlot } from '@/lib/partner-actions';
-import { getSlots, turfHours } from '@/lib/pricing';
-import { getDb } from '@/lib/store';
-import { addDays, dayOfWeek, formatDate, formatHour, formatSlotRange, isValidDate, istNow } from '@/lib/time';
+import { requirePartner } from '@/modules/shared/backend/partner-auth';
+import { blockRange, blockSlot, unblockSlot } from '@/modules/partner/backend/partner-actions';
+import { getSlots, turfHours } from '@/modules/shared/lib/pricing';
+import { getDb } from '@/modules/shared/database/store';
+import { addDays, dayOfWeek, formatDate, formatHour, formatSlotRange, isValidDate, istNow } from '@/modules/shared/lib/time';
 
 export default async function SlotsPage({ searchParams }: { searchParams: Promise<{ date?: string; view?: string }> }) {
   const ctx = await requirePartner('slots');

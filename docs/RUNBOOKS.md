@@ -12,7 +12,7 @@ Operational runbooks for on-call engineers, ops staff, and admins. Corresponds t
 | **SEV-2 (Major)** | Payout batch failure; individual refund failure loop; SMS/notification outage. | < 1 hour | < 6 hours |
 | **SEV-3 (Minor)** | Non-blocking admin dashboard bug; partner calendar display glitch. | Next business day | < 3 business days |
 
-All system errors log to Vercel runtime logs and ping `ERROR_WEBHOOK_URL` (`src/lib/monitoring.ts`). Sensitive actions and alerts include the affected `bookingId`, `turfId`, or `partnerId` without logging personal credentials or credit card numbers.
+All system errors log to Vercel runtime logs and ping `ERROR_WEBHOOK_URL` (`src/modules/shared/backend/monitoring.ts`). Sensitive actions and alerts include the affected `bookingId`, `turfId`, or `partnerId` without logging personal credentials or credit card numbers.
 
 ---
 

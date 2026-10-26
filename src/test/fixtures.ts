@@ -1,7 +1,7 @@
 // Small, explicit test data built on the real seed so every field has a valid value.
-import { seed } from '@/lib/seed';
-import type { Booking, Database, Player, Turf } from '@/lib/types';
-import type { IstNow } from '@/lib/time';
+import { seed } from '@/modules/shared/database/seed';
+import type { Booking, Database, Player, Turf } from '@/modules/shared/database/types';
+import type { IstNow } from '@/modules/shared/lib/time';
 
 export const MONDAY = '2026-10-12';
 export const SATURDAY = '2026-10-17';

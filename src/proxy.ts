@@ -1,10 +1,10 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse, type NextFetchEvent } from 'next/server';
-import { clerkEnabled } from '@/lib/clerk';
-import { buildCsp } from '@/lib/csp';
-import { PREVIEW_COOKIE, isLaunched, previewAllowed, roleForHost, routeForHost } from '@/lib/hosts';
-import { devLoginSkipped, sessionCookieName, verifySessionToken, type Role } from '@/lib/session';
-import { updateSession } from '@/utils/supabase/middleware';
+import { clerkEnabled } from '@/modules/shared/lib/clerk';
+import { buildCsp } from '@/modules/shared/backend/csp';
+import { PREVIEW_COOKIE, isLaunched, previewAllowed, roleForHost, routeForHost } from '@/modules/shared/backend/hosts';
+import { devLoginSkipped, sessionCookieName, verifySessionToken, type Role } from '@/modules/shared/backend/session';
+import { updateSession } from '@/modules/shared/database/supabase/middleware';
 
 // Optimistic cookie check; dashboard layouts verify the session again on the server
 function dashboardGuard(req: NextRequest) {

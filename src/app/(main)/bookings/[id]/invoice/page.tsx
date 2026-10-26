@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import Invoice from '@/components/Invoice';
-import PrintButton from '@/components/PrintButton';
-import { getDb } from '@/lib/store';
-import BackButton from '@/components/BackButton';
+import Invoice from '@/modules/shared/frontend/Invoice';
+import PrintButton from '@/modules/shared/frontend/PrintButton';
+import { getDb } from '@/modules/shared/database/store';
+import BackButton from '@/modules/web/frontend/BackButton';
 
 export default async function BookingInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
