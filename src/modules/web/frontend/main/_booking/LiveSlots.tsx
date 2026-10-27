@@ -5,6 +5,7 @@ import { getSlotsForDate } from '@/modules/web/backend/booking-actions';
 import { istNow } from '@/modules/shared/lib/time';
 import type { TurfSummary } from '@/modules/shared/database/types';
 import styles from './LiveSlots.module.css';
+import UpcomingGame from './UpcomingGame';
 
 type Snapshot = { key: string; count: number; error: boolean };
 
@@ -31,8 +32,13 @@ export default function LiveSlots({ turfs }: { turfs: TurfSummary[] }) {
   }, [key]);
   const ready = snapshot?.key === key;
   return <section className={styles.banner} aria-label="Live slot availability">
+    <div className={styles.panels} tabIndex={0} aria-label="Open slots and your next game" onKeyDown={e => { if (e.target !== e.currentTarget || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return; e.preventDefault(); e.currentTarget.scrollBy({left: (e.key === 'ArrowRight' ? 1 : -1) * e.currentTarget.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }}>
+    <div className={styles.summary}>
     <p className={styles.eyebrow}>TODAY ON OYUN</p>
     <div role="status" aria-live="polite">{!ready ? <p className={styles.loading}>Checking open slots…</p> : snapshot.error ? <p className={styles.loading}>Check venues for live availability</p> : <p className={styles.total}><strong>{snapshot.count}</strong> open slots</p>}</div>
     <p className={styles.caption}>Your next game starts here.</p>
+    </div>
+    <UpcomingGame />
+    </div>
   </section>;
 }

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { asPlayer, TURF } from './helpers';
+import { asPlayer, TURF, holdFirstSlot, confirmBooking } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await asPlayer(page);
@@ -218,4 +218,32 @@ test('mobile featured banners auto-advance without arrow or playback buttons', a
   await expect(carousel).toBeInViewport({ratio:0.8});
   await expect(carousel.getByRole('button',{name:'Show featured venues card 1'})).toHaveAttribute('aria-current','true');
   await expect(carousel.getByRole('button',{name:'Show featured venues card 2'})).toHaveAttribute('aria-current','true',{timeout:12000});
+});
+
+test('next game stays inside the live banner and moves only by manual swipe', async ({ page }) => {
+  expect(await holdFirstSlot(page, 1)).toBe(true);
+  await confirmBooking(page);
+  await page.goto('/');
+  const banner=page.getByRole('region',{name:'Live slot availability'});
+  const next=banner.getByRole('link',{name:/Next game/});
+  await expect(next).toBeVisible();
+  const rail=banner.locator('[aria-label="Open slots and your next game"]');
+  await rail.focus();await rail.press('ArrowRight');
+  await expect(next).toBeInViewport({ratio:0.8});
+  const before=await rail.evaluate(el=>el.scrollLeft);
+  await page.clock.install();await page.clock.fastForward(10000);
+  expect(await rail.evaluate(el=>el.scrollLeft)).toBe(before);
+});
+
+test('venue save share and map actions form one group outside the photo', async ({ page }) => {
+  await page.goto(`/arenas/${TURF}`);
+  const actions=page.getByRole('group',{name:'Venue actions'});
+  const save=actions.getByRole('button',{name:'Save Perfect Pass',exact:true});
+  await expect(save).toBeVisible();
+  await expect(actions.getByRole('button',{name:'Share',exact:true})).toBeVisible();
+  await expect(actions.getByRole('link',{name:'View on map'})).toBeVisible();
+  await expect(page.getByText('OYUN venue',{exact:true})).toHaveCount(0);
+  await expect(page.getByRole('img',{name:'Perfect Pass photo 1'}).locator('..').getByRole('button',{name:/Save|Share|Back/})).toHaveCount(0);
+  await save.click();await expect(actions.getByRole('button',{name:'Remove Perfect Pass from saved venues'})).toHaveAttribute('aria-pressed','true');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

@@ -13,7 +13,6 @@ import { shortHour } from '@/modules/shared/lib/format';
 import ShareButton from '@/modules/web/frontend/main/arenas/id/ShareButton';
 import TurfMiniMap from '@/modules/web/frontend/main/arenas/id/TurfMiniMap';
 import styles from '@/modules/web/frontend/main/arenas/id/page.module.css';
-import BackButton from '@/modules/web/frontend/BackButton';
 import { sportInfo } from '@/modules/web/lib/sports';
 
 interface TurfDetailProps {
@@ -40,15 +39,6 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
       {/* Mobile Image Header with Carousel (P13-10) */}
       <div className={styles.imageHeader}>
         <Image src={imageSrc} alt={`${turf.name} photo ${imgIdx + 1}`} fill preload fetchPriority="high" sizes="100vw" className={styles.mainImage} unoptimized={!canOptimize(imageSrc)} />
-
-        <div className={styles.topNav}>
-          <BackButton fallback="/arenas" className={`${styles.iconBtn} ${styles.backIcon}`}>←</BackButton>
-          <div className={styles.midBadge}>{turf.isVerified ? 'Verified venue' : 'OYUN venue'}</div>
-          <div className={styles.topNavRight}>
-            <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.iconBtn} />
-            <ShareButton title={turf.name} className={styles.iconBtn} />
-          </div>
-        </div>
 
         {images.length > 1 && (
           <>
@@ -87,7 +77,9 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             </h1>
 
           </div>
-          <div className={styles.titleSide}>
+          <div className={styles.titleSide} role="group" aria-label="Venue actions">
+            <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.mapLink} />
+            <ShareButton title={turf.name} className={styles.mapLink} />
             <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink} aria-label="View on map" title="View on map">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z" /><path d="M9 4v13M15 7v13" /></svg>
             </a>

@@ -5,3 +5,14 @@
 .caption { max-width: 320px; margin: 12px auto 0; color: #f2d6d3; font-size: 14px; line-height: 1.5; }
 .loading { min-height: 48px; display: grid; place-items: center; margin: 0; color: #fff; font-size: 20px; font-weight: 650; }
 @media (max-width: 600px) { .banner { padding: 30px 20px; margin-top: 26px; border-radius: 20px; } .total { font-size: 36px; } .caption { max-width: 240px; } }
+.banner { padding: 0; overflow: hidden; }
+.panels { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-inline: contain; }
+.panels::-webkit-scrollbar { display: none; }
+.summary, .next { flex: 0 0 100%; min-width: 0; box-sizing: border-box; padding: 34px 24px; scroll-snap-align: start; min-height: 190px; display: flex; flex-direction: column; justify-content: center; }
+.next { gap: 10px; background: #210000; color: #fff; text-align: left; text-decoration: none; }
+.next > span { color: #ffc34d; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 750; }
+.next strong { font-size: clamp(22px,3vw,30px); line-height: 1.2; }
+.next small { color: #e9ceca; font-size: 14px; line-height: 1.5; }
+.panels:focus-visible { outline: 2px solid #c4c4c4; outline-offset: -4px; }
+.next:focus-visible { outline: 2px solid #fff; outline-offset: -6px; }
+@media(max-width:600px) { .banner { padding: 0; } .summary, .next { padding: 30px 20px; } }
