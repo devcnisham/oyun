@@ -9,7 +9,7 @@ import styles from '../../auth.module.css';
 
 export const metadata: Metadata = {
   title: 'Sign in',
-  description: 'Sign in to OYUN to see your bookings and book turfs faster.',
+  description: 'Sign in to OYUN to see your bookings and book venues faster.',
 };
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ redirect_url?: string }> }) {

@@ -148,7 +148,7 @@ export default function PhotoUploader({
         value={images.join('\n')}
         onChange={handleManualChange}
         style={{ display: manualMode ? 'block' : 'none', width: '100%', minHeight: 120, fontFamily: 'monospace' }}
-        placeholder="One photo URL per line (/turfs/turf_1.jpg or https://…)"
+        placeholder="One photo URL per line (/venues/turf_1.jpg or https://…)"
       />
 
       {!manualMode && (

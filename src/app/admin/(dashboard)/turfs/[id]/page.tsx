@@ -16,7 +16,7 @@ export default async function AdminTurfEdit({ params }: { params: Promise<{ id: 
   return (
     <div className={dash.page}>
       <PageHeader title={`Edit ${turf.name}`} desc={`ID: ${turf.id}`}>
-        <Link href="/admin/turfs" className={`${dash.btn} ${dash.btnSecondary}`}><NavIcon name="arrowLeft" size={16} /> All turfs</Link>
+        <Link href="/admin/turfs" className={`${dash.btn} ${dash.btnSecondary}`}><NavIcon name="arrowLeft" size={16} /> All venues</Link>
         <Link href={`/arenas/${turf.id}`} className={`${dash.btn} ${dash.btnSecondary}`}>View public page</Link>
       </PageHeader>
 
@@ -78,9 +78,9 @@ export default async function AdminTurfEdit({ params }: { params: Promise<{ id: 
             </label>
           </div>
 
-          <h2 className={dash.cardTitle} style={{ marginTop: 8 }}>Turf details</h2>
+          <h2 className={dash.cardTitle} style={{ marginTop: 8 }}>Venue details</h2>
           <TurfProfileFields turf={turf} phoneOptional />
-          <div className={dash.actions}><button className={dash.btn}>Save turf</button></div>
+          <div className={dash.actions}><button className={dash.btn}>Save venue</button></div>
         </ActionForm>
       </div>
     </div>

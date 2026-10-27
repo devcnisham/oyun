@@ -7,30 +7,23 @@ import TurfCard from '@/modules/web/frontend/TurfCard';
 import PageSkeleton from '@/modules/shared/frontend/PageSkeleton';
 import type { TurfSummary } from '@/modules/shared/database/types';
 import styles from '@/app/(main)/arenas/page.module.css';
+import { VENUE_SORT_OPTIONS as sortOptions } from '@/modules/web/lib/venue-search-options';
 import { SPORTS, sportInfo } from '@/modules/web/lib/sports';
 import { filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/modules/web/backend/search';
-import { locateTurfs } from '@/modules/web/backend/map-actions';
 import { getOpenHours } from '@/modules/web/backend/availability-actions';
 import { hasOpenSlot, isTimeWindow, type TimeWindow } from '@/modules/web/lib/availability';
 import { istNow } from '@/modules/shared/lib/time';
-import type { Coords } from '@/modules/shared/backend/geocode';
 
-// Leaflet touches window, so the map loads in the browser only
+// Load the map view only when requested.
 const TurfMap = dynamic(() => import('@/modules/web/frontend/TurfMap'), { ssr: false, loading: () => <PageSkeleton variant="content" /> });
 
-const sortOptions = [
-  { value: 'featured', label: 'Featured First' },
-  { value: 'rating', label: 'Highest Rated' },
-  { value: 'price-low', label: 'Price: Low to High' },
-  { value: 'price-high', label: 'Price: High to Low' },
-  { value: 'availability', label: 'Most Available' },
-];
+
 
 // The list reads its filters from the address bar in the browser, so the page itself can be prebuilt and cached.
 // Re-keying on the filters that come from other pages (home search, top bar) restarts the list state when they change.
 export default function ArenasClient(props: { turfs: TurfSummary[]; areaNames: string[] }) {
   const sp = useSearchParams();
-  const key = ['q', 'area', 'sport', 'date', 'type'].map((k) => sp.get(k) ?? '').join('|');
+  const key = ['q', 'area', 'sport', 'date', 'type', 'sort', 'view'].map((k) => sp.get(k) ?? '').join('|');
   return <ArenasList key={key} {...props} />;
 }
 
@@ -51,6 +44,8 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
   const [selectedArea, setSelectedArea] = useState(defaultArea);
   const [selectedSport, setSelectedSport] = useState(urlSport || 'All Sports');
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationError, setLocationError] = useState('');
   const [sortBy, setSortBy] = useState(sortOptions.some((o) => o.value === urlSort) ? urlSort! : 'featured');
   const [maxPrice, setMaxPrice] = useState(() => parseMaxPrice(searchParams.get('maxPrice')));
   const amenityOptions = useMemo(() => [...new Set(turfs.flatMap((t) => t.amenities))].sort(), [turfs]);
@@ -98,23 +93,6 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
   // An empty answer means the day is outside the booking window: show everything rather than nothing
   const openHours = !checking && openSlots && Object.keys(openSlots.hours).length > 0 ? openSlots.hours : null;
 
-  // Map positions are looked up the first time the map opens, a few turfs at a time
-  const [located, setLocated] = useState<Record<string, Coords>>({});
-  useEffect(() => {
-    if (viewMode !== 'map') return;
-    let cancelled = false;
-    (async () => {
-      for (let i = 0; i < 6 && !cancelled; i++) {
-        const found = await locateTurfs().catch(() => ({}));
-        if (cancelled || !Object.keys(found).length) return;
-        setLocated((prev) => ({ ...prev, ...found }));
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [viewMode]);
-
   const filtered = useMemo(() => {
     let result = [...turfs];
 
@@ -150,6 +128,9 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
     // Sort
     switch (sortBy) {
+      case 'nearest':
+        if (position) { const distance = (t: TurfSummary) => typeof t.lat === 'number' && typeof t.lng === 'number' ? Math.hypot((t.lat-position.lat)*111, (t.lng-position.lng)*111*Math.cos(position.lat*Math.PI/180)) : Infinity; result.sort((a,b) => distance(a)-distance(b)); }
+        break;
       case 'rating':
         result.sort((a, b) => b.rating - a.rating);
         break;
@@ -167,11 +148,10 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
     }
 
     return result;
-  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time, placeType]);
+  }, [position, turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time, placeType]);
 
   const hasSearchPreferences = selectedArea !== 'All Areas' || maxPrice > 0 || amenities.length > 0 || Boolean(date || time);
 
-  const mapTurfs = filtered.map((t) => (located[t.id] ? { ...t, ...located[t.id] } : t));
 
   return (
     <div className={styles.page}>
@@ -198,8 +178,8 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
               <input
                 id="arena-search"
                 type="search"
-                placeholder="Search turfs or sports"
-                aria-label="Search turfs or sports"
+                placeholder="Search venues or sports"
+                aria-label="Search venues or sports"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
@@ -216,7 +196,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
                 <path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4" />
               </svg>
               <span className={styles.ctrlLabel}>{sortOptions.find((o) => o.value === sortBy)?.label}</span>
-              <select id="arena-sort" className={styles.overlaySelect} value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort turfs">
+              <select id="arena-sort" className={styles.overlaySelect} value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort venues">
                 {sortOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
@@ -257,13 +237,22 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
         </div>
       </div>
 
+      {viewMode === 'grid' && <div className={`container ${styles.mobileFilters}`}>
+        <div className={styles.sportRail} role="group" aria-label="Filter venues by sport">{['All Sports', ...SPORTS.map(s => s.value)].map(s => <button type="button" key={s} aria-pressed={selectedSport === s} onClick={() => setSelectedSport(s)}>{s === 'All Sports' ? 'All' : s}</button>)}</div>
+        <div className={styles.mobileSort}><strong>{filtered.length} venues</strong><div>
+          <button type="button" aria-pressed={sortBy === 'nearest'} onClick={() => { if (!navigator.geolocation) { setLocationError('Location is unavailable in this browser.'); return; } navigator.geolocation.getCurrentPosition(p => { if (!turfs.some(t => typeof t.lat === 'number' && typeof t.lng === 'number')) { setLocationError('Venue coordinates are not available yet.'); return; } setPosition({lat:p.coords.latitude,lng:p.coords.longitude}); setSortBy('nearest'); setLocationError(''); }, () => setLocationError('Allow location access to sort nearby venues.'), { timeout: 10000 }); }}>Nearest</button>
+          <button type="button" aria-pressed={sortBy === 'rating'} onClick={() => setSortBy('rating')}>Top rated</button>
+          <button type="button" aria-pressed={sortBy === 'price-low'} onClick={() => setSortBy('price-low')}>Price</button>
+        </div></div>{locationError && <p role="status" className={styles.locationError}>{locationError}</p>}
+      </div>}
+
       <div className={`container ${styles.body}`}>
         {/* Grid */}
         <div className={styles.main}>
           {filtered.length === 0 ? (
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>🏟️</div>
-              <h2 className={styles.emptyTitle}>No turfs found</h2>
+              <h2 className={styles.emptyTitle}>No venues found</h2>
               <p className={styles.emptyDesc}>Try a different area, price, day or search term.</p>
               <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSelectedSport('All Sports'); setMaxPrice(0); setAmenities([]); setDate(''); setTime(''); setSearchQuery(''); }}>
                 Clear Filters
@@ -271,12 +260,11 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
             </div>
           ) : viewMode === 'map' ? (
             <div className={styles.mapContainer}>
-              <TurfMap turfs={mapTurfs} />
-              {mapTurfs.some((t) => t.lat === undefined) && <p className={styles.mapNote}>Placing turfs on the map…</p>}
+              <TurfMap turfs={filtered} />
             </div>
           ) : (
             <>
-            <h2 className="sr-only">{filtered.length} turfs found</h2>
+            <h2 className="sr-only">{filtered.length} venues found</h2>
             <div className={styles.grid}>
               {filtered.map((turf, i) => (
                 // Above-the-fold cards paint at once: a fade-in starts at opacity 0 and would hold back the LCP image

@@ -6,7 +6,7 @@ import { HomeView } from '@/modules/web/frontend/main/HomeView';
 
 // The phone version of the home page: phones reach it through a rewrite from /, so it must stay indexable (canonical points at /)
 export const metadata: Metadata = {
-  title: { absolute: 'OYUN | Book Sports Turfs & Courts in Mangalore Online' },
+  title: { absolute: 'OYUN | Book Sports Venues & Courts in Mangalore Online' },
   description: SITE_DESCRIPTION,
   alternates: { canonical: '/' },
 };

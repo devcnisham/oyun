@@ -62,3 +62,45 @@
 @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
 .manageActions > div { min-width: 0; }
 .manageActions > div:has(> div) { grid-column: 1 / -1; }
+
+/* Compact icon actions retain accessible names and descriptive tooltips. */
+.actionGroup { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.actions, .extras { display: contents; }
+.actions > a, .extra { width: 46px; height: 46px; min-height: 46px; padding: 0; border-radius: 50%; flex: none; }
+.actions > :last-child, .extras > :last-child { grid-column: auto; }
+.withQr { display: block; }
+.qrBlock { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; align-items: center; padding: 20px; width: 100%; max-width: none; text-align: left; }
+.qrMedia { text-align: center; min-width: 0; }
+.qrBlock .summary { min-width: 0; }
+@media (max-width: 650px) { .qrBlock { grid-template-columns: 1fr; gap: 18px; padding: 16px; max-width: none; } .qrMedia { width: 196px; max-width: 100%; margin: 0 auto; } }
+
+/* OYUN-colour ticket with a clear, high-contrast QR panel. */
+.card { background: #4a0000; border-color: #4a0000; color: #fff8f5; }
+.ticketHeader { border-color: #ffffff26; }
+.turf { color: #fff8f5; }
+.when { color: #f3d9d3; }
+.where { color: #e9c8c0; }
+.actionGroup { border-color: #ffffff26; }
+.actions > a, .extra { background: #fff8f5; color: #4a0000; border-color: #fff8f5; }
+.actions > a:hover, .extra:hover { background: #fff; color: #4a0000; }
+.manageActions > div > button { background: #fff8f5; color: #4a0000; border-color: #fff8f5; }
+.note { color: #e9c8c0; border-color: #ffffff26; }
+.rewards { border-color: #ffffff26; }
+.rewardsTitle, .walletBalance, .txnDate { color: #f3d9d3; }
+.ticketTitleRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 12px; }
+.ticketTitleRow .status { margin: 0; max-width: 145px; font-size: 11px; text-align: center; }
+.qrBlock { display: block; padding: 20px; }
+.qrMedia { width: 100%; margin: auto; }
+.qr { max-width: 380px; margin: auto; }
+.qr svg { width: 100%; height: auto; }
+.qrMedia .code { margin-top: 12px; }
+@media (max-width: 650px) { .qrBlock { padding: 12px; } .qrMedia { width: 100%; } .qr svg { width: 100%; height: auto; } .ticketTitleRow .status { max-width: 128px; font-size: 10px; padding: 6px 8px; } }
+.when { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; font-weight: 550; margin-top: 12px; }
+.ticketTime { margin-left: auto; white-space: nowrap; text-align: right; }
+.qrBlock { max-width: 320px; margin-inline: auto; padding: 16px; }
+.qr { width: 260px; max-width: 100%; }
+.qr svg { width: 100%; height: auto; }
+.qrMedia .code { font-size: 16px; }
+@media (max-width: 650px) { .qrBlock { max-width: 292px; padding: 14px; } .qr { width: 236px; max-width: 100%; } .when { font-size: 12px; } }
+.ticketButton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 18px; border: 1px solid #fff8f5; border-radius: 999px; background: #fff8f5; color: #4a0000; font-size: 13px; font-weight: 700; text-decoration: none; }
+.ticketButton:hover { background: #fff; }

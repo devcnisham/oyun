@@ -30,7 +30,7 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
               </div>
             </div>
             <p className={styles.brandDesc}>
-              Discover and book turfs and courts near you: football, box cricket, badminton and pickleball. Play more, stress less.
+              Discover and book venues and courts near you: football, box cricket, badminton and pickleball. Play more, stress less.
             </p>
             {(SOCIAL_LINKS.instagram || SOCIAL_LINKS.whatsapp) && (
             <div className={styles.socialRow}>
@@ -57,9 +57,9 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
             <div className={styles.linkGroup}>
               <p className={styles.linkGroupTitle}>Book</p>
               <ul className={styles.linkList}>
-                <li><Link href="/arenas">All turfs</Link></li>
-                <li><Link href="/areas">Turfs by area</Link></li>
-                <li><Link href="/sports/football">Football turfs</Link></li>
+                <li><Link href="/arenas">All venues</Link></li>
+                <li><Link href="/areas">Venues by area</Link></li>
+                <li><Link href="/sports/football">Football venues</Link></li>
                 <li><Link href="/sports/box-cricket">Box cricket</Link></li>
                 <li><Link href="/sports/badminton">Badminton courts</Link></li>
                 <li><Link href="/sports/pickleball">Pickleball courts</Link></li>
@@ -78,14 +78,14 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
                 <li><Link href="/guides">Sports guides &amp; rules</Link></li>
                 <li><Link href="/guides/pickleball-mangalore-venues">Pickleball in Mangalore</Link></li>
                 <li><Link href="/guides/padel-in-mangalore">Padel court guide</Link></li>
-                <li><Link href="/curated/night-turfs-mangalore">Night turfs (after 12 AM)</Link></li>
-                <li><Link href="/curated/monsoon-covered-turfs-mangalore">Monsoon covered turfs</Link></li>
+                <li><Link href="/curated/night-turfs-mangalore">Night venues (after 12 AM)</Link></li>
+                <li><Link href="/curated/monsoon-covered-turfs-mangalore">Monsoon covered venues</Link></li>
               </ul>
             </div>
             <div className={styles.linkGroup}>
-              <p className={styles.linkGroupTitle}>Turf owners</p>
+              <p className={styles.linkGroupTitle}>Venue owners</p>
               <ul className={styles.linkList}>
-                <li><Link href="/list-turf">List your turf</Link></li>
+                <li><Link href="/list-turf">List your venue</Link></li>
                 <li><Link href="/partner">Partner dashboard</Link></li>
                 <li><Link href="/admin">Admin dashboard</Link></li>
               </ul>

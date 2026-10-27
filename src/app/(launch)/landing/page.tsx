@@ -17,10 +17,10 @@ import SlotBoard from '@/modules/web/frontend/launch/landing/SlotBoard';
 import styles from './landing.module.css';
 
 export const metadata: Metadata = {
-  title: 'Book Football, Box Cricket, Badminton & Pickleball Turfs in Mangalore',
+  title: 'Book Football, Box Cricket, Badminton & Pickleball Venues in Mangalore',
   description: SITE_DESCRIPTION,
   alternates: { canonical: '/', languages: localeAlternates() },
-  openGraph: { ...ogBase('/'), title: 'OYUN | Book Sports Turfs & Courts in Mangalore Online', description: SITE_DESCRIPTION },
+  openGraph: { ...ogBase('/'), title: 'OYUN | Book Sports Venues & Courts in Mangalore Online', description: SITE_DESCRIPTION },
 };
 
 const STEPS = [
@@ -44,7 +44,7 @@ const LISTING = [
 
 const FAQ = [
   { q: 'What is OYUN?', a: `OYUN is a booking platform for sports venues in ${SITE_CITY}. You see open slots, hold the hours you want and get a ticket, instead of calling around.` },
-  { q: 'What can I book?', a: 'Football and box cricket turfs, plus badminton and pickleball courts. More venues are joining before launch.' },
+  { q: 'What can I book?', a: 'Football and box cricket venues, plus badminton and pickleball courts. More venues are joining before launch.' },
   { q: 'How does booking work?', a: 'Choose a venue, a day and your hours. They are held for 8 minutes while you sign in and confirm. A small advance is paid when you book and the rest at the venue.' },
   { q: 'Can I cancel?', a: 'Yes, from your ticket, up to 2 hours before the slot starts.' },
   { q: 'I run a venue. How do I get listed?', a: 'Write to us with your venue details. Once we approve it you get a partner login with your calendar, bookings and check-in tools.' },
@@ -65,7 +65,7 @@ export default async function LandingPage() {
             <div className={styles.heroCopy}>
               <p className={styles.kicker}>{SITE_CITY}</p>
               <h1 id="hero-title" className={styles.h1}>
-                <span className="sr-only">Book football, box cricket, badminton and pickleball turfs in {SITE_CITY}. </span>
+                <span className="sr-only">Book football, box cricket, badminton and pickleball venues in {SITE_CITY}. </span>
                 <span className={styles.rise} style={{ ['--d' as string]: '0ms' }}>Pick the hour.</span>
                 <span className={`${styles.rise} ${styles.h1Accent}`} style={{ ['--d' as string]: '120ms' }}>Play the game.</span>
               </h1>

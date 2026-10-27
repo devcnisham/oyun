@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ band: str
   if (!data) return { title: 'Not found', robots: { index: false } };
   const { band, turfs } = data;
   return {
-    title: `Turfs Under ${rupees(band)} per Hour in ${SITE_CITY} | Cheap Turf Booking`,
-    description: `${turfs.length} turf${turfs.length === 1 ? '' : 's'} and court${turfs.length === 1 ? '' : 's'} in ${SITE_CITY} at ${rupees(band)} per hour or less, from ${rupees(turfs[0].pricePerHour)}/hr. Compare and book online on OYUN.`,
+    title: `Venues Under ${rupees(band)} per Hour in ${SITE_CITY} | Cheap Venue Booking`,
+    description: `${turfs.length} venue${turfs.length === 1 ? '' : 's'} and court${turfs.length === 1 ? '' : 's'} in ${SITE_CITY} at ${rupees(band)} per hour or less, from ${rupees(turfs[0].pricePerHour)}/hr. Compare and book online on OYUN.`,
     alternates: { canonical: `/prices/${slug}` },
     openGraph: ogBase(`/prices/${slug}`),
   };
@@ -50,15 +50,15 @@ export default async function PriceBandPage({ params }: { params: Promise<{ band
       <JsonLd
         data={[
           breadcrumbSchema([{ name: 'Home', path: '/' }, { name: `Areas in ${SITE_CITY}`, path: '/areas' }, { name: `Under ${rupees(band)}`, path: `/prices/${slug}` }]),
-          itemListSchema(turfs, `Turfs under ${rupees(band)} per hour in ${SITE_CITY}`),
+          itemListSchema(turfs, `Venues under ${rupees(band)} per hour in ${SITE_CITY}`),
         ]}
       />
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
         <Link href="/">Home</Link> <span aria-hidden>›</span> <Link href="/areas">Areas in {SITE_CITY}</Link> <span aria-hidden>›</span> <span aria-current="page">Under {rupees(band)}</span>
       </nav>
-      <h1 className={styles.title}>Turfs under {rupees(band)} per hour in {SITE_CITY}</h1>
+      <h1 className={styles.title}>Venues under {rupees(band)} per hour in {SITE_CITY}</h1>
       <p className={styles.lead}>
-        {turfs.length} venue{turfs.length === 1 ? '' : 's'} at {rupees(band)} per hour or less, starting at {rupees(turfs[0].pricePerHour)}. Prices are per hour for the whole turf or court; evening peak slots can cost a little more.
+        {turfs.length} venue{turfs.length === 1 ? '' : 's'} at {rupees(band)} per hour or less, starting at {rupees(turfs[0].pricePerHour)}. Prices are per hour for the whole venue or court; evening peak slots can cost a little more.
       </p>
       <section aria-labelledby="list-heading">
         <h2 id="list-heading" className={styles.h2}>Venues under {rupees(band)}</h2>
@@ -72,7 +72,7 @@ export default async function PriceBandPage({ params }: { params: Promise<{ band
         <h2 id="more-heading" className={styles.h2}>Other budgets</h2>
         <div className={styles.areas}>
           {PRICE_BANDS.filter((b) => b !== band).map((b) => (
-            <Link key={b} href={`/prices/${bandSlug(b)}`} className={styles.areaLink}>Turfs under {rupees(b)} per hour</Link>
+            <Link key={b} href={`/prices/${bandSlug(b)}`} className={styles.areaLink}>Venues under {rupees(b)} per hour</Link>
           ))}
           <Link href="/areas" className={styles.areaLink}>Browse by area</Link>
         </div>

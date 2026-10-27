@@ -34,3 +34,10 @@
 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes drop { from { transform: translateY(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
+.controls { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 16px; }
+.controls label { display: grid; gap: 7px; font-size: 12px; color: var(--text-muted); font-weight: 650; }
+.controls select { min-width: 0; width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: var(--text-primary); font: inherit; font-size: 16px; }
+.categoryFilters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.categoryFilters button { min-height: 44px; padding: 10px 14px; border: 1px solid #dedee2; border-radius: 999px; background: #fff; color: #515154; font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.categoryFilters button[aria-pressed="true"] { background: #9e0a0a; border-color: #9e0a0a; color: #fff; }
+.categoryFilters button:focus-visible { outline: 2px solid #6e6e73; outline-offset: 3px; }

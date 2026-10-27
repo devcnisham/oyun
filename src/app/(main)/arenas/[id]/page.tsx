@@ -29,7 +29,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const turf = await getPublicTurf(id);
-  if (!turf) return { title: 'Turf not found', robots: { index: false } };
+  if (!turf) return { title: 'Venue not found', robots: { index: false } };
   const sport = primarySport(turf);
   const place = sport.place === 'court' ? 'Court' : 'Turf';
   const title = `${turf.name}, ${turf.area} | ${sport.label} ${place} from ₹${turf.pricePerHour}/hr`;
@@ -69,7 +69,7 @@ export default async function TurfDetailPage({ params }: PageProps) {
         turfSchema(turf),
         breadcrumbSchema([
           { name: 'Home', path: '/' },
-          { name: 'Turfs in Mangalore', path: '/arenas' },
+          { name: 'Venues in Mangalore', path: '/arenas' },
           { name: turf.area, path: `/turfs/${areaSlug(turf.area)}` },
           { name: turf.name, path: `/arenas/${turf.id}` },
         ]),

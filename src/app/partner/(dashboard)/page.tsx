@@ -404,7 +404,7 @@ export default async function PartnerDashboard() {
           <div>
             <h2 className={styles.cardTitle}>Manual Slot Management & Facility Holds</h2>
             <p className={styles.cardSubtitle}>
-              Quickly block slots for offline customer phone bookings, turf maintenance, or weather emergencies
+              Quickly block slots for offline customer phone bookings, venue maintenance, or weather emergencies
             </p>
           </div>
           <Link href="/partner/slots" className={styles.actionBtnSecondary} style={{ padding: '6px 12px', fontSize: 13 }}>

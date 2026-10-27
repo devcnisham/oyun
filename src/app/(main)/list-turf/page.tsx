@@ -72,7 +72,7 @@ export default function ListTurfPage() {
     }
   };
 
-  const steps = ['Your Info', 'Turf Details', 'Pricing', 'Finish'];
+  const steps = ['Your Info', 'Venue Details', 'Pricing', 'Finish'];
 
   if (submitted) {
     return (
@@ -102,7 +102,7 @@ export default function ListTurfPage() {
           <div className="container">
             <BackButton />
             <h1 className={styles.heroTitle}>Partner with OYUN</h1>
-            <p className={styles.heroSubtitle}>Join Mangalore&apos;s fastest growing turf booking network. Free to list, zero commission during beta.</p>
+            <p className={styles.heroSubtitle}>Join Mangalore&apos;s fastest growing venue booking network. Free to list, zero commission during beta.</p>
             <button className="btn btn--primary btn--lg" onClick={() => { document.getElementById('list-form')?.scrollIntoView({ behavior: 'smooth' }); }}>List Your Property Now</button>
           </div>
         </motion.div>
@@ -155,10 +155,10 @@ export default function ListTurfPage() {
         <div className="container">
           <div className={styles.headerInner}>
             <div>
-              <p className="section-label">For Turf Owners</p>
-              <h2 className={styles.pageTitle}>List Your Turf on OYUN</h2>
+              <p className="section-label">For Venue Owners</p>
+              <h2 className={styles.pageTitle}>List Your Venue on OYUN</h2>
               <p className={styles.pageDesc}>
-                Join Mangalore&apos;s growing turf booking network. Free to list, free to earn.
+                Join Mangalore&apos;s growing venue booking network. Free to list, free to earn.
               </p>
               <p className={styles.pageDesc}>
                 Already a partner? <Link href="/partner/login">Log in here</Link>
@@ -286,11 +286,11 @@ export default function ListTurfPage() {
             {/* Step 2: Turf Details */}
             {step === 2 && (
               <div className={`${styles.stepContent} animate-fadeInUp`}>
-                <h2 className={styles.stepTitle}>Turf Details</h2>
+                <h2 className={styles.stepTitle}>Venue Details</h2>
                 <p className={styles.stepDesc}>Describe your facility so players can make an informed choice.</p>
 
                 <div className={styles.field}>
-                  <label className={styles.label} htmlFor="turfName">Turf Name *</label>
+                  <label className={styles.label} htmlFor="turfName">Venue Name *</label>
                   <input id="turfName" name="turfName" type="text" required placeholder="e.g. Arena Central" className={styles.input} value={formData.turfName} onChange={handleChange} />
                 </div>
 
@@ -303,7 +303,7 @@ export default function ListTurfPage() {
                     </select>
                   </div>
                   <div className={styles.field}>
-                    <label className={styles.label} htmlFor="size">Turf Format *</label>
+                    <label className={styles.label} htmlFor="size">Venue Format *</label>
                     <select id="size" name="size" required className={styles.select} value={formData.size} onChange={handleChange}>
                       <option value="">Select size</option>
                       {sizes.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -397,7 +397,7 @@ export default function ListTurfPage() {
                 </div>
 
                 <div className={styles.pricingNote}>
-                  💡 Tip: Turfs with peak-hour pricing typically earn 35% more per month than flat-rate turfs.
+                  💡 Tip: Venues with peak-hour pricing typically earn 35% more per month than flat-rate venues.
                 </div>
               </div>
             )}
@@ -406,16 +406,16 @@ export default function ListTurfPage() {
             {step === 4 && (
               <div className={`${styles.stepContent} animate-fadeInUp`}>
                 <h2 className={styles.stepTitle}>Final Details</h2>
-                <p className={styles.stepDesc}>Add a short description of your turf for players to read before booking.</p>
+                <p className={styles.stepDesc}>Add a short description of your venue for players to read before booking.</p>
 
                 <div className={styles.field}>
-                  <label className={styles.label} htmlFor="description">Turf Description *</label>
+                  <label className={styles.label} htmlFor="description">Venue Description *</label>
                   <textarea
                     id="description"
                     name="description"
                     required
                     rows={5}
-                    placeholder="Describe your turf — the quality of the pitch, unique features, surroundings, facilities..."
+                    placeholder="Describe your venue — the quality of the pitch, unique features, surroundings, facilities..."
                     className={styles.textarea}
                     value={formData.description}
                     onChange={handleChange}

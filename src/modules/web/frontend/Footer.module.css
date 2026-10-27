@@ -172,7 +172,7 @@
 .watermark {
   margin: 40px 0 28px;
   color: var(--logo-from);
-  opacity: 0.07;
+  opacity: 0.20;
   font-family: var(--font-wordmark-family);
   font-size: clamp(100px, 25vw, 350px);
   font-weight: 800;

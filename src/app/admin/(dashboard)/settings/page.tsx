@@ -75,14 +75,14 @@ export default async function AdminSettings() {
               </label>
             </div>
 
-            <p className={dash.muted}>Commission applies to online payments; individual turfs can override it on their edit page. Cashback and referral credit are paid by OYUN, not the turf.</p>
+            <p className={dash.muted}>Commission applies to online payments; individual venues can override it on their edit page. Cashback and referral credit are paid by OYUN, not the venue.</p>
             <div className={dash.actions}><button className={dash.btn}>Save settings</button></div>
           </ActionForm>
         </div>
 
         <div className={dash.card}>
           <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Offers for players</h2></div>
-          <p className={dash.muted}>Two offers that apply to every turf while they are on. A player gets the single best offer for a booking: these, the turf&apos;s own offers and first-time offers do not add up. The Student offer only applies to players whose student ID you have approved (see Student IDs).</p>
+          <p className={dash.muted}>Two offers that apply to every venue while they are on. A player gets the single best offer for a booking: these, the venue&apos;s own offers and first-time offers do not add up. The Student offer only applies to players whose student ID you have approved (see Student IDs).</p>
           <ActionForm action={savePlatformOffers}>
             <h3 className={dash.cardTitle}>Regular offer</h3>
             <label className={dash.check}><input type="checkbox" name="regularActive" defaultChecked={offers.regular.active} /> On: for every player</label>
@@ -114,7 +114,7 @@ export default async function AdminSettings() {
 
         <div className={dash.card}>
           <div className={dash.cardHeader}><h2 className={dash.cardTitle}>Rain days</h2></div>
-          <p className={dash.muted}>On a rain day, players with a booking at any outdoor turf can cancel up to the start of the slot and get a full wallet refund. Indoor and covered turfs are not affected.</p>
+          <p className={dash.muted}>On a rain day, players with a booking at any outdoor venue can cancel up to the start of the slot and get a full wallet refund. Indoor and covered venues are not affected.</p>
           <ActionForm action={setRainDay} resetOnSuccess>
             <input type="hidden" name="mode" value="set" />
             <label className={dash.field}>

@@ -7,8 +7,8 @@ test.beforeEach(async ({ page }) => {
 
 test('home opens the booking feed directly on every screen', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Book turfs and courts in Mangalore');
-  await expect(page.getByRole('search', { name: 'Find a turf' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Book venues and courts in Mangalore');
+  await expect(page.getByRole('search', { name: 'Find a venue' })).toBeVisible();
   await expect(page.getByRole('img', { name: /QR code that opens OYUN on your phone/ })).toHaveCount(0);
   await expect(page.getByRole('img', { name: /OYUN app: browse turfs/ })).toHaveCount(0);
   const venue = page.locator('a[href^="/arenas/"]').first();
@@ -20,7 +20,7 @@ test('home opens the booking feed directly on every screen', async ({ page }) =>
 
 test('home search carries its query into venue results', async ({ page }) => {
   await page.goto('/');
-  const search = page.getByRole('search', { name: 'Find a turf' });
+  const search = page.getByRole('search', { name: 'Find a venue' });
   await search.getByRole('searchbox').fill('Kodialbail');
   await search.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page).toHaveURL(/\/arenas\?/);
@@ -37,8 +37,8 @@ test('the redesigned home fits the viewport and offers direct daytime browsing',
   const daytime = page.getByRole('region', { name: /Morning and afternoon deals/ });
   await expect(daytime.getByRole('link', { name: /daytime slots/ })).toHaveCount(3);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({ path: `/private/tmp/oyun-redesign-${isMobile ? 'mobile' : 'desktop'}.png`, fullPage: true });
-  await page.screenshot({ path: `/private/tmp/oyun-redesign-${isMobile ? 'mobile' : 'desktop'}-top.png` });
+  await page.screenshot({ path: test.info().outputPath(`oyun-redesign-${isMobile ? 'mobile' : 'desktop'}.png`), fullPage: true });
+  await page.screenshot({ path: test.info().outputPath(`oyun-redesign-${isMobile ? 'mobile' : 'desktop'}-top.png`) });
 });
 
 test('home remains readable at tablet width', async ({ page, isMobile }) => {
@@ -53,7 +53,7 @@ test('home metadata and public crawler endpoints are still served', async ({ pag
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/OYUN.*Book Sports/);
-  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Book.*turfs/);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Book.*venues/);
   const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
   expect(new URL(canonical!).pathname).toBe('/');
   expect((await request.get('/robots.txt')).status()).toBe(200);

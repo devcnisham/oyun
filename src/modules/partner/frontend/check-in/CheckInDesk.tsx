@@ -1,5 +1,6 @@
 'use client';
 
+import { bookingCodeFromQr } from '@/modules/shared/lib/booking-qr';
 import NavIcon from '@/modules/shared/frontend/dash/NavIcon';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { dash } from '@/modules/shared/frontend/dash/ui';
@@ -50,7 +51,9 @@ export default function CheckInDesk({ initialCode = '' }: { initialCode?: string
         const found = await detector.detect(videoRef.current);
         const value = found[0]?.rawValue?.trim();
         if (value) {
-          setCode(value);
+          const bookingCode = bookingCodeFromQr(value);
+          if (!bookingCode) { setScanError('This is not an OYUN booking QR code.'); stopCamera(); return; }
+          setCode(bookingCode);
           stopCamera();
           // Let React apply the value before submitting
           requestAnimationFrame(() => formRef.current?.requestSubmit());

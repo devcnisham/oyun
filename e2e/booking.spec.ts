@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { TURF, acceptDialogs, asPlayer, confirmBooking, holdFirstSlot, holdSlot, seatAt, selectDay } from './helpers';
 
-test('browse → hold → book → cancel', async ({ page }) => {
+test('browse → hold → book → downloadable ticket', async ({ page }) => {
   await asPlayer(page);
   acceptDialogs(page);
 
@@ -13,11 +13,9 @@ test('browse → hold → book → cancel', async ({ page }) => {
   const code = await confirmBooking(page);
   expect(code).toMatch(/^SA-/);
 
-  // Anonymous ticket: the booking phone number is the second factor
-  await page.getByLabel('Mobile number used for this booking').fill('9876500001');
-  await page.getByRole('button', { name: 'Cancel booking' }).click();
-  await expect(page.getByRole('button', { name: 'Cancel booking' })).toBeHidden();
-  await expect(page.getByText(/cancelled/i).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Download QR' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View invoice' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Cancel booking' })).toHaveCount(0);
 });
 
 test('a slot booked by one player shows as booked to another', async ({ browser }) => {
@@ -42,19 +40,17 @@ test('booking ticket tools remain usable at tablet and phone widths', async ({ p
   acceptDialogs(page);
   expect(await holdFirstSlot(page, 3)).toBe(true);
   await confirmBooking(page);
-  await page.screenshot({ path: `/private/tmp/oyun-ticket-${isMobile ? 'mobile' : 'desktop'}.png`, fullPage: true });
-  await page.getByRole('button', { name: /Split cost with team/ }).click();
-  await expect(page.getByRole('heading', { name: 'Split Payment with Teammates' })).toBeVisible();
-  for (const width of isMobile ? [393] : [700, 393]) {
+  await page.screenshot({ path: test.info().outputPath(`oyun-ticket-${isMobile ? 'mobile' : 'desktop'}.png`), fullPage: true });
+  for (const width of isMobile ? [320, 393] : [700, 393]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await expect(page.getByRole('button', { name: /Copy message/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Download QR' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'View invoice' })).toBeVisible();
   }
-  await page.getByRole('button', { name: 'Close', exact: true }).click();
-  await page.getByRole('button', { name: /Reschedule booking/ }).click();
-  await expect(page.getByLabel('Select new time')).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.getByLabel('Mobile number used for this booking', { exact: true }).fill('9876500078');
-  await page.getByRole('button', { name: 'Cancel booking', exact: true }).click();
-  await expect(page.getByText(/cancelled/i).first()).toBeVisible();
+  const download = page.getByRole('link', { name: 'Download QR' });
+  await expect(download).toHaveAttribute('href', /^data:image\/png;base64,/);
+  await expect(download).toHaveAttribute('download', /^OYUN-SA-/);
+  await expect(page.getByRole('button', { name: /Split cost|Reschedule|Cancel booking/ })).toHaveCount(0);
+  await page.getByRole('link', { name: 'View invoice' }).click();
+  await expect(page.getByRole('heading', { name: /Tax Invoice|Booking Receipt/ })).toBeVisible();
 });

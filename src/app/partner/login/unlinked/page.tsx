@@ -20,11 +20,11 @@ export default async function UnlinkedPage() {
           <div className={styles.loginHeader}>
             <h2>No partner account yet</h2>
             <p>
-              {email ? <>You signed in as <b>{email}</b>, but that email is not linked to an approved turf. </> : <>That sign-in is not linked to an approved turf. </>}
-              Apply to list your turf and we will approve it, then you can sign in with the same account.
+              {email ? <>You signed in as <b>{email}</b>, but that email is not linked to an approved venue. </> : <>That sign-in is not linked to an approved venue. </>}
+              Apply to list your venue and we will approve it, then you can sign in with the same account.
             </p>
           </div>
-          <Link href="/list-turf" className={styles.loginBtn} style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>List your turf</Link>
+          <Link href="/list-turf" className={styles.loginBtn} style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>List your venue</Link>
           <div className={styles.partnerPrompt}>
             {clerkEnabled && (
               <SignOutButton redirectUrl="/partner/login">

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import styles from './Breadcrumbs.module.css';
 
 const names: Record<string, string> = {
-  blog: 'Blog', news: 'News & events', about: 'About us', guides: 'Guides', arenas: 'Sports arenas', bookings: 'Bookings', events: 'Events', tournaments: 'Tournaments', matches: 'Open matches', profile: 'Profile', settings: 'Settings', saved: 'Saved turfs', offers: 'Offers', sports: 'Sports', areas: 'Areas', turfs: 'Turfs', faq: 'FAQ', help: 'Help', terms: 'Terms & conditions', privacy: 'Privacy policy', 'list-turf': 'List your turf', membership: 'Membership', curated: 'Collections', prices: 'Prices', m: 'Home',
+  blog: 'Blog', news: 'News & events', about: 'About us', guides: 'Guides', arenas: 'Sports arenas', bookings: 'Bookings', events: 'Events', tournaments: 'Tournaments', matches: 'Open matches', profile: 'Profile', settings: 'Settings', saved: 'Saved venues', offers: 'Offers', sports: 'Sports', areas: 'Areas', turfs: 'Venues', faq: 'FAQ', help: 'Help', terms: 'Terms & conditions', privacy: 'Privacy policy', 'list-turf': 'List your venue', membership: 'Membership', curated: 'Collections', prices: 'Prices', m: 'Home',
 };
 export default function Breadcrumbs({ guideCategories = {} }: { guideCategories?: Record<string, string> }) {
   const pathname = usePathname();

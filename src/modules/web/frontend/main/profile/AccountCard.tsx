@@ -16,7 +16,6 @@ export default function AccountCard() {
       <section className={`${styles.card} ${styles.signInCard}`}>
         <div className={styles.signInIcon} aria-hidden><ProfileIcon name="user" /></div>
         <h2>Sign in to OYUN</h2>
-        <p>Keep your bookings and wallet on every device.</p>
         <div className={styles.authRow}>
           <Link href="/login" className={styles.primaryBtn}>Sign in</Link>
           <Link href="/signup" className={styles.ghostBtn}>Create account</Link>

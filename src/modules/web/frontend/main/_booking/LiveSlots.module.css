@@ -1,0 +1,7 @@
+.banner { margin-top: 32px; padding: 34px 24px; border-radius: 24px; background: #4a0000; color: #fff; text-align: center; }
+.eyebrow { margin: 0 0 10px; color: #f2d6d3; font-size: 10px; font-weight: 750; letter-spacing: .17em; }
+.total { margin: 0; color: #fff; font-size: clamp(32px, 4vw, 48px); font-weight: 800; letter-spacing: -.045em; line-height: 1.15; }
+.total strong { color: #ffd46b; font-weight: 850; font-variant-numeric: tabular-nums; }
+.caption { max-width: 320px; margin: 12px auto 0; color: #f2d6d3; font-size: 14px; line-height: 1.5; }
+.loading { min-height: 48px; display: grid; place-items: center; margin: 0; color: #fff; font-size: 20px; font-weight: 650; }
+@media (max-width: 600px) { .banner { padding: 30px 20px; margin-top: 26px; border-radius: 20px; } .total { font-size: 36px; } .caption { max-width: 240px; } }

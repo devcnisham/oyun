@@ -7,7 +7,7 @@ import BackButton from '@/modules/web/frontend/BackButton';
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
   description:
-    'The terms for booking sports turfs on OYUN and for listing a venue: slot holds, paying at the venue, cancellations, no-shows, conduct and liability.',
+    'The terms for booking sports venues on OYUN and for listing a venue: slot holds, paying at the venue, cancellations, no-shows, conduct and liability.',
   alternates: { canonical: '/terms' },
 };
 
@@ -24,44 +24,44 @@ export default async function TermsPage() {
 
         <div className={styles.textBlock}>
           <p>
-            These terms apply when you use OYUN to book a sports turf (&quot;player&quot;) or to list and manage a venue (&quot;partner&quot;). By making a booking or listing a venue
+            These terms apply when you use OYUN to book a sports venue (&quot;player&quot;) or to list and manage a venue (&quot;partner&quot;). By making a booking or listing a venue
             you agree to them. Please also read our <Link href="/privacy">Privacy Policy</Link>.
           </p>
 
           <h2>1. What OYUN does</h2>
           <p>
-            OYUN is a marketplace that shows venue availability and takes bookings on behalf of independent turf owners. The venue, its facilities and the game itself are
-            provided by the turf owner, not by OYUN.
+            OYUN is a marketplace that shows venue availability and takes bookings on behalf of independent venue owners. The venue, its facilities and the game itself are
+            provided by the venue owner, not by OYUN.
           </p>
 
           <h2>2. Bookings and slot holds</h2>
           <ul>
             <li>When you press Proceed, the selected slots are held for you for 8 minutes. If you don&apos;t complete the booking in that time the hold ends and the slots are released.</li>
             <li>A booking is confirmed only when you see the confirmation with a booking code and QR code.</li>
-            <li>Please enter your real name and mobile number; the turf uses them to check you in.</li>
+            <li>Please enter your real name and mobile number; the venue uses them to check you in.</li>
             <li>Prices can change with demand (for example peak hours, weekends or last-minute deals). The price shown at checkout is the price you pay.</li>
           </ul>
 
           <h2>3. Payments</h2>
           <ul>
-            <li>You reserve slots on OYUN and pay the turf at the venue, by cash or UPI. Each booked hour needs an advance (₹150 by default) when you arrive, and the balance is paid after you play. No payment is taken online.</li>
+            <li>You reserve slots on OYUN and pay the venue at the venue, by cash or UPI. Each booked hour needs an advance (₹150 by default) when you arrive, and the balance is paid after you play. No payment is taken online.</li>
             <li>Prices include GST where applicable. Invoices are available from your booking page.</li>
             <li>Wallet credits (cashback, referral rewards), when offered, can only be used for bookings on OYUN, have no cash value and cannot be transferred.</li>
           </ul>
 
           <h2>4. Cancellations, no-shows and refunds</h2>
           <ul>
-            <li><strong>Standard cancellation:</strong> You can cancel a booking yourself from its booking page up to 2 hours before the slot starts. Any advance payment or wallet deduction is refunded 100% to your OYUN wallet immediately. Within 2 hours of the slot, self-cancellation closes; contact the turf or OYUN support.</li>
-            <li><strong>Rain &amp; weather policy (Monsoon guarantee):</strong> For outdoor open turfs, if unplayable monsoon rain or waterlogging occurs, your booking is eligible for an immediate 100% full wallet refund right up until the slot start time.</li>
+            <li><strong>Standard cancellation:</strong> You can cancel a booking yourself from its booking page up to 2 hours before the slot starts. Any advance payment or wallet deduction is refunded 100% to your OYUN wallet immediately. Within 2 hours of the slot, self-cancellation closes; contact the venue or OYUN support.</li>
+            <li><strong>Rain &amp; weather policy (Monsoon guarantee):</strong> For outdoor open venues, if unplayable monsoon rain or waterlogging occurs, your booking is eligible for an immediate 100% full wallet refund right up until the slot start time.</li>
             <li><strong>No-shows:</strong> If you don&apos;t arrive for your slot and haven&apos;t cancelled, it will be marked as a no-show. Repeated no-shows can lead to your account being blocked from booking.</li>
-            <li><strong>Turf cancellation:</strong> If a turf cancels or cannot host your game (for maintenance or venue emergencies), you receive a 100% refund to your wallet and our team assists with rebooking.</li>
+            <li><strong>Venue cancellation:</strong> If a venue cancels or cannot host your game (for maintenance or venue emergencies), you receive a 100% refund to your wallet and our team assists with rebooking.</li>
           </ul>
 
           <h2>5. At the venue</h2>
           <ul>
-            <li>Follow the turf&apos;s rules, timings and safety instructions. Wear suitable footwear.</li>
+            <li>Follow the venue&apos;s rules, timings and safety instructions. Wear suitable footwear.</li>
             <li>You are responsible for damage you cause to the venue or equipment.</li>
-            <li>Sport carries a risk of injury. You play at your own risk; the turf owner is responsible for the condition of the venue.</li>
+            <li>Sport carries a risk of injury. You play at your own risk; the venue owner is responsible for the condition of the venue.</li>
           </ul>
 
           <h2>6. Partners</h2>

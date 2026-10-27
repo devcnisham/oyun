@@ -3,13 +3,15 @@
 // driven with the keyboard alone.
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { TURF, asPlayer, seats } from './helpers';
+import { TURF, PARTNER_TURF, asPlayer, seats, selectDay, holdFirstSlot, confirmBooking } from './helpers';
 
 const PAGES = [
   { name: 'home', path: '/' },
   { name: 'landing page', path: '/landing' },
   { name: 'launch countdown', path: '/countdown' },
   { name: 'about', path: '/about' },
+  { name: 'blog', path: '/blog' },
+  { name: 'news', path: '/news' },
   { name: 'sports index', path: '/sports' },
   { name: 'offers', path: '/offers' },
   { name: 'events', path: '/events' },
@@ -61,7 +63,7 @@ for (const { name, path } of PAGES) {
 test('the booking path works with the keyboard alone', async ({ page }) => {
   await asPlayer(page);
   await page.goto(`/arenas/${TURF}`);
-  await page.getByRole('tab').nth(1).click(); // tomorrow
+  await selectDay(page, 1); // wait for the hydrated tomorrow grid
   const open = seats(page).and(page.locator('[aria-disabled="false"][aria-pressed="false"]'));
   await open.first().waitFor({ timeout: 10_000 });
 
@@ -84,4 +86,15 @@ test('the booking path works with the keyboard alone', async ({ page }) => {
     }
     await expect(dialog).toBeVisible({ timeout: 1_500 });
   }).toPass({ timeout: 15_000 });
+});
+
+
+test('partner upcoming-booking card meets contrast requirements', async ({ page }) => {
+  await asPlayer(page, 'Contrast Player', '9876500091');
+  test.skip(!await holdFirstSlot(page, 0, PARTNER_TURF), 'No remaining slot in the venue day');
+  await confirmBooking(page);
+  const { results, summary } = await scan(page, '/partner');
+  await expect(page.getByRole('region', { name: 'Next upcoming booking' })).toBeVisible();
+  const contrast = results.violations.filter(v => v.id === 'color-contrast');
+  expect(contrast, summary.join('\n')).toEqual([]);
 });

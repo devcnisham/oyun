@@ -26,8 +26,8 @@ describe('Content Security Policy (CSP)', () => {
     expect(cspProd).not.toContain("'unsafe-eval'");
   });
 
-  test('allows no frames without Clerk, since maps are drawn on the page and not embedded', () => {
+  test('allows Google Maps frames without opening arbitrary frame origins', () => {
     const frameSrc = buildCsp('abc', false).split(';').find((d) => d.trim().startsWith('frame-src')) ?? '';
-    expect(frameSrc.trim()).toBe("frame-src 'none'");
+    expect(frameSrc.trim()).toBe("frame-src https://www.google.com https://maps.google.com");
   });
 });

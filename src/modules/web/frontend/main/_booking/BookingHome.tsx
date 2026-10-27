@@ -18,7 +18,7 @@ export default function BookingHome({ turfs, offers, ads }: { turfs: TurfSummary
   const deals = homeDeals(offers, new Set(byId.keys())).slice(0, 3);
   return (
     <div className={styles.home} data-booking-home>
-      <h1 className="sr-only">Book turfs and courts in Mangalore</h1>
+      <h1 className="sr-only">Book venues and courts in Mangalore</h1>
       <HomeFeatured turfs={turfs} />
 
       <AdPlacement id="home-leaderboard" />
@@ -28,13 +28,12 @@ export default function BookingHome({ turfs, offers, ads }: { turfs: TurfSummary
         <div className={styles.dealGrid}>
           {deals.length ? deals.map((offer, i) => <DaytimeCard key={offer.id} turf={byId.get(offer.turfId)!} offer={offer} tone={i} />) : turfs.slice(0, 3).map((turf, i) => <DaytimeCard key={turf.id} turf={turf} tone={i} />)}
         </div>
-        {!deals.length && <p className={styles.dealNote}>Regular starting rates shown. Off-peak discounts appear here when a venue has an active offer.</p>}
 
       </section>
 
       {ads.length === 0 && <div className={styles.adInventory}><AdPlacement id="home-sponsor-left" format="card" /><AdPlacement id="home-sponsor-right" format="card" /></div>}
 
-      {ads.length > 0 && <section className={`${styles.section} ${styles.sponsors}`} aria-labelledby="sponsors-title"><div className={styles.sectionHead}><div><h2 id="sponsors-title">Around the game</h2><p>From our sponsors</p></div><span className={styles.label}>Sponsored</span></div><div className={styles.sponsorGrid}>{ads.map(ad => <article key={ad.id} className={`${styles.sponsor} ${!ad.image ? styles.sponsorTextOnly : ''}`}>
+      {ads.length > 0 && <section className={`${styles.section} ${styles.sponsors}`} aria-labelledby="sponsors-title"><div className={styles.sectionHead}><div><h2 id="sponsors-title">Around the game</h2></div><span className={styles.label}>Sponsored</span></div><div className={styles.sponsorGrid}>{ads.map(ad => <article key={ad.id} className={`${styles.sponsor} ${!ad.image ? styles.sponsorTextOnly : ''}`}>
         {ad.image && <div className={styles.sponsorImage}><Image src={ad.image} alt="" fill sizes="(max-width: 600px) 100vw, 50vw" unoptimized={!canOptimize(ad.image)} /></div>}
         <div><span className={styles.sponsorBrand}>{ad.brand} · Sponsored</span><h3>{ad.title}</h3><p>{ad.subtitle}</p>{(/^(https?:\/\/|\/(?!\/))/.test(ad.link)) && <a href={ad.link} rel="sponsored noopener" className={styles.textLink}>Find out more </a>}</div>
       </article>)}</div></section>}
@@ -42,7 +41,7 @@ export default function BookingHome({ turfs, offers, ads }: { turfs: TurfSummary
       <CommunityCards />
 
       {others.length > 0 && <section className={styles.section} aria-labelledby="more-title"><div className={styles.sectionHead}><div><h2 id="more-title">More places. More play.</h2></div><Link href="/arenas?view=map" className={styles.outlineButton}>Explore the map </Link></div><div className={styles.venueGrid}>{others.map(t => <VenueCard key={t.id} turf={t} />)}</div></section>}
-      <section className={styles.owner}><div><span>FOR THE PEOPLE BEHIND THE PITCH</span><h2>Your turf.<br />Their next great game.</h2></div><div><p>Bring your venue to OYUN.<br />Let players find you and book online.</p><Link href="/list-turf">List your turf </Link></div></section>
+      <section className={styles.owner}><div><h2>Your venue.<br />Their next great game.</h2></div><div><Link href="/list-turf">List your venue </Link></div></section>
     </div>
   );
 }

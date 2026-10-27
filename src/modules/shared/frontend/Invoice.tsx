@@ -19,7 +19,7 @@ export default function Invoice({ booking, turf, partner, settings, hidePhone = 
   const gst = gstSplit(p.total, settings.gstPercent);
   const business = partner?.business;
   const lines = [
-    { label: `Turf booking — ${formatDate(booking.date, { day: 'numeric', month: 'short', year: 'numeric' })}, ${booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}${halfNote(booking.pitch, turf.halfNames)}`, amount: p.slotPrice },
+    { label: `Venue booking — ${formatDate(booking.date, { day: 'numeric', month: 'short', year: 'numeric' })}, ${booking.timeLabel || formatSlotRange(booking.hour, booking.durationMinutes, booking.startMinute)}${halfNote(booking.pitch, turf.halfNames)}`, amount: p.slotPrice },
     ...(p.offer ? [p.offer] : []),
     ...(p.promo ? [p.promo] : []),
     ...booking.addOns.map((a) => ({ label: `${a.name} × ${a.qty}`, amount: a.price * a.qty })),
@@ -105,7 +105,7 @@ export default function Invoice({ booking, turf, partner, settings, hidePhone = 
       </table>
 
       <footer className={styles.footer}>
-        {business?.gstin ? 'SAC 999652 — Sports and recreational services. ' : 'This turf has not added a GSTIN; this is a payment receipt, not a tax invoice. '}
+        {business?.gstin ? 'SAC 999652 — Sports and recreational services. ' : 'This venue has not added a GSTIN; this is a payment receipt, not a tax invoice. '}
         Questions? {settings.supportEmail}{settings.supportPhone ? ` · ${settings.supportPhone}` : ''}
       </footer>
     </article>

@@ -43,11 +43,11 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
 
   return (
     <div className={`container ${styles.page}`}>
-      <header className={styles.header}><p className={styles.eyebrow}>Your game plan</p><h1 className={styles.title}>My bookings</h1><p className={styles.intro}>Your next game, your past sessions, all in one place.</p></header>
+      <header className={styles.header}><h1 className={styles.title}>My bookings</h1></header>
 
       {newIds.length > 0 && (
         <div className={styles.banner} role="status">
-          🎉 {newIds.length} slot{newIds.length === 1 ? '' : 's'} booked! Show the QR code at the turf to check in.
+          🎉 {newIds.length} slot{newIds.length === 1 ? '' : 's'} booked! Show the QR code at the venue to check in.
         </div>
       )}
 
@@ -68,8 +68,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>⚽</div>
           <h2>{tab === 'upcoming' ? 'No upcoming games' : 'Nothing here yet'}</h2>
-          <p>Bookings you make on this device or your account show up here.</p>
-          <Link href="/arenas" className={styles.cta}>Book a turf</Link>
+          <Link href="/arenas" className={styles.cta}>Book a venue</Link>
         </div>
       ) : (
         <div className={styles.list}>

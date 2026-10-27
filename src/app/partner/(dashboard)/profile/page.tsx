@@ -66,7 +66,7 @@ export default async function ProfilePage() {
 
       <div className={dash.card}>
         <div className={dash.cardHeader}>
-          <h2 className={dash.cardTitle}>{ctx.turfs.length === 1 ? 'Your turf' : 'Your turfs'}</h2>
+          <h2 className={dash.cardTitle}>{ctx.turfs.length === 1 ? 'Your venue' : 'Your venues'}</h2>
         </div>
         <div className={dash.list}>
           {ctx.turfs.map((t) => (
@@ -83,7 +83,7 @@ export default async function ProfilePage() {
           ))}
         </div>
         <p className={dash.muted} style={{ marginTop: 12 }}>
-          {ctx.can('turf') && <><Link href="/partner/turf">Edit turf details</Link>{ctx.can('payouts') ? ' · ' : ''}</>}
+          {ctx.can('turf') && <><Link href="/partner/turf">Edit venue details</Link>{ctx.can('payouts') ? ' · ' : ''}</>}
           {ctx.can('payouts') && <Link href="/partner/payouts">Business and GST details</Link>}
         </p>
       </div>

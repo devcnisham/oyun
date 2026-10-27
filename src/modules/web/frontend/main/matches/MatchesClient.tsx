@@ -150,7 +150,7 @@ export default function MatchesClient({
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
             <div>
-              <label htmlFor="host-turf" style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Turf / Venue</label>
+              <label htmlFor="host-turf" style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Venue / Venue</label>
               <select
                 id="host-turf"
                 value={hostTurfId}

@@ -10,7 +10,7 @@ import styles from './Help.module.css';
 
 export const metadata: Metadata = {
   title: 'Help center | Bookings, payments & cancellations',
-  description: 'Get help with booking a turf or court on OYUN: contact support, cancel a booking, how payment works and answers to common questions.',
+  description: 'Get help with booking a venue or court on OYUN: contact support, cancel a booking, how payment works and answers to common questions.',
   alternates: { canonical: '/help' },
 };
 
@@ -27,7 +27,7 @@ export default async function HelpPage() {
 
       <section className={styles.card} aria-labelledby="contact">
         <h2 id="contact">Contact us</h2>
-        <p className={styles.hint}>Booking problem, a payment question, or a turf that did not turn up? Reach OYUN support.</p>
+        <p className={styles.hint}>Booking problem, a payment question, or a venue that did not turn up? Reach OYUN support.</p>
         <div className={styles.contact}>
           <a className={styles.contactBtn} href={`mailto:${s.supportEmail}`}>✉️ {s.supportEmail}</a>
           {phone && <a className={styles.contactBtn} href={`tel:${phone.replace(/\s+/g, '')}`}>📞 {phone}</a>}
@@ -39,8 +39,8 @@ export default async function HelpPage() {
         <ul className={styles.rows}>
           <li><Link href="/faq"><span aria-hidden>❓</span><b>FAQ</b><i>Booking, payment, cancellation and check-in answers</i></Link></li>
           <li><Link href="/bookings"><span aria-hidden>🎟️</span><b>Find or cancel a booking</b><i>Open it and tap Cancel booking, up to 2 hours before</i></Link></li>
-          <li><Link href="/arenas"><span aria-hidden>🏟️</span><b>Book a turf</b><i>Browse turfs and pick your slots</i></Link></li>
-          <li><Link href="/list-turf"><span aria-hidden>💼</span><b>List your turf</b><i>For turf owners</i></Link></li>
+          <li><Link href="/arenas"><span aria-hidden>🏟️</span><b>Book a venue</b><i>Browse venues and pick your slots</i></Link></li>
+          <li><Link href="/list-turf"><span aria-hidden>💼</span><b>List your venue</b><i>For venue owners</i></Link></li>
           <li><Link href="/settings"><span aria-hidden>⚙️</span><b>Settings</b><i>Cookies, account and notifications</i></Link></li>
         </ul>
       </section>

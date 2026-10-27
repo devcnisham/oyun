@@ -8,8 +8,8 @@ import styles from './page.module.css';
 import BackButton from '@/modules/web/frontend/BackButton';
 
 export const metadata: Metadata = {
-  title: 'Turf Booking FAQ | Payments, Cancellations & Check-in',
-  description: 'Answers to common questions about booking turfs and courts on OYUN: how slot holds work, advance payments, cancellations, refunds, wallet cashback and checking in.',
+  title: 'Venue Booking FAQ | Payments, Cancellations & Check-in',
+  description: 'Answers to common questions about booking venues and courts on OYUN: how slot holds work, advance payments, cancellations, refunds, wallet cashback and checking in.',
   alternates: { canonical: '/faq' },
 };
 
@@ -24,7 +24,7 @@ export default async function FAQPage() {
         <BackButton />
         <h1 className={styles.title}>Frequently asked questions</h1>
         <p className={styles.subtitle}>
-          Everything you need to know about booking turfs and courts with OYUN. Still stuck? Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a>.
+          Everything you need to know about booking venues and courts with OYUN. Still stuck? Email <a href={`mailto:${s.supportEmail}`}>{s.supportEmail}</a>.
         </p>
 
         <div className={styles.faqSection}>
@@ -37,7 +37,7 @@ export default async function FAQPage() {
         </div>
 
         <p className={styles.subtitle} style={{ marginTop: 32 }}>
-          Ready to play? <Link href="/arenas">Browse turfs and courts in Mangalore</Link> or <Link href="/list-turf">list your own turf</Link>.
+          Ready to play? <Link href="/arenas">Browse venues and courts in Mangalore</Link> or <Link href="/list-turf">list your own venue</Link>.
         </p>
       </div>
     </div>

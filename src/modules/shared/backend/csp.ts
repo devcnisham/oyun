@@ -34,7 +34,7 @@ export function buildCsp(nonce?: string, isDev = process.env.NODE_ENV !== 'produ
     "img-src 'self' data: blob: https:",
     "media-src 'self' blob:",
     `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com${clerkConnect}${isDev ? ' ws:' : ''}`,
-    `frame-src${clerkFrame || " 'none'"}`,
+    `frame-src https://www.google.com https://maps.google.com${clerkFrame}`,
     "worker-src 'self' blob:",
     "frame-ancestors 'self'",
     "object-src 'none'",

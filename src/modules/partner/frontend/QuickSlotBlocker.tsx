@@ -19,7 +19,7 @@ interface QuickSlotBlockerProps {
 const PRESET_REASONS = [
   'Phone / Offline Booking',
   'Heavy Rain / Weather',
-  'Turf Maintenance',
+  'Venue Maintenance',
   'Private Tournament / Event',
   'Front Desk Hold',
 ];

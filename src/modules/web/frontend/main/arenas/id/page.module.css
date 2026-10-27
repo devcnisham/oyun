@@ -74,3 +74,6 @@
  .reviewHead time { width: 100%; margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .info, .more { animation: none; } .page * { transition: none; } }
+.locationHours { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.locationHours .addressBlock, .locationHours .hoursText { margin: 0; }
+.locationHours .hoursText { margin-left: auto; white-space: nowrap; }

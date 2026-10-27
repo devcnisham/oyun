@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 export default function NewsPage() {
   return <div className={styles.page}>
-    <header className={styles.header}><span>AROUND THE GAME</span><h1>News &amp; events.</h1><p>Stories to read. Games to look forward to.</p></header>
+    <header className={styles.header}><span>AROUND THE GAME</span><h1>News &amp; events.</h1></header>
     <CommunityCards />
     <AdPlacement id="news-leaderboard" />
     <section className={styles.stories} aria-labelledby="news-stories"><h2 id="news-stories">From the blog</h2><div className={styles.grid}>{GUIDES.slice(4, 7).map(g => <article className={styles.card} key={g.slug}><div className={styles.cardImage}><Image src={g.coverImage} alt="" fill sizes="(max-width: 600px) 100vw, 33vw" /></div><div className={styles.cardBody}><span className={styles.meta}>{g.category} · {g.readTime}</span><h3><Link href={`/guides/${g.slug}`}>{g.title}</Link></h3><Link href={`/guides/${g.slug}`} className={styles.read}>Read story</Link></div></article>)}</div><Link className={styles.read} href="/blog">Browse the blog</Link></section>

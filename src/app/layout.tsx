@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata, Viewport } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import localFont from "next/font/local";
@@ -28,19 +29,19 @@ const rupee = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "OYUN | Book Sports Turfs & Courts in Mangalore Online",
+    default: "OYUN | Book Sports Venues & Courts in Mangalore Online",
     template: "%s | OYUN",
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  keywords: ["turf booking Mangalore", "football turf Mangalore", "box cricket Mangalore", "badminton court Mangalore", "pickleball Mangalore", "book turf near me", "sports court booking"],
+  keywords: ["venue booking Mangalore", "football venue Mangalore", "box cricket Mangalore", "badminton court Mangalore", "pickleball Mangalore", "book venue near me", "sports court booking"],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   openGraph: {
     type: "website",
     locale: "en_IN",
     siteName: SITE_NAME,
     url: "/",
-    title: "OYUN | Book Sports Turfs & Courts in Mangalore Online",
+    title: "OYUN | Book Sports Venues & Courts in Mangalore Online",
     description: SITE_DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },
@@ -67,7 +68,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
         {children}
-        <BottomNav />
+        <Suspense fallback={null}><BottomNav /></Suspense>
         <ConsentManager />
         <NavTracker />
         <AttributionCapture />

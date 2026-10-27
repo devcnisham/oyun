@@ -8,6 +8,7 @@ import type { PublicReview } from '@/modules/shared/lib/reviews';
 import Stars from '@/modules/shared/frontend/Stars';
 import FavouriteButton from '@/modules/web/frontend/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from '@/modules/web/frontend/main/arenas/id/BookingFlow';
+import { formatTime } from '@/modules/shared/lib/time';
 import { shortHour } from '@/modules/shared/lib/format';
 import ShareButton from '@/modules/web/frontend/main/arenas/id/ShareButton';
 import TurfMiniMap from '@/modules/web/frontend/main/arenas/id/TurfMiniMap';
@@ -84,8 +85,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
               {turf.name}{' '}
               <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
             </h1>
-            <p className={styles.addressBlock}>Mangalore</p>
-            <p className={styles.hoursText}>{turf.openTime} – {turf.closeTime}</p>
+
           </div>
           <div className={styles.titleSide}>
             <a href={`https://maps.google.com/?q=${encodeURIComponent(`${turf.name} ${turf.location}`)}`} target="_blank" rel="noreferrer" className={styles.mapLink} aria-label="View on map" title="View on map">
@@ -93,6 +93,8 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
             </a>
           </div>
         </div>
+
+        <div className={styles.locationHours}><p className={styles.addressBlock}>Mangalore</p><p className={styles.hoursText}>{formatTime(...turf.openTime.split(':').map(Number) as [number, number])} – {formatTime(...turf.closeTime.split(':').map(Number) as [number, number])}</p></div>
 
         {(turf.isVerified || turf.reviewCount > 0) && (
           <ul className={styles.facts}>
@@ -128,7 +130,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         <aside className={styles.bookingPanel}>
         <h2 className={styles.panelTitle}>Book a slot</h2>
         {!bookable ? (
-          <div className={styles.notice}>This turf is under maintenance and not taking bookings right now.</div>
+          <div className={styles.notice}>This venue is under maintenance and not taking bookings right now.</div>
         ) : (
           <BookingFlow
             turf={turf}

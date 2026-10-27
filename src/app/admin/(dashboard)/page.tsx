@@ -39,7 +39,7 @@ export default async function AdminOverview() {
         <div className={dash.cardHeader}>
           <div>
             <h2 className={dash.cardTitle}>Listing applications</h2>
-            <p className={dash.cardDesc}>Submitted from the “List your turf” page. Approving creates the turf and a partner login.</p>
+            <p className={dash.cardDesc}>Submitted from the “List your venue” page. Approving creates the venue and a partner login.</p>
           </div>
           <Badge status="pending" label={`${pending.length} pending`} />
         </div>
@@ -79,7 +79,7 @@ export default async function AdminOverview() {
                   </div>
                   <div className={dash.inline}>
                     <Badge status={a.status} />
-                    {a.turfId && <Link href={`/admin/turfs/${a.turfId}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Edit turf</Link>}
+                    {a.turfId && <Link href={`/admin/turfs/${a.turfId}`} className={`${dash.btn} ${dash.btnSecondary} ${dash.btnSm}`}>Edit venue</Link>}
                   </div>
                 </div>
               ))}

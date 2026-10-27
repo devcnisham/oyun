@@ -54,7 +54,7 @@ export default function ReviewForm({ bookingId, turfName, existing, needsPhone }
       </div>
       <textarea
         className={styles.input}
-        placeholder="Tell other players about the turf, lights, staff… (optional)"
+        placeholder="Tell other players about the venue, lights, staff… (optional)"
         maxLength={500}
         rows={3}
         value={comment}
