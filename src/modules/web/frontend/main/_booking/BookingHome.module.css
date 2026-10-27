@@ -279,3 +279,10 @@
   .venueGrid::-webkit-scrollbar, .dealGrid::-webkit-scrollbar, .sponsorGrid::-webkit-scrollbar, .adInventory::-webkit-scrollbar { display: none; }
   .venueGrid > *, .sponsorGrid > *, .adInventory > * { flex: 0 0 min(86%, 360px); min-width: 0; scroll-snap-align: start; }
 }
+@media (max-width: 768px) {
+  .venueGrid > *, .dealGrid > .deal { flex-basis: 100%; }
+}
+@media(max-width:768px) {
+ .venueGrid .venueBody { padding-bottom: 42px; }
+ .dealGrid > .deal { padding-bottom: 50px; }
+}

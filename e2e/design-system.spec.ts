@@ -143,7 +143,8 @@ test('Google map selects venues and the mobile centre tab opens it', async ({ pa
   await expect(map.locator('iframe')).toHaveAttribute('src', /^https:\/\/www\.google\.com\/maps\/embed/);
   await map.getByRole('button', { name: 'Show Mangala Magnus on Google Maps' }).click();
   await expect(map.locator('iframe')).toHaveAttribute('title', 'Google Maps: Mangala Magnus');
-  await map.getByRole('textbox', { name: 'Search map venues' }).fill('Perfect Pass');
+  if (isMobile) { await page.getByRole('searchbox', { name: 'Search venue, area or sport' }).fill('Perfect Pass'); await page.getByRole('searchbox', { name: 'Search venue, area or sport' }).press('Enter'); }
+  else await page.getByRole('searchbox', { name: 'Search venues or sports' }).fill('Perfect Pass');
   await expect(map.getByRole('button', { name: /Show .* on Google Maps/ })).toHaveCount(1);
   if (isMobile) {
     const nav = page.getByRole('navigation', { name: 'Main', exact: true });
@@ -168,10 +169,30 @@ test('mobile daytime deals stay in a swipeable single row', async ({ page, isMob
   await page.goto('/');
   const section = page.getByRole('region', { name: 'Morning and afternoon deals' });
   const cards = section.locator('article');
+  await expect(cards).toHaveCount(3);
   const boxes = await cards.evaluateAll(els => els.map(el => { const r=el.getBoundingClientRect(); return {top:r.top,left:r.left}; }));
   expect(boxes.length).toBeGreaterThan(1);
   expect(Math.abs(boxes[0].top-boxes[1].top)).toBeLessThan(2);
   expect(boxes[1].left).toBeGreaterThan(boxes[0].left);
   expect(await cards.first().evaluate(el => el.parentElement!.scrollWidth > el.parentElement!.clientWidth)).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('mobile carousel dots sit inside each banner without extra controls', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile banner controls');
+  await page.goto('/');
+  for (const label of ['Featured venues', 'Daytime deals']) {
+    const carousel = page.locator(`[aria-roledescription="carousel"][aria-label="${label}"]`);
+    const dot = carousel.getByRole('button', { name: `Show ${label.toLowerCase()} card 2` });
+    await dot.scrollIntoViewIfNeeded();
+    await dot.click();
+    await expect(dot).toHaveAttribute('aria-current', 'true');
+    const inside = await dot.evaluate(el => { const box=el.getBoundingClientRect(); const parent=el.closest('[aria-roledescription="carousel"]')!.getBoundingClientRect(); return box.top>=parent.top && box.bottom<=parent.bottom; });
+    expect(inside).toBe(true);
+    await expect(carousel.getByRole('button', { name: /Pause|Resume|Previous|Next/i })).toHaveCount(0);
+  }
+  const ad = page.getByRole('complementary', { name: 'Demo advertisement' }).first();
+  await ad.getByRole('button', { name: 'Show advertisement 2' }).click();
+  await expect(ad.getByRole('button', { name: 'Show advertisement 2' })).toHaveAttribute('aria-current', 'true');
+  await expect(ad.getByRole('button', { name: /Pause|Resume|Previous|Next/i })).toHaveCount(0);
 });

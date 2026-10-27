@@ -7,6 +7,7 @@ import HomeFeatured from './HomeFeatured';
 import VenueCard from './VenueCard';
 import DaytimeCard from './DaytimeCard';
 import AdPlacement from './AdPlacement';
+import AutoSlideRail from './AutoSlideRail';
 import CommunityCards from './CommunityCards';
 import styles from './BookingHome.module.css';
 
@@ -25,13 +26,12 @@ export default function BookingHome({ turfs, offers, ads }: { turfs: TurfSummary
 
       <section className={styles.section} aria-labelledby="deals-title">
         <div className={styles.sectionHead}><div><div className={styles.headingLine}><h2 id="deals-title">Morning and<br className={styles.mobileBreak} /> afternoon deals</h2><span className={styles.offPeak}>Off-peak</span></div></div><Link href="/offers" className={styles.textLink}>All offers </Link></div>
-        <div className={styles.dealGrid}>
+        <AutoSlideRail className={styles.dealGrid} label="Daytime deals">
           {deals.length ? deals.map((offer, i) => <DaytimeCard key={offer.id} turf={byId.get(offer.turfId)!} offer={offer} tone={i} />) : turfs.slice(0, 3).map((turf, i) => <DaytimeCard key={turf.id} turf={turf} tone={i} />)}
-        </div>
+        </AutoSlideRail>
 
       </section>
 
-      {ads.length === 0 && <div className={styles.adInventory}><AdPlacement id="home-sponsor-left" format="card" /><AdPlacement id="home-sponsor-right" format="card" /></div>}
 
       {ads.length > 0 && <section className={`${styles.section} ${styles.sponsors}`} aria-labelledby="sponsors-title"><div className={styles.sectionHead}><div><h2 id="sponsors-title">Around the game</h2></div><span className={styles.label}>Sponsored</span></div><div className={styles.sponsorGrid}>{ads.map(ad => <article key={ad.id} className={`${styles.sponsor} ${!ad.image ? styles.sponsorTextOnly : ''}`}>
         {ad.image && <div className={styles.sponsorImage}><Image src={ad.image} alt="" fill sizes="(max-width: 600px) 100vw, 50vw" unoptimized={!canOptimize(ad.image)} /></div>}
