@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import VenueSearchBar from './VenueSearchBar';
 import BackButton from '@/modules/web/frontend/BackButton';
 import FloatingSearch from '@/modules/web/frontend/FloatingSearch';
 import styles from '@/modules/web/frontend/AppBar.module.css';
@@ -32,6 +33,7 @@ export default function AppBar() {
   const router = useRouter();
   // Home draws its own header; the venue page has its own floating controls
   if (path === '/' || path === '/m' || ['/blog', '/news', '/events', '/about'].includes(path) || (path.startsWith('/arenas/') && path !== '/arenas')) return null;
+  if (path === '/arenas') return <VenueSearchBar />;
   const title = TITLES.find(([p]) => path === p || path.startsWith(`${p}/`))?.[1] ?? 'OYUN';
   // Top-level tabs have nothing to go back to
   const isTab = ['/arenas', '/bookings', '/profile'].includes(path);

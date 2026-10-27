@@ -44,6 +44,8 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
   const [selectedArea, setSelectedArea] = useState(defaultArea);
   const [selectedSport, setSelectedSport] = useState(urlSport || 'All Sports');
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationError, setLocationError] = useState('');
   const [sortBy, setSortBy] = useState(sortOptions.some((o) => o.value === urlSort) ? urlSort! : 'featured');
   const [maxPrice, setMaxPrice] = useState(() => parseMaxPrice(searchParams.get('maxPrice')));
   const amenityOptions = useMemo(() => [...new Set(turfs.flatMap((t) => t.amenities))].sort(), [turfs]);
@@ -126,6 +128,9 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
     // Sort
     switch (sortBy) {
+      case 'nearest':
+        if (position) { const distance = (t: TurfSummary) => typeof t.lat === 'number' && typeof t.lng === 'number' ? Math.hypot((t.lat-position.lat)*111, (t.lng-position.lng)*111*Math.cos(position.lat*Math.PI/180)) : Infinity; result.sort((a,b) => distance(a)-distance(b)); }
+        break;
       case 'rating':
         result.sort((a, b) => b.rating - a.rating);
         break;
@@ -143,7 +148,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
     }
 
     return result;
-  }, [turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time, placeType]);
+  }, [position, turfs, selectedCity, selectedArea, selectedSport, sortBy, searchQuery, maxPrice, amenities, openHours, time, placeType]);
 
   const hasSearchPreferences = selectedArea !== 'All Areas' || maxPrice > 0 || amenities.length > 0 || Boolean(date || time);
 
@@ -231,6 +236,15 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
           </div>
         </div>
       </div>
+
+      {viewMode === 'grid' && <div className={`container ${styles.mobileFilters}`}>
+        <div className={styles.sportRail} role="group" aria-label="Filter venues by sport">{['All Sports', ...SPORTS.map(s => s.value)].map(s => <button type="button" key={s} aria-pressed={selectedSport === s} onClick={() => setSelectedSport(s)}>{s === 'All Sports' ? 'All' : s}</button>)}</div>
+        <div className={styles.mobileSort}><strong>{filtered.length} venues</strong><div>
+          <button type="button" aria-pressed={sortBy === 'nearest'} onClick={() => { if (!navigator.geolocation) { setLocationError('Location is unavailable in this browser.'); return; } navigator.geolocation.getCurrentPosition(p => { if (!turfs.some(t => typeof t.lat === 'number' && typeof t.lng === 'number')) { setLocationError('Venue coordinates are not available yet.'); return; } setPosition({lat:p.coords.latitude,lng:p.coords.longitude}); setSortBy('nearest'); setLocationError(''); }, () => setLocationError('Allow location access to sort nearby venues.'), { timeout: 10000 }); }}>Nearest</button>
+          <button type="button" aria-pressed={sortBy === 'rating'} onClick={() => setSortBy('rating')}>Top rated</button>
+          <button type="button" aria-pressed={sortBy === 'price-low'} onClick={() => setSortBy('price-low')}>Price</button>
+        </div></div>{locationError && <p role="status" className={styles.locationError}>{locationError}</p>}
+      </div>}
 
       <div className={`container ${styles.body}`}>
         {/* Grid */}

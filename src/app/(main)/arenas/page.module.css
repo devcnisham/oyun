@@ -360,3 +360,15 @@
 @media (max-width: 768px) { .filterBar { display: none; } }
 @media (max-width: 768px) { .chipRowWrap { display: none; } }
 @media (max-width: 768px) { .header { padding-top: 0; border-bottom: 0; } .body { padding-top: 14px; } .headerInner:has(.pageDesc) { padding-top: 12px; } }
+.mobileFilters { display: none; }
+@media (max-width: 768px) {
+ .mobileFilters { display: block; padding-top: 18px; }
+ .sportRail { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; }
+ .sportRail button, .mobileSort button { flex: none; min-height: 40px; padding: 9px 16px; border: 1px solid #e5e2df; border-radius: 999px; background: #fff; color: #242424; font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; }
+ .sportRail button[aria-pressed=true], .mobileSort button[aria-pressed=true] { background: #210000; color: #fff; border-color: #210000; }
+ .mobileSort { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+ .mobileSort strong { font-size: 14px; white-space: nowrap; }
+ .mobileSort > div { display: flex; gap: 6px; }
+ .mobileSort button { font-size: 11px; padding: 8px 10px; min-height: 36px; }
+ .locationError { font-size: 12px; color: #646469; margin-top: 10px; }
+}

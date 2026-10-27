@@ -56,11 +56,9 @@ test('venue cards align their actions while keeping names close to the city', as
 
 test('venue results keep only sport categories and can clear incoming search preferences', async ({ page, isMobile }) => {
   await page.goto('/arenas?area=Kodialbail');
-  if (isMobile) await page.getByRole('button', { name: 'Search venues', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'All sports', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: isMobile ? 'All' : 'All sports', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Morning', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('Maximum price per hour')).toHaveCount(0);
-  if (isMobile) await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   await page.getByRole('button', { name: 'Clear search preferences' }).click();
   await expect(page).not.toHaveURL(/[?&]area=/);
 });
