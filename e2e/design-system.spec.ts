@@ -210,6 +210,7 @@ test('desktop ad cards flank an aligned live-slot and category column', async ({
 
 test('mobile featured banners auto-advance without arrow or playback buttons', async ({ page, isMobile }) => {
   test.skip(!isMobile,'mobile auto slide');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   const carousel=page.locator('[aria-roledescription="carousel"][aria-label="Featured venues"]');
   await page.bringToFront();
