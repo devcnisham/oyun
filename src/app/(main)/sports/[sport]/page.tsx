@@ -76,7 +76,7 @@ export default async function SportPage({ params }: Props) {
         data={[
           breadcrumbSchema([
             { name: 'Home', path: '/' },
-            { name: `Turfs in ${SITE_CITY}`, path: '/arenas' },
+            { name: `Venues in ${SITE_CITY}`, path: '/arenas' },
             { name: sport.label, path: `/sports/${slug}` },
           ]),
           ...(turfs.length > 0 ? [itemListSchema(turfs, `${sport.label} ${sport.place}s in ${SITE_CITY}`)] : []),
@@ -85,7 +85,7 @@ export default async function SportPage({ params }: Props) {
       />
 
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
-        <Link href="/">Home</Link> <span aria-hidden>›</span> <Link href="/arenas">Turfs in {SITE_CITY}</Link> <span aria-hidden>›</span> <span aria-current="page">{sport.label}</span>
+        <Link href="/">Home</Link> <span aria-hidden>›</span> <Link href="/arenas">Venues in {SITE_CITY}</Link> <span aria-hidden>›</span> <span aria-current="page">{sport.label}</span>
       </nav>
 
       <h1 className={styles.title}>{sport.label} {sport.place}s in {SITE_CITY}</h1>
@@ -112,7 +112,7 @@ export default async function SportPage({ params }: Props) {
           <div style={{ fontSize: '40px' }}>{sport.icon}</div>
           <h2 className={styles.emptyTitle}>Dedicated {sport.label} Courts Coming Soon</h2>
           <p className={styles.emptyDesc}>
-            Venues in {SITE_CITY} are currently constructing dedicated courts for {sport.label.toLowerCase()}. Are you a turf owner opening a {sport.label.toLowerCase()} court? List with us to reach hundreds of players daily.
+            Venues in {SITE_CITY} are currently constructing dedicated courts for {sport.label.toLowerCase()}. Are you a venue owner opening a {sport.label.toLowerCase()} court? List with us to reach hundreds of players daily.
           </p>
           <Link href="/list-turf" className={styles.areaLink} style={{ background: 'var(--primary-700)', color: '#fff', borderColor: 'var(--primary-700)' }}>
             List Your {sport.label} Venue

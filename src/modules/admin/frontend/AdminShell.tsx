@@ -12,7 +12,7 @@ import styles from '@/modules/admin/frontend/layout.module.css';
 
 const ADMIN_PAGES = [
   { href: '/admin', label: 'Overview & approvals', tab: 'Overview', icon: 'shield' },
-  { href: '/admin/turfs', label: 'Turfs', icon: 'turfs' },
+  { href: '/admin/turfs', label: 'Venues', icon: 'turfs' },
   { href: '/admin/partners', label: 'Partners', icon: 'partners' },
   { href: '/admin/transactions', label: 'Bookings & refunds', tab: 'Bookings', icon: 'transactions' },
   { href: '/admin/users', label: 'Players', icon: 'players' },

@@ -40,7 +40,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
           <form className={dash.inline}>
             <input name="q" aria-label="Search bookings by name, phone or code" defaultValue={q} placeholder="Name, phone or code" className={dash.input} style={{ width: 200 }} />
             <select name="turf" defaultValue={turf} className={dash.select} style={{ width: 180 }}>
-              <option value="">All turfs</option>
+              <option value="">All venues</option>
               {db.turfs.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
             <select name="status" defaultValue={status} className={dash.select} style={{ width: 150 }}>
@@ -54,7 +54,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
           <table className={dash.table}>
             <thead>
               <tr>
-                <th>Date & slot</th><th>Turf</th><th>Player</th><th>Code</th><th>Payment</th><th>Status</th>
+                <th>Date & slot</th><th>Venue</th><th>Player</th><th>Code</th><th>Payment</th><th>Status</th>
                 <th className={dash.num}>Total</th><th className={dash.num}>Paid</th><th></th>
               </tr>
             </thead>

@@ -25,7 +25,7 @@ export default function ListingSubmitted({ form, refId, onAnother }: ListingSubm
           <div className={styles.successPerk}>✓ Verified badge on approval</div>
         </div>
         <button className="btn btn--primary btn--lg" onClick={onAnother}>
-          Submit Another Turf
+          Submit Another Venue
         </button>
       </div>
     </div>

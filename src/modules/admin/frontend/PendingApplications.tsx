@@ -44,7 +44,7 @@ export default function PendingApplications({ applications }: { applications: Ap
                 {a.description && <p className={dash.muted} style={{ marginTop: 6 }}>{a.description}</p>}
               </div>
               <div className={dash.form} style={{ flex: '1 1 260px' }}>
-                <form action={(fd) => run(approveApplication, fd, `Approve ${a.turfName}? This creates the owner login and puts the turf live.`)}>
+                <form action={(fd) => run(approveApplication, fd, `Approve ${a.turfName}? This creates the owner login and puts the venue live.`)}>
                   <input type="hidden" name="applicationId" value={a.id} />
                   <button className={dash.btn} disabled={pending}>Approve & create partner</button>
                 </form>

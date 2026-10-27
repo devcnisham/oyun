@@ -14,7 +14,7 @@ const ClerkAccount = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? dynamic(() 
 
 export default function Navbar() {
   const pathname = usePathname();
-  const isHome = pathname === '/' || pathname === '/m' || ['/blog', '/news', '/events', '/about'].includes(pathname ?? '');
+  const isHome = pathname?.startsWith('/arenas/') || pathname === '/' || pathname === '/m' || ['/blog', '/news', '/events', '/about'].includes(pathname ?? '');
   const [firstName, setFirstName] = useState('');
   const [signedIn, setSignedIn] = useState(false);
 

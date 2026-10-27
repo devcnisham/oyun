@@ -5,7 +5,7 @@ import styles from '@/app/(auth)/auth.module.css';
 
 const perks = [
   { icon: '⚡', title: 'Instant confirmation', text: 'Pick your hours and they are yours in seconds.' },
-  { icon: '🎟️', title: 'QR tickets', text: 'Show your ticket at the turf and walk in.' },
+  { icon: '🎟️', title: 'QR tickets', text: 'Show your ticket at the venue and walk in.' },
   { icon: '💰', title: 'Cashback on every game', text: 'Rewards go straight to your wallet.' },
 ];
 
@@ -34,7 +34,7 @@ export default function AuthShell({ mode, title, subtitle, children, footer }: {
             <span>OYUN</span>
           </Link>
           <div>
-            <p className={styles.brandHeadline}>Book Mangalore&apos;s best turfs in seconds.</p>
+            <p className={styles.brandHeadline}>Book Mangalore&apos;s best venues in seconds.</p>
             <ul className={styles.perks}>
               {perks.map((p) => (
                 <li key={p.title}>

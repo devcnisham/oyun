@@ -93,7 +93,6 @@ export default function ProfileScreen({ supportEmail }: { supportEmail: string }
             <section className={`${styles.card} ${styles.signInCard}`}>
               <div className={styles.signInIcon} aria-hidden><ProfileIcon name="user" /></div>
               <h2>Sign in to OYUN</h2>
-              <p>Book in a tap, with your details filled in for you.</p>
               <div className={styles.authRow}>
                 <Link href="/login?redirect_url=/profile" className={styles.primaryBtn}>Sign in</Link>
                 <Link href="/signup?redirect_url=/profile" className={styles.ghostBtn}>Create account</Link>
@@ -107,8 +106,8 @@ export default function ProfileScreen({ supportEmail }: { supportEmail: string }
             title="Book"
             items={[
               { icon: 'ticket', label: 'My bookings', note: 'Tickets and past games', href: '/bookings' },
-              { icon: 'heart', label: 'Saved turfs', note: 'Your shortlist', href: '/saved' },
-              { icon: 'pitch', label: 'All turfs', note: 'Browse every turf and court', href: '/arenas' },
+              { icon: 'heart', label: 'Saved venues', note: 'Your shortlist', href: '/saved' },
+              { icon: 'pitch', label: 'All venues', note: 'Browse every venue and court', href: '/arenas' },
             ]}
           />
           <ProfileMenu
@@ -121,10 +120,10 @@ export default function ProfileScreen({ supportEmail }: { supportEmail: string }
             ]}
           />
           <ProfileMenu
-            title="Turf owners"
+            title="Venue owners"
             items={[
-              { icon: 'briefcase', label: 'List your turf', note: 'Get more bookings', href: '/list-turf' },
-              { icon: 'key', label: 'Partner login', note: 'Manage your turf', href: '/partner/login' },
+              { icon: 'briefcase', label: 'List your venue', note: 'Get more bookings', href: '/list-turf' },
+              { icon: 'key', label: 'Partner login', note: 'Manage your venue', href: '/partner/login' },
             ]}
           />
           <p className={styles.legal}>

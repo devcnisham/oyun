@@ -8,7 +8,7 @@ import PrivacyDataControls from '@/modules/web/frontend/PrivacyDataControls';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    'How OYUN collects, uses, shares and protects your personal data when you book a turf or list a venue, which cookies we use, and your rights under India\'s DPDP Act.',
+    'How OYUN collects, uses, shares and protects your personal data when you book a venue or list a venue, which cookies we use, and your rights under India\'s DPDP Act.',
   alternates: { canonical: '/privacy' },
 };
 
@@ -25,15 +25,15 @@ export default async function PrivacyPage() {
 
         <div className={styles.textBlock}>
           <p>
-            This policy explains what personal data OYUN (&quot;we&quot;, &quot;us&quot;) collects when you use our website and app to book sports turfs or to list a venue,
+            This policy explains what personal data OYUN (&quot;we&quot;, &quot;us&quot;) collects when you use our website and app to book sports venues or to list a venue,
             why we collect it, who we share it with and the choices you have. We process personal data in line with India&apos;s Digital Personal Data Protection Act, 2023.
           </p>
 
           <h2>1. Data we collect</h2>
           <ul>
-            <li><strong>Booking details:</strong> your name, mobile number, the turf, date and time you book, the amount paid and your booking status (for example checked in or cancelled).</li>
+            <li><strong>Booking details:</strong> your name, mobile number, the venue, date and time you book, the amount paid and your booking status (for example checked in or cancelled).</li>
             <li><strong>Wallet and referrals:</strong> wallet credits, cashback, refunds and your referral code, linked to your mobile number.</li>
-            <li><strong>Turf owners and staff:</strong> name, email, phone, business name, GSTIN and address, and the details of the venue you list.</li>
+            <li><strong>Venue owners and staff:</strong> name, email, phone, business name, GSTIN and address, and the details of the venue you list.</li>
             <li><strong>Device data:</strong> a random device identifier cookie used to hold slots during checkout, and the name, number and booking list you choose to save on your device.</li>
             <li><strong>Technical data:</strong> IP address, browser type and pages requested, kept in server logs for security and to fix errors.</li>
             <li><strong>Analytics (only with your consent):</strong> anonymous usage statistics such as pages visited and device type.</li>
@@ -42,7 +42,7 @@ export default async function PrivacyPage() {
 
           <h2>2. Why we use it</h2>
           <ul>
-            <li>To create and manage your booking and show it to the turf so they can check you in.</li>
+            <li>To create and manage your booking and show it to the venue so they can check you in.</li>
             <li>To run the wallet, cashback, referrals and refunds.</li>
             <li>To prevent fraud, abuse and double bookings, and keep the service secure.</li>
             <li>To answer support requests and send booking-related messages.</li>
@@ -51,7 +51,7 @@ export default async function PrivacyPage() {
 
           <h2>3. Who we share it with</h2>
           <ul>
-            <li><strong>The turf you book:</strong> your name, mobile number and booking details, so they can run your game.</li>
+            <li><strong>The venue you book:</strong> your name, mobile number and booking details, so they can run your game.</li>
             <li><strong>Service providers</strong> that host and run OYUN for us (cloud hosting and database providers), under contract and only to provide the service.</li>
             <li><strong>Authorities</strong> when required by law.</li>
           </ul>

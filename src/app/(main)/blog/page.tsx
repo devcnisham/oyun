@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   const [featured, ...rest] = GUIDES;
   return <div className={styles.page}>
-    <header className={styles.header}><span>OYUN JOURNAL</span><h1>Off the turf.</h1><p>Sports guides, rules and ideas for your next game.</p></header>
+    <header className={styles.header}><span>OYUN JOURNAL</span><h1>Off the venue.</h1></header>
     {featured && <article className={styles.featured}>
       <Link className={styles.featureImage} href={`/guides/${featured.slug}`} tabIndex={-1} aria-hidden="true"><Image src={featured.coverImage} alt="" fill sizes="(max-width: 760px) 100vw, 60vw" priority /></Link>
       <div className={styles.featureBody}><span className={styles.meta}>Featured · {featured.category}</span><h2><Link href={`/guides/${featured.slug}`}>{featured.title}</Link></h2><p>{featured.excerpt}</p><span className={styles.meta}>{featured.readTime}</span><Link className={styles.read} href={`/guides/${featured.slug}`}>Read story</Link></div>

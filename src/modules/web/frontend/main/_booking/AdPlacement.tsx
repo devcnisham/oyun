@@ -11,7 +11,7 @@ export default function AdPlacement({ id, format = 'banner' }: { id: string; for
     <span>Advertisement · Demo</span>
     <div className={styles.adCreative} data-ad-container={id}>
       <div><small>OYUN · PLAY BEYOND.</small><p>{second ? 'Make room for more play.' : 'Your next game is calling.'}</p><span>Sample ad creative</span></div>
-      <Link href="/arenas">Explore turfs</Link>
+      <Link href="/arenas">Explore venues</Link>
     </div>
   </aside>;
 }

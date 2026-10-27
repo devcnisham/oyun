@@ -9,7 +9,7 @@ export default function TurfProfileFields({ turf, phoneOptional = false }: { tur
     <>
       <div className={styles.formGrid}>
         <label className={styles.field}>
-          <span className={styles.label}>Turf name</span>
+          <span className={styles.label}>Venue name</span>
           <input name="name" defaultValue={turf.name} required maxLength={80} className={styles.input} />
         </label>
         <label className={styles.field}>

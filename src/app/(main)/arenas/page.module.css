@@ -356,3 +356,7 @@
 .clearFilters:focus-visible { outline: 3px solid #6e6e73; outline-offset: 3px; }
 .headerInner { margin-bottom: 0; }
 .headerInner .pageDesc { margin: 0 0 16px; }
+@media (max-width: 768px) { .searchInputWrap { display: none; } }
+@media (max-width: 768px) { .filterBar { display: none; } }
+@media (max-width: 768px) { .chipRowWrap { display: none; } }
+@media (max-width: 768px) { .header { padding-top: 0; border-bottom: 0; } .body { padding-top: 14px; } .headerInner:has(.pageDesc) { padding-top: 12px; } }

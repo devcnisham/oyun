@@ -22,7 +22,7 @@ const ICONS = {
 
 const TABS = [
   { href: '/', label: 'Home', icon: 'home', match: (p: string) => p === '/' },
-  { href: '/arenas', label: 'Turfs', icon: 'turfs', match: (p: string) => p.startsWith('/arenas') || p.startsWith('/sports') },
+  { href: '/arenas', label: 'Venues', icon: 'turfs', match: (p: string) => p.startsWith('/arenas') || p.startsWith('/sports') },
   { href: '/bookings', label: 'Bookings', icon: 'bookings', match: (p: string) => p.startsWith('/bookings') },
   { href: '/profile', label: 'Profile', icon: 'profile', match: (p: string) => ['/profile', '/settings', '/help', '/saved'].some((x) => p.startsWith(x)) },
 ] as const;

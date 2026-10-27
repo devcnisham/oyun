@@ -20,7 +20,7 @@ export default async function PartnerReviews() {
       </div>
       <div className={dash.card}>
         {reviews.length === 0 ? (
-          <p className={dash.muted}>No reviews yet. Players are asked to rate the turf on their booking after you check them in.</p>
+          <p className={dash.muted}>No reviews yet. Players are asked to rate the venue on their booking after you check them in.</p>
         ) : (
           <div {...tableScroll}>
             <table className={dash.table}>

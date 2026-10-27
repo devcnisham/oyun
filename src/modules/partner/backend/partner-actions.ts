@@ -1,5 +1,6 @@
 'use server';
 
+import { bookingCodeFromQr } from '@/modules/shared/lib/booking-qr';
 import { cookies } from 'next/headers';
 import {
   ValidationError,
@@ -241,7 +242,8 @@ export async function cancelBooking(_prev: ActionResult, fd: FormData): Promise<
 export async function checkInBooking(_prev: ActionResult, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const ctx = await requirePartnerAction('checkin');
-    const raw = str(fd, 'code').toUpperCase().replace(/\s/g, '');
+    const raw = bookingCodeFromQr(str(fd, 'code'));
+    if (!raw && !str(fd, 'bookingId')) throw new ValidationError('Enter a valid booking code');
     const code = raw.startsWith('SA-') ? raw : `SA-${raw}`;
     const bookingId = str(fd, 'bookingId');
     const { date: today, hour, minute } = istNow();

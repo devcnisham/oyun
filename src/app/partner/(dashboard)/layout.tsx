@@ -28,7 +28,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
     ...(ctx.can('addons') ? [{ href: '/partner/add-ons', label: 'Add-ons', icon: 'addons' }] : []),
     ...(ctx.can('payouts') ? [{ href: '/partner/payouts', label: 'Payouts & GST', icon: 'payouts' }] : []),
     ...(ctx.can('staff') ? [{ href: '/partner/staff', label: 'Staff', icon: 'staff' }] : []),
-    ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Turf', icon: 'turf' }] : []),
+    ...(ctx.can('turf') ? [{ href: '/partner/turf', label: 'My Venue', icon: 'turf' }] : []),
     ...(ctx.can('turf') ? [{ href: '/partner/courts', label: 'Courts & Pitches', icon: 'courts' }] : []),
     { href: '/partner/profile', label: 'Profile & settings', icon: 'settings' },
   ];
@@ -106,7 +106,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
             <div className={styles.turfName}>
             {ctx.turfs.length > 1 ? (
               <ActionForm action={switchTurf} inline>
-                <select name="turfId" defaultValue={ctx.turf.id} aria-label="Switch turf" style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', fontWeight: 600 }}>
+                <select name="turfId" defaultValue={ctx.turf.id} aria-label="Switch venue" style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', fontWeight: 600 }}>
                   {ctx.turfs.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}

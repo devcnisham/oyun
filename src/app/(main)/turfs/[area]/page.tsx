@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { area, turfs } = data;
   const from = Math.min(...turfs.map((t) => t.pricePerHour));
   return {
-    title: `Turfs & Courts in ${area}, Mangalore | Book from ₹${from}/hr`,
+    title: `Venues & Courts in ${area}, Mangalore | Book from ₹${from}/hr`,
     description: `${turfs.length} venue${turfs.length === 1 ? '' : 's'} in ${area}, Mangalore for ${areaSports(turfs)}. Check live slot availability and book online on OYUN.`,
     alternates: { canonical: `/turfs/${slug}` },
     openGraph: ogBase(`/turfs/${slug}`),
@@ -64,9 +64,9 @@ export default async function AreaPage({ params }: Props) {
   const opens = turfs.map((t) => t.openTime).sort()[0];
   const closes = turfs.map((t) => t.closeTime).sort().at(-1);
   const faqs = [
-    { q: `How much does a turf cost in ${area}, Mangalore?`, a: `Turfs and courts in ${area} cost ${from === to ? rupees(from) : `${rupees(from)} to ${rupees(to)}`} per hour on OYUN. Peak evening slots can cost a little more than morning slots.` },
+    { q: `How much does a venue cost in ${area}, Mangalore?`, a: `Venues and courts in ${area} cost ${from === to ? rupees(from) : `${rupees(from)} to ${rupees(to)}`} per hour on OYUN. Peak evening slots can cost a little more than morning slots.` },
     { q: `Which sports can I play in ${area}?`, a: `Venues in ${area} offer ${areaSports(turfs)}.` },
-    { q: `What time do turfs in ${area} open?`, a: `Venues in ${area} open from ${opens} and the latest closes at ${closes === '00:00' ? 'midnight' : closes}. Check each venue page for exact hours and live open slots.` },
+    { q: `What time do venues in ${area} open?`, a: `Venues in ${area} open from ${opens} and the latest closes at ${closes === '00:00' ? 'midnight' : closes}. Check each venue page for exact hours and live open slots.` },
   ];
 
   return (
@@ -75,19 +75,19 @@ export default async function AreaPage({ params }: Props) {
         data={[
           breadcrumbSchema([
             { name: 'Home', path: '/' },
-            { name: 'Turfs in Mangalore', path: '/arenas' },
+            { name: 'Venues in Mangalore', path: '/arenas' },
             { name: area, path: `/turfs/${slug}` },
           ]),
-          itemListSchema(turfs, `Turfs and courts in ${area}, Mangalore`),
+          itemListSchema(turfs, `Venues and courts in ${area}, Mangalore`),
           faqSchema(faqs),
         ]}
       />
 
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
-        <Link href="/">Home</Link> <span aria-hidden>›</span> <Link href="/arenas">Turfs in Mangalore</Link> <span aria-hidden>›</span> <span aria-current="page">{area}</span>
+        <Link href="/">Home</Link> <span aria-hidden>›</span> <Link href="/arenas">Venues in Mangalore</Link> <span aria-hidden>›</span> <span aria-current="page">{area}</span>
       </nav>
 
-      <h1 className={styles.title}>Turfs and courts in {area}, Mangalore</h1>
+      <h1 className={styles.title}>Venues and courts in {area}, Mangalore</h1>
       <p className={styles.lead}>
         {turfs.length} venue{turfs.length === 1 ? '' : 's'} for {areaSports(turfs)} in {area} from {rupees(from)} per hour
         {openToday > 0 ? `, with ${openToday} open slot${openToday === 1 ? '' : 's'} today` : ''}. Pick a venue to see live availability and book in under a minute.
@@ -112,7 +112,7 @@ export default async function AreaPage({ params }: Props) {
       </section>
 
       <section aria-labelledby="faq-heading">
-        <h2 id="faq-heading" className={styles.h2}>Turf booking in {area}: quick answers</h2>
+        <h2 id="faq-heading" className={styles.h2}>Venue booking in {area}: quick answers</h2>
         {faqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
@@ -122,12 +122,12 @@ export default async function AreaPage({ params }: Props) {
       </section>
 
       <section aria-labelledby="areas-heading">
-        <h2 id="areas-heading" className={styles.h2}>Turfs in other areas</h2>
+        <h2 id="areas-heading" className={styles.h2}>Venues in other areas</h2>
         <div className={styles.areas}>
           {areas.filter((a) => a !== area).map((a) => (
-            <Link key={a} href={`/turfs/${areaSlug(a)}`} className={styles.areaLink}>Turfs in {a}</Link>
+            <Link key={a} href={`/turfs/${areaSlug(a)}`} className={styles.areaLink}>Venues in {a}</Link>
           ))}
-          <Link href="/arenas" className={styles.areaLink}>All turfs in Mangalore</Link>
+          <Link href="/arenas" className={styles.areaLink}>All venues in Mangalore</Link>
         </div>
       </section>
     </div>

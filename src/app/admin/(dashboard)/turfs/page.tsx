@@ -21,12 +21,12 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
 
   return (
     <div className={dash.page}>
-      <PageHeader title="Turfs" desc={`${db.turfs.length} turfs on the platform. New turfs come from approved listing applications.`} />
+      <PageHeader title="Venues" desc={`${db.turfs.length} venues on the platform. New venues come from approved listing applications.`} />
 
       <div className={dash.card}>
         <div className={dash.cardHeader}>
           <form className={dash.inline}>
-            <input name="q" aria-label="Search turfs by name or area" defaultValue={q} placeholder="Search name or area" className={dash.input} style={{ width: 220 }} />
+            <input name="q" aria-label="Search venues by name or area" defaultValue={q} placeholder="Search name or area" className={dash.input} style={{ width: 220 }} />
             <select name="status" defaultValue={status} className={dash.select} style={{ width: 160 }}>
               <option value="">All statuses</option>
               <option value="active">Active</option>
@@ -41,7 +41,7 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
           <table className={dash.table}>
             <thead>
               <tr>
-                <th></th><th>Turf</th><th>Partner</th><th>Status</th><th>Flags</th>
+                <th></th><th>Venue</th><th>Partner</th><th>Status</th><th>Flags</th>
                 <th className={dash.num}>Price</th><th className={dash.num}>Commission</th><th className={dash.num}>Revenue (month)</th><th></th>
               </tr>
             </thead>
@@ -95,8 +95,8 @@ export default async function AdminTurfs({ searchParams }: { searchParams: Promi
             </tbody>
           </table>
         </div>
-        {turfs.length === 0 && <p className={dash.empty}>No turfs match.</p>}
-        <p className={dash.muted} style={{ marginTop: 12 }}><Badge status="maintenance" /> turfs stay visible but can&apos;t be booked; <Badge status="suspended" /> turfs are hidden.</p>
+        {turfs.length === 0 && <p className={dash.empty}>No venues match.</p>}
+        <p className={dash.muted} style={{ marginTop: 12 }}><Badge status="maintenance" /> venues stay visible but can&apos;t be booked; <Badge status="suspended" /> venues are hidden.</p>
       </div>
     </div>
   );

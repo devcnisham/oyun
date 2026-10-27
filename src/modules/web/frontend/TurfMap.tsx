@@ -38,7 +38,7 @@ function clusterPin(count: number) {
 // List shown when grouped turfs sit too close to be told apart by zooming in
 function listCard(turfs: MapTurf[]) {
   const root = el('div', styles.card);
-  root.append(el('strong', styles.cardName, `${turfs.length} turfs here`));
+  root.append(el('strong', styles.cardName, `${turfs.length} venues here`));
   for (const t of [...turfs].sort((a, b) => a.name.localeCompare(b.name))) {
     const link = el('a', styles.cardLink, `${t.name} · ₹${t.pricePerHour}`) as HTMLAnchorElement;
     link.href = `/arenas/${t.id}`;
@@ -118,7 +118,7 @@ export default function TurfMap({ turfs, single = false }: { turfs: MapTurf[]; s
           continue;
         }
         const at = m.unproject(L.point(c.x, c.y), zoom);
-        L.marker(at, { icon: clusterPin(members.length), title: `${members.length} turfs here`, keyboard: true }).addTo(lay).on('click', () => {
+        L.marker(at, { icon: clusterPin(members.length), title: `${members.length} venues here`, keyboard: true }).addTo(lay).on('click', () => {
           const bounds = L.latLngBounds(members.map((t) => [t.lat!, t.lng!] as L.LatLngTuple));
           const apart = !bounds.getNorthEast().equals(bounds.getSouthWest());
           // Zoom in when that would separate them; otherwise (same spot, or already at the closest zoom) list them
@@ -137,5 +137,5 @@ export default function TurfMap({ turfs, single = false }: { turfs: MapTurf[]; s
     };
   }, [turfs, single]);
 
-  return <div ref={box} className={`${styles.map} ${single ? styles.fill : ''}`} role="region" aria-label={single ? 'Turf location' : 'Turfs on map'} />;
+  return <div ref={box} className={`${styles.map} ${single ? styles.fill : ''}`} role="region" aria-label={single ? 'Venue location' : 'Venues on map'} />;
 }

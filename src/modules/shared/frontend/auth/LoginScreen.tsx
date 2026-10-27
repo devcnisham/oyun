@@ -9,16 +9,16 @@ const copy = {
   admin: {
     tag: 'Admin Control Center',
     subtitle: 'Enter the admin portal',
-    prompt: 'Are you a turf owner?',
+    prompt: 'Are you a venue owner?',
     altHref: '/partner/login',
     altLabel: 'Go to Partner Portal',
   },
   partner: {
     tag: 'Partner Portal',
-    subtitle: 'Enter the partner portal to manage your turf',
+    subtitle: 'Enter the partner portal to manage your venue',
     prompt: 'Not a partner yet?',
     altHref: '/list-turf',
-    altLabel: 'List your turf for free',
+    altLabel: 'List your venue for free',
   },
 };
 
@@ -54,7 +54,7 @@ export default async function LoginScreen({ role, social, mode = 'login' }: { ro
         <div className={styles.loginCard}>
           <div className={styles.loginHeader}>
             <h2>{signup ? 'Create your partner account' : 'Welcome Back'}</h2>
-            <p>{signup ? 'Sign up with Google or Apple. Your turf goes live once we approve your application.' : c.subtitle}</p>
+            <p>{signup ? 'Sign up with Google or Apple. Your venue goes live once we approve your application.' : c.subtitle}</p>
           </div>
 
           {social}

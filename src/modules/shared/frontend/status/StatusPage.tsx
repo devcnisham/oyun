@@ -13,16 +13,16 @@ export default function StatusPage({ code, title, message, children }: { code: s
         <div className={styles.actions}>
           {children ?? (
             <>
-              <Link href="/arenas" className={styles.primary}>Find a turf</Link>
+              <Link href="/arenas" className={styles.primary}>Find a venue</Link>
               <Link href="/" className={styles.secondary}>Go home</Link>
             </>
           )}
         </div>
         <nav className={styles.links} aria-label="Popular pages">
-          <Link href="/arenas">All turfs</Link>
+          <Link href="/arenas">All venues</Link>
           <Link href="/bookings">My bookings</Link>
           <Link href="/faq">Help &amp; FAQ</Link>
-          <Link href="/list-turf">List your turf</Link>
+          <Link href="/list-turf">List your venue</Link>
         </nav>
       </div>
     </div>

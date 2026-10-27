@@ -83,7 +83,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (turfs.length === 0) {
     return {
       title: `${sport.label} in ${area}, ${SITE_CITY} | Court Availability & Guide`,
-      description: `Explore ${sport.label.toLowerCase()} courts and turfs in ${area}, ${SITE_CITY}. Check nearby venues, prices, and booking options on OYUN.`,
+      description: `Explore ${sport.label.toLowerCase()} courts and venues in ${area}, ${SITE_CITY}. Check nearby venues, prices, and booking options on OYUN.`,
       alternates: { canonical: `/sports/${sportParam}/${areaParam}` },
       openGraph: ogBase(`/sports/${sportParam}/${areaParam}`),
     };
@@ -113,7 +113,7 @@ export default async function SportAreaPage({ params }: Props) {
         data={[
           breadcrumbSchema([
             { name: 'Home', path: '/' },
-            { name: `Turfs in ${SITE_CITY}`, path: '/arenas' },
+            { name: `Venues in ${SITE_CITY}`, path: '/arenas' },
             { name: sport.label, path: `/sports/${sportParam}` },
             { name: `${sport.label} in ${area}`, path: `/sports/${sportParam}/${areaParam}` },
           ]),
@@ -124,7 +124,7 @@ export default async function SportAreaPage({ params }: Props) {
 
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
         <Link href="/">Home</Link> <span aria-hidden>›</span>{' '}
-        <Link href="/arenas">Turfs in {SITE_CITY}</Link> <span aria-hidden>›</span>{' '}
+        <Link href="/arenas">Venues in {SITE_CITY}</Link> <span aria-hidden>›</span>{' '}
         <Link href={`/sports/${sportParam}`}>{sport.label}</Link> <span aria-hidden>›</span>{' '}
         <span aria-current="page">{area}</span>
       </nav>
@@ -157,7 +157,7 @@ export default async function SportAreaPage({ params }: Props) {
         <div className={styles.emptyState}>
           <h2 className={styles.emptyTitle}>No {sport.label} venues directly in {area} yet</h2>
           <p className={styles.emptyDesc}>
-            Check out other top areas across {SITE_CITY} offering {sport.label.toLowerCase()} courts and turfs below.
+            Check out other top areas across {SITE_CITY} offering {sport.label.toLowerCase()} courts and venues below.
           </p>
         </div>
       )}

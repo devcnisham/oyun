@@ -59,7 +59,7 @@ export default async function CuratedCollectionPage({ params }: Props) {
         data={[
           breadcrumbSchema([
             { name: 'Home', path: '/' },
-            { name: `Turfs in ${SITE_CITY}`, path: '/arenas' },
+            { name: `Venues in ${SITE_CITY}`, path: '/arenas' },
             { name: collection.title, path: `/curated/${slug}` },
           ]),
           ...(turfs.length > 0 ? [itemListSchema(turfs, collection.title)] : []),
@@ -69,7 +69,7 @@ export default async function CuratedCollectionPage({ params }: Props) {
 
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
         <Link href="/">Home</Link> <span aria-hidden>›</span>{' '}
-        <Link href="/arenas">Turfs in {SITE_CITY}</Link> <span aria-hidden>›</span>{' '}
+        <Link href="/arenas">Venues in {SITE_CITY}</Link> <span aria-hidden>›</span>{' '}
         <span aria-current="page">{collection.badge}</span>
       </nav>
 

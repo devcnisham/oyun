@@ -239,3 +239,27 @@
 
 .resetSport { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; background: #fff; border: 1px solid #d2d2d7; border-radius: 999px; color: #a40000; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .resetSport:hover { border-color: #a1a1a6; }
+
+/* Compact, responsive venue cards on phones. */
+@media (max-width: 768px) {
+  .venue { border-radius: 18px; }
+  .venueImage { aspect-ratio: 1.85; max-height: 190px; }
+  .venueBody { padding: 14px; }
+  .venueBody h3 { font-size: 18px; line-height: 1.2; }
+  .venueLocation { font-size: 12px; line-height: 18px; margin: 4px 0 10px; }
+  .venueBottom { padding-top: 12px; }
+  .price { font-size: 23px; }
+  .bookButton { min-height: 44px; font-size: 12px; padding: 10px 14px; }
+  .availability { font-size: 11px; bottom: 11px; }
+  .featuredBadge { font-size: 9px; padding: 5px 9px; }
+  .amenityRow { gap: 5px; margin-bottom: 12px; }
+  .amenityRow span { font-size: 10px; padding: 4px 7px; }
+}
+
+@media (max-width: 768px) {
+  .sectionHead { gap: 10px; }
+  .sectionHead h2 { font-size: clamp(22px, 5.5vw, 26px); line-height: 1.2; }
+  .headingLine { gap: 8px; align-items: center; }
+  .label, .offPeak { font-size: 10px; padding: 4px 9px; }
+  .owner h2 { font-size: 26px; }
+}

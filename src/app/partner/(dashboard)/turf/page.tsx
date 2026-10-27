@@ -12,14 +12,14 @@ export default async function MyTurfPage() {
 
   return (
     <div className={dash.page}>
-      <PageHeader title="My turf" desc="Everything here appears on your public booking page.">
+      <PageHeader title="My venue" desc="Everything here appears on your public booking page.">
         <Badge status={turf.status} />
         {turf.isVerified && <Badge status="active" label="Verified" />}
         <Link href={`/arenas/${turf.id}`} className={`${dash.btn} ${dash.btnSecondary}`}>View public page</Link>
       </PageHeader>
 
       {turf.status !== 'active' && (
-        <p className={dash.notice}>Your turf is {turf.status}. Contact OYUN support to make it live again.</p>
+        <p className={dash.notice}>Your venue is {turf.status}. Contact OYUN support to make it live again.</p>
       )}
 
       {isOutdoorTurf(turf) && (

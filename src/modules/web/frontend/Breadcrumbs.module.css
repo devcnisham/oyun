@@ -6,4 +6,4 @@
 .trail a:focus-visible { outline: 2px solid #6e6e73; outline-offset: 3px; }
 .separator { color: #8c8075; }
 .content nav:is([aria-label="Breadcrumb"], [aria-label="Breadcrumbs"]) { display: none; }
-@media (max-width: 760px) { .trail { padding-inline: 18px; font-size: 12px; } }
+@media (max-width: 768px) { .trail { display: none; } }

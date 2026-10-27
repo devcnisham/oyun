@@ -134,7 +134,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
 
           <section className={styles.venueNote}>
             <h3>Payment</h3>
-            <p>💵 Nothing is charged online. You pay at the turf by cash or UPI: {advanceSummary(quote)} when you arrive, and the balance after you play.</p>
+            <p>💵 Nothing is charged online. You pay at the venue by cash or UPI: {advanceSummary(quote)} when you arrive, and the balance after you play.</p>
           </section>
 
           </div>
@@ -171,7 +171,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
               {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
               <div><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
               <div className={styles.billTotal}>
-                <span>Advance at the turf ({isFlatAdvance(quote) && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span>
+                <span>Advance at the venue ({isFlatAdvance(quote) && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span>
                 <span>{rupees(quote.payNow)}</span>
               </div>
               <div className={styles.billBalance}><span>Balance after you play</span><span>{rupees(quote.payAtVenue)}</span></div>
@@ -183,7 +183,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
             <div className={`${styles.sheetFoot} ${styles.footDesktop}`}>
 <div className={styles.barInfo}>
                 <b>{quote ? rupees(quote.payNow) : '…'}</b>
-                <span>Advance due at the turf</span>
+                <span>Advance due at the venue</span>
               </div>
               <button className={styles.primary} onClick={onPay} disabled={!quote || paying}>
                 {paying ? 'Reserving…' : signedIn ? 'Confirm booking' : 'Sign in to confirm'}
@@ -195,7 +195,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
         <div className={`${styles.sheetFoot} ${styles.footMobile}`}>
           <div className={styles.barInfo}>
             <b>{quote ? rupees(quote.payNow) : '…'}</b>
-            <span>Advance due at the turf</span>
+            <span>Advance due at the venue</span>
           </div>
           <button className={styles.primary} onClick={onPay} disabled={!quote || paying}>
             {paying ? 'Reserving…' : signedIn ? 'Confirm booking' : 'Sign in to confirm'}

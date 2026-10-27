@@ -15,7 +15,7 @@ test('desktop navigation is fixed flush to the viewport with no redundant search
     await expect(nav.getByRole('search')).toHaveCount(0);
     await expect(nav.getByRole('link', { name: /^Bookings/ })).toHaveCount(0);
     await expect(nav.getByRole('button', { name: 'Open menu' })).toBeVisible();
-    await expect(nav.getByRole('link', { name: 'List your turf' })).toHaveCount(0);
+    await expect(nav.getByRole('link', { name: 'List your venue' })).toHaveCount(0);
     await expect(nav.getByRole('link', { name: 'Offers', exact: true })).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0, 600));
     const box = await nav.boundingBox();
@@ -54,11 +54,13 @@ test('venue cards align their actions while keeping names close to the city', as
   }
 });
 
-test('venue results keep only sport categories and can clear incoming search preferences', async ({ page }) => {
+test('venue results keep only sport categories and can clear incoming search preferences', async ({ page, isMobile }) => {
   await page.goto('/arenas?area=Kodialbail');
+  if (isMobile) await page.getByRole('button', { name: 'Search venues', exact: true }).click();
   await expect(page.getByRole('button', { name: 'All sports', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Morning', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('Maximum price per hour')).toHaveCount(0);
+  if (isMobile) await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   await page.getByRole('button', { name: 'Clear search preferences' }).click();
   await expect(page).not.toHaveURL(/[?&]area=/);
 });
@@ -68,9 +70,8 @@ test('desktop footer keeps Support beside the other groups and shows the dimmed 
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto('/');
   const footer = page.locator('footer');
-  const book = await footer.getByText('Book', { exact: true }).boundingBox();
-  const support = await footer.getByText('Support', { exact: true }).boundingBox();
-  expect(Math.abs(book!.y - support!.y)).toBeLessThan(2);
+  await footer.scrollIntoViewIfNeeded();
+  await expect.poll(async () => footer.evaluate(el => { const titles = [...el.querySelectorAll('p')]; const top = (label: string) => titles.find(p => p.textContent === label)!.getBoundingClientRect().top; return Math.abs(top('Book') - top('Support')); })).toBeLessThan(2);
   await expect(footer.locator('[aria-hidden="true"]').filter({ hasText: /^OYUN$/ })).toBeVisible();
 });
 
@@ -94,14 +95,14 @@ test('home category selection filters featured venues without navigating away', 
   const category = page.getByRole('button', { name: 'Badminton', exact: true });
   await category.click();
   await expect(category).toHaveAttribute('aria-pressed', 'true');
-  const featured = page.getByRole('region', { name: 'Badminton featured turfs' });
+  const featured = page.getByRole('region', { name: 'Badminton featured venues' });
   await expect(featured.getByRole('link', { name: 'Book Smash Court Badminton' })).toBeVisible();
   await expect(featured.getByRole('link', { name: 'Book Perfect Pass' })).toHaveCount(0);
-  await expect(featured.getByRole('link', { name: 'See all turfs' })).toHaveAttribute('href', '/arenas?sport=Badminton');
+  await expect(featured.getByRole('link', { name: 'See all venues' })).toHaveAttribute('href', '/arenas?sport=Badminton');
   expect(new URL(page.url()).pathname).toBe('/');
-  await featured.getByRole('button', { name: 'All sports', exact: true }).click();
+  await category.click();
   await expect(category).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.getByRole('region', { name: 'Featured turfs' }).getByRole('link', { name: 'Book Perfect Pass' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Featured venues' }).getByRole('link', { name: 'Book Perfect Pass' })).toBeVisible();
 });
 
 test('side menu opens, traps focus and closes with Escape', async ({ page, isMobile }) => {

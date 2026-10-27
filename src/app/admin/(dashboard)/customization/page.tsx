@@ -36,7 +36,7 @@ export default async function AdminCustomization() {
         <div className={dash.cardHeader}>
           <div>
             <h2 className={dash.cardTitle}>Promo carousel</h2>
-            <p className={dash.cardDesc}>Images: a file in /public (e.g. /turfs/turf_2.jpg) or an images.unsplash.com link.</p>
+            <p className={dash.cardDesc}>Images: a file in /public (e.g. /venues/turf_2.jpg) or an images.unsplash.com link.</p>
           </div>
         </div>
         <div className={styles.cards}>

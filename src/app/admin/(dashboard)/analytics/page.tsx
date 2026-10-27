@@ -72,7 +72,7 @@ export default async function AdminAnalyticsPage() {
               <thead>
                 <tr>
                   <th>Area</th>
-                  <th className={dash.num}>Turfs</th>
+                  <th className={dash.num}>Venues</th>
                   <th className={dash.num}>Bookings</th>
                   <th className={dash.num}>Revenue</th>
                 </tr>

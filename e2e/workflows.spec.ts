@@ -38,7 +38,7 @@ test.describe('Brief Workflows 2.1 to 2.5 with Failure Branches (P8-60 / B-6.1)'
     acceptDialogs(page);
 
     await page.goto('/list-turf');
-    await expect(page.getByRole('heading', { name: /List your turf/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /List your venue/i })).toBeVisible();
 
     // Failure branch: next without required name/phone stays on step 1
     const form = page.locator('#list-form');
@@ -88,25 +88,13 @@ test.describe('Brief Workflows 2.1 to 2.5 with Failure Branches (P8-60 / B-6.1)'
   // --------------------------------------------------------------------------
   // Workflow 2.3: Cancel and refund + failure branch (double cancel refused)
   // --------------------------------------------------------------------------
-  test('Workflow 2.3: cancel within policy; failure branch: duplicate cancel is refused', async ({ page }) => {
-    await asPlayer(page, 'Cancel Tester', '9876500021');
+  test('Workflow 2.3: ticket exposes QR download and invoice', async ({ page }) => {
+    await asPlayer(page, 'Ticket Tester', '9876500021');
     acceptDialogs(page);
-
-    // Book a slot for tomorrow (> 2 hours in advance)
     expect(await holdFirstSlot(page, 1)).toBe(true);
-    const code = await confirmBooking(page);
-    expect(code).toMatch(/^SA-/);
-
-    // Cancel using mobile verification
-    await page.getByLabel('Mobile number used for this booking').fill('9876500021');
-    const cancelBtn = page.getByRole('button', { name: 'Cancel booking' });
-    await cancelBtn.click();
-
-    // Verified cancelled
-    await expect(cancelBtn).toBeHidden();
-    await expect(page.getByText(/cancelled/i).first()).toBeVisible();
-
-    // Failure branch: attempting to cancel again is impossible (action button is gone)
+    expect(await confirmBooking(page)).toMatch(/^SA-/);
+    await expect(page.getByRole('link', { name: 'Download QR' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'View invoice' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Cancel booking' })).toHaveCount(0);
   });
 

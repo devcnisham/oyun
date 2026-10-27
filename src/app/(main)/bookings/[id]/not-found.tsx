@@ -13,7 +13,7 @@ export default function BookingNotFound() {
       message="Check that the link is complete, or open My bookings on the phone you booked from. If you booked just now and the ticket is missing, please contact the turf: your booking may not have been saved."
     >
       <Link href="/bookings" className={styles.primary}>My bookings</Link>
-      <Link href="/arenas" className={styles.secondary}>Find a turf</Link>
+      <Link href="/arenas" className={styles.secondary}>Find a venue</Link>
     </StatusPage>
   );
 }

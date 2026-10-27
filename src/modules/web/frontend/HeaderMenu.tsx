@@ -7,12 +7,12 @@ import styles from './HeaderMenu.module.css';
 
 const accountLinks = [
   { href: '/bookings', label: 'Your bookings', detail: 'Upcoming games and past bookings', icon: 'M4 5h16v16H4zM8 3v4m8-4v4M4 11h16' },
-  { href: '/saved', label: 'Saved turfs', detail: 'Your favourite places to play', icon: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z' },
+  { href: '/saved', label: 'Saved venues', detail: 'Your favourite places to play', icon: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z' },
   { href: '/profile', label: 'Your account', detail: 'Manage your player profile', icon: 'M20 21v-2a7 7 0 0 0-14 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z' },
   { href: '/settings', label: 'Settings', detail: 'Manage your preferences', icon: 'M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6m-6 0v6' },
   { href: '/help', label: 'Help & support', detail: 'Booking questions and contact details', icon: 'M21 11a9 9 0 0 1-9 9H3l2-5a9 9 0 1 1 16-4ZM8 10h8m-8 4h5' },
 ];
-const exploreLinks = [['/arenas', 'Browse turfs'], ['/tournaments', 'Tournaments'], ['/news', 'News & events'], ['/blog', 'Blog'], ['/about', 'About us']];
+const exploreLinks = [['/arenas', 'Browse venues'], ['/tournaments', 'Tournaments'], ['/news', 'News & events'], ['/blog', 'Blog'], ['/about', 'About us']];
 
 export default function HeaderMenu({ signedIn = false, firstName = '' }: { signedIn?: boolean; firstName?: string }) {
   const [open, setOpen] = useState(false);

@@ -11,8 +11,8 @@ export default function FavouriteButton({ turfId, turfName, className }: { turfI
       type="button"
       className={className}
       aria-pressed={saved}
-      aria-label={saved ? `Remove ${turfName} from saved turfs` : `Save ${turfName}`}
-      title={saved ? 'Saved' : 'Save turf'}
+      aria-label={saved ? `Remove ${turfName} from saved venues` : `Save ${turfName}`}
+      title={saved ? 'Saved' : 'Save venue'}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

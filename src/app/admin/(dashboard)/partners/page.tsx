@@ -25,7 +25,7 @@ export default async function AdminPartners() {
                     {p.business.gstin && <Badge status="confirmed" label="GST registered" />}
                   </div>
                   <div className={dash.muted}>
-                    Turfs:{' '}
+                    Venues:{' '}
                     {turfs.length === 0
                       ? 'none'
                       : turfs.map((t, i) => (

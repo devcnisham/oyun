@@ -11,8 +11,8 @@ import { sportInfo } from '@/modules/web/lib/sports';
 import styles from '../turfs/[area]/page.module.css';
 
 export const metadata: Metadata = {
-  title: `Turfs & Courts by Area in ${SITE_CITY} | Kodialbail, Kankanady, Ullal & more`,
-  description: `Find a football turf, box cricket ground, badminton or pickleball court near you in ${SITE_CITY}. Browse every neighbourhood with live slot availability and prices.`,
+  title: `Venues & Courts by Area in ${SITE_CITY} | Kodialbail, Kankanady, Ullal & more`,
+  description: `Find a football venue, box cricket ground, badminton or pickleball court near you in ${SITE_CITY}. Browse every neighbourhood with live slot availability and prices.`,
   alternates: { canonical: '/areas' },
   openGraph: ogBase('/areas'),
 };
@@ -35,9 +35,9 @@ export default async function AreasHubPage() {
       <nav aria-label="Breadcrumb" className={styles.crumbs}>
         <Link href="/">Home</Link> <span aria-hidden>›</span> <span aria-current="page">Areas in {SITE_CITY}</span>
       </nav>
-      <h1 className={styles.title}>Turfs and courts by area in {SITE_CITY}</h1>
+      <h1 className={styles.title}>Venues and courts by area in {SITE_CITY}</h1>
       <p className={styles.lead}>
-        {turfs.length} venues across {rows.length} neighbourhoods. Pick your area to see football turfs, box cricket grounds, badminton and pickleball courts with live slots and prices.
+        {turfs.length} venues across {rows.length} neighbourhoods. Pick your area to see football venues, box cricket grounds, badminton and pickleball courts with live slots and prices.
       </p>
 
       <section aria-labelledby="areas-heading">
@@ -45,7 +45,7 @@ export default async function AreasHubPage() {
         <div className={styles.areas}>
           {rows.map((r) => (
             <Link key={r.area} href={`/turfs/${areaSlug(r.area)}`} className={styles.areaLink}>
-              Turfs in {r.area}: {r.count} venue{r.count === 1 ? '' : 's'} from {rupees(r.from)}/hr ({r.sports.join(', ')})
+              Venues in {r.area}: {r.count} venue{r.count === 1 ? '' : 's'} from {rupees(r.from)}/hr ({r.sports.join(', ')})
             </Link>
           ))}
         </div>
@@ -56,7 +56,7 @@ export default async function AreasHubPage() {
           <h2 id="budget-heading" className={styles.h2}>Browse by budget</h2>
           <div className={styles.areas}>
             {cheapest.map((b) => (
-              <Link key={b} href={`/prices/${bandSlug(b)}`} className={styles.areaLink}>Turfs under {rupees(b)} per hour in {SITE_CITY}</Link>
+              <Link key={b} href={`/prices/${bandSlug(b)}`} className={styles.areaLink}>Venues under {rupees(b)} per hour in {SITE_CITY}</Link>
             ))}
           </div>
         </section>

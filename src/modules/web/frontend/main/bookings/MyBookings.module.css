@@ -37,3 +37,15 @@
 @keyframes enter { from { opacity: .5; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (max-width: 600px) { .page { padding-top: 28px; } .header { margin-bottom: 24px; } .card { padding: 15px; gap: 14px; } .thumb { width: 76px; height: 90px; border-radius: 13px; } .info { font-size: 12px; gap: 7px; } .info b { font-size: 18px; } .chev { width: 32px; height: 44px; border: 0; } .empty { padding: 42px 20px; } }
 @media (prefers-reduced-motion: reduce) { .cardWrapper, .skeleton { animation: none; } .page * { transition: none; } .cardWrapper:hover { transform: none; } }
+
+/* OYUN booking summaries */
+.cardWrapper { background: #4a0000; border-color: #4a0000; color: #fff; }
+.info { color: #ead2cd; }
+.info b, .chev { color: #fff; }
+.chev { border-color: #ffffff30; }
+.cardActions { background: #ffffff08; border-color: #ffffff26; }
+.rate { color: #ffda83; }
+@media (max-width: 768px) {
+  .header { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .page { padding-top: 16px; }
+}

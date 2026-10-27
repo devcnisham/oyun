@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 // Default share image for every page that doesn't set its own (turf pages use the turf photo)
-export const alt = 'OYUN: book sports turfs and courts in Mangalore';
+export const alt = 'OYUN: book sports venues and courts in Mangalore';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -26,7 +26,7 @@ export default function OpenGraphImage() {
           <div style={{ fontSize: 48, fontWeight: 800, letterSpacing: -1 }}>OYUN</div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2 }}>Book turfs and courts in Mangalore</div>
+          <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2 }}>Book venues and courts in Mangalore</div>
           <div style={{ fontSize: 34, opacity: 0.85 }}>Live slots · Instant booking · 5-a-side &amp; 7-a-side</div>
         </div>
         <div style={{ display: 'flex', gap: 14 }}>

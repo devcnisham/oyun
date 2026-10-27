@@ -6,7 +6,7 @@ import { getDb } from '@/modules/shared/database/store';
 import styles from '../hub.module.css';
 
 export const metadata: Metadata = {
-  title: 'Offers | Discounts on Turf and Court Bookings in Mangalore',
+  title: 'Offers | Discounts on Venue and Court Bookings in Mangalore',
   description: 'Live OYUN offers: platform discounts, student price, and happy-hour and first-booking deals at individual venues.',
   alternates: { canonical: '/offers' },
 };
@@ -19,7 +19,6 @@ export default async function OffersPage() {
     <div className={`container ${styles.page}`}>
       <nav className={styles.crumbs} aria-label="Breadcrumb"><Link href="/">Home</Link> / <span>Offers</span></nav>
       <h1 className={styles.title}>Offers</h1>
-      <p className={styles.lead}>What is running right now. The best single offer is applied to your booking at checkout.</p>
 
       {none && <p className={styles.empty}>No offers are running at the moment. Check back soon, or browse venues to see prices and open slots.</p>}
 

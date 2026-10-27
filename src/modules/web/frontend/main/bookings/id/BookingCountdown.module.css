@@ -1,0 +1,4 @@
+.countdown { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; padding: 14px 16px; border: 1px solid #ffffff30; border-radius: 14px; background: #ffffff0d; color: #f5d7d0; }
+.countdown span { font-size: 12px; }
+.countdown strong { font-size: 22px; letter-spacing: .03em; line-height: 1.2; font-variant-numeric: tabular-nums; color: #ffe3a0; }
+@media (max-width: 400px) { .countdown strong { font-size: 20px; } }

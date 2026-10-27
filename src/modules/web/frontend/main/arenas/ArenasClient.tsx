@@ -7,6 +7,7 @@ import TurfCard from '@/modules/web/frontend/TurfCard';
 import PageSkeleton from '@/modules/shared/frontend/PageSkeleton';
 import type { TurfSummary } from '@/modules/shared/database/types';
 import styles from '@/app/(main)/arenas/page.module.css';
+import { VENUE_SORT_OPTIONS as sortOptions } from '@/modules/web/lib/venue-search-options';
 import { SPORTS, sportInfo } from '@/modules/web/lib/sports';
 import { filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/modules/web/backend/search';
 import { locateTurfs } from '@/modules/web/backend/map-actions';
@@ -18,19 +19,13 @@ import type { Coords } from '@/modules/shared/backend/geocode';
 // Leaflet touches window, so the map loads in the browser only
 const TurfMap = dynamic(() => import('@/modules/web/frontend/TurfMap'), { ssr: false, loading: () => <PageSkeleton variant="content" /> });
 
-const sortOptions = [
-  { value: 'featured', label: 'Featured First' },
-  { value: 'rating', label: 'Highest Rated' },
-  { value: 'price-low', label: 'Price: Low to High' },
-  { value: 'price-high', label: 'Price: High to Low' },
-  { value: 'availability', label: 'Most Available' },
-];
+
 
 // The list reads its filters from the address bar in the browser, so the page itself can be prebuilt and cached.
 // Re-keying on the filters that come from other pages (home search, top bar) restarts the list state when they change.
 export default function ArenasClient(props: { turfs: TurfSummary[]; areaNames: string[] }) {
   const sp = useSearchParams();
-  const key = ['q', 'area', 'sport', 'date', 'type'].map((k) => sp.get(k) ?? '').join('|');
+  const key = ['q', 'area', 'sport', 'date', 'type', 'sort', 'view'].map((k) => sp.get(k) ?? '').join('|');
   return <ArenasList key={key} {...props} />;
 }
 
@@ -198,8 +193,8 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
               <input
                 id="arena-search"
                 type="search"
-                placeholder="Search turfs or sports"
-                aria-label="Search turfs or sports"
+                placeholder="Search venues or sports"
+                aria-label="Search venues or sports"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
@@ -216,7 +211,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
                 <path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4" />
               </svg>
               <span className={styles.ctrlLabel}>{sortOptions.find((o) => o.value === sortBy)?.label}</span>
-              <select id="arena-sort" className={styles.overlaySelect} value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort turfs">
+              <select id="arena-sort" className={styles.overlaySelect} value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort venues">
                 {sortOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
@@ -263,7 +258,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
           {filtered.length === 0 ? (
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>🏟️</div>
-              <h2 className={styles.emptyTitle}>No turfs found</h2>
+              <h2 className={styles.emptyTitle}>No venues found</h2>
               <p className={styles.emptyDesc}>Try a different area, price, day or search term.</p>
               <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSelectedSport('All Sports'); setMaxPrice(0); setAmenities([]); setDate(''); setTime(''); setSearchQuery(''); }}>
                 Clear Filters
@@ -272,11 +267,11 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
           ) : viewMode === 'map' ? (
             <div className={styles.mapContainer}>
               <TurfMap turfs={mapTurfs} />
-              {mapTurfs.some((t) => t.lat === undefined) && <p className={styles.mapNote}>Placing turfs on the map…</p>}
+              {mapTurfs.some((t) => t.lat === undefined) && <p className={styles.mapNote}>Placing venues on the map…</p>}
             </div>
           ) : (
             <>
-            <h2 className="sr-only">{filtered.length} turfs found</h2>
+            <h2 className="sr-only">{filtered.length} venues found</h2>
             <div className={styles.grid}>
               {filtered.map((turf, i) => (
                 // Above-the-fold cards paint at once: a fade-in starts at opacity 0 and would hold back the LCP image

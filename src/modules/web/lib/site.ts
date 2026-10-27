@@ -13,7 +13,7 @@ export const SITE_URL = siteUrl();
 export const SITE_NAME = 'OYUN';
 export const SITE_CITY = 'Mangalore';
 export const SITE_DESCRIPTION =
-  'Book football and box cricket turfs and badminton and pickleball courts in Mangalore. See live slot availability and prices and book in seconds. Kodialbail, Kankanady, Ullal and more.';
+  'Book football, box cricket, badminton and pickleball venues in Mangalore. Compare prices, see live availability and book a slot.';
 
 export const absoluteUrl = (path = '/') => new URL(path, `${SITE_URL}/`).toString();
 

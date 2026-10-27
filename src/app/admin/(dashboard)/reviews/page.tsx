@@ -20,12 +20,12 @@ export default async function AdminReviews({ searchParams }: { searchParams: Pro
       <PageHeader title="Reviews" desc="Ratings players leave after they play. Hide a review if it is abusive or off-topic; the turf's rating updates at once." />
       <div className={dash.card}>
         {reviews.length === 0 ? (
-          <p className={dash.muted}>No reviews yet. Players can rate a turf from their booking after they are checked in.</p>
+          <p className={dash.muted}>No reviews yet. Players can rate a venue from their booking after they are checked in.</p>
         ) : (
           <div {...tableScroll}>
             <table className={dash.table}>
               <thead>
-                <tr><th>Turf</th><th>Rating</th><th>Review</th><th>Player</th><th>When</th><th>Status</th><th>Actions</th></tr>
+                <tr><th>Venue</th><th>Rating</th><th>Review</th><th>Player</th><th>When</th><th>Status</th><th>Actions</th></tr>
               </thead>
               <tbody>
                 {reviews.map((r) => {

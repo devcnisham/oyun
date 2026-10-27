@@ -51,7 +51,7 @@ export default function TurfMiniMap({ turf }: { turf: MapTurf }) {
     return (
       <Note>
         <span>
-          We could not place this turf on the map.{' '}
+          We could not place this venue on the map.{' '}
           <a href={`https://www.google.com/maps/search/?api=1&query=${query}`} target="_blank" rel="noreferrer">
             Search it on Google Maps
           </a>

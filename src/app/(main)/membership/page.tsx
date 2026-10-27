@@ -6,7 +6,7 @@ import { rupees } from '@/modules/shared/lib/format';
 import styles from '../hub.module.css';
 
 export const metadata: Metadata = {
-  title: 'Your OYUN account | Rewards, Saved Turfs and Booking History',
+  title: 'Your OYUN account | Rewards, Saved Venues and Booking History',
   description: 'A free OYUN account keeps your bookings and saved venues in one place, with cashback and referral rewards when they are switched on.',
   alternates: { canonical: '/membership' },
 };
@@ -18,7 +18,7 @@ export default async function MembershipPage() {
   const { student } = platformOffersOf(s);
   const perks: { title: string; text: string }[] = [
     { title: 'Your bookings in one place', text: 'Tickets and history stay on your account, on any device you sign in from.' },
-    { title: 'Saved venues', text: 'Keep the turfs and courts you play at one tap away.' },
+    { title: 'Saved venues', text: 'Keep the venues and courts you play at one tap away.' },
     { title: 'Cancel yourself', text: 'Cancel from your ticket up to 2 hours before the slot starts.' },
   ];
   if (s.cashbackEnabled) perks.push({ title: 'Cashback', text: `${s.cashbackPercent}% back to your wallet after you play, up to ${rupees(s.cashbackMax)} per booking.` });

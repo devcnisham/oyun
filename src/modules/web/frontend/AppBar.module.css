@@ -31,3 +31,4 @@
   .title { flex: 1; margin: 0; font-size: 18px; font-weight: 800; color: var(--text-primary); }
 }
 @media print { .bar { display: none !important; } }
+.tools { display: inline-flex; align-items: center; gap: 6px; }
