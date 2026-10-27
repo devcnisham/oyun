@@ -10,13 +10,11 @@ import styles from '@/app/(main)/arenas/page.module.css';
 import { VENUE_SORT_OPTIONS as sortOptions } from '@/modules/web/lib/venue-search-options';
 import { SPORTS, sportInfo } from '@/modules/web/lib/sports';
 import { filtersToParams, matchesExtras, matchesQuery, parseMaxPrice } from '@/modules/web/backend/search';
-import { locateTurfs } from '@/modules/web/backend/map-actions';
 import { getOpenHours } from '@/modules/web/backend/availability-actions';
 import { hasOpenSlot, isTimeWindow, type TimeWindow } from '@/modules/web/lib/availability';
 import { istNow } from '@/modules/shared/lib/time';
-import type { Coords } from '@/modules/shared/backend/geocode';
 
-// Leaflet touches window, so the map loads in the browser only
+// Load the map view only when requested.
 const TurfMap = dynamic(() => import('@/modules/web/frontend/TurfMap'), { ssr: false, loading: () => <PageSkeleton variant="content" /> });
 
 
@@ -93,23 +91,6 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
   // An empty answer means the day is outside the booking window: show everything rather than nothing
   const openHours = !checking && openSlots && Object.keys(openSlots.hours).length > 0 ? openSlots.hours : null;
 
-  // Map positions are looked up the first time the map opens, a few turfs at a time
-  const [located, setLocated] = useState<Record<string, Coords>>({});
-  useEffect(() => {
-    if (viewMode !== 'map') return;
-    let cancelled = false;
-    (async () => {
-      for (let i = 0; i < 6 && !cancelled; i++) {
-        const found = await locateTurfs().catch(() => ({}));
-        if (cancelled || !Object.keys(found).length) return;
-        setLocated((prev) => ({ ...prev, ...found }));
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [viewMode]);
-
   const filtered = useMemo(() => {
     let result = [...turfs];
 
@@ -166,7 +147,6 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
   const hasSearchPreferences = selectedArea !== 'All Areas' || maxPrice > 0 || amenities.length > 0 || Boolean(date || time);
 
-  const mapTurfs = filtered.map((t) => (located[t.id] ? { ...t, ...located[t.id] } : t));
 
   return (
     <div className={styles.page}>
@@ -266,8 +246,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
             </div>
           ) : viewMode === 'map' ? (
             <div className={styles.mapContainer}>
-              <TurfMap turfs={mapTurfs} />
-              {mapTurfs.some((t) => t.lat === undefined) && <p className={styles.mapNote}>Placing venues on the map…</p>}
+              <TurfMap turfs={filtered} />
             </div>
           ) : (
             <>

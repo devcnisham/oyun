@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata, Viewport } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import localFont from "next/font/local";
@@ -67,7 +68,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
         {children}
-        <BottomNav />
+        <Suspense fallback={null}><BottomNav /></Suspense>
         <ConsentManager />
         <NavTracker />
         <AttributionCapture />

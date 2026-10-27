@@ -91,6 +91,11 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Google Maps frames do not opt into cross-origin isolation.
+        source: '/arenas/:path*',
+        headers: [{ key: 'Cross-Origin-Embedder-Policy', value: 'unsafe-none' }],
+      },
+      {
         // Share previews: WhatsApp, Facebook, LinkedIn and Slack fetch these from another origin, so they must be loadable cross-origin
         source: '/:file(opengraph-image.*|twitter-image.*|icon.*|apple-icon.*|favicon.ico|logo.*|oyun-.*|manifest.webmanifest)',
         headers: [{ key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' }],

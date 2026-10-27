@@ -392,3 +392,30 @@
   .groupTitle { font-size: 11px !important; }
   .groups > .group:first-child .rowText b { font-size: 12px; }
 }
+
+/* Profile reference: white identity, live statistics and pastel shortcuts. */
+.page { max-width: 1000px; }
+.card, .rows { --bg-card: #fff; --bg-muted: #faf6f5; --text-primary: #242424; --text-muted: #646469; --border: #eee8e6; --primary-50: #faf1ef; --accent-text: #4a0000; color: #242424; background: #fff; border: 0; box-shadow: 0 8px 30px #4a000005; }
+.card h2 { color: #242424; }
+.card .primaryBtn { background: #4a0000; color: #fff; }
+.card .primaryBtn:hover { background: #650c0c; }
+.avatar { background: #210000; }
+.cardActions .ghostBtn { background: #faf6f5; }
+.cardActions .ghostBtn:hover { background: #f6ece9; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stats a { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 76px; border-radius: 20px; background: #fff; color: #242424; text-decoration: none; }
+.stats strong { font-size: 24px; line-height: 1.2; }
+.stats span { font-size: 12px; color: #646469; }
+.wallet { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-radius: 24px; background: #210000; color: #fff; text-decoration: none; }
+.wallet span { font-size: 12px; color: #e9ceca; }
+.wallet strong { display: block; margin-top: 4px; font-size: 25px; color: #fff; }
+.wallet svg { width: 28px; height: 28px; color: #f5c86d; }
+.shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.shortcuts a { min-height: 116px; padding: 18px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; border-radius: 24px; background: #eafaf1; color: #242424; text-decoration: none; }
+.shortcuts a:nth-child(2) { background: #fff3d6; }
+.shortcuts a:nth-child(3) { background: #e6efff; }
+.shortcuts a:nth-child(4) { background: #fff1f3; }
+.shortcuts svg { box-sizing: content-box; padding: 10px; border-radius: 50%; background: #fff; color: #4a0000; }
+.shortcuts b { font-size: 15px; }
+.groups { gap: 18px; }
+@media (max-width: 899px) { .layout { gap: 16px; } }

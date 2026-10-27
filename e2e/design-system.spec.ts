@@ -138,3 +138,20 @@ test('home shows a real live-slot total without duplicate venue cards', async ({
   await page.getByRole('button', { name: 'Badminton', exact: true }).click();
   await expect(live.getByText(/\d+ open slots/)).toBeVisible({ timeout: 30_000 });
 });
+
+test('Google map selects venues and the mobile centre tab opens it', async ({ page, isMobile }) => {
+  await page.goto('/arenas?view=map');
+  const map = page.getByRole('region', { name: 'Venues on map' });
+  await expect(map.locator('iframe')).toHaveAttribute('src', /^https:\/\/www\.google\.com\/maps\/embed/);
+  await map.getByRole('button', { name: 'Show Mangala Magnus on Google Maps' }).click();
+  await expect(map.locator('iframe')).toHaveAttribute('title', 'Google Maps: Mangala Magnus');
+  await map.getByRole('textbox', { name: 'Search map venues' }).fill('Perfect Pass');
+  await expect(map.getByRole('button', { name: /Show .* on Google Maps/ })).toHaveCount(1);
+  if (isMobile) {
+    const nav = page.getByRole('navigation', { name: 'Main', exact: true });
+    await expect(nav.getByRole('link').nth(2)).toHaveText('Map');
+    await expect(nav.getByRole('link', { name: 'Map', exact: true })).toHaveAttribute('aria-current', 'page');
+    await nav.getByRole('link', { name: 'Venues', exact: true }).click();
+    await expect(page).toHaveURL(/\/arenas$/);
+  }
+});

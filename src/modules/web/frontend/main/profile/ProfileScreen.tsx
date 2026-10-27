@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getProfile, saveProfile, signOutDevice } from '@/modules/web/frontend/hooks/device';
+import { getBookingSummaries } from '@/modules/web/backend/booking-actions';
+import { useFavourites } from '@/modules/web/frontend/hooks/favourites';
+import { getMyBookingIds, getProfile, saveProfile, signOutDevice } from '@/modules/web/frontend/hooks/device';
 import { openConsentSettings } from '@/modules/web/frontend/consent/consent';
 import { clerkEnabled } from '@/modules/shared/lib/clerk';
 import AccountCard from '@/modules/web/frontend/main/profile/AccountCard';
@@ -10,7 +12,10 @@ import ProfileIcon from '@/modules/web/frontend/main/profile/ProfileIcon';
 import ProfileMenu from '@/modules/web/frontend/main/profile/ProfileMenu';
 import styles from '@/modules/web/frontend/main/profile/Account.module.css';
 
-export default function ProfileScreen({ supportEmail }: { supportEmail: string }) {
+export default function ProfileScreen({ supportEmail, walletBalance, offerCount }: { supportEmail: string; walletBalance: number | null; offerCount: number }) {
+  const { ids } = useFavourites();
+  const [games, setGames] = useState<number | null>(null);
+  useEffect(() => { getBookingSummaries(getMyBookingIds()).then(b => setGames(b.filter(x => x.status === 'checked_in').length)).catch(() => setGames(null)); }, []);
   const [loaded, setLoaded] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -102,14 +107,18 @@ export default function ProfileScreen({ supportEmail }: { supportEmail: string }
         </aside>
 
         <div className={styles.groups}>
-          <ProfileMenu
-            title="Book"
-            items={[
-              { icon: 'ticket', label: 'My bookings', note: 'Tickets and past games', href: '/bookings' },
-              { icon: 'heart', label: 'Saved venues', note: 'Your shortlist', href: '/saved' },
-              { icon: 'pitch', label: 'All venues', note: 'Browse every venue and court', href: '/arenas' },
-            ]}
-          />
+          <div className={styles.stats}>
+            <Link href="/bookings"><strong>{games ?? '—'}</strong><span>Games</span></Link>
+            <Link href="/saved"><strong>{ids.length}</strong><span>Saved</span></Link>
+            <Link href="/offers"><strong>{offerCount}</strong><span>Offers</span></Link>
+          </div>
+          <Link href="/membership" className={styles.wallet}><span>Wallet balance<strong>{walletBalance === null ? 'Sign in' : `₹${walletBalance.toLocaleString('en-IN')}`}</strong></span><ProfileIcon name="ticket" /></Link>
+          <div className={styles.shortcuts}>
+            <Link href="/matches"><ProfileIcon name="user" /><b>Play together</b></Link>
+            <Link href="/tournaments"><ProfileIcon name="ticket" /><b>Tournaments</b></Link>
+            <Link href="/offers"><ProfileIcon name="briefcase" /><b>Offers</b></Link>
+            <Link href="/saved"><ProfileIcon name="heart" /><b>Saved venues</b></Link>
+          </div>
           <ProfileMenu
             title="Help and settings"
             items={[

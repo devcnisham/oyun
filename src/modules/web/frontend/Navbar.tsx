@@ -34,7 +34,7 @@ export default function Navbar() {
     <div className={`${styles.navSlot} ${!isHome ? styles.innerSlot : ''}`}>
       <nav className={styles.nav} data-app-header={isHome ? undefined : true} data-main-navigation aria-label="Main navigation">
         <div className={styles.inner}>
-          <Link href="/" className={styles.brand} aria-label="OYUN home"><Image src="/oyun-icon.svg" alt="" width={36} height={36} />OYUN</Link>
+          <div className={styles.identity}><Link href="/" className={styles.brand} aria-label="OYUN home"><Image src="/oyun-icon.svg" alt="" width={36} height={36} />OYUN</Link></div>
           <div className={styles.links}>
             <Link href="/blog" aria-current={pathname === '/blog' ? 'page' : undefined}>Blog</Link>
             <Link href="/news" aria-current={pathname === '/news' || pathname === '/events' ? 'page' : undefined}>News &amp; Events</Link>

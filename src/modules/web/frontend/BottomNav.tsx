@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useSyncExternalStore } from 'react';
 import { LAUNCH_AT, roleForHost } from '@/modules/shared/backend/hosts';
 import ProfileTabIcon from '@/modules/web/frontend/ProfileTabIcon';
@@ -17,12 +17,14 @@ const ICONS = {
     </>
   ),
   bookings: <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2.5a2.5 2.5 0 0 0 0 5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2.5a2.5 2.5 0 0 0 0-5V7Zm9 1.6-1.1 2.3-2.5.3 1.85 1.75-.48 2.5L12 14.2l2.23 1.25-.48-2.5 1.85-1.75-2.5-.3L12 8.6Z" fillRule="evenodd" />,
+  map: <><path d="M12 22s8-7 8-13a8 8 0 1 0-16 0c0 6 8 13 8 13Z" fill="none" stroke="currentColor" strokeWidth="2" /><circle cx="12" cy="9" r="2.5" fill="none" stroke="currentColor" strokeWidth="2" /></>,
   profile: <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm-8 9c0-4 3.6-7 8-7s8 3 8 7H4Z" />,
 };
 
 const TABS = [
   { href: '/', label: 'Home', icon: 'home', match: (p: string) => p === '/' },
   { href: '/arenas', label: 'Venues', icon: 'turfs', match: (p: string) => p.startsWith('/arenas') || p.startsWith('/sports') },
+  { href: '/arenas?view=map', label: 'Map', icon: 'map', match: (p: string) => p === '/arenas' },
   { href: '/bookings', label: 'Bookings', icon: 'bookings', match: (p: string) => p.startsWith('/bookings') },
   { href: '/profile', label: 'Profile', icon: 'profile', match: (p: string) => ['/profile', '/settings', '/help', '/saved'].some((x) => p.startsWith(x)) },
 ] as const;
@@ -33,6 +35,7 @@ const subscribeNever = () => () => {};
 export default function BottomNav() {
   // The phone home page is prebuilt at /m while the address bar says /
   const raw = usePathname() ?? '/';
+  const isMap = useSearchParams().get('view') === 'map' && raw === '/arenas';
   const path = raw === '/m' ? '/' : raw;
   // Before launch the www host shows the landing page at / (the address bar does not change), so the host and the date tell us too.
   // After launch www is the whole booking site and keeps the tab bar.
@@ -45,7 +48,7 @@ export default function BottomNav() {
     <div className={styles.spacer} aria-hidden />
     <nav className={styles.nav} aria-label="Main">
       {TABS.map((t) => {
-        const active = t.match(path);
+        const active = t.icon === 'map' ? isMap : t.icon === 'turfs' ? t.match(path) && !isMap : t.match(path);
         const tab = (
           <Link key={t.href} href={t.href} className={`${styles.tab} ${active ? styles.active : ''}`} aria-current={active ? 'page' : undefined}>
             {t.icon === 'profile' ? <ProfileTabIcon /> : <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden>{ICONS[t.icon]}</svg>}

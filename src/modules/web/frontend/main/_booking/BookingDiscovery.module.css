@@ -41,3 +41,42 @@
   .photo { aspect-ratio: 1.15; border-radius: 11px; }
   .name { font-size: 11px; line-height: 1.3; }
 }
+.count, .more { display: none; }
+.upcoming { display: flex; flex-direction: column; gap: 6px; padding: 22px; margin-top: 20px; border-radius: 24px; background: #210000; color: #fff; text-decoration: none; }
+.upcoming > span { color: #ffc34d; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.upcoming strong { font-size: 22px; }
+.upcoming small { color: #dfc9c5; font-size: 13px; }
+@media (max-width: 760px) {
+  .search { border: 0; border-radius: 999px; padding: 7px; box-shadow: 0 8px 30px #21000008; }
+  .searchField { padding-left: 14px; }
+  .searchButton { border-radius: 999px; background: #210000; min-height: 46px; padding: 10px 16px; }
+  .categories { display: grid; grid-template-columns: 1.15fr 1fr; grid-template-rows: 110px 110px 62px; gap: 12px; padding-top: 22px; }
+  .category { position: relative; justify-content: space-between; align-items: stretch; padding: 16px; gap: 10px; border-radius: 24px; color: #fff; background: linear-gradient(135deg,#d00928,#4a0000); overflow: hidden; }
+  .category:first-child { grid-row: span 2; }
+  .category:nth-child(2) { background: #ffb522; color: #251a08; }
+  .category:nth-child(3) { background: #210000; }
+  .category:nth-child(4) { background: linear-gradient(120deg,#086aba,#180711); justify-content: center; }
+  .photo { display: none; }
+  .count { display: block; font-size: 12px; font-weight: 600; opacity: .85; }
+  .name { font-size: 20px; text-align: left; line-height: 1.15; }
+  .category:nth-child(4) .name { font-size: 16px; }
+  .category:nth-child(4) .count { position: absolute; right: 14px; font-size: 11px; max-width: 50px; text-align: right; }
+  .category:hover .name, .category[aria-pressed="true"] .name { color: inherit; }
+  .category[aria-pressed="true"] { box-shadow: inset 0 0 0 3px #9c9c9c; }
+  .more { display: flex; align-items: center; justify-content: center; background: #067949; border-radius: 999px; color: #fff; font-size: 16px; font-weight: 700; text-decoration: none; }
+}
+
+/* Sport imagery preview within the new tile layout. */
+@media (max-width: 760px) {
+  .category .photo { display: block; position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; border-radius: inherit; z-index: 0; }
+  .category .photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #0007 0%, #0002 40%, #000b 100%); }
+  .category .count, .category .name { position: relative; z-index: 1; color: #fff; }
+  .category:nth-child(4) .count { position: absolute; }
+}
+@media (max-width: 760px) {
+  .category { justify-content: flex-end; }
+  .more { position: relative; isolation: isolate; overflow: hidden; }
+  .more img { object-fit: cover; z-index: -2; }
+  .more::before { content: ''; position: absolute; inset: 0; background: #002b1a99; z-index: -1; }
+  .more span { position: relative; }
+}
