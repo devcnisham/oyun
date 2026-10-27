@@ -196,3 +196,26 @@ test('mobile carousel dots sit inside each banner without extra controls', async
   await expect(ad.getByRole('button', { name: 'Show advertisement 2' })).toHaveAttribute('aria-current', 'true');
   await expect(ad.getByRole('button', { name: /Pause|Resume|Previous|Next/i })).toHaveCount(0);
 });
+
+test('desktop ad cards flank an aligned live-slot and category column', async ({ page, isMobile }) => {
+  await page.goto('/');
+  const left=page.locator('[data-ad-placement="home-desktop-left"]');
+  const right=page.locator('[data-ad-placement="home-desktop-right"]');
+  if(isMobile) { await expect(left).toBeHidden(); await expect(right).toBeHidden(); return; }
+  await page.setViewportSize({width:1440,height:1000});
+  await expect(left).toBeVisible(); await expect(right).toBeVisible();
+  const aligned = await page.getByRole('region',{name:'Live slot availability'}).evaluate(el=>{const b=el.getBoundingClientRect();const c=document.querySelector('[aria-label="Filter venues by sport"]')!.getBoundingClientRect();return Math.abs(b.left-c.left)<2 && Math.abs(b.right-c.right)<2;});
+  expect(aligned).toBe(true);
+});
+
+test('mobile featured banners auto-advance without arrow or playback buttons', async ({ page, isMobile }) => {
+  test.skip(!isMobile,'mobile auto slide');
+  await page.clock.install();
+  await page.goto('/');
+  const carousel=page.locator('[aria-roledescription="carousel"][aria-label="Featured venues"]');
+  await carousel.scrollIntoViewIfNeeded();
+  await expect(carousel.getByRole('button',{name:'Show featured venues card 1'})).toHaveAttribute('aria-current','true');
+  await page.clock.fastForward(5100);
+  await page.clock.runFor(700);
+  await expect(carousel.getByRole('button',{name:'Show featured venues card 2'})).toHaveAttribute('aria-current','true');
+});

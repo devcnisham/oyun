@@ -27,3 +27,16 @@
  .photo { aspect-ratio: 1.15; border-radius: 11px; }
  .name { font-size: 11px; }
 }
+.discoveryGrid { display: block; }
+.discoveryMain { min-width: 0; }
+.sideAd { display: none; }
+@media(min-width:1100px) {
+ .discoveryGrid { display: grid; grid-template-columns: minmax(180px,.7fr) minmax(0,2fr) minmax(180px,.7fr); gap: 22px; margin-top: 28px; align-items: stretch; }
+ .sideAd { display: block; min-width: 0; }
+ .sideAd > aside { height: 100%; margin-top: 0; }
+ .sideAd [aria-roledescription="slide"], .sideAd [data-ad-container] > div { min-height: 350px; }
+ .discoveryMain > section:first-child { margin-top: 0; }
+ .categories { gap: 14px; }
+}
+.categories { grid-template-columns: repeat(4, minmax(0,1fr)); width: 100%; }
+.discoveryMain > section:first-child { width: 100%; box-sizing: border-box; }
