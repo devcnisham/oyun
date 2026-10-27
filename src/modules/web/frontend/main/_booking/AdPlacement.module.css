@@ -19,3 +19,6 @@
 .dots button { width: 24px; height: 30px; }
 .dots span { width: 6px; height: 6px; }
 .dots button[aria-current=true] span { width: 7px; height: 7px; }
+.creative .brand { font-family: var(--font-wordmark-family); font-size: 28px; font-weight: 800; letter-spacing: -.035em; line-height: 1; }
+.tagline { font-size: 10px; font-weight: 750; letter-spacing: .13em; margin-top: -6px; color: #ffe0d7; }
+.card .creative p { font-size: clamp(24px,2.3vw,34px); }

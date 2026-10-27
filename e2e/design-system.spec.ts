@@ -191,7 +191,7 @@ test('mobile carousel dots sit inside each banner without extra controls', async
     expect(inside).toBe(true);
     await expect(carousel.getByRole('button', { name: /Pause|Resume|Previous|Next/i })).toHaveCount(0);
   }
-  const ad = page.getByRole('complementary', { name: 'Demo advertisement' }).first();
+  const ad = page.getByRole('complementary', { name: 'OYUN advertisement' }).first();
   await ad.getByRole('button', { name: 'Show advertisement 2' }).click();
   await expect(ad.getByRole('button', { name: 'Show advertisement 2' })).toHaveAttribute('aria-current', 'true');
   await expect(ad.getByRole('button', { name: /Pause|Resume|Previous|Next/i })).toHaveCount(0);
@@ -210,12 +210,11 @@ test('desktop ad cards flank an aligned live-slot and category column', async ({
 
 test('mobile featured banners auto-advance without arrow or playback buttons', async ({ page, isMobile }) => {
   test.skip(!isMobile,'mobile auto slide');
-  await page.clock.install();
   await page.goto('/');
   const carousel=page.locator('[aria-roledescription="carousel"][aria-label="Featured venues"]');
+  await page.bringToFront();
   await carousel.scrollIntoViewIfNeeded();
+  await expect(carousel).toBeInViewport({ratio:0.8});
   await expect(carousel.getByRole('button',{name:'Show featured venues card 1'})).toHaveAttribute('aria-current','true');
-  await page.clock.fastForward(5100);
-  await page.clock.runFor(700);
-  await expect(carousel.getByRole('button',{name:'Show featured venues card 2'})).toHaveAttribute('aria-current','true');
+  await expect(carousel.getByRole('button',{name:'Show featured venues card 2'})).toHaveAttribute('aria-current','true',{timeout:12000});
 });
