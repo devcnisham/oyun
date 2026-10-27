@@ -289,3 +289,4 @@
 .adRow { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 22px; align-items: stretch; }
 .desktopAdCard { min-width: 0; }
 @media(max-width:768px) { .adRow { display: block; } .desktopAdCard { display: none; } }
+@media(max-width:768px) { .featuredHint { display: none; } }
