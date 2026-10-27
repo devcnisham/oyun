@@ -263,3 +263,30 @@
   .label, .offPeak { font-size: 10px; padding: 4px 9px; }
   .owner h2 { font-size: 26px; }
 }
+
+@media (max-width: 768px) {
+  .dealGrid { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-inline: contain; padding: 2px 0 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+  .dealGrid > .deal { flex: 0 0 min(86%, 360px); min-width: 0; scroll-snap-align: start; min-height: 240px; padding: 22px; }
+  .dealGrid .dealTop { gap: 8px; flex-wrap: wrap; }
+  .dealGrid .dealTop > span { font-size: 10px; }
+  .dealGrid .dealTop b { font-size: 10px; }
+  .dealGrid .dealBottom { flex-wrap: wrap; gap: 12px; }
+  .dealGrid .dealBottom > div { min-width: 0; }
+}
+
+@media (max-width: 768px) {
+  .venueGrid, .dealGrid, .sponsorGrid, .adInventory { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-inline: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
+  .venueGrid::-webkit-scrollbar, .dealGrid::-webkit-scrollbar, .sponsorGrid::-webkit-scrollbar, .adInventory::-webkit-scrollbar { display: none; }
+  .venueGrid > *, .sponsorGrid > *, .adInventory > * { flex: 0 0 min(86%, 360px); min-width: 0; scroll-snap-align: start; }
+}
+@media (max-width: 768px) {
+  .venueGrid > *, .dealGrid > .deal { flex-basis: 100%; }
+}
+@media(max-width:768px) {
+ .venueGrid .venueBody { padding-bottom: 42px; }
+ .dealGrid > .deal { padding-bottom: 50px; }
+}
+.adRow { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 22px; align-items: stretch; }
+.desktopAdCard { min-width: 0; }
+@media(max-width:768px) { .adRow { display: block; } .desktopAdCard { display: none; } }
+@media(max-width:768px) { .featuredHint { display: none; } }

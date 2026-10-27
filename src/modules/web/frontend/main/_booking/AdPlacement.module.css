@@ -1,0 +1,24 @@
+.carousel { position: relative; isolation: isolate; overflow: hidden; border-radius: 22px; background: #210000; margin-top: 30px; }
+.track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-inline: contain; }
+.track::-webkit-scrollbar { display: none; }
+.slide { position: relative; flex: 0 0 100%; min-width: 0; min-height: 260px; scroll-snap-align: start; isolation: isolate; }
+.slide > img { object-fit: cover; z-index: -2; }
+.slide::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,#000b,#0001); z-index: -1; }
+.creative { display: flex; flex-direction: column; align-items: flex-start; min-height: 260px; justify-content: center; gap: 14px; padding: 36px 42px 52px; color: #fff; }
+.creative > span { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.creative p { font-size: clamp(24px,3vw,38px); font-weight: 800; line-height: 1.1; letter-spacing: -.04em; max-width: 440px; }
+.creative a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; border-radius: 999px; background: #fff; color: #210000; font-size: 12px; font-weight: 700; text-decoration: none; }
+.dots { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); display: flex; }
+.dots button { display: grid; place-items: center; width: 34px; height: 38px; border: 0; padding: 0; background: none; cursor: pointer; }
+.dots span { width: 7px; height: 7px; border-radius: 50%; background: #ffffff70; }
+.dots button[aria-current=true] span { width: 9px; height: 9px; background: #fff; }
+.pause { position: absolute; right: 10px; top: 10px; width: 36px; height: 36px; border: 1px solid #ffffff50; border-radius: 50%; background: #0005; color: #fff; cursor: pointer; }
+.card .creative { min-height: 280px; padding: 32px 24px 46px; }
+.carousel :is(a,button):focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+@media (max-width:768px) { .slide, .creative { min-height: 210px; } .creative { padding: 26px 24px 44px; } .creative p { max-width: 230px; font-size: 26px; } }
+.dots button { width: 24px; height: 30px; }
+.dots span { width: 6px; height: 6px; }
+.dots button[aria-current=true] span { width: 7px; height: 7px; }
+.creative .brand { font-family: var(--font-wordmark-family); font-size: 28px; font-weight: 800; letter-spacing: -.035em; line-height: 1; }
+.tagline { font-size: 10px; font-weight: 750; letter-spacing: .13em; margin-top: -6px; color: #ffe0d7; }
+.card .creative p { font-size: clamp(24px,2.3vw,34px); }

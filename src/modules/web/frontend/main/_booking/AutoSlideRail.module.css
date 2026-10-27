@@ -1,0 +1,25 @@
+.wrapper { position: relative; min-width: 0; }
+.controls { display: none; }
+@media(max-width:768px) {
+ .controls { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; }
+ .dots { display: flex; }
+ .dots button { display: grid; place-items: center; width: 30px; height: 36px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+ .dots span { width: 6px; height: 6px; border-radius: 50%; background: #4a000030; }
+ .dots button[aria-current=true] span { width: 8px; height: 8px; background: #4a0000; }
+ .pause { width: 32px; height: 32px; border: 1px solid #dedee2; border-radius: 50%; background: #fff; color: #4a0000; cursor: pointer; font-size: 11px; }
+}
+@media(max-width:768px) {
+ .controls { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 2; min-height: 26px; }
+ .dots { padding: 0 5px; border-radius: 999px; background: #210000b3; }
+ .dots button { width: 26px; height: 26px; }
+ .dots span { background: #ffffff70; }
+ .dots button[aria-current=true] span { background: #fff; }
+}
+@media(max-width:768px) {
+ .dots { padding: 0; background: transparent; gap: 0; }
+ .dots button { width: 24px; height: 26px; }
+ .dots span { width: 6px; height: 6px; background: #b9b9bf; }
+ .dots button[aria-current=true] span { width: 7px; height: 7px; background: #4a0000; }
+ .wrapper[aria-label="Daytime deals"] .dots span { background: #ffffff70; }
+ .wrapper[aria-label="Daytime deals"] .dots button[aria-current=true] span { background: #fff; }
+}

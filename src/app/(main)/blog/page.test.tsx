@@ -7,7 +7,7 @@ test('blog links to every real article without category filters or invented stor
   const html = renderToStaticMarkup(<BlogPage />);
   for (const guide of GUIDES) expect(html).toContain(`href="/guides/${guide.slug}"`);
   expect(html).not.toContain('Blog categories');
-  expect(html).toContain('Advertisement · Demo');
+  expect(html).toContain('OYUN advertisement');
   expect(metadata.alternates).toEqual({ canonical: '/blog' });
   expect(metadata.openGraph).toMatchObject({ url: '/blog', type: 'website' });
 });

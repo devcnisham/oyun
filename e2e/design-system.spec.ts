@@ -143,7 +143,8 @@ test('Google map selects venues and the mobile centre tab opens it', async ({ pa
   await expect(map.locator('iframe')).toHaveAttribute('src', /^https:\/\/www\.google\.com\/maps\/embed/);
   await map.getByRole('button', { name: 'Show Mangala Magnus on Google Maps' }).click();
   await expect(map.locator('iframe')).toHaveAttribute('title', 'Google Maps: Mangala Magnus');
-  await map.getByRole('textbox', { name: 'Search map venues' }).fill('Perfect Pass');
+  if (isMobile) { await page.getByRole('searchbox', { name: 'Search venue, area or sport' }).fill('Perfect Pass'); await page.getByRole('searchbox', { name: 'Search venue, area or sport' }).press('Enter'); }
+  else await page.getByRole('searchbox', { name: 'Search venues or sports' }).fill('Perfect Pass');
   await expect(map.getByRole('button', { name: /Show .* on Google Maps/ })).toHaveCount(1);
   if (isMobile) {
     const nav = page.getByRole('navigation', { name: 'Main', exact: true });
@@ -152,4 +153,69 @@ test('Google map selects venues and the mobile centre tab opens it', async ({ pa
     await nav.getByRole('link', { name: 'Venues', exact: true }).click();
     await expect(page).toHaveURL(/\/arenas$/);
   }
+});
+
+test('home keeps live slots above one compact sport row', async ({ page }) => {
+  await page.goto('/');
+  const live = page.getByRole('region', { name: 'Live slot availability' });
+  const categories = page.getByRole('group', { name: 'Filter venues by sport' });
+  await expect(categories.getByRole('button')).toHaveCount(4);
+  expect(await live.evaluate((el) => Boolean(el.compareDocumentPosition(document.querySelector('[aria-label="Filter venues by sport"]')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  await expect(page.getByRole('link', { name: 'More sports', exact: true })).toHaveCount(0);
+});
+
+test('mobile daytime deals stay in a swipeable single row', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile swipe layout');
+  await page.goto('/');
+  const section = page.getByRole('region', { name: 'Morning and afternoon deals' });
+  const cards = section.locator('article');
+  await expect(cards).toHaveCount(3);
+  const boxes = await cards.evaluateAll(els => els.map(el => { const r=el.getBoundingClientRect(); return {top:r.top,left:r.left}; }));
+  expect(boxes.length).toBeGreaterThan(1);
+  expect(Math.abs(boxes[0].top-boxes[1].top)).toBeLessThan(2);
+  expect(boxes[1].left).toBeGreaterThan(boxes[0].left);
+  expect(await cards.first().evaluate(el => el.parentElement!.scrollWidth > el.parentElement!.clientWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('mobile carousel dots sit inside each banner without extra controls', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile banner controls');
+  await page.goto('/');
+  for (const label of ['Featured venues', 'Daytime deals']) {
+    const carousel = page.locator(`[aria-roledescription="carousel"][aria-label="${label}"]`);
+    const dot = carousel.getByRole('button', { name: `Show ${label.toLowerCase()} card 2` });
+    await dot.scrollIntoViewIfNeeded();
+    await dot.click();
+    await expect(dot).toHaveAttribute('aria-current', 'true');
+    const inside = await dot.evaluate(el => { const box=el.getBoundingClientRect(); const parent=el.closest('[aria-roledescription="carousel"]')!.getBoundingClientRect(); return box.top>=parent.top && box.bottom<=parent.bottom; });
+    expect(inside).toBe(true);
+    await expect(carousel.getByRole('button', { name: /Pause|Resume|Previous|Next/i })).toHaveCount(0);
+  }
+  const ad = page.getByRole('complementary', { name: 'OYUN advertisement' }).first();
+  await ad.getByRole('button', { name: 'Show advertisement 2' }).click();
+  await expect(ad.getByRole('button', { name: 'Show advertisement 2' })).toHaveAttribute('aria-current', 'true');
+  await expect(ad.getByRole('button', { name: /Pause|Resume|Previous|Next/i })).toHaveCount(0);
+});
+
+test('desktop ad cards flank an aligned live-slot and category column', async ({ page, isMobile }) => {
+  await page.goto('/');
+  const left=page.locator('[data-ad-placement="home-desktop-left"]');
+  const right=page.locator('[data-ad-placement="home-desktop-right"]');
+  if(isMobile) { await expect(left).toBeHidden(); await expect(right).toBeHidden(); return; }
+  await page.setViewportSize({width:1440,height:1000});
+  await expect(left).toBeVisible(); await expect(right).toBeVisible();
+  const aligned = await page.getByRole('region',{name:'Live slot availability'}).evaluate(el=>{const b=el.getBoundingClientRect();const c=document.querySelector('[aria-label="Filter venues by sport"]')!.getBoundingClientRect();return Math.abs(b.left-c.left)<2 && Math.abs(b.right-c.right)<2;});
+  expect(aligned).toBe(true);
+});
+
+test('mobile featured banners auto-advance without arrow or playback buttons', async ({ page, isMobile }) => {
+  test.skip(!isMobile,'mobile auto slide');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const carousel=page.locator('[aria-roledescription="carousel"][aria-label="Featured venues"]');
+  await page.bringToFront();
+  await carousel.scrollIntoViewIfNeeded();
+  await expect(carousel).toBeInViewport({ratio:0.8});
+  await expect(carousel.getByRole('button',{name:'Show featured venues card 1'})).toHaveAttribute('aria-current','true');
+  await expect(carousel.getByRole('button',{name:'Show featured venues card 2'})).toHaveAttribute('aria-current','true',{timeout:12000});
 });
