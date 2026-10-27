@@ -1,82 +1,29 @@
 .discovery { padding-top: 28px; }
-.search { display: flex; align-items: center; gap: 12px; padding: 7px; background: #fff; border: 1px solid #dedee2; border-radius: 16px; }
+.search { display: flex; align-items: center; gap: 12px; padding: 7px; background: #fff; border: 1px solid #dedee2; border-radius: 999px; }
 .search:focus-within { border-color: #9c9ca2; }
 .searchField { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding-inline: 12px; cursor: text; }
 .searchIcon { width: 21px; height: 21px; flex: none; color: #737379; }
-.searchField input { width: 100%; min-width: 0; min-height: 44px; border: 0; border-radius: 0; background: transparent; color: #1d1d1f; font: inherit; font-size: 16px; box-shadow: none; }
+.searchField input { width: 100%; min-width: 0; min-height: 44px; border: 0; background: transparent; color: #1d1d1f; font: inherit; font-size: 16px; box-shadow: none; }
 .searchField input::placeholder { color: #6e6e73; }
-.searchField input:focus-visible { outline: none; box-shadow: inset 0 -2px 0 #6e6e73; }
-.searchButton { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 12px 24px; border: 0; border-radius: 10px; background: #a40000; color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; flex: none; }
-.searchButton:hover { background: #7b0000; }
+.searchButton { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 12px 24px; border: 0; border-radius: 999px; background: #210000; color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; flex: none; }
+.searchButton:hover { background: #4a0000; }
 .discovery :is(a, button):focus-visible { outline: 3px solid #6e6e73; outline-offset: 4px; }
-.categories { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; padding-top: 24px; }
-.category { display: flex; flex-direction: column; gap: 13px; min-width: 0; color: #1d1d1f; text-decoration: none; border-radius: 16px; }
-.photo { position: relative; display: block; overflow: hidden; isolation: isolate; aspect-ratio: 1.5; border-radius: 16px; background: #e8e8ed; }
+.categories { display: grid; grid-template-columns: repeat(4, minmax(0, 160px)); justify-content: center; gap: 20px; padding-top: 24px; }
+.category { display: flex; flex-direction: column; gap: 9px; min-width: 0; padding: 0; border: 0; background: none; color: #1d1d1f; font: inherit; text-align: center; cursor: pointer; }
+.photo { position: relative; display: block; overflow: hidden; width: 100%; aspect-ratio: 1.5; border-radius: 12px; background: #e8e8ed; }
 .photo img { object-fit: cover; }
-.name { display: block; padding: 0 2px 6px; font-size: 16px; line-height: 1.3; font-weight: 700; letter-spacing: -.015em; }
-.category:hover .name { color: #a40000; }
-@media (max-width: 760px) {
-  .discovery { padding-top: 18px; }
-  .search { gap: 6px; padding: 6px; border-radius: 14px; }
-  .searchField { padding-inline: 6px; gap: 8px; }
-  .searchButton { padding-inline: 16px; font-size: 13px; }
-  .categories { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 14px; padding-top: 20px; }
-  .category { gap: 10px; }
-  .photo { aspect-ratio: 1.35; border-radius: 14px; }
-  .name { font-size: 14px; padding-bottom: 0; }
-}
-@media (prefers-reduced-motion: no-preference) { .photo img { transition: transform .3s ease; } .category:hover img { transform: scale(1.035); } }
-
-.category { appearance: none; padding: 0; border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer; }
-.category[aria-pressed="true"] .photo { outline: none; }
-.category[aria-pressed="true"] .name { color: #a40000; }
-
-/* Compact sport categories leave room for the live availability summary below. */
-.categories { grid-template-columns: repeat(4, minmax(0, 160px)); justify-content: center; gap: 20px; }
-.category { gap: 9px; }
-.photo { aspect-ratio: 1.5; border-radius: 12px; width: 100%; }
-.name { text-align: center; font-size: 14px; padding-bottom: 0; }
-@media (max-width: 760px) {
-  .categories { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding-top: 18px; }
-  .photo { aspect-ratio: 1.15; border-radius: 11px; }
-  .name { font-size: 11px; line-height: 1.3; }
-}
-.count, .more { display: none; }
+.name { font-size: 14px; line-height: 1.3; font-weight: 700; }
+.category:hover .name, .category[aria-pressed=true] .name { color: #a40000; }
 .upcoming { display: flex; flex-direction: column; gap: 6px; padding: 22px; margin-top: 20px; border-radius: 24px; background: #210000; color: #fff; text-decoration: none; }
 .upcoming > span { color: #ffc34d; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
 .upcoming strong { font-size: 22px; }
 .upcoming small { color: #dfc9c5; font-size: 13px; }
 @media (max-width: 760px) {
-  .search { border: 0; border-radius: 999px; padding: 7px; box-shadow: 0 8px 30px #21000008; }
-  .searchField { padding-left: 14px; }
-  .searchButton { border-radius: 999px; background: #210000; min-height: 46px; padding: 10px 16px; }
-  .categories { display: grid; grid-template-columns: 1.15fr 1fr; grid-template-rows: 110px 110px 62px; gap: 12px; padding-top: 22px; }
-  .category { position: relative; justify-content: space-between; align-items: stretch; padding: 16px; gap: 10px; border-radius: 24px; color: #fff; background: linear-gradient(135deg,#d00928,#4a0000); overflow: hidden; }
-  .category:first-child { grid-row: span 2; }
-  .category:nth-child(2) { background: #ffb522; color: #251a08; }
-  .category:nth-child(3) { background: #210000; }
-  .category:nth-child(4) { background: linear-gradient(120deg,#086aba,#180711); justify-content: center; }
-  .photo { display: none; }
-  .count { display: block; font-size: 12px; font-weight: 600; opacity: .85; }
-  .name { font-size: 20px; text-align: left; line-height: 1.15; }
-  .category:nth-child(4) .name { font-size: 16px; }
-  .category:nth-child(4) .count { position: absolute; right: 14px; font-size: 11px; max-width: 50px; text-align: right; }
-  .category:hover .name, .category[aria-pressed="true"] .name { color: inherit; }
-  .category[aria-pressed="true"] { box-shadow: inset 0 0 0 3px #9c9c9c; }
-  .more { display: flex; align-items: center; justify-content: center; background: #067949; border-radius: 999px; color: #fff; font-size: 16px; font-weight: 700; text-decoration: none; }
-}
-
-/* Sport imagery preview within the new tile layout. */
-@media (max-width: 760px) {
-  .category .photo { display: block; position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; border-radius: inherit; z-index: 0; }
-  .category .photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #0007 0%, #0002 40%, #000b 100%); }
-  .category .count, .category .name { position: relative; z-index: 1; color: #fff; }
-  .category:nth-child(4) .count { position: absolute; }
-}
-@media (max-width: 760px) {
-  .category { justify-content: flex-end; }
-  .more { position: relative; isolation: isolate; overflow: hidden; }
-  .more img { object-fit: cover; z-index: -2; }
-  .more::before { content: ''; position: absolute; inset: 0; background: #002b1a99; z-index: -1; }
-  .more span { position: relative; }
+ .discovery { padding-top: 18px; }
+ .search { border: 0; gap: 6px; padding: 6px; box-shadow: 0 8px 30px #21000008; }
+ .searchField { padding-inline: 10px; gap: 8px; }
+ .searchButton { padding-inline: 16px; font-size: 13px; }
+ .categories { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; padding-top: 22px; }
+ .photo { aspect-ratio: 1.15; border-radius: 11px; }
+ .name { font-size: 11px; }
 }

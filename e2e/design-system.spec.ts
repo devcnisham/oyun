@@ -153,3 +153,25 @@ test('Google map selects venues and the mobile centre tab opens it', async ({ pa
     await expect(page).toHaveURL(/\/arenas$/);
   }
 });
+
+test('home keeps live slots above one compact sport row', async ({ page }) => {
+  await page.goto('/');
+  const live = page.getByRole('region', { name: 'Live slot availability' });
+  const categories = page.getByRole('group', { name: 'Filter venues by sport' });
+  await expect(categories.getByRole('button')).toHaveCount(4);
+  expect(await live.evaluate((el) => Boolean(el.compareDocumentPosition(document.querySelector('[aria-label="Filter venues by sport"]')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  await expect(page.getByRole('link', { name: 'More sports', exact: true })).toHaveCount(0);
+});
+
+test('mobile daytime deals stay in a swipeable single row', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile swipe layout');
+  await page.goto('/');
+  const section = page.getByRole('region', { name: 'Morning and afternoon deals' });
+  const cards = section.locator('article');
+  const boxes = await cards.evaluateAll(els => els.map(el => { const r=el.getBoundingClientRect(); return {top:r.top,left:r.left}; }));
+  expect(boxes.length).toBeGreaterThan(1);
+  expect(Math.abs(boxes[0].top-boxes[1].top)).toBeLessThan(2);
+  expect(boxes[1].left).toBeGreaterThan(boxes[0].left);
+  expect(await cards.first().evaluate(el => el.parentElement!.scrollWidth > el.parentElement!.clientWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

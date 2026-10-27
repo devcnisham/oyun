@@ -33,6 +33,5 @@ export default function LiveSlots({ turfs }: { turfs: TurfSummary[] }) {
   return <section className={styles.banner} aria-label="Live slot availability">
     <p className={styles.eyebrow}>TODAY ON OYUN</p>
     <div role="status" aria-live="polite">{!ready ? <p className={styles.loading}>Checking open slots…</p> : snapshot.error ? <p className={styles.loading}>Check venues for live availability</p> : <p className={styles.total}><strong>{snapshot.count}</strong> open slots</p>}</div>
-    <p className={styles.caption}>today near you. Pay at the venue.</p>
   </section>;
 }
