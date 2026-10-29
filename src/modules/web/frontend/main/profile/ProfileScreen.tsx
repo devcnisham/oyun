@@ -132,7 +132,7 @@ export default function ProfileScreen({ supportEmail, walletBalance, offerCount 
             title="Venue owners"
             items={[
               { icon: 'briefcase', label: 'List your venue', note: 'Get more bookings', href: '/list-turf' },
-              { icon: 'key', label: 'Partner login', note: 'Manage your venue', href: '/partner/login' },
+              { icon: 'key', label: 'Partner login', note: 'Manage your venue', href: '/partner/login', external: true },
             ]}
           />
           <p className={styles.legal}>

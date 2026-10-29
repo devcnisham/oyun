@@ -86,8 +86,8 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
               <p className={styles.linkGroupTitle}>Venue owners</p>
               <ul className={styles.linkList}>
                 <li><Link href="/list-turf">List your venue</Link></li>
-                <li><Link href="/partner">Partner dashboard</Link></li>
-                <li><Link href="/admin">Admin dashboard</Link></li>
+                <li><a href="/partner">Partner dashboard</a></li>
+                <li><a href="/admin">Admin dashboard</a></li>
               </ul>
             </div>
             <div className={styles.linkGroup}>
