@@ -1,10 +1,10 @@
 .nav, .spacer { display: none; }
 
 @media (max-width: 768px) {
-  .spacer { display: block; height: calc(64px + env(safe-area-inset-bottom)); }
+  .spacer { display: block; height: var(--bottom-nav-h); }
   .nav {
     box-sizing: border-box;
-    height: calc(64px + env(safe-area-inset-bottom));
+    height: var(--bottom-nav-h);
     --nav-bg: #ffffff;
     position: fixed;
     left: 0;
@@ -14,7 +14,7 @@
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     align-items: center;
-    padding: 6px max(4px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+    padding: 4px max(4px, env(safe-area-inset-right)) calc(4px + env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
     border-radius: 0;
     background: var(--nav-bg);
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
@@ -27,22 +27,25 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     padding: 2px 0;
+    min-height: 44px;
+    justify-content: center;
+    line-height: 14px;
     color: var(--text-secondary);
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 500;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
   }
-  .tab svg { transition: transform 0.15s ease; }
+  .tab svg { width: 22px; height: 22px; flex-shrink: 0; transition: transform 0.15s ease; }
   .tab:active svg { transform: scale(0.88); }
   .active { color: var(--accent-text); }
   .active svg { animation: tabPop 0.4s var(--ease-spring); }
   /* Signed-in player's picture on the Profile tab; red ring when the tab is open */
   .avatar {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     object-fit: cover;
     box-shadow: 0 0 0 2px var(--nav-bg), 0 0 0 3.5px #c4c8ce;
@@ -59,4 +62,9 @@
 }
 @keyframes tabPop { 0% { transform: scale(0.8); } 100% { transform: scale(1); } }
 @media print { .nav, .spacer { display: none !important; } }
-@media (prefers-reduced-motion: reduce) { .tab svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .tab svg { width: 22px; height: 22px; flex-shrink: 0; transition: none; animation: none; } }
+
+@media (max-width: 768px) {
+  :global(body:has([data-booking-selection="true"], [data-booking-checkout="true"])) .nav,
+  :global(body:has([data-booking-selection="true"], [data-booking-checkout="true"])) .spacer { display: none; }
+}

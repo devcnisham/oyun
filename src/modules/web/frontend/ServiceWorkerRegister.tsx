@@ -4,7 +4,20 @@ import { useEffect } from 'react';
 
 export default function ServiceWorkerRegister() {
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+    if (!('serviceWorker' in navigator)) return;
+    if (process.env.NODE_ENV === 'development') {
+      // A previous local production preview may have registered OYUN's offline worker.
+      // Development must always read current modules, never an older offline copy.
+      void navigator.serviceWorker.getRegistrations().then(registrations => Promise.all(
+        registrations.filter(registration => {
+          const worker = registration.active ?? registration.waiting ?? registration.installing;
+          return worker?.scriptURL === new URL('/sw.js', window.location.origin).href;
+        }).map(registration => registration.unregister())
+      )).catch(() => {});
+      if ('caches' in window) void caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('oyun-')).map(key => caches.delete(key)))).catch(() => {});
+      return;
+    }
+    if (process.env.NODE_ENV === 'production') {
       window.addEventListener('load', () => {
         navigator.serviceWorker
           .register('/sw.js')

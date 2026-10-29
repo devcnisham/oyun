@@ -61,7 +61,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           </>
         )}
 
-        <div className={styles.imageCounter}>📸 {imgIdx + 1}/{images.length}</div>
+        <div className={styles.imageCounter}> {imgIdx + 1}/{images.length}</div>
       </div>
 
 
@@ -71,10 +71,8 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         {/* Name, badge and address on the left; hours and map link on the right */}
         <div className={styles.titleRow}>
           <div className={styles.titleMain}>
-            <h1 className={styles.title}>
-              {turf.name}{' '}
-              <span className={styles.ratingBadge}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
-            </h1>
+            <span className={`${styles.ratingBadge} ${turf.reviewCount === 0 ? styles.newBadge : ''}`}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
+            <h1 className={styles.title}>{turf.name}</h1>
 
           </div>
           <div className={styles.titleSide} role="group" aria-label="Venue actions">
@@ -104,7 +102,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           <div className={styles.offerStrip}>
             {offers.map((o) => (
               <div key={o.id} className={styles.offerChip}>
-                🏷️ <strong>{o.title}</strong> · {o.percentOff}% off{' '}
+                 <strong>{o.title}</strong> · {o.percentOff}% off{' '}
                 {o.type === 'first_time'
                   ? 'your first booking'
                   : o.type === 'regular'

@@ -47,7 +47,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
 
       {newIds.length > 0 && (
         <div className={styles.banner} role="status">
-          🎉 {newIds.length} slot{newIds.length === 1 ? '' : 's'} booked! Show the QR code at the venue to check in.
+           {newIds.length} slot{newIds.length === 1 ? '' : 's'} booked! Show the QR code at the venue to check in.
         </div>
       )}
 
@@ -66,7 +66,7 @@ export default function MyBookings({ newIds }: { newIds: string[] }) {
         </div>
       ) : shown.length === 0 ? (
         <div className={styles.empty}>
-          <div className={styles.emptyIcon}>⚽</div>
+          <div className={styles.emptyIcon}></div>
           <h2>{tab === 'upcoming' ? 'No upcoming games' : 'Nothing here yet'}</h2>
           <Link href="/arenas" className={styles.cta}>Book a venue</Link>
         </div>

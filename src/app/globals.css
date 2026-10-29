@@ -229,7 +229,7 @@ html, body {
 /* Height of the bottom tab bar; bars pinned to the bottom of the screen sit on top of it */
 :root { --bottom-nav-h: 0px; }
 @media (max-width: 768px) {
-  :root { --bottom-nav-h: calc(82px + env(safe-area-inset-bottom)); }
+  :root { --bottom-nav-h: calc(56px + env(safe-area-inset-bottom)); }
 }
 html {
   -webkit-tap-highlight-color: transparent;
@@ -388,4 +388,8 @@ html:has(.playerRoot) { color-scheme: light; }
   .playerRoot main h1 { font-size: clamp(28px, 7vw, 34px); line-height: 1.15; }
   .playerRoot main h2 { font-size: clamp(22px, 5.5vw, 26px); line-height: 1.2; }
   .playerRoot main h3 { font-size: clamp(18px, 4.5vw, 22px); line-height: 1.25; }
+}
+
+@media (max-width: 768px) {
+  body:has([data-booking-selection="true"], [data-booking-checkout="true"]) { --bottom-nav-h: 0px; }
 }

@@ -1,6 +1,4 @@
 .wrap { width: 100%; max-width: 1440px; margin: auto; padding: 28px 28px 52px; }
-.loadingLabel { display: flex; align-items: center; gap: 9px; color: var(--text-muted); font-size: 12px; margin-bottom: 22px; }
-.indicator { width: 13px; height: 13px; border: 2px solid #d9ceca; border-top-color: #9e0a0a; border-radius: 50%; }
 .content { display: grid; gap: 20px; }
 .block { position: relative; overflow: hidden; background: #eae7e3; border-radius: 8px; }
 .block::after { content: ''; position: absolute; inset: 0; transform: translateX(-110%); background: linear-gradient(90deg, transparent, #ffffffa3, transparent); }
@@ -31,10 +29,15 @@
 .qr { height: 192px; width: 192px; border-radius: 16px; }
 .field { height: 52px; border-radius: 12px; }
 .auth { max-width: 540px; padding-top: 72px; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 768px) { .wrap { padding: 22px 18px 40px; } .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .detail, .ticket { grid-template-columns: 1fr; } .ticket { padding: 22px; } .cover { height: 220px; } .heroTitle { height: 100px; } }
 @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: no-preference) { .block::after { animation: shimmer 1.6s ease-in-out infinite; } .indicator { animation: spin .8s linear infinite; } }
+@media (prefers-reduced-motion: no-preference) { .block::after { animation: shimmer 1.6s ease-in-out infinite; } }
 @keyframes shimmer { to { transform: translateX(110%); } }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Keep the live loading wordmark centred while the layout preview stays quiet behind it. */
+.wrap { position: relative; min-height: calc(100svh - 180px); display: grid; place-items: center; overflow: hidden; }
+.center { position: relative; z-index: 1; display: grid; place-items: center; min-height: calc(100svh - 260px); width: 100%; }
+.center > div { border-radius: 24px; background: transparent; padding: 30px 48px; }
+.content { position: absolute; inset: 28px; opacity: 0; pointer-events: none; }
+@media (max-width: 600px) { .wrap { min-height: calc(100svh - 160px); }.center { min-height: calc(100svh - 230px); }.content { inset: 20px; } }

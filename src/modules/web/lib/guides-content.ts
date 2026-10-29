@@ -237,7 +237,7 @@ export const GUIDES: GuideArticle[] = [
     slug: 'how-to-book-a-turf-in-mangalore',
     title: 'How to Book a Turf in Mangalore Online: Slots, Advance and Cancellation',
     metaTitle: 'How to Book a Turf in Mangalore Online | Step-by-Step Guide',
-    metaDescription: 'Book a football or box cricket turf in Mangalore without phone calls. How live slots, the 8-minute hold, the ₹150 advance per hour and free cancellation work on OYUN.',
+    metaDescription: 'Book a football or box cricket turf in Mangalore without phone calls. How live slots, the 8-minute hold, the 30% advance or full-payment choice and free cancellation work on OYUN.',
     category: 'Booking Basics',
     readTime: '3 min read',
     publishedAt: '2026-10-21',
@@ -262,7 +262,7 @@ export const GUIDES: GuideArticle[] = [
       {
         heading: '3. Pay a small advance, the rest at the venue',
         paragraphs: [
-          'A flat advance of ₹150 per hour secures your booking. You pay the balance at the venue by cash or UPI. Hourly prices on OYUN include floodlights and pitch maintenance, so there is no extra lighting charge at the gate.',
+          'Choose a 30% advance on arrival and pay the balance after play, or pay the full amount on arrival. Payment is at the venue by cash or UPI. Hourly prices on OYUN include floodlights and pitch maintenance, so there is no extra lighting charge at the gate.',
         ],
         keyTakeaway: 'Three hours means a ₹450 advance, and the remaining amount is paid at the turf.',
       },
@@ -281,7 +281,7 @@ export const GUIDES: GuideArticle[] = [
     ],
     faqs: [
       { q: 'Do I need to call the turf to confirm my booking?', a: 'No. Open slots on OYUN are live, and your booking is confirmed once you complete it. Your ticket is the confirmation.' },
-      { q: 'How much is the advance for a turf booking in Mangalore?', a: 'The advance is a flat ₹150 per hour. You pay the rest at the venue by cash or UPI.' },
+      { q: 'How much is the advance for a turf booking in Mangalore?', a: 'Choose a 30% advance or full payment at checkout. Pay at the venue by cash or UPI; with the advance option, the balance is due after play.' },
       { q: 'Can I cancel a turf booking?', a: 'Yes, from your ticket up to 2 hours before the slot starts. The refund goes to your OYUN wallet.' },
     ],
   },
@@ -407,7 +407,7 @@ export const GUIDES: GuideArticle[] = [
         heading: '3. Prices and splitting the cost',
         paragraphs: [
           'Football turfs on OYUN are priced per hour for the whole pitch, listed from around ₹600 to ₹1,200 depending on the venue and time. Divide the hourly price by the number of players: for example a ₹900 hour with 12 players is ₹75 each.',
-          'Booking is a ₹150 advance per hour, with the balance paid at the venue by cash or UPI.',
+          'Choose a 30% advance on arrival and pay the balance after play, or full payment on arrival by cash or UPI.',
         ],
       },
       {

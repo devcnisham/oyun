@@ -1,3 +1,4 @@
+import StartupSplash from '@/modules/shared/frontend/StartupSplash';
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from "next";
 import { Baloo_2, Inter } from "next/font/google";
@@ -66,6 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en-IN" className={`${rupee.variable} ${inter.variable} ${wordmark.variable}`}>
       <body>
+        <StartupSplash />
         <AuthProvider>
         {children}
         <Suspense fallback={null}><BottomNav /></Suspense>

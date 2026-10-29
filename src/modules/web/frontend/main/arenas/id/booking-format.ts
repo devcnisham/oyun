@@ -3,11 +3,11 @@ import type { Slot } from '@/modules/shared/database/types';
 
 /** Day parts the slot map is grouped into; `to` is exclusive. */
 export const SESSIONS = [
-  { name: 'Morning', icon: '🌅', from: 6, to: 12 },
-  { name: 'Afternoon', icon: '☀️', from: 12, to: 17 },
-  { name: 'Evening', icon: '🌆', from: 17, to: 21 },
-  { name: 'Night', icon: '🌙', from: 21, to: 24 },
-  { name: 'Late Night', icon: '🌃', from: 0, to: 6 },
+  { name: 'Morning', icon: '', from: 6, to: 12 },
+  { name: 'Afternoon', icon: '', from: 12, to: 17 },
+  { name: 'Evening', icon: '', from: 17, to: 21 },
+  { name: 'Night', icon: '', from: 21, to: 24 },
+  { name: 'Late Night', icon: '', from: 0, to: 6 },
 ] as const;
 
 /** "7 PM – 9 PM" for consecutive hours, "7 PM, 9 PM" otherwise. Supports cross-midnight sequences. */

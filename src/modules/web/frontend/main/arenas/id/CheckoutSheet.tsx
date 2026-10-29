@@ -1,7 +1,7 @@
+import { OyunLoader } from '@/modules/shared/frontend/OyunMotion';
 import StudentIdBox from '@/modules/web/frontend/main/arenas/id/StudentIdBox';
 import { createPortal } from 'react-dom';
 import { useDialogFocus } from '@/modules/web/frontend/hooks/use-dialog-focus';
-import type { SelectionQuote } from '@/modules/web/lib/booking-types';
 import type { AddOn, PitchSize, PublicTurf, Slot } from '@/modules/shared/database/types';
 import { rupees, shortHour } from '@/modules/shared/lib/format';
 import { describeHours } from '@/modules/web/frontend/main/arenas/id/booking-format';
@@ -28,13 +28,6 @@ interface CheckoutSheetProps {
 const clock = (seconds: number) =>
   `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
-const isFlatAdvance = (quote: SelectionQuote) => quote.minAdvance === quote.maxAdvance;
-
-function advanceSummary(quote: SelectionQuote | null) {
-  if (!quote) return 'an advance of ₹150 per hour';
-  return `an advance of ${rupees(quote.minAdvance)}${isFlatAdvance(quote) ? '' : ` to ${rupees(quote.maxAdvance)}`} per hour`;
-}
-
 /** Bottom sheet shown while the player's slots are held: details, offers, bill and confirm. */
 export default function CheckoutSheet({ turf, size, bookableName, dateLabel, selected, selectedSlots, secondsLeft, paying, signedIn, cashback, form, addOns, onClose, onPay }: CheckoutSheetProps) {
   const { quote, error, name, phone, code, codeError, codeApplied, promo, referral, useWallet, selectedAddOns, setAddOnQty } = form;
@@ -42,13 +35,13 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
   const chips = quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }));
 
   return createPortal(
-    <div className={`${styles.flow} ${styles.overlay}`} onClick={(e) => e.target === e.currentTarget && !paying && onClose()}>
+    <div data-booking-checkout="true" className={`${styles.flow} ${styles.overlay}`} onClick={(e) => e.target === e.currentTarget && !paying && onClose()}>
       <div ref={dialogRef} className={styles.sheet} role="dialog" aria-modal="true" aria-label="Checkout">
         <div className={styles.sheetHead}>
           <button className={styles.back} onClick={onClose} disabled={paying} aria-label="Back to slots">←</button>
           <h2>Checkout</h2>
           <span className={`${styles.timer} ${secondsLeft < 60 ? styles.timerLow : ''}`} aria-live="polite">
-            ⏱ {clock(secondsLeft)}
+             {clock(secondsLeft)}
           </span>
         </div>
 
@@ -134,7 +127,11 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
 
           <section className={styles.venueNote}>
             <h3>Payment</h3>
-            <p>💵 Nothing is charged online. You pay at the venue by cash or UPI: {advanceSummary(quote)} when you arrive, and the balance after you play.</p>
+            <fieldset className={styles.paymentOptions} disabled={paying}>
+              <legend className="sr-only">Choose payment option</legend>
+              <label><input type="radio" name="paymentOption" value="advance" checked={form.paymentOption === 'advance'} onChange={() => form.setPaymentOption('advance')} /><span><b>30% advance</b></span></label>
+              <label><input type="radio" name="paymentOption" value="full" checked={form.paymentOption === 'full'} onChange={() => form.setPaymentOption('full')} /><span><b>Full payment</b></span></label>
+            </fieldset>
           </section>
 
           </div>
@@ -153,7 +150,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
                 <span key={s.hour} className={styles.chip}>{shortHour(s.hour)} · {rupees(s.price)}</span>
               ))}
             </div>
-            <p className={styles.holdNote}>🔒 These slots are reserved for you until the timer runs out.</p>
+            <p className={styles.holdNote}> These slots are reserved for you until the timer runs out.</p>
           </div>
 
           {quote && (
@@ -171,11 +168,11 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
               {quote.walletDeduction > 0 && <div className={styles.discount}><span>Wallet</span><span>−{rupees(quote.walletDeduction)}</span></div>}
               <div><span>Total (incl. GST)</span><span>{rupees(quote.total)}</span></div>
               <div className={styles.billTotal}>
-                <span>Advance at the venue ({isFlatAdvance(quote) && quote.slots.length > 1 ? `${quote.slots.length} × ${rupees(quote.minAdvance)}` : `${quote.advancePercent}%`})</span>
+                <span>{form.paymentOption === 'full' ? 'Full payment at the venue' : '30% advance at the venue'}</span>
                 <span>{rupees(quote.payNow)}</span>
               </div>
               <div className={styles.billBalance}><span>Balance after you play</span><span>{rupees(quote.payAtVenue)}</span></div>
-              {cashback > 0 && <p className={styles.success}>💰 Earn {rupees(cashback)} cashback when you check in</p>}
+              {cashback > 0 && <p className={styles.success}> Earn {rupees(cashback)} cashback when you check in</p>}
             </section>
           )}
 
@@ -183,10 +180,10 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
             <div className={`${styles.sheetFoot} ${styles.footDesktop}`}>
 <div className={styles.barInfo}>
                 <b>{quote ? rupees(quote.payNow) : '…'}</b>
-                <span>Advance due at the venue</span>
+                <span>{form.paymentOption === 'full' ? 'Full amount due at the venue' : '30% advance due at the venue'}</span>
               </div>
               <button className={styles.primary} onClick={onPay} disabled={!quote || paying}>
-                {paying ? 'Reserving…' : signedIn ? 'Confirm booking' : 'Sign in to confirm'}
+                {paying ? <OyunLoader compact label="Confirming booking…" /> : signedIn ? 'Confirm booking' : 'Sign in to confirm'}
               </button>
                     </div>
           </aside>
@@ -195,10 +192,10 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
         <div className={`${styles.sheetFoot} ${styles.footMobile}`}>
           <div className={styles.barInfo}>
             <b>{quote ? rupees(quote.payNow) : '…'}</b>
-            <span>Advance due at the venue</span>
+            <span>{form.paymentOption === 'full' ? 'Full amount due at the venue' : '30% advance due at the venue'}</span>
           </div>
           <button className={styles.primary} onClick={onPay} disabled={!quote || paying}>
-            {paying ? 'Reserving…' : signedIn ? 'Confirm booking' : 'Sign in to confirm'}
+            {paying ? <OyunLoader compact label="Confirming booking…" /> : signedIn ? 'Confirm booking' : 'Sign in to confirm'}
           </button>
         </div>
       </div>

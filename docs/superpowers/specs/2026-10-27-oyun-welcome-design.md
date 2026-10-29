@@ -1,0 +1,4 @@
+# OYUN welcome and motion
+Approved direction: replace /landing while preserving booking home at /. Use burgundy, white and gold, the approved wordmark and real booking actions. Loading follows actual pending work without artificial delays. Success appears only on confirmed tickets. Provide a first-visit, skippable three-step guide, replayable on Home. Respect reduced motion, keyboard focus and screen readers. Keep existing booking, payment, authentication and QR validation intact. Remove obsolete launch copy from /landing and make its canonical /landing. Keep the new public page in the sitemap.
+
+User revisions: remove the Home replay button; replay via the landing link. Use a centred stroke-drawn OYUN loader inspired by the supplied recording. Show a short intro on every full reload, not on client navigation, with a reduced-motion static alternative. Fully redesign /list-turf owner introduction and form, remove unsupported statistics and approval-time claims.

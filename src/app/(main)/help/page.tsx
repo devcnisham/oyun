@@ -29,19 +29,19 @@ export default async function HelpPage() {
         <h2 id="contact">Contact us</h2>
         <p className={styles.hint}>Booking problem, a payment question, or a venue that did not turn up? Reach OYUN support.</p>
         <div className={styles.contact}>
-          <a className={styles.contactBtn} href={`mailto:${s.supportEmail}`}>✉️ {s.supportEmail}</a>
-          {phone && <a className={styles.contactBtn} href={`tel:${phone.replace(/\s+/g, '')}`}>📞 {phone}</a>}
+          <a className={styles.contactBtn} href={`mailto:${s.supportEmail}`}> {s.supportEmail}</a>
+          {phone && <a className={styles.contactBtn} href={`tel:${phone.replace(/\s+/g, '')}`}> {phone}</a>}
         </div>
       </section>
 
       <section className={styles.card} aria-labelledby="quick">
         <h2 id="quick">Quick help</h2>
         <ul className={styles.rows}>
-          <li><Link href="/faq"><span aria-hidden>❓</span><b>FAQ</b><i>Booking, payment, cancellation and check-in answers</i></Link></li>
-          <li><Link href="/bookings"><span aria-hidden>🎟️</span><b>Find or cancel a booking</b><i>Open it and tap Cancel booking, up to 2 hours before</i></Link></li>
-          <li><Link href="/arenas"><span aria-hidden>🏟️</span><b>Book a venue</b><i>Browse venues and pick your slots</i></Link></li>
-          <li><Link href="/list-turf"><span aria-hidden>💼</span><b>List your venue</b><i>For venue owners</i></Link></li>
-          <li><Link href="/settings"><span aria-hidden>⚙️</span><b>Settings</b><i>Cookies, account and notifications</i></Link></li>
+          <li><Link href="/faq"><span aria-hidden></span><b>FAQ</b><i>Booking, payment, cancellation and check-in answers</i></Link></li>
+          <li><Link href="/bookings"><span aria-hidden></span><b>Find or cancel a booking</b><i>Open it and tap Cancel booking, up to 2 hours before</i></Link></li>
+          <li><Link href="/arenas"><span aria-hidden></span><b>Book a venue</b><i>Browse venues and pick your slots</i></Link></li>
+          <li><Link href="/list-turf"><span aria-hidden></span><b>List your venue</b><i>For venue owners</i></Link></li>
+          <li><Link href="/settings"><span aria-hidden></span><b>Settings</b><i>Cookies, account and notifications</i></Link></li>
         </ul>
       </section>
 

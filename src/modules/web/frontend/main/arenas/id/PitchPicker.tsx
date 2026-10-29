@@ -39,14 +39,14 @@ export default function PitchPicker({
                 : size === 'full';
             const sportIcon =
               b.sport === 'football'
-                ? '⚽'
+                ? ''
                 : b.sport === 'box_cricket'
-                  ? '🏏'
+                  ? ''
                   : b.sport === 'badminton'
-                    ? '🏸'
+                    ? ''
                     : b.sport === 'pickleball'
-                      ? '🏓'
-                      : '🏟️';
+                      ? ''
+                      : '';
             return (
               <button
                 key={b.id}

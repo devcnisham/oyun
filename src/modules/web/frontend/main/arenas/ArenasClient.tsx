@@ -251,7 +251,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
         <div className={styles.main}>
           {filtered.length === 0 ? (
             <div className={styles.emptyState}>
-              <div className={styles.emptyIcon}>🏟️</div>
+              <div className={styles.emptyIcon}></div>
               <h2 className={styles.emptyTitle}>No venues found</h2>
               <p className={styles.emptyDesc}>Try a different area, price, day or search term.</p>
               <button className="btn btn--secondary" onClick={() => { setSelectedArea('All Areas'); setSelectedSport('All Sports'); setMaxPrice(0); setAmenities([]); setDate(''); setTime(''); setSearchQuery(''); }}>

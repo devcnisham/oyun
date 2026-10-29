@@ -1,3 +1,4 @@
+import { ConfirmationMark } from '@/modules/shared/frontend/OyunMotion';
 import BookingCountdown from '@/modules/web/frontend/main/bookings/id/BookingCountdown';
 import BookingActionIcon from '@/modules/web/frontend/main/bookings/id/BookingActionIcon';
 import { maskPhone } from '@/modules/shared/lib/phone';
@@ -80,7 +81,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           <div className={styles.ticketTitleRow}>
           <h1 className={styles.turf}>{turf.name}</h1>
           <div className={`${styles.status} ${active || booking.status === 'checked_in' ? styles.ok : styles.off}`}>
-            {active ? '✓ ' : ''}{STATUS_TEXT[booking.status]}
+            {active && <ConfirmationMark />}{STATUS_TEXT[booking.status]}
           </div>
           </div>
           <p className={styles.when}>
@@ -124,12 +125,12 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
             <h2 className={styles.rewardsTitle}>Your OYUN wallet</h2>
             <div className={styles.walletBalance}>₹{player.walletBalance}</div>
             {booking.cashback ? (
-              <p className={styles.rewardLine}>💰 ₹{booking.cashback} cashback from this game was added to your wallet.</p>
+              <p className={styles.rewardLine}> ₹{booking.cashback} cashback from this game was added to your wallet.</p>
             ) : expectedCashback > 0 ? (
-              <p className={styles.rewardLine}>💰 You&apos;ll get ₹{expectedCashback} cashback when you check in at the venue.</p>
+              <p className={styles.rewardLine}> You&apos;ll get ₹{expectedCashback} cashback when you check in at the venue.</p>
             ) : null}
             {player.referredBy && !player.referralRewarded && s.referralEnabled && (
-              <p className={styles.rewardLine}>🎁 ₹{s.refereeReward} referral bonus unlocks after your first game.</p>
+              <p className={styles.rewardLine}> ₹{s.refereeReward} referral bonus unlocks after your first game.</p>
             )}
 
             {txns.length > 0 && (

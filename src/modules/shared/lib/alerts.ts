@@ -99,7 +99,7 @@ export async function triggerOnCallPage(incident: PagingIncident): Promise<Pagin
   const opsgenieKey = process.env.OPSGENIE_API_KEY;
   const pagingWebhook = process.env.PAGING_WEBHOOK_URL;
 
-  console.error(`🚨 [ON-CALL PAGE - ${incident.severity.toUpperCase()}] ${incident.title}: ${incident.summary}`);
+  console.error(` [ON-CALL PAGE - ${incident.severity.toUpperCase()}] ${incident.title}: ${incident.summary}`);
 
   // 1. PagerDuty Events API v2
   if (pagerdutyKey && !pagerdutyKey.startsWith('dummy_')) {
@@ -161,7 +161,7 @@ export async function triggerOnCallPage(incident: PagingIncident): Promise<Pagin
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: `🚨 [PAGING ALERT] ${incident.title}\n${incident.summary}`,
+          text: ` [PAGING ALERT] ${incident.title}\n${incident.summary}`,
           severity: incident.severity,
           details: incident.details,
         }),

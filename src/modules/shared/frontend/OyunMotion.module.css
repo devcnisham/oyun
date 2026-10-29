@@ -1,0 +1,17 @@
+.loader { display: grid; justify-items: center; gap: 12px; padding: 28px 16px; color: #9e0a0a; }
+.word { width: clamp(150px, 22vw, 220px); height: auto; overflow: visible; }
+.letter { stroke: currentColor; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.compact { display: inline-grid; gap: 4px; padding: 0; color: inherit; vertical-align: middle; }
+.compact .word { width: 66px; }
+.compact .label { position: static; width: auto; height: auto; clip-path: none; font-size: 11px; color: inherit; }
+.confirmation { display: inline-flex; width: 24px; height: 24px; flex-shrink: 0; vertical-align: middle; margin-right: 5px; }
+.confirmation svg { width: 100%; height: 100%; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-reduced-motion: no-preference) {
+  .letter { stroke-dasharray: 220; stroke-dashoffset: 220; animation: write 2.8s ease-in-out infinite; }
+  .confirmation { animation: appear .4s ease-out both; }
+  .confirmation path { stroke-dasharray: 32; stroke-dashoffset: 32; animation: check .5s .15s ease-out forwards; }
+}
+@keyframes write { 0%, 7% { stroke-dashoffset: 220; opacity: 0; } 12% { opacity: 1; } 48%, 80% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes appear { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes check { to { stroke-dashoffset: 0; } }

@@ -33,7 +33,7 @@ export async function sendBookingConfirmation(
     ? booking.hours.map((h) => formatSlotRange(h, 60)).join(', ')
     : formatSlotRange(booking.hour, 60);
 
-  const message = `🎉 Booking Confirmed at ${turf.name}!\n` +
+  const message = ` Booking Confirmed at ${turf.name}!\n` +
     `Code: ${booking.code}\n` +
     `Date: ${booking.date}\n` +
     `Slot(s): ${hoursText}\n` +
@@ -63,7 +63,7 @@ export async function sendSlotReminder(
   turf: Turf
 ): Promise<NotificationLog> {
   const timeText = formatSlotRange(booking.hour, 60);
-  const message = `⏰ Reminder: Your game at ${turf.name} starts in 2 hours (${timeText}).\n` +
+  const message = ` Reminder: Your game at ${turf.name} starts in 2 hours (${timeText}).\n` +
     `Address: ${turf.location}, ${turf.area}\n` +
     `Show ticket: /bookings/${booking.id}`;
 
@@ -94,12 +94,12 @@ export async function sendOwnerAlert(
     : formatSlotRange(booking.hour, 60);
 
   const message = action === 'new_booking'
-    ? `📢 New Booking Alert!\n` +
+    ? ` New Booking Alert!\n` +
       `Turf: ${turf.name}\n` +
       `Slot: ${booking.date} (${timeText})\n` +
       `Player: ${booking.customerName} (${booking.customerPhone})\n` +
       `Paid: ₹${booking.amountPaid}`
-    : `⚠️ Booking Cancelled!\n` +
+    : ` Booking Cancelled!\n` +
       `Turf: ${turf.name}\n` +
       `Slot: ${booking.date} (${timeText})\n` +
       `Player: ${booking.customerName} (${booking.customerPhone})\n` +

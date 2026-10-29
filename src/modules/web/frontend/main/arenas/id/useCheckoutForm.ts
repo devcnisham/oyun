@@ -1,3 +1,4 @@
+import type { PaymentOption } from '@/modules/web/lib/payment-options';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { checkReferralCode, quoteSelection, type ReferralCheck } from '@/modules/web/backend/booking-actions';
 import type { SelectionQuote } from '@/modules/web/lib/booking-types';
@@ -31,6 +32,8 @@ export function useCheckoutForm({ turfId, date, hours, size, side, active, refer
   const [referral, setReferral] = useState<ReferralCheck | null>(null);
   const [codeError, setCodeError] = useState('');
   const [useWallet, setUseWallet] = useState(false);
+  const [paymentOption, setPaymentOption] = useState<PaymentOption>('advance');
+  const [quotedOption, setQuotedOption] = useState<PaymentOption>('advance');
   const [selectedAddOns, setSelectedAddOns] = useState<{ id: string; qty: number }[]>([]);
   const [quote, setQuote] = useState<SelectionQuote | null>(null);
   const [error, setError] = useState('');
@@ -40,8 +43,8 @@ export function useCheckoutForm({ turfId, date, hours, size, side, active, refer
 
   // What the server needs to price or book the current selection
   const base = useMemo(
-    () => ({ turfId, date, hours, addOns: selectedAddOns, useWallet, size, side }),
-    [turfId, date, hours, selectedAddOns, useWallet, size, side]
+    () => ({ turfId, date, hours, addOns: selectedAddOns, useWallet, size, side, paymentOption }),
+    [turfId, date, hours, selectedAddOns, useWallet, size, side, paymentOption]
   );
 
   // Fill in the signed-in player's name and number
@@ -62,13 +65,13 @@ export function useCheckoutForm({ turfId, date, hours, size, side, active, refer
       const result = await quoteSelection({ ...base, promoCode: promo, phone: phoneDigits });
       if (cancelled) return;
       if ('error' in result) setError(result.error);
-      else setQuote(result);
+      else { setQuote(result); setQuotedOption(paymentOption); }
     }, 150);
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [active, base, promo, phoneDigits]);
+  }, [active, base, promo, phoneDigits, paymentOption]);
 
   const setCode = (value: string) => {
     setCodeValue(value);
@@ -116,12 +119,13 @@ export function useCheckoutForm({ turfId, date, hours, size, side, active, refer
   }, []);
 
   /** Puts back what the player had typed and chosen before a page refresh. */
-  const restore = useCallback((d: { name: string; phone: string; code: string; promo: string | null; useWallet: boolean; addOns: { id: string; qty: number }[] }) => {
+  const restore = useCallback((d: { name: string; phone: string; code: string; promo: string | null; useWallet: boolean; paymentOption?: PaymentOption; addOns: { id: string; qty: number }[] }) => {
     setName((n) => n || d.name);
     setPhone((n) => n || d.phone);
     setCodeValue(d.code);
     setPromo(d.promo);
     setUseWallet(d.useWallet);
+    setPaymentOption(d.paymentOption === 'full' ? 'full' : 'advance');
     setSelectedAddOns(d.addOns);
   }, []);
 
@@ -138,7 +142,8 @@ export function useCheckoutForm({ turfId, date, hours, size, side, active, refer
     promo, referral,
     useWallet, setUseWallet,
     selectedAddOns, setAddOnQty,
-    quote, error, setError,
+    quote: quotedOption === paymentOption ? quote : null, error, setError,
+    paymentOption, setPaymentOption,
     base,
     restore,
     reset,

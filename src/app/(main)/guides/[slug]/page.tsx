@@ -119,7 +119,7 @@ export default async function GuideDetailPage({ params }: Props) {
             ))}
             {section.keyTakeaway && (
               <div style={{ background: 'var(--ok-bg)', borderLeft: '4px solid #10b981', padding: '12px 16px', borderRadius: '4px 8px 8px 4px', fontSize: '14px', color: 'var(--ok)', fontWeight: 500, lineHeight: 1.6 }}>
-                💡 <strong>Key Takeaway:</strong> {section.keyTakeaway}
+                 <strong>Key Takeaway:</strong> {section.keyTakeaway}
               </div>
             )}
           </div>
@@ -159,7 +159,7 @@ export default async function GuideDetailPage({ params }: Props) {
           <div className={styles.areas}>
             {others.map((g) => (
               <Link key={g.slug} href={`/guides/${g.slug}`} className={styles.areaLink}>
-                📖 {g.title}
+                 {g.title}
               </Link>
             ))}
           </div>

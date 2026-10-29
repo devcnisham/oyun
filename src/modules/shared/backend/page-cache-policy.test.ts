@@ -8,3 +8,7 @@ test('personal account routes always keep request authentication', () => {
 test('public discovery pages remain eligible for cached rendering', () => {
   for (const path of ['/', '/m', '/arenas', '/arenas/perfect-pass-kodialbail', '/sports/football', '/turfs/kodialbail']) expect(isPrerendered(path), path).toBe(true);
 });
+
+test('prebuilt editorial and nested discovery routes never receive a runtime nonce', () => {
+  for (const path of ['/blog', '/news', '/guides', '/offers', '/membership', '/guides/how-to-book-a-turf-in-mangalore', '/curated/night-turfs-mangalore', '/sports/football/kodialbail', '/sports/pickleball/bejai']) expect(isPrerendered(path), path).toBe(true);
+});

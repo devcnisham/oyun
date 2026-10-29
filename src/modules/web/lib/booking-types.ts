@@ -1,3 +1,4 @@
+import type { PaymentOption } from './payment-options';
 // Booking request/quote shapes, the slot limit and request cleaning. Nothing here touches the store,
 // so client components (the booking screen), server actions and tests can all import it.
 import { ValidationError } from '@/modules/shared/backend/errors';
@@ -18,6 +19,7 @@ export const cleanSize = (size: unknown): PitchSize => (size === 'half' ? 'half'
 export const cleanSide = (side: unknown): PitchSide | undefined => (side === 'A' || side === 'B' ? side : undefined);
 
 export interface SelectionRequest {
+  paymentOption?: PaymentOption;
   turfId: string;
   date: string;
   hours: number[];

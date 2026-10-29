@@ -21,7 +21,7 @@ export const CURATED_COLLECTIONS: CuratedCollection[] = [
     metaDescription: 'Find and book the best late night football and box cricket turfs in Mangalore. High-intensity LED floodlights, midnight slots, and instant booking on OYUN.',
     lead: "Mangalore's sports culture thrives after sundown. Whether you're organizing a post-work 5v5 football clash or a midnight box cricket championship under high-lux floodlights, these verified venues offer prime slots after 10 PM and past midnight.",
     badge: 'Open After Dark',
-    icon: '🌙',
+    icon: '',
     filter: (t) => {
       const closesLate = t.closeTime === '00:00' || t.closeTime >= '23:00' || t.closeTime <= '04:00';
       const hasLights = t.amenities.some((a) => a.toLowerCase().includes('light') || a.toLowerCase().includes('flood'));
@@ -63,7 +63,7 @@ export const CURATED_COLLECTIONS: CuratedCollection[] = [
     metaDescription: 'Don’t let heavy coastal rains cancel your game. Discover covered football turfs, indoor badminton courts, and rainproof pickleball venues in Mangalore on OYUN.',
     lead: 'Mangalore receives over 3,000mm of monsoon rain between June and September. These covered indoor arenas and high-grade drainage facilities ensure uninterrupted matches through even the heaviest coastal downpours.',
     badge: '100% Monsoon Proof',
-    icon: '🌧️',
+    icon: '',
     filter: (t) => {
       const isIndoorSport = t.sports.some((s) => s.toLowerCase().includes('badminton') || s.toLowerCase().includes('pickleball'));
       const hasCover = t.amenities.some((a) => a.toLowerCase().includes('indoor') || a.toLowerCase().includes('covered'));
@@ -101,7 +101,7 @@ export const CURATED_COLLECTIONS: CuratedCollection[] = [
     metaDescription: 'Book premium wooden badminton courts in Mangalore. Experience Brazilian teak wood flooring, certified shock absorption, and instant hourly court booking.',
     lead: 'For dedicated shuttle enthusiasts, natural wood provides the gold standard in joint cushioning, predictable shuttle rebounds, and authentic playing rhythm. Compare Mangalore’s premier wooden court facilities.',
     badge: 'Pro Wooden Flooring',
-    icon: '🏸',
+    icon: '',
     filter: (t) => {
       return t.sports.some((s) => s.toLowerCase().includes('badminton'));
     },
