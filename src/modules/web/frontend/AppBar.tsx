@@ -36,16 +36,9 @@ export default function AppBar() {
   if (path === '/arenas') return <VenueSearchBar />;
   const title = TITLES.find(([p]) => path === p || path.startsWith(`${p}/`))?.[1] ?? 'OYUN';
   // Top-level tabs have nothing to go back to
-  const isTab = ['/arenas', '/bookings', '/profile'].includes(path);
   return (
     <div className={styles.bar} data-app-bar>
-      {isTab ? (
-        <span className={styles.gap} aria-hidden />
-      ) : (
-        <BackButton className={styles.back} ariaLabel="Back">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 18l-6-6 6-6" /></svg>
-        </BackButton>
-      )}
+      <BackButton className={styles.back} ariaLabel="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 18l-6-6 6-6" /></svg></BackButton>
       <p className={styles.title}>{title}</p>
       <div className={styles.tools}>
         <FloatingSearch className={styles.search} />

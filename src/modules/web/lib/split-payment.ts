@@ -81,17 +81,17 @@ export function generateSplitShareMessage({
   upiLink,
 }: SplitShareDetails): string {
   const lines = [
-    `⚽ *Slot Booked at ${turfName}*`,
-    `📅 ${date} · ⏰ ${timeSlot}`,
-    `💰 Total: ₹${totalAmount} split among ${playerCount} players`,
-    `👉 *Your share: ₹${perPerson}*`,
+    ` *Slot Booked at ${turfName}*`,
+    ` ${date} ·  ${timeSlot}`,
+    ` Total: ₹${totalAmount} split among ${playerCount} players`,
+    ` *Your share: ₹${perPerson}*`,
   ];
 
   if (upiLink) {
     lines.push(`\nPay your share via UPI:\n${upiLink}`);
   }
 
-  lines.push('\nSee you on the pitch! 🏆');
+  lines.push('\nSee you on the pitch! ');
 
   return lines.join('\n');
 }

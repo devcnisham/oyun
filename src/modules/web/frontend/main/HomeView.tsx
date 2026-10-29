@@ -1,3 +1,4 @@
+import WelcomeGuide from '@/modules/web/frontend/welcome/WelcomeGuide';
 import JsonLd from '@/modules/web/frontend/JsonLd';
 import { organizationSchema, websiteSchema } from '@/modules/web/lib/schema';
 import { getSettings, getSiteContent, listPublicTurfs } from '@/modules/web/database/queries';
@@ -10,6 +11,7 @@ export async function HomeView() {
   return (
     <>
       <JsonLd data={[organizationSchema(settings.supportEmail, settings.supportPhone), websiteSchema()]} />
+      <WelcomeGuide />
       <BookingHome turfs={turfs} offers={db.offers} ads={site.ads} />
     </>
   );

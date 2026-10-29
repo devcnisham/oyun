@@ -40,3 +40,15 @@
 }
 .categories { grid-template-columns: repeat(4, minmax(0,1fr)); width: 100%; }
 .discoveryMain > section:first-child { width: 100%; box-sizing: border-box; }
+
+@media (prefers-reduced-motion: no-preference) {
+ .photo img { transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+ .category { transition: transform .2s; }
+ .category:active { transform: scale(.96); }
+ .category[aria-pressed="true"] .photo { box-shadow: 0 0 0 2px #9e0a0a; }
+ .searchButton { transition: background .2s, transform .2s; }
+ .searchButton:active { transform: scale(.97); }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+ .category:hover .photo img { transform: scale(1.06); }
+}

@@ -1,3 +1,4 @@
+import { OyunLoader } from './OyunMotion';
 import styles from '@/modules/shared/frontend/PageSkeleton.module.css';
 
 type Variant = 'home' | 'cards' | 'rows' | 'venue' | 'ticket' | 'auth' | 'content';
@@ -9,9 +10,8 @@ function Card() {
 
 export default function PageSkeleton({ variant = 'rows' }: { variant?: Variant }) {
   return (
-    <div className={`${styles.wrap} ${variant === 'auth' ? styles.auth : ''}`} role="status" aria-busy="true" aria-live="polite">
-      <span className={styles.sr}>Loading…</span>
-      <div className={styles.loadingLabel} aria-hidden="true"><span className={styles.indicator} />Getting things ready</div>
+    <div className={`${styles.wrap} ${variant === 'auth' ? styles.auth : ''}`} aria-busy="true">
+      <div className={styles.center}><OyunLoader label="Loading…" /></div>
       <div aria-hidden="true" className={styles.content}>
         <Block className={variant === 'home' ? styles.heroTitle : styles.title} />
         <Block className={styles.lineShort} />

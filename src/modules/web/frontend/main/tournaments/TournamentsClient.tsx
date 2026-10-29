@@ -72,7 +72,7 @@ export default function TournamentsClient({
                     textTransform: 'uppercase',
                   }}
                 >
-                  🏆 {t.sport}
+                   {t.sport}
                 </span>
                 <span
                   style={{
@@ -93,7 +93,7 @@ export default function TournamentsClient({
               </h2>
 
               <p style={{ margin: '0 0 16px', color: 'var(--text-secondary)', fontSize: '14px' }}>
-                📍 <strong>{t.turfName}</strong>
+                 <strong>{t.turfName}</strong>
               </p>
 
               <div style={{ background: 'var(--bg-muted)', borderRadius: '8px', padding: '12px', marginBottom: '16px', fontSize: '13px' }}>

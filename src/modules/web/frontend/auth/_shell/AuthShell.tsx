@@ -1,12 +1,12 @@
+import HeaderBack from '@/modules/web/frontend/HeaderBack';
 import Image from 'next/image';
 import Link from 'next/link';
-import BrandMark from '@/modules/shared/frontend/BrandMark';
 import styles from '@/app/(auth)/auth.module.css';
 
 const perks = [
-  { icon: '⚡', title: 'Instant confirmation', text: 'Pick your hours and they are yours in seconds.' },
-  { icon: '🎟️', title: 'QR tickets', text: 'Show your ticket at the venue and walk in.' },
-  { icon: '💰', title: 'Cashback on every game', text: 'Rewards go straight to your wallet.' },
+  { icon: '', title: 'Instant confirmation', text: 'Pick your hours and they are yours in seconds.' },
+  { icon: '', title: 'QR tickets', text: 'Show your ticket at the venue and walk in.' },
+  { icon: '', title: 'Cashback on every game', text: 'Rewards go straight to your wallet.' },
 ];
 
 // Shared frame for /login and /signup: brand panel on desktop, a clean form card everywhere
@@ -29,10 +29,7 @@ export default function AuthShell({ mode, title, subtitle, children, footer }: {
           priority
         />
         <div className={styles.brandInner}>
-          <Link href="/" className={styles.brandHome} aria-label="OYUN home">
-            <BrandMark size={44} />
-            <span>OYUN</span>
-          </Link>
+          <HeaderBack />
           <div>
             <p className={styles.brandHeadline}>Book Mangalore&apos;s best venues in seconds.</p>
             <ul className={styles.perks}>
@@ -51,10 +48,7 @@ export default function AuthShell({ mode, title, subtitle, children, footer }: {
       <main className={styles.formPanel}>
         <div className={styles.topBar}>
 
-          <Link href="/" className={styles.mobileLogo} aria-label="OYUN home">
-            <BrandMark size={30} />
-            <span>OYUN</span>
-          </Link>
+          <HeaderBack />
         </div>
 
         <div className={styles.formWrapper}>

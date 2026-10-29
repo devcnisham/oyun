@@ -39,7 +39,7 @@ export async function reportError(report: ErrorReport) {
 
   // Client reports are unauthenticated, so the text must not be able to ping a channel (@everyone, <!channel>, <@user>)
   const safe = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/@/g, '@\u200b');
-  const text = `🚨 OYUN ${report.source} error${report.path ? ` on ${safe(report.path)}` : ''}: ${safe(entry.message)}${report.digest ? ` (digest ${safe(report.digest)})` : ''}`;
+  const text = ` OYUN ${report.source} error${report.path ? ` on ${safe(report.path)}` : ''}: ${safe(entry.message)}${report.digest ? ` (digest ${safe(report.digest)})` : ''}`;
   try {
     await fetch(webhook, {
       method: 'POST',

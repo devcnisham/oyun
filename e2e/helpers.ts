@@ -58,6 +58,10 @@ export async function holdFirstSlot(page: Page, dayIndex: number, turf: string =
 
 export async function confirmBooking(page: Page) {
   await page.getByRole('dialog', { name: 'Checkout' }).getByRole('button', { name: 'Confirm booking' }).click();
+  const payment = page.getByRole('dialog', { name: 'Payment methods' });
+  await expect(payment).toBeVisible();
+  await payment.getByRole('radio', { name: /^Pay at venue/ }).check();
+  await payment.getByRole('button', { name: 'Confirm reservation', exact: true }).click();
   await page.waitForURL(/\/bookings\/[^/?]+$/);
   const code = (await page.getByText(/^SA-[A-Z0-9]{6}$/).first().textContent())!.trim();
   return code;

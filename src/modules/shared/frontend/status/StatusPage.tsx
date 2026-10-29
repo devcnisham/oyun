@@ -6,7 +6,7 @@ export default function StatusPage({ code, title, message, children }: { code: s
   return (
     <div className={styles.wrap}>
       <div className={styles.card}>
-        <div className={styles.ball} aria-hidden>⚽</div>
+        <div className={styles.ball} aria-hidden></div>
         <p className={styles.code}>{code}</p>
         <h1 className={styles.title}>{title}</h1>
         <p className={styles.message}>{message}</p>

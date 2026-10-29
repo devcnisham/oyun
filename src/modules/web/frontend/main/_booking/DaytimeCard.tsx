@@ -9,7 +9,7 @@ export default function DaytimeCard({ turf, offer, tone }: {
   tone: number;
 }) {
   return (
-    <article className={`${styles.deal} ${styles[`dealTone${tone % 3}`]}`}>
+    <article data-home-reveal className={`${styles.deal} ${styles[`dealTone${tone % 3}`]}`}>
       <div className={styles.dealTop}><span>{offer?.period ?? 'Morning & afternoon'}</span>{offer ? <b>{offer.percentOff}% off</b> : <b className={styles.regularRate}>Daytime play</b>}</div>
       <h3>{turf.name}</h3><p>{turf.city}</p>
       <div className={styles.dealBottom}>

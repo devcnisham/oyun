@@ -94,7 +94,7 @@ export default async function CourtTimeline({ ctx }: { ctx: PartnerContext }) {
               ) : block ? (
                 <>
                   <span className={styles.slotPlayerName} style={{ color: '#b45309' }}>
-                    🔒 Blocked
+                     Blocked
                   </span>
                   <span className={styles.slotStatusText} title={block.reason}>
                     {block.reason}

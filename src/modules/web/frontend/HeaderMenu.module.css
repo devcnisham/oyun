@@ -23,3 +23,23 @@
 .drawer :is(a, button):focus-visible, .trigger:focus-visible { outline: 3px solid #6e6e73; outline-offset: -3px; }
 @media (max-width: 400px) { .account { flex-wrap: wrap; } .account p { flex: 1; } .account a { margin-left: 54px; } }
 @media (prefers-reduced-motion: no-preference) { .drawer[open] { animation: slideIn .22s ease-out; } @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } } }
+
+@media (max-width: 768px) {
+  .drawer { width: min(360px, calc(100vw - 16px)); }
+  .top { min-height: 68px; padding: 12px 18px; gap: 10px; }
+  .top h2 { font-size: 22px; line-height: 1.2; overflow-wrap: anywhere; min-width: 0; }
+  .close { width: 36px; height: 36px; }
+  .close svg { width: 20px; height: 20px; }
+  .account { padding: 16px; gap: 10px; flex-wrap: nowrap; }
+  .accountIcon { width: 34px; height: 34px; font-size: 9px; }
+  .account p { font-size: 12px; flex: 1; }
+  .account a { margin-left: auto; min-height: 40px; padding: 8px 10px; font-size: 11px; }
+  .row { min-height: 68px; padding: 14px 18px; gap: 13px; }
+  .row > svg { width: 21px; height: 21px; }
+  .row span { gap: 3px; }
+  .row strong { font-size: 14px; }
+  .row small { font-size: 11px; }
+  .explore { padding: 20px 18px 6px; }
+  .explore a { font-size: 13px; min-height: 40px; }
+  .tagline { padding: 16px 18px 24px; }
+}

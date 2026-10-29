@@ -16,7 +16,7 @@
 .info { min-width: 0; padding: 8px 0 28px; border-bottom: 1px solid #e6dfda; }
 .titleRow { display: flex; gap: 18px; align-items: flex-start; }
 .titleMain { flex: 1; min-width: 0; }
-.title { font-size: clamp(30px, 4vw, 50px); letter-spacing: -.055em; font-weight: 850; line-height: 1.12; color: #301814; overflow-wrap: anywhere; }
+.titleRow .title { font-size: clamp(30px, 4vw, 50px); letter-spacing: -.055em; font-weight: 850; line-height: 1.12; color: #301814; overflow-wrap: anywhere; }
 .title .ratingBadge { display: inline-block; vertical-align: middle; margin-left: 8px; }
 .ratingBadge { background: #fff0db; color: #82500b; font-size: 13px; padding: 7px 11px; border-radius: 99px; font-weight: 750; letter-spacing: 0; }
 .addressBlock { font-size: 16px; color: #70635e; margin-top: 12px; }
@@ -85,3 +85,46 @@
  .titleSide { margin-left: auto; }
  .titleSide .mapLink { width: 44px; height: 44px; }
 }
+
+/* Compact venue introduction on phones. */
+@media (max-width: 600px) {
+ .content.layout { margin-top: 18px; }
+ .info { padding-top: 0; padding-bottom: 20px; }
+ .titleRow { gap: 10px; align-items: center; }
+ .titleMain { flex-basis: auto; flex: 1; }
+ .titleRow .title { font-size: 25px; line-height: 1.15; }
+ .ratingBadge { font-size: 10px; padding: 4px 8px; }
+ .title .ratingBadge { margin-left: 4px; }
+ .titleSide { margin-left: 0; gap: 4px; }
+ .titleSide .mapLink { width: 44px; height: 44px; border: 0; background: transparent; }
+ .titleSide .mapLink svg { width: 19px; height: 19px; }
+ .locationHours { gap: 8px; margin-top: 10px; }
+ .addressBlock { font-size: 13px; }
+ .hoursText { font-size: 11px; }
+ .facts { margin-top: 12px; gap: 6px; }
+ .facts li { padding: 6px 9px; font-size: 10px; }
+ .offerStrip { display: grid; gap: 8px; margin-top: 14px; }
+ .offerChip { font-size: 12px; line-height: 1.5; padding: 10px 12px; border-radius: 12px; }
+}
+@media (max-width: 350px) {
+ .titleRow { flex-wrap: wrap; }
+ .titleMain { flex-basis: 100%; }
+ .titleSide { margin-left: auto; }
+}
+
+/* The badge sits above the name; the three actions share the name's row. */
+.titleRow { align-items: flex-end; }
+.titleMain { display: grid; justify-items: start; gap: 5px; }
+.titleRow .title { font-size: clamp(26px, 3vw, 38px); font-weight: 750; min-height: 48px; display: flex; align-items: center; }
+.titleMain > .ratingBadge { font-size: 10px; padding: 3px 8px; margin: 0; line-height: 1.4; }
+@media (max-width: 600px) {
+ .titleRow { flex-wrap: nowrap; align-items: flex-end; gap: 8px; }
+ .titleMain { flex-basis: auto; flex: 1; gap: 4px; }
+ .titleRow .title { font-size: 20px; line-height: 1.25; font-weight: 700; min-height: 44px; }
+ .titleMain > .ratingBadge { font-size: 9px; padding: 2px 7px; }
+ .titleSide { gap: 0; margin-left: 0; align-self: flex-end; }
+ .titleSide .mapLink { width: 40px; height: 44px; }
+ .titleSide .mapLink svg { width: 18px; height: 18px; }
+}
+@media (prefers-reduced-motion: no-preference) { .newBadge { animation: newPulse 1.8s ease-in-out infinite; } }
+@keyframes newPulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }

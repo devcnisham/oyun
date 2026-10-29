@@ -356,7 +356,7 @@ export default function MatchesClient({
                     {m.turfName}
                   </h3>
                   <p style={{ margin: '0 0 12px', color: 'var(--text-secondary)', fontSize: '14px' }}>
-                    📅 {m.date} at {m.timeLabel}
+                     {m.date} at {m.timeLabel}
                   </p>
                   <p style={{ margin: '0 0 16px', color: 'var(--text-muted)', fontSize: '13px' }}>
                     Organized by <strong>{m.hostName}</strong>

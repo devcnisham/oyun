@@ -1,0 +1,4 @@
+.splash { position: fixed; inset: 0; z-index: 30000; display: grid; place-items: center; background: #fff; animation: exit 1.8s linear forwards; }
+@keyframes exit { 0%, 84% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .splash { animation-duration: .25s; } }
+@media print { .splash { display: none; } }

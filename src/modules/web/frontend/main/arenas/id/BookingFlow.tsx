@@ -1,5 +1,7 @@
 'use client';
 
+import PaymentPreview from './PaymentPreview';
+
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
@@ -56,6 +58,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const [now, setNow] = useState(() => Date.now());
   const [paying, startPaying] = useTransition();
   const [showGate, setShowGate] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const [gateFor, setGateFor] = useState<'proceed' | 'pay'>('pay'); // which step asked the player to sign in
   const pendingProceed = useRef(false); // Clerk's sign-in is open and Proceed should continue once it is done
   const proceedRef = useRef<(force?: boolean) => Promise<void>>(async () => {});
@@ -195,10 +198,11 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       code: form.code,
       promo: form.promo,
       useWallet: form.useWallet,
+      paymentOption: form.paymentOption,
       addOns: form.selectedAddOns,
       savedAt: Date.now(),
     });
-  }, [turf.id, date, selected, size, side, selectedBookable, holdUntil, form.name, form.phone, form.code, form.promo, form.useWallet, form.selectedAddOns]);
+  }, [turf.id, date, selected, size, side, selectedBookable, holdUntil, form.name, form.phone, form.code, form.promo, form.useWallet, form.paymentOption, form.selectedAddOns]);
 
   // Live seat map: other players' holds and bookings show up within a second
   const refreshCurrent = useCallback(() => {
@@ -240,6 +244,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
   const closeCheckout = useCallback(
     (message?: string) => {
       setHoldUntil(null);
+      setShowPayment(false);
       resetForm();
       releaseHolds().catch(() => {});
       startSlotLoad(() => refreshSlots(date));
@@ -350,7 +355,9 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       else setShowGate(true);
       return;
     }
-    reserve(form.name, form.phoneDigits);
+    if (!form.name.trim()) return form.setError('Enter your name');
+    if (form.phoneDigits.length !== 10) return form.setError('Enter a 10-digit mobile number');
+    if (form.quote) setShowPayment(true);
   };
 
   // Confirms the held slots; nothing is charged online, the player pays the turf at the venue
@@ -472,13 +479,20 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       </div>
 
       {/* Sticky selection bar */}
-      <div className={`${styles.bar} ${selected.length > 0 && !inCheckout ? styles.barShow : ''}`}>
+      <div data-booking-selection={selected.length > 0 && !inCheckout ? 'true' : undefined} className={`${styles.bar} ${selected.length > 0 && !inCheckout ? styles.barShow : ''}`}>
         <div className={styles.barInfo}>
           <b>
-            {selectedBookable ? `${selectedBookable.name} · ` : ''}
             {selected.length} slot{selected.length === 1 ? '' : 's'} · {rupees(estimate)}
           </b>
-          <span>{dateInfo?.label} · {describeHours(selected, parseHour(turf.openTime))}</span>
+          {selected.length > 0 && !inCheckout && <details className={styles.barDetails}>
+            <summary>View details</summary>
+            <div className={styles.barDetailsPanel}>
+              <b>{turf.name}</b>
+              <p>{selectedBookable?.name ?? (size === 'half' ? 'Half pitch' : turf.size)}</p>
+              <p>{dateInfo?.label} · {describeHours(selected, parseHour(turf.openTime))}</p>
+              <p>{selected.length} slot{selected.length === 1 ? '' : 's'} · {rupees(estimate)}</p>
+            </div>
+          </details>}
         </div>
         <button className={styles.primary} onClick={() => proceed()} disabled={holding || selected.length === 0}>
           {holding ? 'Holding…' : 'Proceed'}
@@ -489,7 +503,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
       {toast && createPortal(<div className={`${styles.flow} ${styles.toast}`} role="status">{toast}</div>, document.body)}
 
       {/* 4 · Checkout sheet */}
-      {inCheckout && (
+      {inCheckout && !showPayment && (
         <CheckoutSheet
           turf={turf}
           size={size}
@@ -508,6 +522,8 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
         />
       )}
 
+      {inCheckout && showPayment && form.quote && <PaymentPreview amount={form.quote.payNow} total={form.quote.total} venue={turf.name} full={form.paymentOption === 'full'} pending={paying} error={form.error} onBack={() => setShowPayment(false)} onReserve={() => reserve(form.name, form.phoneDigits)} />}
+
       {showGate &&
         createPortal(
           <SignInGate
@@ -523,7 +539,7 @@ export default function BookingFlow({ turf, dates, initialDate, initialSlots, re
                 void proceed(true);
                 return;
               }
-              reserve(p.name, p.phone);
+              setShowPayment(true);
             }}
           />,
           document.body

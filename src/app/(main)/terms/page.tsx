@@ -44,7 +44,7 @@ export default async function TermsPage() {
 
           <h2>3. Payments</h2>
           <ul>
-            <li>You reserve slots on OYUN and pay the venue at the venue, by cash or UPI. Each booked hour needs an advance (₹150 by default) when you arrive, and the balance is paid after you play. No payment is taken online.</li>
+            <li>You reserve slots on OYUN and pay the venue at the venue, by cash or UPI. At checkout, choose a 30% advance on arrival with the balance after you play, or full payment on arrival. No payment is taken online.</li>
             <li>Prices include GST where applicable. Invoices are available from your booking page.</li>
             <li>Wallet credits (cashback, referral rewards), when offered, can only be used for bookings on OYUN, have no cash value and cannot be transferred.</li>
           </ul>

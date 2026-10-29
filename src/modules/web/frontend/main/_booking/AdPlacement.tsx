@@ -32,7 +32,7 @@ export default function AdPlacement({ id, format = 'banner' }: { id: string; for
     return () => window.clearInterval(timer);
   },[paused,hovered,reduced,slides.length]);
   const go = (n:number) => { setPaused(true); track.current?.scrollTo({left:n*track.current.clientWidth,behavior:reduced?'auto':'smooth'}); };
-  return <aside className={`${styles.carousel} ${format === 'card' ? styles.card : ''}`} aria-label="OYUN advertisement" aria-roledescription="carousel" data-ad-placement={id} data-ad-format={format} onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}>
+  return <aside data-home-reveal className={`${styles.carousel} ${format === 'card' ? styles.card : ''}`} aria-label="OYUN advertisement" aria-roledescription="carousel" data-ad-placement={id} data-ad-format={format} onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}>
     <div ref={track} className={styles.track} onPointerDown={() => setPaused(true)} onFocusCapture={() => setPaused(true)} onScroll={e => setIndex(Math.round(e.currentTarget.scrollLeft/e.currentTarget.clientWidth))}>
       {slides.map((slide,i) => <div key={slide.photo} className={styles.slide} role="group" aria-label={`Advertisement ${i+1} of ${slides.length}`} aria-roledescription="slide" data-ad-container={`${id}-${i}`}>
         <Image src={`https://images.unsplash.com/${slide.photo}?w=1200&q=85&auto=format&fit=crop`} alt="" fill sizes={format==='banner'?'100vw':'(max-width:768px) 86vw,50vw'} />

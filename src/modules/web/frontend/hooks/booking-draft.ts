@@ -1,5 +1,7 @@
 'use client';
 
+import type { PaymentOption } from '@/modules/web/lib/payment-options';
+
 import type { PitchSide, PitchSize } from '@/modules/shared/database/types';
 
 // What a player has picked on a venue page, kept in this browser so a refresh (or a dropped connection) does not lose it.
@@ -17,6 +19,7 @@ export interface BookingDraft {
   code: string;
   promo: string | null;
   useWallet: boolean;
+  paymentOption?: PaymentOption;
   addOns: { id: string; qty: number }[];
   savedAt: number;
 }
@@ -50,6 +53,7 @@ export function parseDraft(raw: string | null, turfId: string, now: number): Boo
       code: typeof d.code === 'string' ? d.code.slice(0, 20) : '',
       promo: typeof d.promo === 'string' ? d.promo.slice(0, 40) : null,
       useWallet: d.useWallet === true,
+      ...(d.paymentOption === 'full' || d.paymentOption === 'advance' ? { paymentOption: d.paymentOption } : {}),
       addOns: Array.isArray(d.addOns) ? d.addOns.filter((a) => a && typeof a.id === 'string' && isNum(a.qty) && a.qty > 0 && a.qty <= 20).slice(0, 20) : [],
       savedAt: d.savedAt,
     };

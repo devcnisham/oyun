@@ -60,3 +60,5 @@ Known gap: on `/arenas` the first card image is not in the initial HTML (the lis
 - `/blog`: OYUN sports blog and Mangalore playing tips. Articles retain their `/guides/[slug]` URLs. Public and permitted by the existing robots policy.
 
 - `/news`: OYUN news and events in Mangalore; demo events are visible as previews, never represented as real event structured data. `/about` stays at its existing canonical and now uses the customer layout.
+
+- `/landing`: OYUN introduction, sports venue booking in Mangalore. Self-canonical after launch; booking home stays at `/`.

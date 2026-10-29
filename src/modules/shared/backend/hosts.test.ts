@@ -56,7 +56,7 @@ describe('landing host (www)', () => {
   test('after launch www serves the whole public site (the single SEO host)', () => {
     for (const p of ['/', '/arenas', '/arenas/x', '/guides/padel', '/sports/football', '/turfs/kodialbail', '/login']) expect(routeForHost('landing', p, LIVE)).toEqual(next);
     expect(routeForHost('landing', '/countdown', LIVE)).toEqual(perm('/'));
-    expect(routeForHost('landing', '/landing', LIVE)).toEqual(perm('/'));
+    expect(routeForHost('landing', '/landing', LIVE)).toEqual(next);
     expect(routeForHost('landing', '/admin', LIVE)).toEqual(go('admin', '/admin'));
   });
   test('the old /welcome address redirects to the countdown before launch and to / after', () => {

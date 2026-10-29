@@ -13,7 +13,7 @@ export default function BookingDiscovery({ selectedSport, onSelectSport, childre
       <div className={styles.discoveryMain}>
     {children}
     <div className={styles.categories} role="group" aria-label="Filter venues by sport">
-      {SPORTS.slice(0, 4).map(sport => <button type="button" key={sport.value} className={styles.category} aria-pressed={selectedSport === sport.value} aria-controls="featured-title" onClick={() => onSelectSport(sport.value)}>
+      {SPORTS.slice(0, 4).map(sport => <button data-home-reveal type="button" key={sport.value} className={styles.category} aria-pressed={selectedSport === sport.value} aria-controls="featured-title" onClick={() => onSelectSport(sport.value)}>
         <span className={styles.photo}><Image src={sport.image} alt="" fill loading="eager" sizes="(max-width: 760px) 25vw, 160px" /></span>
         <span className={styles.name}>{sport.label}</span>
       </button>)}

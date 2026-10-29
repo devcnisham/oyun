@@ -56,7 +56,7 @@ export default function StudentIdBox({ name, phone }: { name: string; phone: str
 
   return (
     <section aria-label="Student offer">
-      <h3>🎓 {info.title}: {info.percentOff}% off</h3>
+      <h3> {info.title}: {info.percentOff}% off</h3>
       {status === 'approved' ? (
         <p className={styles.muted}>Your student ID is approved. The discount is in your bill.</p>
       ) : status === 'pending' ? (

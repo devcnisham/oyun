@@ -31,7 +31,7 @@ export default function LiveSlots({ turfs }: { turfs: TurfSummary[] }) {
     return () => { active = false; window.clearInterval(timer); document.removeEventListener('visibilitychange', visible); };
   }, [key]);
   const ready = snapshot?.key === key;
-  return <section className={styles.banner} aria-label="Live slot availability">
+  return <section data-home-reveal className={styles.banner} aria-label="Live slot availability">
     <div className={styles.panels} tabIndex={0} aria-label="Open slots and your next game" onKeyDown={e => { if (e.target !== e.currentTarget || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return; e.preventDefault(); e.currentTarget.scrollBy({left: (e.key === 'ArrowRight' ? 1 : -1) * e.currentTarget.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }}>
     <div className={styles.summary}>
     <p className={styles.eyebrow}>TODAY ON OYUN</p>

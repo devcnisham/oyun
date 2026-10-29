@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import OwnerIntroduction from '@/modules/web/frontend/main/list-turf/OwnerIntroduction';
+import { OyunLoader } from '@/modules/shared/frontend/OyunMotion';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { submitApplication } from '@/modules/web/backend/booking-actions';
 import { STEP_FIELDS, validateApplication, type FieldErrors } from '@/modules/web/lib/validation/application';
-import BackButton from '@/modules/web/frontend/BackButton';
 import ListingSubmitted from '@/modules/web/frontend/main/list-turf/ListingSubmitted';
-import { amenitiesOptions, EMPTY_FORM, mangaloreAreas, perks, sizes, surfaces, type ListingForm } from '@/modules/web/frontend/main/list-turf/listing-options';
+import { amenitiesOptions, EMPTY_FORM, mangaloreAreas, sizes, surfaces, type ListingForm } from '@/modules/web/frontend/main/list-turf/listing-options';
 import styles from './page.module.css';
 
 export default function ListTurfPage() {
@@ -61,14 +61,19 @@ export default function ListTurfPage() {
       return;
     }
     setSubmitting(true);
-    const res = await submitApplication({ ...formData, amenities: selectedAmenities, website, startedAt });
-    setSubmitting(false);
-    if (res.fieldErrors) showErrors(res.fieldErrors);
-    if (res.id) {
-      setRefId(res.id);
-      setSubmitted(true);
-    } else {
-      setSubmitError(res.error ?? 'Could not submit your listing. Please try again.');
+    try {
+      const res = await submitApplication({ ...formData, amenities: selectedAmenities, website, startedAt });
+      if (res.fieldErrors) showErrors(res.fieldErrors);
+      if (res.id) {
+        setRefId(res.id);
+        setSubmitted(true);
+      } else {
+        setSubmitError(res.error ?? 'Could not submit your listing. Please try again.');
+      }
+    } catch {
+      setSubmitError('Could not submit your listing. Check your connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -91,64 +96,7 @@ export default function ListTurfPage() {
 
   return (
     <div className={styles.page}>
-      {/* Landing Page Content */}
-      <div className={styles.landingPage}>
-        <motion.div 
-          className={styles.heroSection}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="container">
-            <BackButton />
-            <h1 className={styles.heroTitle}>Partner with OYUN</h1>
-            <p className={styles.heroSubtitle}>Join Mangalore&apos;s fastest growing venue booking network. Free to list, zero commission during beta.</p>
-            <button className="btn btn--primary btn--lg" onClick={() => { document.getElementById('list-form')?.scrollIntoView({ behavior: 'smooth' }); }}>List Your Property Now</button>
-          </div>
-        </motion.div>
-        
-        <div className={`container ${styles.perksGrid}`}>
-          <motion.h2 
-            className={styles.sectionTitle}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5 }}
-          >
-            Why list on OYUN?
-          </motion.h2>
-          <div className={styles.perksCards}>
-            {perks.map((p, index) => (
-              <motion.div 
-                key={p.title} 
-                className={styles.perkCardLarge}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                 <div className={styles.perkIconLarge}>{p.icon}</div>
-                 <h3>{p.title}</h3>
-                 <p>{p.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        <motion.div 
-          className={`container ${styles.statsSection}`}
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className={styles.statBannerLarge}>
-             <div><p className={styles.statValue}>2,000+</p><p>Active Bookers</p></div>
-             <div><p className={styles.statValue}>₹0</p><p>Listing Cost</p></div>
-             <div><p className={styles.statValue}>24h</p><p>Approval Time</p></div>
-          </div>
-        </motion.div>
-      </div>
+      <OwnerIntroduction />
 
       <div id="list-form" style={{ scrollMarginTop: '80px' }}>
         <div className={styles.header}>
@@ -158,7 +106,7 @@ export default function ListTurfPage() {
               <p className="section-label">For Venue Owners</p>
               <h2 className={styles.pageTitle}>List Your Venue on OYUN</h2>
               <p className={styles.pageDesc}>
-                Join Mangalore&apos;s growing venue booking network. Free to list, free to earn.
+                Tell us about your venue. Our team will review your application.
               </p>
               <p className={styles.pageDesc}>
                 Already a partner? <Link href="/partner/login">Log in here</Link>
@@ -169,35 +117,6 @@ export default function ListTurfPage() {
       </div>
 
       <div className={`container ${styles.body}`}>
-        {/* Left: Perks */}
-        <aside className={styles.sidebar}>
-          <div className={styles.perksCard}>
-            <h3 className={styles.perksTitle}>Benefits for partners</h3>
-            <div className={styles.perksList}>
-              {perks.map((p) => (
-                <div key={p.title} className={styles.perkItem}>
-                  <div className={styles.perkIcon}>{p.icon}</div>
-                  <div>
-                    <div className={styles.perkTitle}>{p.title}</div>
-                    <div className={styles.perkDesc}>{p.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className={styles.statsBanner}>
-            <div className={styles.statBannerItem}>
-              <div className={styles.statBannerValue}>2,000+</div>
-              <div className={styles.statBannerLabel}>Active Bookers</div>
-            </div>
-            <div className={styles.statBannerDivider} />
-            <div className={styles.statBannerItem}>
-              <div className={styles.statBannerValue}>₹0</div>
-              <div className={styles.statBannerLabel}>Listing Cost</div>
-            </div>
-          </div>
-        </aside>
-
         {/* Right: Form */}
         <div className={styles.formWrap}>
           {/* Step indicator */}
@@ -362,7 +281,7 @@ export default function ListTurfPage() {
 
                 <div className={styles.pricingCards}>
                   <div className={styles.pricingCard}>
-                    <div className={styles.pricingCardIcon}>☀️</div>
+                    <div className={styles.pricingCardIcon}></div>
                     <div className={styles.field}>
                       <label className={styles.label} htmlFor="weekdayPrice">Weekday Rate (₹/hr) *</label>
                       <div className={styles.priceInputWrap}>
@@ -373,7 +292,7 @@ export default function ListTurfPage() {
                     </div>
                   </div>
                   <div className={styles.pricingCard}>
-                    <div className={styles.pricingCardIcon}>🌆</div>
+                    <div className={styles.pricingCardIcon}></div>
                     <div className={styles.field}>
                       <label className={styles.label} htmlFor="eveningPrice">Evening Rate (₹/hr) *</label>
                       <div className={styles.priceInputWrap}>
@@ -384,7 +303,7 @@ export default function ListTurfPage() {
                     </div>
                   </div>
                   <div className={styles.pricingCard}>
-                    <div className={styles.pricingCardIcon}>🎯</div>
+                    <div className={styles.pricingCardIcon}></div>
                     <div className={styles.field}>
                       <label className={styles.label} htmlFor="weekendPrice">Weekend Rate (₹/hr) *</label>
                       <div className={styles.priceInputWrap}>
@@ -397,7 +316,7 @@ export default function ListTurfPage() {
                 </div>
 
                 <div className={styles.pricingNote}>
-                  💡 Tip: Venues with peak-hour pricing typically earn 35% more per month than flat-rate venues.
+                  Set the rates players should see for each booking period.
                 </div>
               </div>
             )}
@@ -465,16 +384,16 @@ export default function ListTurfPage() {
             <div className={styles.stepNav}>
               {step > 1 && (
                 <button type="button" className="btn btn--ghost" onClick={() => setStep(step - 1)} id="form-prev">
-                  ← Previous
+                  Previous
                 </button>
               )}
               {step < 4 ? (
                 <button type="button" className={`btn btn--primary ${styles.nextBtn}`} onClick={nextStep} id="form-next">
-                  Continue →
+                  Continue
                 </button>
               ) : (
                 <button type="submit" className={`btn btn--primary ${styles.nextBtn}`} id="form-submit" disabled={submitting}>
-                  {submitting ? 'Submitting…' : '🚀 Submit Listing'}
+                  {submitting ? <OyunLoader compact label="Submitting…" /> : 'Submit listing'}
                 </button>
               )}
             </div>

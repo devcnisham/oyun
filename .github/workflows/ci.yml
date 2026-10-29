@@ -38,6 +38,7 @@ jobs:
       - run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: 1
+      - run: node --experimental-strip-types scripts/check-prerender.mjs
 
   secrets:
     name: Secret scan (Gitleaks)

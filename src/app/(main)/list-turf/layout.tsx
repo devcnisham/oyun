@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { ogBase } from '@/modules/web/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'List Your Venue for Free | Get More Bookings in Mangalore',
+  title: 'List Your Venue | OYUN Partners in Mangalore',
   description:
-    'Venue owners in Mangalore: list your venue, court or sports arena on OYUN for free. Online bookings, slot management, payouts and a verified badge. Zero commission during beta.',
+    'Bring your sports venue to OYUN. Apply to list your venue in Mangalore and manage availability, bookings and player check-ins from your partner dashboard.',
   alternates: { canonical: '/list-turf' },
-  openGraph: { ...ogBase('/list-turf'), title: 'List Your Venue on OYUN for Free' },
+  openGraph: { ...ogBase('/list-turf'), title: 'List Your Venue | OYUN Partners' },
 };
 
 export default function ListTurfLayout({ children }: { children: React.ReactNode }) {

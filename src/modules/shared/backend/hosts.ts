@@ -78,8 +78,8 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
     case 'landing':
       if (dashboard()) return dashboard()!;
       if (access.launched) {
-        // The countdown and the pre-launch landing page have no purpose after launch: / is the booking home
-        if (pathname === '/countdown' || pathname === '/landing') return to('landing', '/', true);
+        // The countdown retires after launch; /landing remains the introduction and / is the booking home
+        if (pathname === '/countdown') return to('landing', '/', true);
         return { kind: 'next' };
       }
       if (pathname === '/') return { kind: 'rewrite', path: '/landing' };

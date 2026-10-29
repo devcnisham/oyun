@@ -1,11 +1,11 @@
 // The sports people can filter turfs by. `value` is what turfs list in `sports` and what /arenas?sport= expects.
 // `place` is what one venue of that sport is called in copy ("turf" or "court").
 export const SPORTS = [
-  { value: 'Football', label: 'Football', icon: '⚽', place: 'turf', image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop' },
-  { value: 'Box Cricket', label: 'Box Cricket', icon: '🏏', place: 'turf', image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=600&auto=format&fit=crop' },
-  { value: 'Badminton', label: 'Badminton', icon: '🏸', place: 'court', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=600&auto=format&fit=crop' },
-  { value: 'Pickleball', label: 'Pickleball', icon: '🏓', place: 'court', image: 'https://images.unsplash.com/photo-1693142517898-2f986215e412?q=80&w=600&auto=format&fit=crop' },
-  { value: 'Padel', label: 'Padel', icon: '🎾', place: 'court', image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=600&auto=format&fit=crop' },
+  { value: 'Football', label: 'Football', icon: '', place: 'turf', image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop' },
+  { value: 'Box Cricket', label: 'Box Cricket', icon: '', place: 'turf', image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=600&auto=format&fit=crop' },
+  { value: 'Badminton', label: 'Badminton', icon: '', place: 'court', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=600&auto=format&fit=crop' },
+  { value: 'Pickleball', label: 'Pickleball', icon: '', place: 'court', image: 'https://images.unsplash.com/photo-1693142517898-2f986215e412?q=80&w=600&auto=format&fit=crop' },
+  { value: 'Padel', label: 'Padel', icon: '', place: 'court', image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=600&auto=format&fit=crop' },
 ] as const;
 
 // URL slug for a sport, e.g. "Box Cricket" -> "box-cricket" (used by /sports/[sport])
@@ -26,7 +26,7 @@ export type SportInfo = { label: string; icon: string; place: 'turf' | 'court' }
 export function sportInfo(name: string): SportInfo {
   const key = name.trim().toLowerCase();
   const known = SPORTS.find((s) => s.value.toLowerCase() === key);
-  return known ? { label: known.label, icon: known.icon, place: known.place } : { label: name.trim() || 'Sports', icon: '🏟️', place: 'turf' };
+  return known ? { label: known.label, icon: known.icon, place: known.place } : { label: name.trim() || 'Sports', icon: '', place: 'turf' };
 }
 
 // The sport a venue is mainly for: its first listed sport

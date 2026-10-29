@@ -5,7 +5,7 @@ export function buildFaqs(s: PlatformSettings) {
   return [
     {
       q: 'How do I book a turf on OYUN?',
-      a: 'Open a turf, pick a date and tap one or more free slots, then press Proceed. Your slots are held for you for 8 minutes while you sign in and reserve. You get a booking with a QR code straight away. Nothing is charged online: you pay the turf by cash or UPI, starting with an advance of ₹150 per hour when you arrive, and the balance after you play.',
+      a: 'Open a turf, pick a date and tap one or more free slots, then press Proceed. Your slots are held for you for 8 minutes while you sign in and reserve. You get a booking with a QR code straight away. Nothing is charged online: you pay the turf by cash or UPI, with either a 30% advance on arrival and the balance after play, or full payment on arrival.',
     },
     {
       q: 'What does "On hold" mean on a slot?',

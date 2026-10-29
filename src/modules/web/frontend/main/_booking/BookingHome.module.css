@@ -39,7 +39,7 @@
 .venue { border-radius: 26px; overflow: hidden; background: #fff; box-shadow: 0 12px 34px #40100806; min-width: 0; transition: box-shadow .25s, transform .25s; }
 .venue:hover { transform: translateY(-4px); box-shadow: 0 16px 35px #40100812; }
 .venueLink { text-decoration: none; display: flex; flex-direction: column; height: 100%; color: inherit; }
-.venueImage { flex: none; position: relative; aspect-ratio: 1.6; background: #174e32; overflow: hidden; }
+.venueImage { flex: none; width: 100%; align-self: stretch; position: relative; aspect-ratio: 1.6; background: #174e32; overflow: hidden; }
 .venueImage img { object-fit: cover; transition: transform .5s; }
 .venue:hover img { transform: scale(1.035); }
 .venueImage::after { content: ''; position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, #0009); pointer-events: none; }
@@ -145,7 +145,7 @@
   .heroMain { animation: arrive .5s cubic-bezier(.2,.7,.2,1) backwards; }
   .search { animation: arrive .5s .07s cubic-bezier(.2,.7,.2,1) backwards; }
   .sports { animation: arrive .5s .12s cubic-bezier(.2,.7,.2,1) backwards; }
-  .venue, .deal, .sponsor { animation: arrive .5s var(--card-delay, 0ms) cubic-bezier(.2,.7,.2,1) backwards; }
+
   .venueGrid > :nth-child(2), .dealGrid > :nth-child(2) { --card-delay: 60ms; }
   .venueGrid > :nth-child(3), .dealGrid > :nth-child(3) { --card-delay: 120ms; }
   .venueGrid > :nth-child(4) { --card-delay: 180ms; }
@@ -243,7 +243,7 @@
 /* Compact, responsive venue cards on phones. */
 @media (max-width: 768px) {
   .venue { border-radius: 18px; }
-  .venueImage { aspect-ratio: 1.85; max-height: 190px; }
+  .venueImage { aspect-ratio: 1.85; max-height: none; }
   .venueBody { padding: 14px; }
   .venueBody h3 { font-size: 18px; line-height: 1.2; }
   .venueLocation { font-size: 12px; line-height: 18px; margin: 4px 0 10px; }
@@ -290,3 +290,17 @@
 .desktopAdCard { min-width: 0; }
 @media(max-width:768px) { .adRow { display: block; } .desktopAdCard { display: none; } }
 @media(max-width:768px) { .featuredHint { display: none; } }
+
+@media (prefers-reduced-motion: no-preference) {
+ .home[data-motion-ready="true"] [data-home-reveal] { transition: opacity .55s ease, translate .55s cubic-bezier(.2,.7,.2,1); }
+ .home[data-motion-ready="true"] [data-home-reveal]:not([data-revealed="true"]) { opacity: 0; translate: 0 16px; }
+ .home[data-motion-ready="true"] [data-home-reveal][data-revealed="true"] { opacity: 1; translate: 0 0; }
+ .home[data-motion-ready="true"] [data-home-reveal]:nth-child(2) { transition-delay: 50ms; }
+ .home[data-motion-ready="true"] [data-home-reveal]:nth-child(3) { transition-delay: 100ms; }
+ .home[data-motion-ready="true"] [data-home-reveal]:nth-child(4) { transition-delay: 150ms; }
+ .home .venue { transition: opacity .55s ease, translate .55s ease, box-shadow .2s, transform .2s; }
+ .home .bookButton:active, .home .outlineButton:active, .home .dealBottom a:active { transform: scale(.97); }
+}
+@media (prefers-reduced-motion: reduce) {
+ .home [data-home-reveal] { opacity: 1; translate: none; transition: none; animation: none; }
+}

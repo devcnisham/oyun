@@ -1,3 +1,4 @@
+import { paymentAmounts } from './payment-options';
 // Server-side booking planner: finds a bookable turf and prices and books every chosen hour against a
 // database copy. It imports the store and wallet, so only server code (booking-actions, tests) may use it.
 // Client-safe request types, limits and cleaners live in booking-types.ts.
@@ -116,8 +117,11 @@ export function planBooking(
     totalWalletDeduction += quote.breakdown.walletDeduction;
     totalSubtotal += quote.breakdown.subtotal;
     totalOrder += quote.breakdown.total;
-    totalAdvance += quote.breakdown.advance;
+
   });
+
+  const payment = paymentAmounts(totalOrder, req.paymentOption);
+  totalAdvance = payment.due;
 
   // A code is used up once per checkout, however many hours it covered.
   if (promoCode) {
@@ -190,9 +194,9 @@ export function planBooking(
     walletBalance,
     walletDeduction: totalWalletDeduction,
     total: totalOrder,
-    advancePercent: totalOrder > 0 ? Math.round((totalAdvance / totalOrder) * 1000) / 10 : 0,
-    minAdvance: db.settings.minAdvance,
-    maxAdvance: db.settings.maxAdvance,
+    advancePercent: payment.percent,
+    minAdvance: 0,
+    maxAdvance: totalOrder,
     payNow: totalAdvance,
     payAtVenue: totalOrder - totalAdvance,
     promoCode,

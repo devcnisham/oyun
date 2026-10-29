@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import HeaderBack from '@/modules/web/frontend/HeaderBack';
 import { useEffect, useState } from 'react';
 import { IconArrow, IconClose, IconMenu } from '@/modules/web/frontend/launch/_ui/icons';
-import BrandMark from '@/modules/shared/frontend/BrandMark';
 import { BROWSE_URL } from '@/modules/web/frontend/launch/_ui/links';
 import styles from '@/modules/web/frontend/launch/_ui/site.module.css';
 
@@ -39,10 +39,7 @@ export default function SiteHeader({ current, waiting = false }: { current?: 'ab
     <header className={`${styles.header} ${scrolled || open ? styles.solid : ''}`}>
       <a href="#content" className={styles.skip}>Skip to content</a>
       <div className={styles.bar}>
-        <Link href="/" className={styles.brand}>
-          <BrandMark size={34} />
-          <span className={styles.brandName}>OYUN</span>
-        </Link>
+        <HeaderBack />
 
         <nav className={styles.nav} aria-label="Main">
           {SECTIONS.map((s) => (

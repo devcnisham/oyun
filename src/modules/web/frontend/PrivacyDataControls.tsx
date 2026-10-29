@@ -72,7 +72,7 @@ export default function PrivacyDataControls() {
         </button>
 
         <button type="button" onClick={handleDelete} className={styles.dangerBtn} disabled={loading}>
-          🗑️ Erase my personal data
+           Erase my personal data
         </button>
       </div>
 

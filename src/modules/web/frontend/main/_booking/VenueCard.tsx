@@ -9,7 +9,7 @@ import FavouriteButton from '@/modules/web/frontend/FavouriteButton';
 export default function VenueCard({ turf, eager = false, date, showSave = false, showAmenities = false }: { turf: PublicTurf & { availableToday?: number }; eager?: boolean; date?: string; showSave?: boolean; showAmenities?: boolean }) {
   const photo = turf.images[0];
   return (
-    <article className={`${styles.venue} ${showSave ? styles.withSave : ''}`}>
+    <article data-home-reveal className={`${styles.venue} ${showSave ? styles.withSave : ''}`}>
       {showSave && <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.saveButton} />}
       <Link href={date ? `/arenas/${turf.id}?date=${encodeURIComponent(date)}` : `/arenas/${turf.id}`} className={styles.venueLink} aria-label={`Book ${turf.name}`}>
         <div className={styles.venueImage}>

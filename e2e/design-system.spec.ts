@@ -14,7 +14,8 @@ test('desktop navigation is fixed flush to the viewport with no redundant search
     await expect(nav).toBeVisible();
     await expect(nav.getByRole('search')).toHaveCount(0);
     await expect(nav.getByRole('link', { name: /^Bookings/ })).toHaveCount(0);
-    await expect(nav.getByRole('button', { name: 'Open menu' })).toBeVisible();
+    if (path === '/') await expect(nav.getByRole('button', { name: 'Open menu' })).toHaveCount(0);
+    else await expect(nav.getByRole('button', { name: 'Open menu' })).toBeVisible();
     await expect(nav.getByRole('link', { name: 'List your venue' })).toHaveCount(0);
     await expect(nav.getByRole('link', { name: 'Offers', exact: true })).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0, 600));
@@ -93,18 +94,18 @@ test('home category selection filters featured venues without navigating away', 
   const category = page.getByRole('button', { name: 'Badminton', exact: true });
   await category.click();
   await expect(category).toHaveAttribute('aria-pressed', 'true');
-  const featured = page.getByRole('region', { name: 'Badminton featured venues' });
+  const featured = page.getByRole('region', { name: 'Featured', exact: true });
   await expect(featured.getByRole('link', { name: 'Book Smash Court Badminton' })).toBeVisible();
   await expect(featured.getByRole('link', { name: 'Book Perfect Pass' })).toHaveCount(0);
   await expect(featured.getByRole('link', { name: 'See all venues' })).toHaveAttribute('href', '/arenas?sport=Badminton');
   expect(new URL(page.url()).pathname).toBe('/');
   await category.click();
   await expect(category).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.getByRole('region', { name: 'Featured venues' }).getByRole('link', { name: 'Book Perfect Pass' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Featured', exact: true }).getByRole('link', { name: 'Book Perfect Pass' })).toBeVisible();
 });
 
 test('side menu opens, traps focus and closes with Escape', async ({ page, isMobile }) => {
-  await page.goto('/');
+  await page.goto('/blog');
   const nav = page.getByRole('navigation', { name: 'Main navigation' });
   await expect(nav.getByRole('link', { name: /^Bookings/ })).toHaveCount(0);
   const trigger = nav.getByRole('button', { name: 'Open menu' });

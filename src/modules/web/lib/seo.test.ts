@@ -6,6 +6,7 @@ describe('isIndexableTurf', () => {
   test('keeps real venues, drops the test venue and demo addresses', () => {
     expect(isIndexableTurf({ id: 'perfect-pass-kodialbail', location: 'Kodialbail, Mangalore' })).toBe(true);
     expect(isIndexableTurf({ id: 'oyun-club-test', location: 'Mangalore' })).toBe(false);
+    expect(isIndexableTurf({ id: 'turf_test_payout', location: 'Mangalore' })).toBe(false);
     expect(isIndexableTurf({ id: 'griffins', location: 'Demo address, Kadri, Mangalore' })).toBe(false);
   });
 });
