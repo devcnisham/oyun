@@ -68,3 +68,22 @@ test('brand intro is centred and runs again on a full refresh', async ({ page })
   await expect(splash).toBeVisible();
   await expect(splash).toHaveCount(0);
 });
+
+test('first-visit guide does not shift the mobile booking home after hydration', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The mobile layout is also the production Lighthouse performance target.');
+  await page.addInitScript(() => {
+    const state = window as unknown as Window & { oyunLayoutShift: number };
+    state.oyunLayoutShift = 0;
+    new PerformanceObserver(list => {
+      for (const entry of list.getEntries()) {
+        const shift = entry as PerformanceEntry & { hadRecentInput: boolean; value: number };
+        if (!shift.hadRecentInput) state.oyunLayoutShift += shift.value;
+      }
+    }).observe({ type: 'layout-shift', buffered: true });
+  });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Show me', exact: true })).toBeVisible();
+  await expect(page.locator('[data-startup-splash]')).toHaveCount(0);
+  await page.waitForTimeout(750);
+  expect(await page.evaluate(() => (window as unknown as Window & { oyunLayoutShift: number }).oyunLayoutShift)).toBeLessThan(.05);
+});

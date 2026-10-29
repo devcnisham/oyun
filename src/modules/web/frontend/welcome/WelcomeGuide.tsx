@@ -26,7 +26,8 @@ function GuideDialog({ onClose }: { onClose: () => void }) {
 }
 
 export default function WelcomeGuide() {
-  const [firstVisit, setFirstVisit] = useState(false);
+  // Include the first-visit prompt in the initial HTML so hydration cannot push the page down.
+  const [firstVisit, setFirstVisit] = useState(true);
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const id = requestAnimationFrame(() => {
