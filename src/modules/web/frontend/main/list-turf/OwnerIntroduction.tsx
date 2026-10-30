@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import styles from './OwnerIntroduction.module.css';
 
 const benefits = [
@@ -9,7 +8,9 @@ const benefits = [
 export default function OwnerIntroduction() {
   return <>
     <section className={styles.hero} aria-labelledby="owner-title">
-      <div className={styles.copy}><p className={styles.eyebrow}>OYUN for venue owners</p><h1 id="owner-title">Your ground.<br />Their next<br /><span>great game.</span></h1><p className={styles.lead}>Bring your venue to OYUN.<br />Give players a place to find you, book and play.</p><div className={styles.actions}><a href="#list-form" className={styles.primary}>List your venue</a><Link href="/partner/login" className={styles.secondary}>Partner sign in</Link></div><p className={styles.note}>Football · Box cricket · Badminton · Pickleball</p></div>
+      <div className={styles.copy}><p className={styles.eyebrow}>OYUN for venue owners</p><h1 id="owner-title">Your ground.<br />Their next<br /><span>great game.</span></h1><p className={styles.lead}>Bring your venue to OYUN.<br />Give players a place to find you, book and play.</p><div className={styles.actions}><a href="#list-form" className={styles.primary}>List your venue</a>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- This route redirects to the partner subdomain and needs document navigation. */}
+            <a href="/partner/login" className={styles.secondary}>Partner sign in</a></div><p className={styles.note}>Football · Box cricket · Badminton · Pickleball</p></div>
       <div className={styles.board} aria-label="Illustration of partner booking tools">
         <div className={styles.boardHead}><b>OYUN <span>PARTNER</span></b><span className={styles.preview}>Product preview</span></div>
         <div className={styles.boardBody}><div className={styles.boardTitle}><h2>A clearer view<br />of your day.</h2><span className={styles.live}>Your calendar</span></div><div className={styles.calendar} aria-hidden="true">{['MON', 'TUE', 'WED', 'THU', 'FRI'].map((day, i) => <div key={day}><span>{day}</span>{[0, 1, 2, 3].map(row => <i key={row} className={(i + row) % 3 === 0 ? styles.booked : (i + row) % 4 === 0 ? styles.blocked : styles.available} />)}</div>)}</div><div className={styles.legend}><span><i className={styles.booked} />Booked</span><span><i className={styles.available} />Available</span><span><i className={styles.blocked} />Blocked</span></div><div className={styles.ticket}><span className={styles.check}>✓</span><div><b>From booking to check-in</b><p>One place to manage the game.</p></div></div></div>
