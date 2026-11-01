@@ -4,15 +4,17 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { getSearchIndex } from '@/modules/web/backend/search-actions';
 import { buildSuggestions, type SearchEntry } from '@/modules/web/backend/search';
+import { usePublicSearchEntries } from './PublicSearchProvider';
 import styles from '@/modules/web/frontend/SearchSuggestions.module.css';
 
 
 // Loads the search index the first time a search box is used, then answers as you type
 export function useSuggestions(query: string, active: boolean) {
+  const publicEntries = usePublicSearchEntries();
   const [entries, setEntries] = useState<SearchEntry[] | null>(null);
 
   useEffect(() => {
-    if (!active || entries) return;
+    if (!active || entries || publicEntries) return;
     let cancelled = false;
     getSearchIndex()
       .then((rows) => !cancelled && setEntries(rows))
@@ -20,9 +22,9 @@ export function useSuggestions(query: string, active: boolean) {
     return () => {
       cancelled = true;
     };
-  }, [active, entries]);
+  }, [active, entries, publicEntries]);
 
-  return useMemo(() => (entries ? buildSuggestions(entries, query) : []), [entries, query]);
+  return useMemo(() => buildSuggestions(publicEntries ?? entries ?? [], query), [publicEntries, entries, query]);
 }
 
 export default function SearchSuggestions({

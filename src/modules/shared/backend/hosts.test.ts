@@ -143,6 +143,6 @@ describe('booking subdomain', () => {
     for (const path of ['/', '/arenas', '/arenas/x', '/bookings', '/profile', '/login']) {
       expect(routeForHost('book', path, LIVE)).toEqual(next);
     }
-    expect(routeForHost('book', '/help', LIVE)).toEqual(perm('/help'));
+    for (const path of ['/help', '/terms', '/privacy', '/faq', '/guides']) expect(routeForHost('book', path, LIVE)).toEqual(next);
   });
 });

@@ -87,7 +87,8 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
       return playerSiteOpen ? { kind: 'next' } : toLanding();
     case 'book':
       if (dashboard()) return dashboard()!;
-      if (isHelp(pathname)) return to('landing', pathname, true);
+      // Keep help/legal navigation on this origin; public canonicals still point to www.
+      if (isHelp(pathname)) return { kind: 'next' };
       return playerSiteOpen ? { kind: 'next' } : toLanding();
     case 'app':
     case 'help':
