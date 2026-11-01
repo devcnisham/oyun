@@ -1,3 +1,5 @@
+import { headers } from 'next/headers';
+import { authReturnPath } from '@/modules/web/lib/auth-return';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SignIn } from '@clerk/nextjs';
@@ -14,7 +16,8 @@ export const metadata: Metadata = {
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ redirect_url?: string }> }) {
   const { redirect_url } = await searchParams;
-  const redirectTo = redirect_url?.startsWith('/') && !redirect_url.startsWith('//') ? redirect_url : '/booking';
+  const requestHeaders = await headers();
+  const redirectTo = authReturnPath(redirect_url, requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host') ?? '');
   const query = `?redirect_url=${encodeURIComponent(redirectTo)}`;
   return (
     <AuthShell
