@@ -1,3 +1,5 @@
+import PublicSearchProvider from '@/modules/web/frontend/PublicSearchProvider';
+import { getSearchIndex } from '@/modules/web/backend/search-actions';
 import Breadcrumbs from '@/modules/web/frontend/Breadcrumbs';
 import breadcrumbStyles from '@/modules/web/frontend/Breadcrumbs.module.css';
 import { GUIDES } from '@/modules/web/lib/guides-content';
@@ -11,10 +13,9 @@ export default async function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const site = await getSiteContent();
-  const settings = await getSettings();
+  const [site, settings, searchEntries] = await Promise.all([getSiteContent(), getSettings(), getSearchIndex()]);
   return (
-    <div className="playerRoot">
+    <PublicSearchProvider entries={searchEntries}><div className="playerRoot">
       {site.announcementActive && site.announcement && (
         <div
           role="status"
@@ -29,6 +30,6 @@ export default async function MainLayout({
       <AppBar />
       <main id="main" tabIndex={-1} className="appMain"><Breadcrumbs guideCategories={Object.fromEntries(GUIDES.map(g => [g.slug, g.category]))} /><div className={breadcrumbStyles.content}>{children}</div></main>
       <Footer supportEmail={settings.supportEmail} />
-    </div>
+    </div></PublicSearchProvider>
   );
 }
