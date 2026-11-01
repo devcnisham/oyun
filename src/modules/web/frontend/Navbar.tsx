@@ -15,8 +15,8 @@ const ClerkAccount = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? dynamic(() 
 
 export default function Navbar() {
   const pathname = usePathname();
-  const logoOnly = pathname === '/' || pathname === '/m';
-  const isHome = pathname?.startsWith('/arenas/') || pathname === '/' || pathname === '/m' || ['/blog', '/news', '/events', '/about'].includes(pathname ?? '');
+  const logoOnly = pathname === '/' || pathname === '/m' || pathname === '/booking';
+  const isHome = pathname?.startsWith('/arenas/') || pathname === '/' || pathname === '/m' || pathname === '/booking' || ['/blog', '/news', '/events', '/about'].includes(pathname ?? '');
   const [firstName, setFirstName] = useState('');
   const [signedIn, setSignedIn] = useState(false);
 
@@ -34,18 +34,18 @@ export default function Navbar() {
 
   return (
     <div className={`${styles.navSlot} ${!isHome ? styles.innerSlot : ''}`}>
-      <nav className={styles.nav} data-app-header={isHome ? undefined : true} data-main-navigation aria-label="Main navigation">
+      <nav className={styles.nav} data-home-header={logoOnly || undefined} data-app-header={isHome ? undefined : true} data-main-navigation aria-label="Main navigation">
         <div className={styles.inner}>
           <div className={styles.identity}>{logoOnly ? <Link href="/" className={styles.brand} aria-label="OYUN home"><Image src="/oyun-icon.svg" alt="" width={36} height={36} />OYUN</Link> : <HeaderBack />}</div>
-          {!logoOnly && <div className={styles.links}>
+          <div className={styles.links}>
             <Link href="/blog" aria-current={pathname === '/blog' ? 'page' : undefined}>Blog</Link>
             <Link href="/news" aria-current={pathname === '/news' || pathname === '/events' ? 'page' : undefined}>News &amp; Events</Link>
             <Link href="/about" aria-current={pathname === '/about' ? 'page' : undefined}>About us</Link>
-          </div>}
-          {!logoOnly && <div className={styles.actions}>
+          </div>
+          <div className={styles.actions}>
             {clerkEnabled && ClerkAccount ? <ClerkAccount className={styles.account} /> : <Link href={signedIn ? '/profile' : '/login'} className={styles.account}>{signedIn ? `Hi, ${firstName || 'player'}` : 'Sign in'}</Link>}
             <HeaderMenu signedIn={signedIn} firstName={firstName} />
-          </div>}
+          </div>
         </div>
       </nav>
     </div>

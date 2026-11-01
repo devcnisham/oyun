@@ -21,6 +21,8 @@ export default function AdPlacement({ id, format = 'banner' }: { id: string; for
     { photo: 'photo-1517836357463-d25dfeac3438', title: 'More play. Less planning.' },
   ] : bannerSlides;
   const track = useRef<HTMLDivElement>(null);
+  const interacting = useRef(false);
+  const pause = () => { interacting.current = true; setPaused(true); };
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -28,15 +30,15 @@ export default function AdPlacement({ id, format = 'banner' }: { id: string; for
   useEffect(() => { const mq = window.matchMedia('(prefers-reduced-motion: reduce)'); const update = () => setReduced(mq.matches); update(); mq.addEventListener('change', update); return () => mq.removeEventListener('change', update); }, []);
   useEffect(() => {
     if (paused || hovered || reduced) return;
-    const timer = window.setInterval(() => { const el=track.current; if (!el || document.hidden) return; const rect=el.getBoundingClientRect(); if (rect.bottom<0 || rect.top>innerHeight) return; const next=(Math.round(el.scrollLeft/el.clientWidth)+1)%slides.length; el.scrollTo({ left:next*el.clientWidth, behavior:'smooth' }); },5000);
+    const timer = window.setInterval(() => { const el=track.current; if (!el || interacting.current || document.hidden) return; const rect=el.getBoundingClientRect(); if (rect.bottom<0 || rect.top>innerHeight) return; const next=(Math.round(el.scrollLeft/el.clientWidth)+1)%slides.length; el.scrollTo({ left:next*el.clientWidth, behavior:'smooth' }); },5000);
     return () => window.clearInterval(timer);
   },[paused,hovered,reduced,slides.length]);
-  const go = (n:number) => { setPaused(true); track.current?.scrollTo({left:n*track.current.clientWidth,behavior:reduced?'auto':'smooth'}); };
+  const go = (n:number) => { pause(); track.current?.scrollTo({left:n*track.current.clientWidth,behavior:reduced?'auto':'smooth'}); };
   return <aside data-home-reveal className={`${styles.carousel} ${format === 'card' ? styles.card : ''}`} aria-label="OYUN advertisement" aria-roledescription="carousel" data-ad-placement={id} data-ad-format={format} onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}>
-    <div ref={track} className={styles.track} onPointerDown={() => setPaused(true)} onFocusCapture={() => setPaused(true)} onScroll={e => setIndex(Math.round(e.currentTarget.scrollLeft/e.currentTarget.clientWidth))}>
+    <div ref={track} className={styles.track} data-swipe-rail onPointerDown={pause} onTouchStart={pause} onWheel={pause} onFocusCapture={pause} onScroll={e => setIndex(Math.round(e.currentTarget.scrollLeft/e.currentTarget.clientWidth))}>
       {slides.map((slide,i) => <div key={slide.photo} className={styles.slide} role="group" aria-label={`Advertisement ${i+1} of ${slides.length}`} aria-roledescription="slide" data-ad-container={`${id}-${i}`}>
-        <Image src={`https://images.unsplash.com/${slide.photo}?w=1200&q=85&auto=format&fit=crop`} alt="" fill sizes={format==='banner'?'100vw':'(max-width:768px) 86vw,50vw'} />
-        <div className={styles.creative}><span className={`${styles.brand} brand-wordmark`}>OYUN</span><small className={styles.tagline}>PLAY BEYOND.</small><p>{slide.title}</p><Link href={/deal|value/i.test(slide.title)?'/offers':'/arenas'} tabIndex={index===i?0:-1}>{/deal|value/i.test(slide.title)?'Explore offers':'Book a venue'}</Link></div>
+        <Image src={`https://images.unsplash.com/${slide.photo}?w=1200&q=85&auto=format&fit=crop`} alt="" draggable={false} fill sizes={format==='banner'?'100vw':'(max-width:768px) 86vw,50vw'} />
+        <div className={styles.creative}><span className={`${styles.brand} brand-wordmark`}>OYUN</span><small className={styles.tagline}>PLAY BEYOND.</small><p>{slide.title}</p><Link draggable={false} href={/deal|value/i.test(slide.title)?'/offers':'/arenas'} tabIndex={index===i?0:-1}>{/deal|value/i.test(slide.title)?'Explore offers':'Book a venue'}</Link></div>
       </div>)}
     </div>
     <div className={styles.dots} aria-label="Advertisement slides">{slides.map((slide,i)=><button key={slide.photo} type="button" aria-label={`Show advertisement ${i+1}`} aria-current={index===i?'true':undefined} onClick={()=>go(i)}><span /></button>)}</div>

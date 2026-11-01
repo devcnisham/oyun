@@ -62,3 +62,7 @@ Known gap: on `/arenas` the first card image is not in the initial HTML (the lis
 - `/news`: OYUN news and events in Mangalore; demo events are visible as previews, never represented as real event structured data. `/about` stays at its existing canonical and now uses the customer layout.
 
 - `/landing`: OYUN introduction, sports venue booking in Mangalore. Self-canonical after launch; booking home stays at `/`.
+
+### Landing and booking entry flow (31 October 2026)
+
+The apex/www home rewrites to the landing presentation with Book venue and List your venue actions. Book venue opens https://book.oyun.co.in/; the booking host serves player screens directly. Public editorial/discovery canonicals remain on www. The /landing alias uses the root canonical and is excluded from the sitemap. Booking-host robots remain excluded from indexing; this is not an authentication control.

@@ -78,7 +78,7 @@ export default function SidebarToggle({ className, variant = 'logo' }: { classNa
       {collapsed ? (
         <span style={{ display: 'block', margin: '0 auto', width: 26 }}><BrandMark size={26} shadow={false} /></span>
       ) : (
-        <span style={{ fontFamily: 'var(--font-wordmark-family)', fontWeight: 800, letterSpacing: 0 }}>OYUN</span>
+        <span style={{ fontFamily: 'var(--font-wordmark-family)', fontWeight: 700, fontStyle: 'italic', letterSpacing: 0 }}>OYUN</span>
       )}
     </button>
   );

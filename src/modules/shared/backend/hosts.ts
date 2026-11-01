@@ -1,6 +1,7 @@
 // Which part of OYUN each hostname serves (oyun.co.in is the public landing page, each audience has its own subdomain):
-//   www.oyun.co.in (and oyun.co.in)  the whole public site (landing page before launch, everything after): the one SEO host
-//   app., book., help.               old subdomains, permanent redirects to the same path on www
+//   www.oyun.co.in (and oyun.co.in)  landing entry point and canonical public content
+//   book.                            booking home and player screens
+//   app., help.                      legacy redirects to www
 //   partner.oyun.co.in               turf owner dashboard
 //   admin.oyun.co.in                 OYUN admin dashboard
 // Any other host (localhost, the *.vercel.app address, previews) is left alone, so development and testing behave as before.
@@ -63,8 +64,7 @@ const isHelp = (p: string) => HELP_AREAS.some((a) => inArea(p, a));
 
 const to = (role: HostRole, path: string, permanent = false): HostRoute => ({ kind: 'redirect', host: hostFor(role), path, ...(permanent ? { permanent } : {}) });
 
-// SEO: every public page lives on www.oyun.co.in so ranking signals are not split across subdomains.
-// app., book. and help. are kept only as permanent redirects to the same path on www.
+// Public content keeps its www canonical; book serves the player experience directly.
 export function routeForHost(role: HostRole | null, pathname: string, access: Access = { launched: false, preview: false }): HostRoute {
   if (!role || SHARED.test(pathname)) return { kind: 'next' };
   const playerSiteOpen = access.launched || access.preview;
@@ -77,16 +77,19 @@ export function routeForHost(role: HostRole | null, pathname: string, access: Ac
   switch (role) {
     case 'landing':
       if (dashboard()) return dashboard()!;
+      if (pathname === '/') return { kind: 'rewrite', path: '/landing' };
       if (access.launched) {
-        // The countdown retires after launch; /landing remains the introduction and / is the booking home
+        // The main domain remains the introduction after launch.
         if (pathname === '/countdown') return to('landing', '/', true);
         return { kind: 'next' };
       }
-      if (pathname === '/') return { kind: 'rewrite', path: '/landing' };
       if (LANDING_PAGES.has(pathname) || isHelp(pathname)) return { kind: 'next' };
       return playerSiteOpen ? { kind: 'next' } : toLanding();
-    case 'app':
     case 'book':
+      if (dashboard()) return dashboard()!;
+      if (isHelp(pathname)) return to('landing', pathname, true);
+      return playerSiteOpen ? { kind: 'next' } : toLanding();
+    case 'app':
     case 'help':
       if (dashboard()) return dashboard()!;
       if (role === 'help' && pathname === '/') return to('landing', '/help', true);

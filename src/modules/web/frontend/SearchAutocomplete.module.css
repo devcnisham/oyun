@@ -1,0 +1,9 @@
+.control { position:relative; flex:1; min-width:0; }
+.control > input { position:relative; z-index:1; padding:0; width:100%; min-width:0; min-height:44px; border:0; background:transparent; font:inherit; font-size:16px; color:#241b19; box-shadow:none; }
+.control > input:focus { outline:none; }
+.dropdown { position:absolute; top:calc(100% + 15px); left:-20px; right:-20px; z-index:60; border:1px solid #e3dcd7; border-radius:16px; padding:8px; background:white; box-shadow:0 18px 45px #28120b18; }
+.dropdown ul { margin:0; max-height:min(48dvh,390px); overscroll-behavior:contain; }
+.dropdown a { padding:12px 10px; }.dropdown a:focus-visible { outline:2px solid #8c817a; outline-offset:-2px; }
+@media(max-width:600px) { .dropdown { left:-36px; right:-48px; }.dropdown a { gap:8px; }.dropdown ul { max-height:45dvh; } }
+
+.ghost { position:absolute; left:0; right:24px; top:50%; transform:translateY(-50%); color:#a49c97; font:inherit; font-size:16px; line-height:normal; white-space:pre; overflow:hidden; pointer-events:none; }.ghost > span { visibility:hidden; }

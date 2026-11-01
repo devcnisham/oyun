@@ -68,10 +68,13 @@ test('online payment preview never creates a paid confirmation', async ({ page }
   await expect(page.getByRole('dialog', { name: 'Checkout' })).toBeVisible();
 });
 
-test('Home header contains only the OYUN brand', async ({ page }) => {
-  await page.goto('/');
+test('Home header contains the brand, navigation and account menu', async ({ page, isMobile }) => {
+  await page.goto('/booking');
   const header = page.getByRole('navigation', { name: 'Main navigation' });
   await expect(header.getByRole('link', { name: 'OYUN home' })).toBeVisible();
-  await expect(header.getByRole('link')).toHaveCount(1);
-  await expect(header.getByRole('button')).toHaveCount(0);
+  for (const label of ['Blog', 'News & Events', 'About us']) {
+    if (isMobile) await expect(header.getByRole('link', { name: label, exact: true })).not.toBeVisible();
+    else await expect(header.getByRole('link', { name: label, exact: true })).toBeVisible();
+  }
+  await expect(header.getByRole('button', { name: 'Open menu' })).toBeVisible();
 });

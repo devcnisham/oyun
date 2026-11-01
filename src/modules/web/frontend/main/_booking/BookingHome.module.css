@@ -304,3 +304,11 @@
 @media (prefers-reduced-motion: reduce) {
  .home [data-home-reveal] { opacity: 1; translate: none; transition: none; animation: none; }
 }
+@media (max-width: 768px) {
+  .venueGrid { scroll-padding-inline: 0; }
+  .venueGrid > .venue { scroll-snap-stop: always; }
+  .home[data-motion-ready] .venue[data-home-reveal] { translate: none; }
+  .venue:hover { transform: none; box-shadow: 0 12px 34px #40100806; }
+  .venue:hover img { transform: none; }
+  .venueLink, .venueImage img { -webkit-user-drag: none; }
+}

@@ -1,7 +1,7 @@
 import StartupSplash from '@/modules/shared/frontend/StartupSplash';
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from "next";
-import { Baloo_2, Inter } from "next/font/google";
+import { Kanit, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/modules/web/lib/site";
@@ -13,8 +13,8 @@ import AuthProvider from "@/modules/web/frontend/AuthProvider";
 import ServiceWorkerRegister from "@/modules/web/frontend/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-// Rounded face for the OYUN wordmark only (navbar and footer); one weight keeps it a few KB
-const wordmark = Baloo_2({ subsets: ["latin"], weight: "800", variable: "--font-wordmark", display: "swap" });
+// OYUN wordmarks share one self-hosted bold italic face.
+const wordmark = Kanit({ subsets: ["latin"], weight: "700", style: "italic", variable: "--font-wordmark", display: "swap" });
 
 // Inter's Latin-Extended file is 85 KB and the only reason a page asks for it is the rupee sign (U+20B9).
 // This is that one glyph cut from the same Inter file (1 KB), listed ahead of Inter so the big file is never fetched.

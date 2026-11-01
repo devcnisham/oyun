@@ -10,8 +10,8 @@ const examples = [
 export default function CommunityCards() {
   return <section className={styles.section} aria-labelledby="community-title">
     <div className={styles.heading}><h2 id="community-title">Tournaments &amp; events</h2><Link href="/events">View all events</Link></div>
-    <div className={styles.grid}>{examples.map(item => <article className={styles.card} key={item.title}>
-      <div className={styles.image}><Image src={item.image} alt="" fill sizes="(max-width: 600px) 100vw, 33vw" /><span>Demo event</span></div>
+    <div className={styles.grid} data-swipe-rail>{examples.map(item => <article className={styles.card} key={item.title}>
+      <div className={styles.image}><Image src={item.image} alt="" draggable={false} fill sizes="(max-width: 600px) 100vw, 33vw" /><span>Demo event</span></div>
       <div className={styles.body}><span className={styles.kind}>{item.kind}</span><h3>{item.title}</h3><p>{item.detail}</p><small>Sample listing · Dates and registration aren’t live</small><Link href={item.href}>{item.kind === 'Tournament' ? 'Browse tournaments' : 'Browse events'}</Link></div>
     </article>)}</div>
   </section>;

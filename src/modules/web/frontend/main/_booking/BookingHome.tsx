@@ -41,7 +41,7 @@ export default function BookingHome({ turfs, offers, ads }: { turfs: TurfSummary
 
       <CommunityCards />
 
-      {others.length > 0 && <section className={styles.section} aria-labelledby="more-title"><div className={styles.sectionHead} data-home-reveal><div><h2 id="more-title">More places. More play.</h2></div><Link href="/arenas?view=map" className={styles.outlineButton}>Explore the map </Link></div><div className={styles.venueGrid}>{others.map(t => <VenueCard key={t.id} turf={t} />)}</div></section>}
+      {others.length > 0 && <section className={styles.section} aria-labelledby="more-title"><div className={styles.sectionHead} data-home-reveal><div><h2 id="more-title">More places. More play.</h2></div><Link href="/arenas?view=map" className={styles.outlineButton}>Explore the map </Link></div><div className={styles.venueGrid} data-swipe-rail>{others.map(t => <VenueCard key={t.id} turf={t} />)}</div></section>}
       <section className={styles.owner} data-home-reveal><div><h2>Your venue.<br />Their next great game.</h2></div><div><Link href="/list-turf">List your venue </Link></div></section>
     </HomeMotion>
   );

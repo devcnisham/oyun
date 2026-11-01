@@ -33,7 +33,7 @@
 .brand { padding: 28px 24px; border-bottom: 1px solid rgb(255 255 255 / 12%); display: flex; align-items: center; justify-content: space-between; }
 .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .logoText { display: flex; flex-direction: column; gap: 5px; }
-.logoName { font-family: var(--font-wordmark-family); color: #fff; font-size: 24px; font-weight: 800; line-height: 1; }
+.logoName { font-family: var(--font-wordmark-family); color: #fff; font-size: 24px; font-weight: 700; line-height: 1; font-style: italic; }
 .logoTag { font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: #f3c8cc; font-weight: 700; }
 .nav { padding: 22px 14px; overflow-y: auto; min-height: 0; flex: 1; display: flex; flex-direction: column; gap: 24px; scrollbar-width: thin; }
 .navGroup { display: flex; flex-direction: column; gap: 4px; }

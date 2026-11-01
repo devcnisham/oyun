@@ -14,17 +14,19 @@ export const metadata: Metadata = {
 
 export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ redirect_url?: string }> }) {
   const { redirect_url } = await searchParams;
+  const redirectTo = redirect_url?.startsWith('/') && !redirect_url.startsWith('//') ? redirect_url : '/booking';
+  const query = `?redirect_url=${encodeURIComponent(redirectTo)}`;
   return (
     <AuthShell
-      mode="signup"
+      mode="signup" redirectTo={redirectTo}
       title="Create your account"
-      subtitle="It's free and takes less than a minute."
-      footer={<p>Already have an account? <Link href="/login" className={styles.footerLink}>Sign in</Link></p>}
+      subtitle="Keep your games, bookings and saved venues together."
+      footer={<p>Already have an account? <Link href={`/login${query}`} className={styles.footerLink}>Sign in</Link></p>}
     >
       {clerkEnabled ? (
-        <SignUp path="/signup" routing="path" signInUrl="/login" fallbackRedirectUrl="/" appearance={clerkAppearance} />
+        <SignUp path="/signup" routing="path" signInUrl={`/login${query}`} fallbackRedirectUrl={redirectTo} appearance={{ ...clerkAppearance, variables: { ...clerkAppearance.variables, colorPrimary: '#4a0000' } }} />
       ) : (
-        <PlayerForm mode="signup" redirectTo={redirect_url} />
+        <PlayerForm mode="signup" redirectTo={redirectTo} />
       )}
     </AuthShell>
   );

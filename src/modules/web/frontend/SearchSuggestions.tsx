@@ -6,7 +6,6 @@ import { getSearchIndex } from '@/modules/web/backend/search-actions';
 import { buildSuggestions, type SearchEntry } from '@/modules/web/backend/search';
 import styles from '@/modules/web/frontend/SearchSuggestions.module.css';
 
-const KIND_LABEL = { turf: 'Turf', area: 'Area', sport: 'Sport' } as const;
 
 // Loads the search index the first time a search box is used, then answers as you type
 export function useSuggestions(query: string, active: boolean) {
@@ -44,7 +43,6 @@ export default function SearchSuggestions({
       {suggestions.map((s) => (
         <li key={`${s.kind}:${s.href}`}>
           <Link href={s.href} className={styles.item} onClick={onPick}>
-            <span className={styles.kind}>{KIND_LABEL[s.kind]}</span>
             <span className={styles.text}>
               <span className={styles.label}>{s.label}</span>
               <span className={styles.hint}>{s.hint}</span>

@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import VenueSearchBar from './VenueSearchBar';
 import BackButton from '@/modules/web/frontend/BackButton';
 import FloatingSearch from '@/modules/web/frontend/FloatingSearch';
@@ -32,8 +33,8 @@ export default function AppBar() {
   const path = usePathname() ?? '/';
   const router = useRouter();
   // Home draws its own header; the venue page has its own floating controls
-  if (path === '/' || path === '/m' || ['/blog', '/news', '/events', '/about'].includes(path) || (path.startsWith('/arenas/') && path !== '/arenas')) return null;
-  if (path === '/arenas') return <VenueSearchBar />;
+  if (path === '/' || path === '/m' || path === '/booking' || ['/blog', '/news', '/events', '/about'].includes(path) || (path.startsWith('/arenas/') && path !== '/arenas')) return null;
+  if (path === '/arenas') return <Suspense fallback={null}><VenueSearchBar /></Suspense>;
   const title = TITLES.find(([p]) => path === p || path.startsWith(`${p}/`))?.[1] ?? 'OYUN';
   // Top-level tabs have nothing to go back to
   return (
@@ -41,7 +42,7 @@ export default function AppBar() {
       <BackButton className={styles.back} ariaLabel="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 18l-6-6 6-6" /></svg></BackButton>
       <p className={styles.title}>{title}</p>
       <div className={styles.tools}>
-        <FloatingSearch className={styles.search} />
+        {path !== '/profile' && <FloatingSearch className={styles.search} />}
         {path === '/arenas' && <button type="button" className={styles.search} aria-label="Show venue map" title="Map" onClick={() => { const params = new URLSearchParams(window.location.search); params.set('view', 'map'); router.push(`/arenas?${params}`); }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true"><path d="m3 5 6-2 6 3 6-2v15l-6 2-6-3-6 2V5Z" /><path d="M9 3v15M15 6v15" /></svg></button>}
       </div>
     </div>

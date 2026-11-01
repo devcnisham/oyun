@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const h = await headers();
   const role = roleForHost(h.get('x-forwarded-host') ?? h.get('host'));
-  // Only www is indexed. app., book., help., partner. and admin. redirect or hold dashboards: keep crawlers out.
+  // Only www is indexed. The booking experience and dashboard hosts are excluded to avoid duplicate public content.
   if (role && role !== 'landing') return { rules: [{ userAgent: '*', disallow: '/' }] };
   return {
     rules: [

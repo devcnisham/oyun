@@ -52,3 +52,6 @@
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
  .category:hover .photo img { transform: scale(1.06); }
 }
+@media (max-width: 768px) {
+  .category:active, .category:hover .photo img { transform: none; }
+}

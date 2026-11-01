@@ -19,12 +19,13 @@ function seatState(slot: Slot, isSelected: boolean) {
 
 /** Cinema-style seat map: slots grouped by part of the day, plus the colour legend. */
 export default function SlotMap({ slots, selected, loading, onToggle }: SlotMapProps) {
+  const upcoming = slots.filter(slot => slot.reason !== 'past');
   return (
     <>
       <div className={`${styles.map} ${loading ? styles.mapLoading : ''}`}>
-        {slots.length === 0 && <p className={styles.muted}>No slots on this day.</p>}
+        {upcoming.length === 0 && <p className={styles.muted}>No upcoming slots on this day.</p>}
         {SESSIONS.map((session) => {
-          const inSession = slots.filter((s) => s.hour >= session.from && s.hour < session.to);
+          const inSession = upcoming.filter((s) => s.hour >= session.from && s.hour < session.to);
           if (inSession.length === 0) return null;
           return (
             <div key={session.name} className={styles.session}>

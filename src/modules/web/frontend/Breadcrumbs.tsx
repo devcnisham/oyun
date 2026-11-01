@@ -9,7 +9,7 @@ const names: Record<string, string> = {
 };
 export default function Breadcrumbs({ guideCategories = {} }: { guideCategories?: Record<string, string> }) {
   const pathname = usePathname();
-  if (pathname === '/' || pathname === '/m') return null;
+  if (pathname === '/' || pathname === '/m' || pathname === '/booking' || pathname === '/list-turf' || ['/blog', '/news', '/events', '/about'].some(path => pathname === path || pathname.startsWith(`${path}/`))) return null;
   const segments = pathname.split('/').filter(Boolean);
   const label = (segment: string, index: number) => {
     if (index > 0 && segments[0] === 'bookings') return index === 1 ? 'Booking details' : names[segment] ?? 'Details';
