@@ -103,7 +103,7 @@ export default function Footer({ supportEmail }: { supportEmail: string }) {
           </nav>
         </div>
 
-        <div className={styles.watermark} aria-hidden="true">OYUN</div>
+        <div className={styles.watermark} aria-hidden="true"><svg viewBox="0 0 1200 310" role="presentation"><text x="50%" y="260" textAnchor="middle" fill="currentColor" fontSize="320">OYUN</text></svg></div>
         <div className={styles.bottom}>
           <p className={styles.copyright}>© {new Date().getFullYear()} OYUN</p>
           <p className={styles.copyright}>All rights reserved.</p>

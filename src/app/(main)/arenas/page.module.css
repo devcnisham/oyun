@@ -372,3 +372,7 @@
  .mobileSort button { font-size: 11px; padding: 8px 10px; min-height: 36px; }
  .locationError { font-size: 12px; color: #646469; margin-top: 10px; }
 }
+@media (max-width: 768px) {
+  .mapView { min-height: 0; }
+  .mapView .body { padding: 0; max-width: none; }
+}

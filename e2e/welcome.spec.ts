@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('first-visit guide can be skipped, remembered and replayed with keyboard support', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/booking');
   await page.getByRole('button', { name: 'Show me', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Find your venue' });
   await expect(dialog).toBeVisible();
@@ -16,7 +16,7 @@ test('first-visit guide can be skipped, remembered and replayed with keyboard su
   await page.reload();
   await expect(page.getByRole('button', { name: 'Show me', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'How booking works', exact: true })).toHaveCount(0);
-  await page.goto('/?guide=1');
+  await page.goto('/booking?guide=1');
   await page.getByRole('button', { name: 'Next', exact: true }).click();
   await page.getByRole('button', { name: 'Next', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Keep your ticket', exact: true })).toBeVisible();
@@ -26,14 +26,17 @@ test('first-visit guide can be skipped, remembered and replayed with keyboard su
 
 test('landing introduces the service without replacing the booking home', async ({ page }) => {
   await page.goto('/landing');
-  await expect(page.getByRole('heading', { name: 'Less planning. More playing.' })).toBeVisible();
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/landing$/);
+  await expect(page.getByRole('heading', { name: 'PLAY BEYOND.' })).toBeVisible();
+  expect(new URL((await page.locator('link[rel="canonical"]').getAttribute('href'))!).pathname).toBe('/');
   await expect(page.getByText('Launching soon')).toHaveCount(0);
   await page.locator('[data-startup-splash]').waitFor({ state: 'detached' });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.screenshot({ path: test.info().outputPath('landing.png') });
-  await page.getByRole('link', { name: 'New here? Start here' }).click();
-  await expect(page.getByRole('dialog', { name: 'Find your venue' })).toBeVisible();
+  await page.getByRole('link', { name: 'Book venue', exact: true }).first().click();
+  const intro = page.getByRole('dialog', { name: 'Welcome to OYUN' });
+  await expect(intro).toBeVisible();
+  await intro.getByRole('link', { name: 'Skip for now' }).click();
+  await expect(page).toHaveURL(/\/booking$/);
 });
 
 test('owner introduction leads to the working listing form without fabricated statistics', async ({ page }) => {
@@ -59,7 +62,7 @@ test('brand intro is centred and runs again on a full refresh', async ({ page })
   await expect(splash).toBeVisible();
   await splash.evaluate(el => el.getAnimations({ subtree: true }).forEach(animation => { animation.pause(); animation.currentTime = 1500; }));
   await page.screenshot({ path: test.info().outputPath('loader.png') });
-  const word = splash.locator('svg');
+  const word = splash.locator('[data-oyun-wordmark]');
   const box = await word.boundingBox();
   expect(Math.abs(box!.x + box!.width / 2 - page.viewportSize()!.width / 2)).toBeLessThan(4);
   expect(Math.abs(box!.y + box!.height / 2 - page.viewportSize()!.height / 2)).toBeLessThan(4);
@@ -81,7 +84,7 @@ test('first-visit guide does not shift the mobile booking home after hydration',
       }
     }).observe({ type: 'layout-shift', buffered: true });
   });
-  await page.goto('/');
+  await page.goto('/booking');
   await expect(page.getByRole('button', { name: 'Show me', exact: true })).toBeVisible();
   await expect(page.locator('[data-startup-splash]')).toHaveCount(0);
   await page.waitForTimeout(750);

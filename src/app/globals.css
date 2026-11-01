@@ -21,7 +21,7 @@
   --logo-to: #4a0000;
   --logo-gradient: linear-gradient(135deg, var(--logo-from) 0%, var(--logo-to) 100%);
   /* Wordmark typeface (Baloo 2, loaded in layout.tsx): rounded letter ends, used only for the OYUN text logo */
-  --font-wordmark-family: var(--font-wordmark), 'Baloo 2', 'Inter', system-ui, sans-serif;
+  --font-wordmark-family: var(--font-wordmark), 'Kanit', 'Inter', system-ui, sans-serif;
 
   --bg-primary: #faf9f7; /* OYUN paper surface */
   --bg-secondary: #ffffff;
@@ -310,6 +310,9 @@ html {
 
 /* OYUN text logo in the brand colour (light backgrounds only; on red it stays white) */
 .brand-wordmark {
+  font-family: var(--font-wordmark-family);
+  font-weight: 700;
+  font-style: italic;
   background: var(--logo-gradient);
   -webkit-background-clip: text;
   background-clip: text;
@@ -392,4 +395,11 @@ html:has(.playerRoot) { color-scheme: light; }
 
 @media (max-width: 768px) {
   body:has([data-booking-selection="true"], [data-booking-checkout="true"]) { --bottom-nav-h: 0px; }
+}
+/* Preserve card geometry during touch/trackpad swipes, while keeping opacity reveals. */
+@media (max-width: 768px) {
+  .playerRoot main [data-swipe-rail] { overflow-anchor: none; }
+  .playerRoot main [data-swipe-rail] > * { scroll-snap-stop: always; transform: none !important; translate: none !important; }
+  .playerRoot main [data-booking-home][data-motion-ready] [data-home-reveal] { translate: none !important; }
+  .playerRoot main [data-swipe-rail] img, .playerRoot main [data-swipe-rail] a { -webkit-user-drag: none; }
 }

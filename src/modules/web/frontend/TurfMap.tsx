@@ -18,10 +18,10 @@ export default function TurfMap({ turfs, single = false }: { turfs: MapTurf[]; s
   return <section className={`${styles.map} ${single ? styles.fill : ''}`} aria-label={single ? 'Venue location' : 'Venues on map'}>
     <iframe key={place} className={styles.frame} title={venue ? `Google Maps: ${venue.name}` : 'Google Maps: Mangalore'} src={`https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s${encodeURIComponent(place)}!6i${single ? 16 : 14}`} allowFullScreen referrerPolicy="no-referrer-when-downgrade" />
     {!single && <>
-      <div className={styles.rail} aria-label="Map venues">
+      <div className={styles.rail} data-swipe-rail aria-label="Map venues">
         {venues.map(t => <article key={t.id} className={`${styles.venue} ${venue?.id === t.id ? styles.selected : ''}`}>
           <button type="button" className={styles.select} aria-pressed={venue?.id === t.id} onClick={() => setSelected(t.id)} aria-label={`Show ${t.name} on Google Maps`}>
-            {t.images?.[0] && <span className={styles.image}><Image src={t.images[0]} alt="" fill sizes="280px" unoptimized={!canOptimize(t.images[0])} /></span>}
+            {t.images?.[0] && <span className={styles.image}><Image src={t.images[0]} alt="" draggable={false} fill sizes="280px" unoptimized={!canOptimize(t.images[0])} /></span>}
             <span className={styles.info}><strong>{t.name}</strong><span>Mangalore</span><b>₹{t.pricePerHour.toLocaleString('en-IN')} <small>/hr</small></b></span>
           </button>
           <Link className={styles.book} href={`/arenas/${t.id}`}>Book now</Link>

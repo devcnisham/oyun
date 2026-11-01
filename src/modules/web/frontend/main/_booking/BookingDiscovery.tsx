@@ -14,7 +14,7 @@ export default function BookingDiscovery({ selectedSport, onSelectSport, childre
     {children}
     <div className={styles.categories} role="group" aria-label="Filter venues by sport">
       {SPORTS.slice(0, 4).map(sport => <button data-home-reveal type="button" key={sport.value} className={styles.category} aria-pressed={selectedSport === sport.value} aria-controls="featured-title" onClick={() => onSelectSport(sport.value)}>
-        <span className={styles.photo}><Image src={sport.image} alt="" fill loading="eager" sizes="(max-width: 760px) 25vw, 160px" /></span>
+        <span className={styles.photo}><Image src={sport.image} alt="" draggable={false} fill loading="eager" sizes="(max-width: 760px) 25vw, 160px" /></span>
         <span className={styles.name}>{sport.label}</span>
       </button>)}
     </div>

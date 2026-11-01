@@ -6,8 +6,8 @@ test('loading communicates the real pending action and renders the brand', () =>
   const html = renderToStaticMarkup(<OyunLoader compact label="Confirming booking…" />);
   expect(html).toContain('role="status"');
   expect(html).toContain('Confirming booking…');
-  expect((html.match(/<path/g) ?? []).length).toBe(4);
-  expect(html).toContain('viewBox="0 0 244 76"');
+  expect(html).toContain('data-oyun-wordmark');
+  for (const letter of 'OYUN') expect(html).toContain(`>${letter}</span>`);
 });
 test('the animated confirmation is decorative, leaving ticket status as the accessible label', () => {
   const html = renderToStaticMarkup(<ConfirmationMark />);

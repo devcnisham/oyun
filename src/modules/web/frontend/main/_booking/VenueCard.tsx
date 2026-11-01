@@ -11,9 +11,9 @@ export default function VenueCard({ turf, eager = false, date, showSave = false,
   return (
     <article data-home-reveal className={`${styles.venue} ${showSave ? styles.withSave : ''}`}>
       {showSave && <FavouriteButton turfId={turf.id} turfName={turf.name} className={styles.saveButton} />}
-      <Link href={date ? `/arenas/${turf.id}?date=${encodeURIComponent(date)}` : `/arenas/${turf.id}`} className={styles.venueLink} aria-label={`Book ${turf.name}`}>
+      <Link href={date ? `/arenas/${turf.id}?date=${encodeURIComponent(date)}` : `/arenas/${turf.id}`} className={styles.venueLink} draggable={false} aria-label={`Book ${turf.name}`}>
         <div className={styles.venueImage}>
-          {photo ? <Image src={photo} alt={turf.name} fill sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 25vw" loading={eager ? 'eager' : 'lazy'} unoptimized={!canOptimize(photo)} /> : <span className={styles.photoFallback}>{turf.sports[0] || 'Sports'}<br />{turf.city}</span>}
+          {photo ? <Image src={photo} alt={turf.name} draggable={false} fill sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 25vw" loading={eager ? 'eager' : 'lazy'} unoptimized={!canOptimize(photo)} /> : <span className={styles.photoFallback}>{turf.sports[0] || 'Sports'}<br />{turf.city}</span>}
           <div className={styles.venueBadges}>
             {turf.isFeatured && <span className={styles.featuredBadge}>Featured</span>}
             {turf.reviewCount > 0 && turf.rating > 0 && <span className={styles.rating}><span aria-hidden>★</span> {turf.rating.toFixed(1)}<span className="sr-only"> out of 5 from {turf.reviewCount} reviews</span></span>}

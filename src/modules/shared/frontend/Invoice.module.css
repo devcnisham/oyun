@@ -33,9 +33,10 @@
 
 .brand {
   font-family: var(--font-wordmark-family);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 24px;
   color: var(--accent-text);
+  font-style: italic;
 }
 
 .parties {

@@ -6,7 +6,7 @@
 .top h2 { font-size: 30px; letter-spacing: -.04em; }
 .close { border-color: transparent; background: #f5f5f7; }
 .account { display: flex; align-items: center; gap: 12px; padding: 24px; background: #f8f8fa; border-bottom: 1px solid #e5e5e7; }
-.accountIcon { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: #a40000; color: #fff; font-family: var(--font-wordmark-family); font-size: 11px; font-weight: 850; }
+.accountIcon { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: #a40000; color: #fff; font-family: var(--font-wordmark-family); font-size: 11px; font-weight: 700; font-style: italic; }
 .account p { font-size: 13px; line-height: 1.5; color: #646469; }
 .account a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 13px; margin-left: auto; border: 1px solid #a40000; border-radius: 10px; color: #a40000; font-size: 12px; font-weight: 700; text-decoration: none; flex: none; }
 .row { display: flex; align-items: center; gap: 18px; min-height: 88px; padding: 20px 26px; border-bottom: 1px solid #ededf0; color: #414145; text-decoration: none; }

@@ -56,12 +56,17 @@ async function handle(req: NextRequest) {
     res.cookies.set(PREVIEW_COOKIE, previewKey, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 30, ...shared });
     return res;
   }
-  const route = routeForHost(role, req.nextUrl.pathname, {
+  const localHost = ['localhost', '127.0.0.1', '[::1]'].includes(req.nextUrl.hostname);
+  const localPath = localHost && req.nextUrl.pathname === '/' ? '/landing'
+    : localHost && req.nextUrl.pathname === '/booking'
+      ? (/Mobi|Android|iPhone|iPod/i.test(req.headers.get('user-agent') ?? '') ? '/m' : '/')
+      : null;
+  const route = localPath ? { kind: 'rewrite' as const, path: localPath } : routeForHost(role, req.nextUrl.pathname, {
     launched: isLaunched(),
     preview: previewAllowed(req.cookies.get(PREVIEW_COOKIE)?.value, previewKey),
   });
   if (route.kind === 'redirect') {
-    // Old subdomains (app., book., help.) move to www with a permanent redirect so search engines pass their signals on.
+    // Legacy and canonical-content redirects preserve search signals.
     // Those keep the query string (campaign tags); the temporary launch-gate redirects drop it (it may hold the preview key).
     if (route.permanent) return NextResponse.redirect(`https://${route.host}${route.path}${req.nextUrl.search}`, req.method === 'GET' || req.method === 'HEAD' ? 301 : 308);
     return NextResponse.redirect(`https://${route.host}${route.path}`, 307);

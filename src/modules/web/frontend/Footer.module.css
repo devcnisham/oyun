@@ -39,10 +39,11 @@
 .logoName {
   font-family: var(--font-wordmark-family);
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
   color: var(--text-primary);
   letter-spacing: 0;
+  font-style: italic;
 }
 
 .logoTag {
@@ -175,10 +176,13 @@
   opacity: 0.20;
   font-family: var(--font-wordmark-family);
   font-size: clamp(100px, 25vw, 350px);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 0.85;
   letter-spacing: -0.055em;
   text-align: center;
   user-select: none;
   pointer-events: none;
+  font-style: italic;
 }
+
+.watermark svg { display:block; width:100%; height:auto; overflow:visible; }

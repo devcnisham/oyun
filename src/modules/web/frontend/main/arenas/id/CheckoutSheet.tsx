@@ -6,6 +6,7 @@ import type { AddOn, PitchSize, PublicTurf, Slot } from '@/modules/shared/databa
 import { rupees, shortHour } from '@/modules/shared/lib/format';
 import { describeHours } from '@/modules/web/frontend/main/arenas/id/booking-format';
 import styles from '@/modules/web/frontend/main/arenas/id/BookingFlow.module.css';
+import checkout from './CheckoutSheet.module.css';
 import type { CheckoutForm } from '@/modules/web/frontend/main/arenas/id/useCheckoutForm';
 
 interface CheckoutSheetProps {
@@ -35,29 +36,29 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
   const chips = quote?.slots ?? selectedSlots.map((s) => ({ hour: s.hour, label: s.label, price: s.price }));
 
   return createPortal(
-    <div data-booking-checkout="true" className={`${styles.flow} ${styles.overlay}`} onClick={(e) => e.target === e.currentTarget && !paying && onClose()}>
-      <div ref={dialogRef} className={styles.sheet} role="dialog" aria-modal="true" aria-label="Checkout">
-        <div className={styles.sheetHead}>
+    <div data-booking-checkout="true" className={`${styles.flow} ${styles.overlay} ${checkout.surface}`} onClick={(e) => e.target === e.currentTarget && !paying && onClose()}>
+      <div ref={dialogRef} className={`${styles.sheet} ${checkout.sheet}`} role="dialog" aria-modal="true" aria-label="Checkout">
+        <div className={`${styles.sheetHead} ${checkout.head}`}>
           <button className={styles.back} onClick={onClose} disabled={paying} aria-label="Back to slots">←</button>
-          <h2>Checkout</h2>
-          <span className={`${styles.timer} ${secondsLeft < 60 ? styles.timerLow : ''}`} aria-live="polite">
+          <div className={checkout.heading}><span>Finish your booking</span><h2>Checkout</h2></div>
+          <span className={`${styles.timer} ${checkout.timer} ${secondsLeft < 60 ? styles.timerLow : ''}`} aria-label={`Slot hold expires in ${clock(secondsLeft)}`}>
              {clock(secondsLeft)}
           </span>
         </div>
 
-        <div className={styles.sheetBody}>
-          <div className={styles.coLeft}>
+        <div className={`${styles.sheetBody} ${checkout.body}`}>
+          <div className={`${styles.coLeft} ${checkout.left}`}>
           <section>
             <h3>Your details</h3>
             <div className={styles.fields}>
-              <input className={styles.input} name="name" aria-label="Full name" placeholder="Full name" value={name} onChange={(e) => form.setName(e.target.value)} autoComplete="name" />
-              <input className={styles.input} name="phone" type="tel" aria-label="10-digit mobile number" placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => form.setPhone(e.target.value)} autoComplete="tel-national" />
+              <label className={checkout.field}><span>Full name</span><input className={styles.input} name="name" aria-label="Full name" placeholder="Full name" value={name} onChange={(e) => form.setName(e.target.value)} autoComplete="name" /></label>
+              <label className={checkout.field}><span>Mobile number</span><input className={styles.input} name="phone" type="tel" aria-label="10-digit mobile number" placeholder="10-digit mobile number" inputMode="numeric" value={phone} onChange={(e) => form.setPhone(e.target.value)} autoComplete="tel-national" /></label>
             </div>
           </section>
           <StudentIdBox name={name} phone={phone} />
 
           <section>
-            <h3>Offers</h3>
+            <div className={checkout.sectionTitle}><h3>Offers &amp; rewards</h3><span>Optional</span></div>
             <div className={styles.codeRow}>
               <input
                 className={styles.input}
@@ -135,8 +136,8 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           </section>
 
           </div>
-          <aside className={styles.coRight}>
-          <div className={styles.ticket}>
+          <aside className={`${styles.coRight} ${checkout.right}`}>
+          <div className={`${styles.ticket} ${checkout.ticket}`}><p className={checkout.ticketLabel}>Your session</p>
             <div>
               <b>{turf.name}</b>
               <span className={styles.muted}>Mangalore · {bookableName ?? (size === 'half' ? 'Half pitch' : turf.size)}</span>
@@ -154,7 +155,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           </div>
 
           {quote && (
-            <section className={styles.bill}>
+            <section className={`${styles.bill} ${checkout.bill}`}>
               <div><span>Slots ({quote.slots.length})</span><span>{rupees(quote.slotTotal)}</span></div>
               {quote.addOnTotal > 0 && (
                 <div style={{ color: 'var(--text-accent, #047857)' }}>
@@ -177,7 +178,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           )}
 
           {error && <p className={styles.error} role="alert">{error}</p>}
-            <div className={`${styles.sheetFoot} ${styles.footDesktop}`}>
+            <div className={`${styles.sheetFoot} ${styles.footDesktop} ${checkout.foot}`}>
 <div className={styles.barInfo}>
                 <b>{quote ? rupees(quote.payNow) : '…'}</b>
                 <span>{form.paymentOption === 'full' ? 'Full amount due at the venue' : '30% advance due at the venue'}</span>
@@ -189,7 +190,7 @@ export default function CheckoutSheet({ turf, size, bookableName, dateLabel, sel
           </aside>
         </div>
 
-        <div className={`${styles.sheetFoot} ${styles.footMobile}`}>
+        <div className={`${styles.sheetFoot} ${styles.footMobile} ${checkout.foot}`}>
           <div className={styles.barInfo}>
             <b>{quote ? rupees(quote.payNow) : '…'}</b>
             <span>{form.paymentOption === 'full' ? 'Full amount due at the venue' : '30% advance due at the venue'}</span>

@@ -38,10 +38,11 @@
 .brandTitle {
   font-family: var(--font-wordmark-family);
   font-size: 48px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0;
   margin-bottom: 8px;
   text-transform: uppercase;
+  font-style: italic;
 }
 
 .brandTag {

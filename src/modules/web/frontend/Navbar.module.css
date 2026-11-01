@@ -53,11 +53,12 @@
 .logoName {
   font-family: var(--font-wordmark-family);
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   color: #fff;
   letter-spacing: 0;
   text-transform: uppercase;
+  font-style: italic;
 }
 
 /* Nav Links */

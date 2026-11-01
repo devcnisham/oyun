@@ -14,17 +14,19 @@ export const metadata: Metadata = {
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ redirect_url?: string }> }) {
   const { redirect_url } = await searchParams;
+  const redirectTo = redirect_url?.startsWith('/') && !redirect_url.startsWith('//') ? redirect_url : '/booking';
+  const query = `?redirect_url=${encodeURIComponent(redirectTo)}`;
   return (
     <AuthShell
-      mode="login"
+      mode="login" redirectTo={redirectTo}
       title="Welcome back"
-      subtitle="Sign in with Google, Apple or your email to book in a tap."
-      footer={<p>New to OYUN? <Link href="/signup" className={styles.footerLink}>Create an account</Link></p>}
+      subtitle="Your bookings and favourite venues, all in one place."
+      footer={<p>New to OYUN? <Link href={`/signup${query}`} className={styles.footerLink}>Create an account</Link></p>}
     >
       {clerkEnabled ? (
-        <SignIn path="/login" routing="path" signUpUrl="/signup" fallbackRedirectUrl="/" appearance={clerkAppearance} />
+        <SignIn path="/login" routing="path" signUpUrl={`/signup${query}`} fallbackRedirectUrl={redirectTo} appearance={{ ...clerkAppearance, variables: { ...clerkAppearance.variables, colorPrimary: '#4a0000' } }} />
       ) : (
-        <PlayerForm mode="login" redirectTo={redirect_url} />
+        <PlayerForm mode="login" redirectTo={redirectTo} />
       )}
     </AuthShell>
   );

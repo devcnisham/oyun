@@ -9,7 +9,6 @@ import Stars from '@/modules/shared/frontend/Stars';
 import FavouriteButton from '@/modules/web/frontend/FavouriteButton';
 import BookingFlow, { type BookingFlowProps } from '@/modules/web/frontend/main/arenas/id/BookingFlow';
 import { formatTime } from '@/modules/shared/lib/time';
-import { shortHour } from '@/modules/shared/lib/format';
 import ShareButton from '@/modules/web/frontend/main/arenas/id/ShareButton';
 import TurfMiniMap from '@/modules/web/frontend/main/arenas/id/TurfMiniMap';
 import styles from '@/modules/web/frontend/main/arenas/id/page.module.css';
@@ -29,7 +28,7 @@ interface TurfDetailProps {
 }
 
 
-export default function TurfDetail({ turf, dates, initialDate, initialSlots, offers, bookable, rewards, initialReferral, reviews, addOns }: TurfDetailProps) {
+export default function TurfDetail({ turf, dates, initialDate, initialSlots, bookable, rewards, initialReferral, reviews, addOns }: TurfDetailProps) {
   const [imgIdx, setImgIdx] = useState(0);
   const images = turf.images && turf.images.length > 0 ? turf.images : ['/turfs/turf_0.jpg'];
   const imageSrc = images[imgIdx] || images[0];
@@ -61,6 +60,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
           </>
         )}
 
+        {turf.reviewCount === 0 && <span className={`${styles.imageBadge} ${styles.newBadge}`}>New</span>}
         <div className={styles.imageCounter}> {imgIdx + 1}/{images.length}</div>
       </div>
 
@@ -71,7 +71,7 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
         {/* Name, badge and address on the left; hours and map link on the right */}
         <div className={styles.titleRow}>
           <div className={styles.titleMain}>
-            <span className={`${styles.ratingBadge} ${turf.reviewCount === 0 ? styles.newBadge : ''}`}>{turf.reviewCount > 0 ? `★ ${turf.rating}` : 'New'}</span>
+            {turf.reviewCount > 0 && <span className={styles.ratingBadge}>★ {turf.rating}</span>}
             <h1 className={styles.title}>{turf.name}</h1>
 
           </div>
@@ -98,27 +98,11 @@ export default function TurfDetail({ turf, dates, initialDate, initialSlots, off
 
 
 
-        {offers.length > 0 && (
-          <div className={styles.offerStrip}>
-            {offers.map((o) => (
-              <div key={o.id} className={styles.offerChip}>
-                 <strong>{o.title}</strong> · {o.percentOff}% off{' '}
-                {o.type === 'first_time'
-                  ? 'your first booking'
-                  : o.type === 'regular'
-                    ? 'every booking'
-                    : o.type === 'student'
-                      ? 'for students: send your ID at checkout'
-                      : `${shortHour(o.startHour)}–${shortHour(o.endHour)}`}
-              </div>
-            ))}
-          </div>
-        )}
+
         </div>
 
         {/* Right column: booking panel, sticky on desktop */}
         <aside className={styles.bookingPanel}>
-        <h2 className={styles.panelTitle}>Book a slot</h2>
         {!bookable ? (
           <div className={styles.notice}>This venue is under maintenance and not taking bookings right now.</div>
         ) : (

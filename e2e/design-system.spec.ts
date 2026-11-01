@@ -8,14 +8,13 @@ test.beforeEach(async ({ page }) => {
 
 test('desktop navigation is fixed flush to the viewport with no redundant search', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop navigation');
-  for (const path of ['/', '/arenas']) {
+  for (const path of ['/booking', '/arenas']) {
     await page.goto(path);
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav).toBeVisible();
     await expect(nav.getByRole('search')).toHaveCount(0);
     await expect(nav.getByRole('link', { name: /^Bookings/ })).toHaveCount(0);
-    if (path === '/') await expect(nav.getByRole('button', { name: 'Open menu' })).toHaveCount(0);
-    else await expect(nav.getByRole('button', { name: 'Open menu' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Open menu' })).toBeVisible();
     await expect(nav.getByRole('link', { name: 'List your venue' })).toHaveCount(0);
     await expect(nav.getByRole('link', { name: 'Offers', exact: true })).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0, 600));
@@ -67,7 +66,7 @@ test('venue results keep only sport categories and can clear incoming search pre
 test('desktop footer keeps Support beside the other groups and shows the dimmed wordmark', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop footer columns');
   await page.setViewportSize({ width: 1440, height: 1100 });
-  await page.goto('/');
+  await page.goto('/booking');
   const footer = page.locator('footer');
   await footer.scrollIntoViewIfNeeded();
   await expect.poll(async () => footer.evaluate(el => { const titles = [...el.querySelectorAll('p')]; const top = (label: string) => titles.find(p => p.textContent === label)!.getBoundingClientRect().top; return Math.abs(top('Book') - top('Support')); })).toBeLessThan(2);
@@ -90,7 +89,7 @@ test('redesigned page groups render with no viewport overflow', async ({ page, i
 
 
 test('home category selection filters featured venues without navigating away', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/booking');
   const category = page.getByRole('button', { name: 'Badminton', exact: true });
   await category.click();
   await expect(category).toHaveAttribute('aria-pressed', 'true');
@@ -98,7 +97,7 @@ test('home category selection filters featured venues without navigating away', 
   await expect(featured.getByRole('link', { name: 'Book Smash Court Badminton' })).toBeVisible();
   await expect(featured.getByRole('link', { name: 'Book Perfect Pass' })).toHaveCount(0);
   await expect(featured.getByRole('link', { name: 'See all venues' })).toHaveAttribute('href', '/arenas?sport=Badminton');
-  expect(new URL(page.url()).pathname).toBe('/');
+  expect(new URL(page.url()).pathname).toBe('/booking');
   await category.click();
   await expect(category).toHaveAttribute('aria-pressed', 'false');
   await expect(page.getByRole('region', { name: 'Featured', exact: true }).getByRole('link', { name: 'Book Perfect Pass' })).toBeVisible();
@@ -129,7 +128,7 @@ test('side menu opens, traps focus and closes with Escape', async ({ page, isMob
 });
 
 test('home shows a real live-slot total without duplicate venue cards', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/booking');
   const live = page.getByRole('region', { name: 'Live slot availability', exact: true });
   await expect(live.getByText(/\d+ open slots/)).toBeVisible({ timeout: 30_000 });
   await expect(live.locator('article')).toHaveCount(0);
@@ -138,7 +137,7 @@ test('home shows a real live-slot total without duplicate venue cards', async ({
   await expect(live.getByText(/\d+ open slots/)).toBeVisible({ timeout: 30_000 });
 });
 
-test('Google map selects venues and the mobile centre tab opens it', async ({ page, isMobile }) => {
+test('Google map selects venues and the mobile search bar toggles it', async ({ page, isMobile }) => {
   await page.goto('/arenas?view=map');
   const map = page.getByRole('region', { name: 'Venues on map' });
   await expect(map.locator('iframe')).toHaveAttribute('src', /^https:\/\/www\.google\.com\/maps\/embed/);
@@ -149,15 +148,23 @@ test('Google map selects venues and the mobile centre tab opens it', async ({ pa
   await expect(map.getByRole('button', { name: /Show .* on Google Maps/ })).toHaveCount(1);
   if (isMobile) {
     const nav = page.getByRole('navigation', { name: 'Main', exact: true });
-    await expect(nav.getByRole('link').nth(2)).toHaveText('Map');
-    await expect(nav.getByRole('link', { name: 'Map', exact: true })).toHaveAttribute('aria-current', 'page');
-    await nav.getByRole('link', { name: 'Venues', exact: true }).click();
-    await expect(page).toHaveURL(/\/arenas$/);
+    await expect(nav).toHaveCount(0);
+    const search = page.getByRole('search', { name: 'Search venues', exact: true });
+    await search.getByRole('button', { name: 'Show venue cards', exact: true }).click();
+    await expect(page).not.toHaveURL(/view=map/);
+    await expect(nav.getByRole('link')).toHaveCount(4);
+    await expect(nav.getByRole('link', { name: 'Map', exact: true })).toHaveCount(0);
+    await expect(nav.getByRole('link', { name: 'Venues', exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(search.getByRole('button', { name: 'Show venue map', exact: true })).toHaveCSS('color', 'rgb(29, 29, 31)');
+    await expect(page).toHaveURL(/q=Perfect(?:%20|\+)Pass/);
+    await search.getByRole('button', { name: 'Show venue map', exact: true }).click();
+    await expect(page).toHaveURL(/view=map/);
+    await expect(nav).toHaveCount(0);
   }
 });
 
 test('home keeps live slots above one compact sport row', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/booking');
   const live = page.getByRole('region', { name: 'Live slot availability' });
   const categories = page.getByRole('group', { name: 'Filter venues by sport' });
   await expect(categories.getByRole('button')).toHaveCount(4);
@@ -167,7 +174,7 @@ test('home keeps live slots above one compact sport row', async ({ page }) => {
 
 test('mobile daytime deals stay in a swipeable single row', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'mobile swipe layout');
-  await page.goto('/');
+  await page.goto('/booking');
   const section = page.getByRole('region', { name: 'Morning and afternoon deals' });
   const cards = section.locator('article');
   await expect(cards).toHaveCount(3);
@@ -181,7 +188,7 @@ test('mobile daytime deals stay in a swipeable single row', async ({ page, isMob
 
 test('mobile carousel dots sit inside each banner without extra controls', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'mobile banner controls');
-  await page.goto('/');
+  await page.goto('/booking');
   for (const label of ['Featured venues', 'Daytime deals']) {
     const carousel = page.locator(`[aria-roledescription="carousel"][aria-label="${label}"]`);
     const dot = carousel.getByRole('button', { name: `Show ${label.toLowerCase()} card 2` });
@@ -199,7 +206,7 @@ test('mobile carousel dots sit inside each banner without extra controls', async
 });
 
 test('desktop ad cards flank an aligned live-slot and category column', async ({ page, isMobile }) => {
-  await page.goto('/');
+  await page.goto('/booking');
   const left=page.locator('[data-ad-placement="home-desktop-left"]');
   const right=page.locator('[data-ad-placement="home-desktop-right"]');
   if(isMobile) { await expect(left).toBeHidden(); await expect(right).toBeHidden(); return; }
@@ -212,7 +219,7 @@ test('desktop ad cards flank an aligned live-slot and category column', async ({
 test('mobile featured banners auto-advance without arrow or playback buttons', async ({ page, isMobile }) => {
   test.skip(!isMobile,'mobile auto slide');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/');
+  await page.goto('/booking');
   const carousel=page.locator('[aria-roledescription="carousel"][aria-label="Featured venues"]');
   await page.bringToFront();
   await carousel.scrollIntoViewIfNeeded();
@@ -224,7 +231,7 @@ test('mobile featured banners auto-advance without arrow or playback buttons', a
 test('next game stays inside the live banner and moves only by manual swipe', async ({ page }) => {
   expect(await holdFirstSlot(page, 1)).toBe(true);
   await confirmBooking(page);
-  await page.goto('/');
+  await page.goto('/booking');
   const banner=page.getByRole('region',{name:'Live slot availability'});
   const next=banner.getByRole('link',{name:/Next game/});
   await expect(next).toBeVisible();

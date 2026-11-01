@@ -54,7 +54,8 @@ describe('landing host (www)', () => {
     expect(routeForHost('landing', '/arenas/x', TEAM)).toEqual(next);
   });
   test('after launch www serves the whole public site (the single SEO host)', () => {
-    for (const p of ['/', '/arenas', '/arenas/x', '/guides/padel', '/sports/football', '/turfs/kodialbail', '/login']) expect(routeForHost('landing', p, LIVE)).toEqual(next);
+    for (const p of ['/arenas', '/arenas/x', '/guides/padel', '/sports/football', '/turfs/kodialbail', '/login']) expect(routeForHost('landing', p, LIVE)).toEqual(next);
+    expect(routeForHost('landing', '/', LIVE)).toEqual({ kind: 'rewrite', path: '/landing' });
     expect(routeForHost('landing', '/countdown', LIVE)).toEqual(perm('/'));
     expect(routeForHost('landing', '/landing', LIVE)).toEqual(next);
     expect(routeForHost('landing', '/admin', LIVE)).toEqual(go('admin', '/admin'));
@@ -67,7 +68,7 @@ describe('landing host (www)', () => {
 
 describe('old subdomains (app, book, help) permanently redirect to www', () => {
   test('after launch every public path moves to the same path on www', () => {
-    for (const role of ['app', 'book', 'help'] as const) {
+    for (const role of ['app', 'help'] as const) {
       for (const p of ['/arenas', '/arenas/x', '/bookings/b_1', '/faq', '/guides/padel', '/login']) expect(routeForHost(role, p, LIVE)).toEqual(perm(p));
     }
     expect(routeForHost('help', '/', LIVE)).toEqual(perm('/help'));
@@ -114,7 +115,7 @@ describe('launch gate', () => {
   });
   test('a team member with the preview cookie sees the player site', () => {
     expect(routeForHost('app', '/arenas', TEAM)).toEqual(perm('/arenas'));
-    expect(routeForHost('book', '/arenas/x', TEAM)).toEqual(perm('/arenas/x'));
+    expect(routeForHost('book', '/arenas/x', TEAM)).toEqual(next);
     expect(routeForHost('preview', '/', TEAM)).toEqual(next);
   });
   test('after launch the vercel.app address is just the site', () => {
@@ -134,5 +135,14 @@ describe('launch gate', () => {
     expect(previewAllowed(undefined, key)).toBe(false);
     expect(previewAllowed(key, undefined)).toBe(false);
     expect(previewAllowed('short', 'short')).toBe(false);
+  });
+});
+
+describe('booking subdomain', () => {
+  test('serves booking home and player screens without redirecting to www', () => {
+    for (const path of ['/', '/arenas', '/arenas/x', '/bookings', '/profile', '/login']) {
+      expect(routeForHost('book', path, LIVE)).toEqual(next);
+    }
+    expect(routeForHost('book', '/help', LIVE)).toEqual(perm('/help'));
   });
 });

@@ -6,6 +6,7 @@ import { istNow } from '@/modules/shared/lib/time';
 import type { TurfSummary } from '@/modules/shared/database/types';
 import styles from './LiveSlots.module.css';
 import UpcomingGame from './UpcomingGame';
+import AnimatedSlotCount from './AnimatedSlotCount';
 
 type Snapshot = { key: string; count: number; error: boolean };
 
@@ -31,11 +32,12 @@ export default function LiveSlots({ turfs }: { turfs: TurfSummary[] }) {
     return () => { active = false; window.clearInterval(timer); document.removeEventListener('visibilitychange', visible); };
   }, [key]);
   const ready = snapshot?.key === key;
+  const count = ready ? snapshot.count : turfs.reduce((total, turf) => total + turf.availableToday, 0);
   return <section data-home-reveal className={styles.banner} aria-label="Live slot availability">
     <div className={styles.panels} tabIndex={0} aria-label="Open slots and your next game" onKeyDown={e => { if (e.target !== e.currentTarget || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return; e.preventDefault(); e.currentTarget.scrollBy({left: (e.key === 'ArrowRight' ? 1 : -1) * e.currentTarget.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }}>
     <div className={styles.summary}>
     <p className={styles.eyebrow}>TODAY ON OYUN</p>
-    <div role="status" aria-live="polite">{!ready ? <p className={styles.loading}>Checking open slots…</p> : snapshot.error ? <p className={styles.loading}>Check venues for live availability</p> : <p className={styles.total}><strong>{snapshot.count}</strong> open slots</p>}</div>
+    <div role="status" aria-live="polite" aria-label={ready && snapshot.error ? undefined : `${count} open slots`}>{ready && snapshot.error ? <p className={styles.loading}>Check venues for live availability</p> : <p className={styles.total} aria-hidden="true"><strong><AnimatedSlotCount value={count} /></strong> open slots</p>}</div>
     <p className={styles.caption}>Your next game starts here.</p>
     </div>
     <UpcomingGame />

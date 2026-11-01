@@ -49,3 +49,8 @@
   .header { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .page { padding-top: 16px; }
 }
+@media (max-width: 768px) {
+  .cardWrapper { animation-name: cardFade; }
+  .cardWrapper:hover { transform: none; }
+}
+@keyframes cardFade { from { opacity: .5; } to { opacity: 1; } }

@@ -154,7 +154,7 @@ function ArenasList({ turfs, areaNames }: { turfs: TurfSummary[]; areaNames: str
 
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${viewMode === 'map' ? styles.mapView : ''}`}>
       {/* Header */}
       <div className={styles.header}>
         <div className="container">
